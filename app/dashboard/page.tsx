@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
 import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
+import Loader from "@/components/shared/Loader";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -29,15 +31,11 @@ export default function DashboardPage() {
   }, [router]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a]">
-        <div className="text-white text-xl">Chargement...</div>
-      </div>
-    );
+    return <Loader fullScreen message="Chargement de votre espace..." />;
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white">
+    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
       {/* Contenu principal */}
@@ -143,6 +141,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
