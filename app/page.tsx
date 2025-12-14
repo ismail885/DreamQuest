@@ -39,10 +39,10 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
               <Link
-                href="/register"
+                href="/create-character"
                 className="px-8 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-white font-semibold rounded-lg transition-all duration-200 w-full sm:w-auto"
               >
-                Commencer l&apos;Aventure
+                Créer un Personnage
               </Link>
               
               <Link

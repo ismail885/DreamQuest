@@ -1,0 +1,95 @@
+'use client';
+
+import { Character, CHARACTER_CLASSES, STAT_ICONS } from '@/types';
+import Image from 'next/image';
+
+interface CharacterCardProps {
+  character: Character;
+  onSelect?: () => void;
+  onDelete?: () => void;
+}
+
+export default function CharacterCard({ character, onSelect, onDelete }: CharacterCardProps) {
+  const classInfo = CHARACTER_CLASSES[character.classe];
+  const healthPercentage = (character.points_vie / character.points_vie_max) * 100;
+
+  return (
+    <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group">
+      {/* Image et niveau */}
+      <div className="relative h-48 bg-gradient-to-b from-gray-800 to-gray-900">
+        <Image
+          src={classInfo.image}
+          alt={character.nom_personnage}
+          fill
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
+        
+        {/* Badge de niveau */}
+        <div className="absolute top-2 right-2 bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold">
+          Niv. {character.niveau}
+        </div>
+      </div>
+
+      {/* Informations */}
+      <div className="p-4">
+        <h3 className="text-xl font-bold text-white mb-1">{character.nom_personnage}</h3>
+        <p className="text-cyan-400 text-sm mb-3">{character.classe}</p>
+
+        {/* Barre de vie */}
+        <div className="mb-3">
+          <div className="flex justify-between text-xs text-gray-400 mb-1">
+            <span>Points de Vie</span>
+            <span>{character.points_vie} / {character.points_vie_max}</span>
+          </div>
+          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 ${
+                healthPercentage > 50
+                  ? 'bg-green-500'
+                  : healthPercentage > 25
+                  ? 'bg-yellow-500'
+                  : 'bg-red-500'
+              }`}
+              style={{ width: `${healthPercentage}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Statistiques */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          {Object.entries(character.stats).map(([stat, value]) => (
+            <div key={stat} className="flex items-center gap-2 text-sm">
+              <span className="text-xl">{STAT_ICONS[stat as keyof typeof STAT_ICONS]}</span>
+              <span className="text-gray-400 capitalize">{stat}:</span>
+              <span className="text-white font-bold">{value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          {onSelect && (
+            <button
+              onClick={onSelect}
+              className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
+            >
+              Sélectionner
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors"
+              title="Supprimer le personnage"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

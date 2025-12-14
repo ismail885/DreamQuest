@@ -77,7 +77,7 @@ export default function Footer() {
                 <Link href="/dashboard">Découvrir</Link>
               </li>
               <li>
-                <Link href="/create">Créer un personnage</Link>
+                <Link href="/create-character">Créer un personnage</Link>
               </li>
               <li>
                 <Link href="/adventure">Mes aventures</Link>
@@ -116,9 +116,6 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/blog">Blog</Link>
-              </li>
-              <li>
-                <Link href="/api">API</Link>
               </li>
               <li>
                 <Link href="/support">Support</Link>

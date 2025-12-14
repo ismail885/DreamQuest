@@ -7,6 +7,7 @@ import { User } from "@supabase/supabase-js";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import Loader from "@/components/shared/Loader";
+import CharacterList from "@/components/character/CharacterList";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -49,24 +50,21 @@ export default function DashboardPage() {
             <p className="text-gray-400">Prêt à vivre de nouvelles aventures ?</p>
           </div>
 
-          {/* Section des aventures */}
+          {/* Section des personnages */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Mes Aventures</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* Carte vide - Aucune aventure */}
-              <div className="col-span-full bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-12 text-center">
-                <div className="w-16 h-16 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">Aucune aventure pour le moment</h3>
-                <p className="text-gray-400 mb-6">Créez votre premier personnage et commencez votre quête !</p>
-                <button className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all">
-                  Créer un Personnage
-                </button>
-              </div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">Mes Personnages</h2>
+              <button 
+                onClick={() => router.push('/create-character')}
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Créer un Personnage
+              </button>
             </div>
+            {user && <CharacterList userId={user.id} />}
           </div>
 
           {/* Statistiques */}
@@ -82,7 +80,7 @@ export default function DashboardPage() {
                 <div className="text-gray-400 text-sm">Quêtes complétées</div>
               </div>
               <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-yellow-400 mb-2">1</div>
+                <div className="text-3xl font-bold text-yellow-400 mb-2">0</div>
                 <div className="text-gray-400 text-sm">Niveau</div>
               </div>
               <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6">

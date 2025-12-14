@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.77.0",
     "dotenv": "^17.2.3",
+    "lucide-react": "^0.554.0",
     "mongoose": "^8.19.2",
     "next": "15.5.5",
     "postgres": "^3.4.7",

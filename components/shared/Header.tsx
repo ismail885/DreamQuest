@@ -71,7 +71,7 @@ export default function Header() {
 
             {/* Boutons droite */}
             <div className="flex items-center gap-4">
-              <Link href="/create">
+              <Link href="/create-character">
                 <button className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors">
                   Nouveau Personnage
                 </button>
@@ -117,7 +117,7 @@ export default function Header() {
             <Link href="/adventure" className="text-gray-400 hover:text-white transition-colors">
               Aventures
             </Link>
-            <Link href="/create" className="text-gray-400 hover:text-white transition-colors">
+            <Link href="/create-character" className="text-gray-400 hover:text-white transition-colors">
               Créer
             </Link>
             <Link href="/classement" className="text-gray-400 hover:text-white transition-colors">

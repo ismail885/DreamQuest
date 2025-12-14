@@ -15,15 +15,6 @@ export interface UserProfile {
   role: string
 }
 
-export interface Character {
-  id_personnage: number
-  nom_personnage: string
-  classe: string
-  niveau: number
-  points_vie: number
-  id_utilisateur: number
-}
-
 export interface Vote {
   id_vote: number
   id_utilisateur: number
