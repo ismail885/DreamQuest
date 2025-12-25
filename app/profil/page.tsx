@@ -25,6 +25,21 @@ export default function ProfilPage() {
     trophies: 0,
   });
 
+  // États pour la popup de modification du profil
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editUsername, setEditUsername] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // États pour la popup des paramètres
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [notifications, setNotifications] = useState(true);
+  const [soundEffects, setSoundEffects] = useState(true);
+  const [darkMode, setDarkMode] = useState(true);
+  const [language, setLanguage] = useState("fr");
+  const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -155,6 +170,117 @@ export default function ProfilPage() {
   const maxExperience = currentLevel * 1000; // 1000 XP par niveau
   const experiencePercentage = maxExperience > 0 ? (currentExperience / maxExperience) * 100 : 0;
 
+  // Ouvrir la popup de modification
+  const openEditModal = () => {
+    setEditUsername(userProfile?.nom_utilisateur || "");
+    setEditEmail(userProfile?.email || "");
+    setSaveMessage(null);
+    setIsEditModalOpen(true);
+  };
+
+  // Fermer la popup
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSaveMessage(null);
+  };
+
+  const openSettingsModal = () => {
+    setSettingsMessage(null);
+    setIsSettingsModalOpen(true);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsModalOpen(false);
+    setSettingsMessage(null);
+  };
+
+  const handleSaveSettings = () => {
+    // Sauvegarder les paramètres en localStorage
+    const settings = {
+      notifications,
+      soundEffects,
+      darkMode,
+      language,
+    };
+    localStorage.setItem("dreamquest_settings", JSON.stringify(settings));
+    setSettingsMessage({ type: "success", text: "Paramètres sauvegardés !" });
+    
+    setTimeout(() => {
+      closeSettingsModal();
+    }, 1500);
+  };
+
+  // Charger les paramètres au montage
+  useEffect(() => {
+    const savedSettings = localStorage.getItem("dreamquest_settings");
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      setNotifications(settings.notifications ?? true);
+      setSoundEffects(settings.soundEffects ?? true);
+      setDarkMode(settings.darkMode ?? true);
+      setLanguage(settings.language ?? "fr");
+    }
+  }, []);
+
+  // Sauvegarder les modifications du profil
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    setSaveMessage(null);
+
+    try {
+      // Mettre à jour le profil dans la table utilisateur
+      const { error: profileError } = await supabase
+        .from("utilisateur")
+        .update({
+          nom_utilisateur: editUsername,
+          email: editEmail,
+        })
+        .eq("id_utilisateur", user.id);
+
+      if (profileError) {
+        // Si l'utilisateur n'existe pas dans la table, on l'insère
+        const { error: insertError } = await supabase
+          .from("utilisateur")
+          .upsert({
+            id_utilisateur: user.id,
+            nom_utilisateur: editUsername,
+            email: editEmail,
+          });
+
+        if (insertError) throw insertError;
+      }
+
+      // Mettre à jour les métadonnées Supabase Auth
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { username: editUsername }
+      });
+
+      if (authError) throw authError;
+
+      // Mettre à jour l'état local
+      setUserProfile(prev => prev ? {
+        ...prev,
+        nom_utilisateur: editUsername,
+        email: editEmail,
+      } : null);
+
+      setSaveMessage({ type: "success", text: "Profil mis à jour avec succès !" });
+      
+      // Fermer la popup après 1.5 secondes
+      setTimeout(() => {
+        closeEditModal();
+      }, 1500);
+
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
+      setSaveMessage({ type: "error", text: "Erreur lors de la mise à jour du profil." });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     if (status === "completed") {
       return (
@@ -231,13 +357,19 @@ export default function ProfilPage() {
 
                 {/* Boutons */}
                 <div className="space-y-3">
-                  <button className="w-full py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white font-medium hover:bg-[#1f2940] transition-colors flex items-center justify-center gap-2">
+                  <button 
+                    onClick={openEditModal}
+                    className="w-full py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white font-medium hover:bg-[#1f2940] transition-colors flex items-center justify-center gap-2"
+                  >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                     Modifier le profil
                   </button>
-                  <button className="w-full py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white font-medium hover:bg-[#1f2940] transition-colors flex items-center justify-center gap-2">
+                  <button 
+                    onClick={openSettingsModal}
+                    className="w-full py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white font-medium hover:bg-[#1f2940] transition-colors flex items-center justify-center gap-2"
+                  >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                     </svg>
@@ -389,6 +521,253 @@ export default function ProfilPage() {
           </div>
         </div>
       </main>
+
+      {/* Modal des paramètres */}
+      {isSettingsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={closeSettingsModal}
+          />
+          
+          {/* Contenu de la modal */}
+          <div className="relative bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Paramètres
+              </h3>
+              <button
+                onClick={closeSettingsModal}
+                className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Options */}
+            <div className="space-y-4">
+              {/* Notifications */}
+              <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  <span className="text-white">Notifications</span>
+                </div>
+                <button
+                  onClick={() => setNotifications(!notifications)}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${notifications ? 'bg-cyan-500' : 'bg-gray-600'}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications ? 'translate-x-7' : 'translate-x-1'}`} />
+                </button>
+              </div>
+
+              {/* Effets sonores */}
+              <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  </svg>
+                  <span className="text-white">Effets sonores</span>
+                </div>
+                <button
+                  onClick={() => setSoundEffects(!soundEffects)}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${soundEffects ? 'bg-cyan-500' : 'bg-gray-600'}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${soundEffects ? 'translate-x-7' : 'translate-x-1'}`} />
+                </button>
+              </div>
+
+              {/* Mode sombre */}
+              <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                  <span className="text-white">Mode sombre</span>
+                </div>
+                <button
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${darkMode ? 'bg-cyan-500' : 'bg-gray-600'}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${darkMode ? 'translate-x-7' : 'translate-x-1'}`} />
+                </button>
+              </div>
+
+              {/* Langue */}
+              <div className="p-4 bg-[#1a2235] rounded-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                  </svg>
+                  <span className="text-white">Langue</span>
+                </div>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="w-full px-4 py-2 bg-[#0d1526] border border-gray-600/50 rounded-lg text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                >
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="de">Deutsch</option>
+                </select>
+              </div>
+
+              {/* Message de feedback */}
+              {settingsMessage && (
+                <div className={`p-3 rounded-lg text-sm ${
+                  settingsMessage.type === "success" 
+                    ? "bg-green-500/20 border border-green-500/50 text-green-400"
+                    : "bg-red-500/20 border border-red-500/50 text-red-400"
+                }`}>
+                  {settingsMessage.text}
+                </div>
+              )}
+            </div>
+
+            {/* Boutons d'action */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={closeSettingsModal}
+                className="flex-1 py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-gray-300 font-medium hover:bg-[#1f2940] hover:text-white transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSaveSettings}
+                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Sauvegarder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de modification du profil */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={closeEditModal}
+          />
+          
+          {/* Contenu de la modal */}
+          <div className="relative bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Modifier le profil
+              </h3>
+              <button
+                onClick={closeEditModal}
+                className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Avatar preview */}
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-cyan-500/30">
+                {editUsername ? editUsername.substring(0, 2).toUpperCase() : getUserInitials()}
+              </div>
+            </div>
+
+            {/* Formulaire */}
+            <div className="space-y-4">
+              {/* Nom d'utilisateur */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Nom d&apos;utilisateur
+                </label>
+                <input
+                  type="text"
+                  value={editUsername}
+                  onChange={(e) => setEditUsername(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                  placeholder="Votre nom d'utilisateur"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                  placeholder="Votre email"
+                />
+              </div>
+
+              {/* Message de feedback */}
+              {saveMessage && (
+                <div className={`p-3 rounded-lg text-sm ${
+                  saveMessage.type === "success" 
+                    ? "bg-green-500/20 border border-green-500/50 text-green-400"
+                    : "bg-red-500/20 border border-red-500/50 text-red-400"
+                }`}>
+                  {saveMessage.text}
+                </div>
+              )}
+            </div>
+
+            {/* Boutons d'action */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={closeEditModal}
+                className="flex-1 py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-gray-300 font-medium hover:bg-[#1f2940] hover:text-white transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSaving || !editUsername.trim()}
+                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                {isSaving ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Sauvegarde...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Sauvegarder
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
