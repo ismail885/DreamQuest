@@ -14,3 +14,15 @@ export interface SaveWithDetails extends Save {
   aventure_titre?: string
   personnage_nom?: string
 }
+
+export interface UserSave {
+  id: string
+  id_utilisateur: number
+  id_aventure: string
+  id_personnage: number
+  id_embranchement_actuel: string
+  progression: number
+  date_sauvegarde: string
+  aventure_titre: string
+  status: "completed" | "in-progress"
+}

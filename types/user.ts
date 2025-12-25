@@ -15,6 +15,18 @@ export interface UserProfile {
   role: string
 }
 
+export interface ExtendedUserProfile extends UserProfile {
+  niveau: number
+  experience: number
+}
+
+export interface UserStats {
+  storiesPlayed: number
+  storiesCreated: number
+  likes: number
+  trophies: number
+}
+
 export interface Vote {
   id_vote: number
   id_utilisateur: number

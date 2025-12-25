@@ -3,7 +3,6 @@
 > **Vivez Votre Propre Aventure** - Un RPG textuel interactif où chaque choix façonne votre destin
 
 
-
 ## À propos
 
 **DreamQuest** est une application web de RPG textuel permettant aux utilisateurs de créer, personnaliser et vivre des aventures interactives à embranchements. Incarnez des personnages uniques avec des classes et attributs spécifiques qui influencent le déroulement de votre histoire.

@@ -23,3 +23,9 @@ export interface Branch {
 export interface AdventureWithAuthor extends Adventure {
   auteur_nom?: string // Jointure avec Supabase
 }
+
+export interface UserCreation {
+  id: number
+  titre: string
+  popularite: number
+}
