@@ -4,17 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { useAuthContext } from "@/context/AuthContext";
 import Loader from "@/components/shared/Loader";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { register } = useAuthContext();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -26,38 +29,23 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
+    setSuccess("");
     
-    try {
-      // Inscription avec Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            username: formData.username,
-            full_name: formData.username
-          }
-        }
-      });
+    const result = await register(formData.username, formData.email, formData.password);
 
-      if (error) {
-        throw error;
-      }
-
-      console.log("Inscription réussie:", data);
-      alert("Inscription réussie ! Veuillez vérifier votre email.");
-      
-      // Redirection vers la page de connexion
-      router.push("/login");
-    } catch (error) {
-      console.error("Erreur lors de l'inscription:", error);
-      alert(error instanceof Error ? error.message : "Erreur lors de l'inscription");
+    if (result.success) {
+      setSuccess(result.message || "Inscription réussie ! Veuillez vérifier votre email.");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } else {
+      setError(result.error || "Erreur lors de l'inscription");
       setIsLoading(false);
     }
   };
 
-  // Afficher le loader en plein écran pendant l'inscription
-  if (isLoading) {
+  if (isLoading && !success) {
     return <Loader fullScreen message="Création de votre compte..." />;
   }
 
@@ -161,6 +149,20 @@ export default function RegisterForm() {
                 />
               </div>
             </div>
+
+            {/* Message d'erreur */}
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
+                <p className="text-red-400 text-sm text-center">{error}</p>
+              </div>
+            )}
+
+            {/* Message de succès */}
+            {success && (
+              <div className="p-3 bg-green-500/10 border border-green-500/50 rounded-lg">
+                <p className="text-green-400 text-sm text-center">{success}</p>
+              </div>
+            )}
 
             {/* Bouton S'inscrire */}
             <button

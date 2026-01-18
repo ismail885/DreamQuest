@@ -2,54 +2,43 @@ export function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(' ')
 }
 
-import { supabase } from './supabaseClient'
-import { connectDB, Aventure, Sauvegarde } from './mongodb'
+import { supabase, Aventure, Sauvegarde } from './supabaseClient'
 import type { AdventureWithAuthor } from '@/types/adventure'
 import type { SaveWithDetails } from '@/types/save'
-import type { Types } from 'mongoose'
 
-interface AventureDoc {
-  _id: Types.ObjectId
-  titre: string
-  description: string
-  auteur_id: number
-  date_creation: Date
-  popularite: number
-  embranchement_initial?: Types.ObjectId
+interface AventureWithUtilisateur extends Aventure {
+  utilisateur: { nom_utilisateur: string } | null
 }
 
-interface SaveDoc {
-  _id: Types.ObjectId
-  id_utilisateur: number
-  id_aventure: { _id: Types.ObjectId; titre: string }
-  id_personnage: number
-  id_embranchement_actuel: Types.ObjectId
-  date_sauvegarde: Date
-  progression: number
+interface SauvegardeWithRelations extends Sauvegarde {
+  aventure: { titre: string } | null
+  personnage: { nom_personnage: string } | null
 }
 
-export async function getAdventureWithAuthor(adventureId: string): Promise<AdventureWithAuthor | null> {
+/**
+ * Recupere une aventure avec les informations de l'auteur
+ */
+export async function getAdventureWithAuthor(adventureId: number): Promise<AdventureWithAuthor | null> {
   try {
-    await connectDB()
-    
-    const adventure = await Aventure.findById(adventureId).lean() as AventureDoc | null
-    if (!adventure) return null
-
-    const { data: author } = await supabase
-      .from('utilisateur')
-      .select('nom_utilisateur')
-      .eq('id_utilisateur', adventure.auteur_id)
+    const { data, error } = await supabase
+      .from('aventure')
+      .select(`*, utilisateur:auteur_id (nom_utilisateur)`)
+      .eq('id', adventureId)
       .single()
 
+    if (error || !data) return null
+
+    const adventure = data as AventureWithUtilisateur
+
     return {
-      _id: adventure._id.toString(),
+      id: adventure.id,
       titre: adventure.titre,
       description: adventure.description,
       auteur_id: adventure.auteur_id,
       date_creation: adventure.date_creation,
       popularite: adventure.popularite,
-      embranchement_initial: adventure.embranchement_initial?.toString(),
-      auteur_nom: author?.nom_utilisateur
+      embranchement_initial_id: adventure.embranchement_initial_id,
+      auteur_nom: adventure.utilisateur?.nom_utilisateur
     }
   } catch (error) {
     console.error('Erreur getAdventureWithAuthor:', error)
@@ -57,29 +46,29 @@ export async function getAdventureWithAuthor(adventureId: string): Promise<Adven
   }
 }
 
+/**
+ * Recupere toutes les aventures avec les informations des auteurs
+ */
 export async function getAllAdventuresWithAuthors(): Promise<AdventureWithAuthor[]> {
   try {
-    await connectDB()
-    
-    const adventures = await Aventure.find().sort({ date_creation: -1 }).lean() as unknown as AventureDoc[]
-    
-    const authorIds = [...new Set(adventures.map(a => a.auteur_id))]
-    const { data: authors } = await supabase
-      .from('utilisateur')
-      .select('id_utilisateur, nom_utilisateur')
-      .in('id_utilisateur', authorIds)
+    const { data, error } = await supabase
+      .from('aventure')
+      .select(`*, utilisateur:auteur_id (nom_utilisateur)`)
+      .order('date_creation', { ascending: false })
 
-    const authorMap = new Map(authors?.map(a => [a.id_utilisateur, a.nom_utilisateur]) || [])
+    if (error || !data) return []
+
+    const adventures = data as AventureWithUtilisateur[]
 
     return adventures.map(adventure => ({
-      _id: adventure._id.toString(),
+      id: adventure.id,
       titre: adventure.titre,
       description: adventure.description,
       auteur_id: adventure.auteur_id,
       date_creation: adventure.date_creation,
       popularite: adventure.popularite,
-      embranchement_initial: adventure.embranchement_initial?.toString(),
-      auteur_nom: authorMap.get(adventure.auteur_id)
+      embranchement_initial_id: adventure.embranchement_initial_id,
+      auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
   } catch (error) {
     console.error('Erreur getAllAdventuresWithAuthors:', error)
@@ -87,33 +76,31 @@ export async function getAllAdventuresWithAuthors(): Promise<AdventureWithAuthor
   }
 }
 
+/**
+ * Recupere les sauvegardes d'un utilisateur avec les details
+ */
 export async function getUserSavesWithDetails(userId: number): Promise<SaveWithDetails[]> {
   try {
-    await connectDB()
-    
-    const saves = await Sauvegarde.find({ id_utilisateur: userId })
-      .populate('id_aventure')
-      .sort({ date_sauvegarde: -1 })
-      .lean() as unknown as SaveDoc[]
+    const { data, error } = await supabase
+      .from('sauvegarde')
+      .select(`*, aventure:id_aventure (titre), personnage:id_personnage (nom_personnage)`)
+      .eq('id_utilisateur', userId)
+      .order('date_sauvegarde', { ascending: false })
 
-    const characterIds = [...new Set(saves.map(s => s.id_personnage))]
-    const { data: characters } = await supabase
-      .from('personnage')
-      .select('id_personnage, nom_personnage')
-      .in('id_personnage', characterIds)
+    if (error || !data) return []
 
-    const characterMap = new Map(characters?.map(c => [c.id_personnage, c.nom_personnage]) || [])
+    const saves = data as SauvegardeWithRelations[]
 
     return saves.map(save => ({
-      _id: save._id.toString(),
+      id: save.id,
       id_utilisateur: save.id_utilisateur,
-      id_aventure: save.id_aventure._id.toString(),
+      id_aventure: save.id_aventure,
       id_personnage: save.id_personnage,
-      id_embranchement_actuel: save.id_embranchement_actuel.toString(),
-      date_sauvegarde: save.date_sauvegarde,
+      id_embranchement_actuel: save.id_embranchement_actuel,
       progression: save.progression,
-      aventure_titre: save.id_aventure.titre,
-      personnage_nom: characterMap.get(save.id_personnage)
+      date_sauvegarde: save.date_sauvegarde,
+      aventure_titre: save.aventure?.titre,
+      personnage_nom: save.personnage?.nom_personnage
     }))
   } catch (error) {
     console.error('Erreur getUserSavesWithDetails:', error)
@@ -121,17 +108,20 @@ export async function getUserSavesWithDetails(userId: number): Promise<SaveWithD
   }
 }
 
-export async function voteForAdventure(userId: number, adventureId: string): Promise<boolean> {
+/**
+ * Vote pour une aventure (un utilisateur ne peut voter qu'une fois par aventure)
+ */
+export async function voteForAdventure(userId: number, adventureId: number): Promise<boolean> {
   try {
     const { data: existingVote } = await supabase
       .from('vote')
-      .select('id_vote')
+      .select('id')
       .eq('id_utilisateur', userId)
       .eq('id_aventure', adventureId)
       .single()
 
     if (existingVote) {
-      console.log('Utilisateur a déjà voté pour cette aventure')
+      console.log('Utilisateur a deja vote pour cette aventure')
       return false
     }
 
@@ -141,8 +131,18 @@ export async function voteForAdventure(userId: number, adventureId: string): Pro
 
     if (voteError) throw voteError
 
-    await connectDB()
-    await Aventure.findByIdAndUpdate(adventureId, { $inc: { popularite: 1 } })
+    const { data: currentAdventure } = await supabase
+      .from('aventure')
+      .select('popularite')
+      .eq('id', adventureId)
+      .single()
+
+    if (currentAdventure) {
+      await supabase
+        .from('aventure')
+        .update({ popularite: (currentAdventure as { popularite: number }).popularite + 1 })
+        .eq('id', adventureId)
+    }
 
     return true
   } catch (error) {
@@ -151,35 +151,102 @@ export async function voteForAdventure(userId: number, adventureId: string): Pro
   }
 }
 
+/**
+ * Recupere les aventures les plus populaires
+ */
 export async function getTopAdventures(limit: number = 10): Promise<AdventureWithAuthor[]> {
   try {
-    await connectDB()
-    
-    const adventures = await Aventure.find()
-      .sort({ popularite: -1 })
+    const { data, error } = await supabase
+      .from('aventure')
+      .select(`*, utilisateur:auteur_id (nom_utilisateur)`)
+      .order('popularite', { ascending: false })
       .limit(limit)
-      .lean() as unknown as AventureDoc[]
 
-    const authorIds = [...new Set(adventures.map(a => a.auteur_id))]
-    const { data: authors } = await supabase
-      .from('utilisateur')
-      .select('id_utilisateur, nom_utilisateur')
-      .in('id_utilisateur', authorIds)
+    if (error || !data) return []
 
-    const authorMap = new Map(authors?.map(a => [a.id_utilisateur, a.nom_utilisateur]) || [])
+    const adventures = data as AventureWithUtilisateur[]
 
     return adventures.map(adventure => ({
-      _id: adventure._id.toString(),
+      id: adventure.id,
       titre: adventure.titre,
       description: adventure.description,
       auteur_id: adventure.auteur_id,
       date_creation: adventure.date_creation,
       popularite: adventure.popularite,
-      embranchement_initial: adventure.embranchement_initial?.toString(),
-      auteur_nom: authorMap.get(adventure.auteur_id)
+      embranchement_initial_id: adventure.embranchement_initial_id,
+      auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
   } catch (error) {
     console.error('Erreur getTopAdventures:', error)
     return []
+  }
+}
+
+/**
+ * Recupere un embranchement par son ID
+ */
+export async function getBranchById(branchId: number) {
+  try {
+    const { data, error } = await supabase
+      .from('embranchement')
+      .select('*')
+      .eq('id', branchId)
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Erreur getBranchById:', error)
+    return null
+  }
+}
+
+/**
+ * Cree ou met a jour une sauvegarde
+ */
+export async function saveProgress(
+  userId: number,
+  adventureId: number,
+  characterId: number,
+  currentBranchId: number,
+  progression: number
+): Promise<boolean> {
+  try {
+    const { data: existingSave } = await supabase
+      .from('sauvegarde')
+      .select('id')
+      .eq('id_utilisateur', userId)
+      .eq('id_aventure', adventureId)
+      .eq('id_personnage', characterId)
+      .single()
+
+    if (existingSave) {
+      const { error } = await supabase
+        .from('sauvegarde')
+        .update({
+          id_embranchement_actuel: currentBranchId,
+          progression: progression
+        })
+        .eq('id', (existingSave as { id: number }).id)
+
+      if (error) throw error
+    } else {
+      const { error } = await supabase
+        .from('sauvegarde')
+        .insert({
+          id_utilisateur: userId,
+          id_aventure: adventureId,
+          id_personnage: characterId,
+          id_embranchement_actuel: currentBranchId,
+          progression: progression
+        })
+
+      if (error) throw error
+    }
+
+    return true
+  } catch (error) {
+    console.error('Erreur saveProgress:', error)
+    return false
   }
 }

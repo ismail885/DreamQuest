@@ -21,7 +21,7 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 - Moteur narratif dynamique et évolutif.
 - Interface immersive, responsive et intuitive.
 - Sécurité des comptes utilisateurs (authentification JWT).
-- Double gestion de données : PostgreSQL (relationnel) + MongoDB (NoSQL).
+- Base de données PostgreSQL via Supabase (BaaS).
 
 ## 5. Fonctionnalités principales (MVP)
 
@@ -41,4 +41,4 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 
 - Temps limité (alternance).
 - Déploiement gratuit (Vercel).
-- Gestion de deux bases de données (Supabase + MongoDB).
+- Base de données unique Supabase (PostgreSQL).

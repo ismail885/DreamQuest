@@ -1,27 +1,25 @@
-// Types pour aventures (MongoDB)
-
 export interface Adventure {
-  _id: string // MongoDB ObjectId
+  id: number
   titre: string
-  description: string
-  auteur_id: number // ID Supabase
-  date_creation: Date | string
+  description: string | null
+  auteur_id: number | null
+  date_creation: string
   popularite: number
-  embranchement_initial?: string // MongoDB ObjectId
+  embranchement_initial_id: number | null
 }
 
 export interface Branch {
-  _id: string // MongoDB ObjectId
+  id: number
   texte: string
   choix1: string
-  choix1_lien: string | null // MongoDB ObjectId
+  choix1_lien: number | null
   choix2: string
-  choix2_lien: string | null // MongoDB ObjectId
-  id_aventure: string // MongoDB ObjectId
+  choix2_lien: number | null
+  id_aventure: number
 }
 
 export interface AdventureWithAuthor extends Adventure {
-  auteur_nom?: string // Jointure avec Supabase
+  auteur_nom?: string
 }
 
 export interface UserCreation {

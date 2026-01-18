@@ -14,7 +14,6 @@ export default function ProfilPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations">("stories");
   
-  // États pour les données réelles
   const [userProfile, setUserProfile] = useState<ExtendedUserProfile | null>(null);
   const [userSaves, setUserSaves] = useState<UserSave[]>([]);
   const [userCreations, setUserCreations] = useState<UserCreation[]>([]);
@@ -25,20 +24,19 @@ export default function ProfilPage() {
     trophies: 0,
   });
 
-  // États pour la popup de modification du profil
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editUsername, setEditUsername] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // États pour la popup des paramètres
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [soundEffects, setSoundEffects] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
   const [language, setLanguage] = useState("fr");
   const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -48,7 +46,6 @@ export default function ProfilPage() {
         router.push("/login");
       } else {
         setUser(session.user);
-        // Charger les données du profil
         await loadUserData(session.user);
       }
       setLoading(false);
@@ -59,7 +56,6 @@ export default function ProfilPage() {
 
   const loadUserData = async (currentUser: User) => {
     try {
-      // Récupérer le profil utilisateur depuis la table utilisateur
       const { data: profileData } = await supabase
         .from("utilisateur")
         .select("*")
@@ -77,7 +73,6 @@ export default function ProfilPage() {
           experience: profileData.experience || 0,
         });
       } else {
-        // Si pas de données en BDD, utiliser les métadonnées Supabase Auth
         setUserProfile({
           id_utilisateur: 0,
           nom_utilisateur: currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Aventurier",
@@ -89,7 +84,6 @@ export default function ProfilPage() {
         });
       }
 
-      // Récupérer les sauvegardes de l'utilisateur (histoires jouées)
       const { data: savesData } = await supabase
         .from("sauvegarde")
         .select(`
@@ -122,7 +116,6 @@ export default function ProfilPage() {
         setUserSaves(formattedSaves);
       }
 
-      // Récupérer les aventures créées par l'utilisateur
       const { data: creationsData } = await supabase
         .from("aventure")
         .select("id_aventure, titre, popularite")
@@ -136,13 +129,11 @@ export default function ProfilPage() {
         })));
       }
 
-      // Récupérer les votes (likes) donnés par l'utilisateur
       const { count: votesCount } = await supabase
         .from("vote")
         .select("id_vote", { count: "exact" })
         .eq("id_utilisateur", currentUser.id);
 
-      // Mettre à jour les statistiques
       setStats({
         storiesPlayed: savesData?.length || 0,
         storiesCreated: creationsData?.length || 0,
@@ -164,13 +155,11 @@ export default function ProfilPage() {
     return username.substring(0, 2).toUpperCase();
   };
 
-  // Calcul du niveau et de l'expérience
   const currentLevel = userProfile?.niveau || 1;
   const currentExperience = userProfile?.experience || 0;
   const maxExperience = currentLevel * 1000; // 1000 XP par niveau
   const experiencePercentage = maxExperience > 0 ? (currentExperience / maxExperience) * 100 : 0;
 
-  // Ouvrir la popup de modification
   const openEditModal = () => {
     setEditUsername(userProfile?.nom_utilisateur || "");
     setEditEmail(userProfile?.email || "");
@@ -178,7 +167,6 @@ export default function ProfilPage() {
     setIsEditModalOpen(true);
   };
 
-  // Fermer la popup
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setSaveMessage(null);
@@ -194,35 +182,71 @@ export default function ProfilPage() {
     setSettingsMessage(null);
   };
 
-  const handleSaveSettings = () => {
-    // Sauvegarder les paramètres en localStorage
-    const settings = {
-      notifications,
-      soundEffects,
-      darkMode,
-      language,
-    };
-    localStorage.setItem("dreamquest_settings", JSON.stringify(settings));
-    setSettingsMessage({ type: "success", text: "Paramètres sauvegardés !" });
+  const handleSaveSettings = async () => {
+    if (!user) return;
     
-    setTimeout(() => {
-      closeSettingsModal();
-    }, 1500);
+    setIsSavingSettings(true);
+    setSettingsMessage(null);
+
+    try {
+      const { error } = await supabase
+        .from("parametre_utilisateur")
+        .upsert({
+          id_utilisateur: user.id,
+          notifications,
+          effets_sonores: soundEffects,
+          mode_sombre: darkMode,
+          langue: language,
+          date_modification: new Date().toISOString(),
+        }, {
+          onConflict: "id_utilisateur"
+        });
+
+      if (error) throw error;
+
+      setSettingsMessage({ type: "success", text: "Paramètres sauvegardés !" });
+      
+      setTimeout(() => {
+        closeSettingsModal();
+      }, 1500);
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde des paramètres:", error);
+      setSettingsMessage({ type: "error", text: "Erreur lors de la sauvegarde." });
+    } finally {
+      setIsSavingSettings(false);
+    }
   };
 
-  // Charger les paramètres au montage
   useEffect(() => {
-    const savedSettings = localStorage.getItem("dreamquest_settings");
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      setNotifications(settings.notifications ?? true);
-      setSoundEffects(settings.soundEffects ?? true);
-      setDarkMode(settings.darkMode ?? true);
-      setLanguage(settings.language ?? "fr");
-    }
-  }, []);
+    const loadSettings = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from("parametre_utilisateur")
+          .select("*")
+          .eq("id_utilisateur", user.id)
+          .single();
 
-  // Sauvegarder les modifications du profil
+        if (error && error.code !== "PGRST116") {
+          console.error("Erreur lors du chargement des paramètres:", error);
+          return;
+        }
+
+        if (data) {
+          setNotifications(data.notifications ?? true);
+          setSoundEffects(data.effets_sonores ?? true);
+          setDarkMode(data.mode_sombre ?? true);
+          setLanguage(data.langue ?? "fr");
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des paramètres:", error);
+      }
+    };
+
+    loadSettings();
+  }, [user]);
+
   const handleSaveProfile = async () => {
     if (!user) return;
     
@@ -230,7 +254,6 @@ export default function ProfilPage() {
     setSaveMessage(null);
 
     try {
-      // Mettre à jour le profil dans la table utilisateur
       const { error: profileError } = await supabase
         .from("utilisateur")
         .update({
@@ -240,7 +263,6 @@ export default function ProfilPage() {
         .eq("id_utilisateur", user.id);
 
       if (profileError) {
-        // Si l'utilisateur n'existe pas dans la table, on l'insère
         const { error: insertError } = await supabase
           .from("utilisateur")
           .upsert({
@@ -252,14 +274,12 @@ export default function ProfilPage() {
         if (insertError) throw insertError;
       }
 
-      // Mettre à jour les métadonnées Supabase Auth
       const { error: authError } = await supabase.auth.updateUser({
         data: { username: editUsername }
       });
 
       if (authError) throw authError;
 
-      // Mettre à jour l'état local
       setUserProfile(prev => prev ? {
         ...prev,
         nom_utilisateur: editUsername,
@@ -268,7 +288,6 @@ export default function ProfilPage() {
 
       setSaveMessage({ type: "success", text: "Profil mis à jour avec succès !" });
       
-      // Fermer la popup après 1.5 secondes
       setTimeout(() => {
         closeEditModal();
       }, 1500);
@@ -644,12 +663,25 @@ export default function ProfilPage() {
               </button>
               <button
                 onClick={handleSaveSettings}
-                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
+                disabled={isSavingSettings}
+                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Sauvegarder
+                {isSavingSettings ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Sauvegarde...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Sauvegarder
+                  </>
+                )}
               </button>
             </div>
           </div>

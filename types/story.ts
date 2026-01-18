@@ -1,5 +1,3 @@
-// Types pour histoires et embranchements (MongoDB)
-
 export interface StoryNode {
   _id: string
   texte: string

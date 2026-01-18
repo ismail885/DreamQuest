@@ -15,12 +15,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est connecté
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        // Pas connecté, rediriger vers login
         router.push("/login");
       } else {
         setUser(session.user);

@@ -1,44 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/lib/supabaseClient";
-import { User } from "@supabase/supabase-js";
+import { useAuthContext } from "@/context/AuthContext";
 
 export default function Header() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    // Vérifier si l'utilisateur est connecté
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-    };
-
-    checkUser();
-
-    // Écouter les changements d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user, logout } = useAuthContext();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await logout();
     router.push("/");
   };
 
   const getUserInitials = () => {
-    const username = user?.user_metadata?.username || user?.email || "U";
+    const username = user?.username || user?.email || "U";
     return username.substring(0, 2).toUpperCase();
   };
 
-  // Si l'utilisateur est connecté
   if (user) {
     return (
       <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#0a0e1a]/80 sticky top-0 z-50">
@@ -92,7 +72,6 @@ export default function Header() {
     );
   }
 
-  // Si l'utilisateur n'est pas connecté
   return (
     <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#0a0e1a]/80 sticky top-0 z-50">
       <div className="container mx-auto px-6 py-4">

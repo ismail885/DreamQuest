@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 
 export default function RootLayout({
@@ -14,15 +15,17 @@ export default function RootLayout({
         <meta name="theme-color" content="#00d4ff" />
       </head>
       <body className="bg-[#0b0d1e] text-white antialiased" suppressHydrationWarning>
-        <div className="relative min-h-screen flex flex-col">
-          {/* Animated Background */}
-          <div className="fixed inset-0 -z-10 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0b0d1e] via-[#151829] to-[#0b0d1e]"></div>
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 animate-pulse"></div>
-            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+        <AuthProvider>
+          <div className="relative min-h-screen flex flex-col">
+            {/* Animated Background */}
+            <div className="fixed inset-0 -z-10 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0b0d1e] via-[#151829] to-[#0b0d1e]"></div>
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 animate-pulse"></div>
+              <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+            </div>
+            {children}
           </div>
-          {children}
-        </div>
+        </AuthProvider>
       </body>
     </html>
   );

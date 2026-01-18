@@ -4,42 +4,32 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { useAuthContext } from "@/context/AuthContext";
 import Loader from "@/components/shared/Loader";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useAuthContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     
-    try {
-      // Connexion avec Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+    const result = await login(email, password);
 
-      if (error) {
-        throw error;
-      }
-
-      console.log("Connexion réussie:", data);
-      
-      // Redirection vers le dashboard
+    if (result.success) {
       router.push("/dashboard");
-    } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
-      alert(error instanceof Error ? error.message : "Erreur lors de la connexion");
+    } else {
+      setError(result.error || "Erreur lors de la connexion");
       setIsLoading(false);
     }
   };
 
-  // Afficher le loader en plein écran pendant la connexion
   if (isLoading) {
     return <Loader fullScreen message="Connexion en cours..." />;
   }
@@ -154,6 +144,13 @@ export default function LoginForm() {
                 />
               </div>
             </div>
+
+            {/* Message d'erreur */}
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
+                <p className="text-red-400 text-sm text-center">{error}</p>
+              </div>
+            )}
 
             {/* Mot de passe oublié */}
             <div className="flex justify-end">

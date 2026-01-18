@@ -34,7 +34,7 @@ export default function CreateCharacterPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       <CreateCharacterForm
-        userId={parseInt(user.id) || 1}
+        userEmail={user.email}
         onCharacterCreated={handleCharacterCreated}
       />
     </div>
