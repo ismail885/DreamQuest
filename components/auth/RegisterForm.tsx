@@ -14,6 +14,7 @@ export default function RegisterForm() {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,14 +32,26 @@ export default function RegisterForm() {
     setIsLoading(true);
     setError("");
     setSuccess("");
+
+    // Verifier que les mots de passe correspondent
+    if (formData.password !== formData.confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
+      setIsLoading(false);
+      return;
+    }
+
+    // Verifier la longueur du mot de passe
+    if (formData.password.length < 6) {
+      setError("Le mot de passe doit contenir au moins 6 caracteres");
+      setIsLoading(false);
+      return;
+    }
     
     const result = await register(formData.username, formData.email, formData.password);
 
     if (result.success) {
-      setSuccess(result.message || "Inscription réussie ! Veuillez vérifier votre email.");
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      setSuccess(result.message || "Inscription reussie !");
+      router.push("/dashboard");
     } else {
       setError(result.error || "Erreur lors de l'inscription");
       setIsLoading(false);
@@ -46,7 +59,7 @@ export default function RegisterForm() {
   };
 
   if (isLoading && !success) {
-    return <Loader fullScreen message="Création de votre compte..." />;
+    return <Loader fullScreen message="Creation de votre compte..." />;
   }
 
   return (
@@ -73,8 +86,22 @@ export default function RegisterForm() {
               />
             </div>
             <h1 className="text-2xl font-bold text-cyan-400">DreamQuest</h1>
-            <p className="text-gray-400 text-sm">Créer votre compte jeune aventurier</p>
+            <p className="text-gray-400 text-sm">Creer votre compte jeune aventurier</p>
           </div>
+
+          {/* Message d'erreur */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Message de succes */}
+          {success && (
+            <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm">
+              {success}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
@@ -142,7 +169,7 @@ export default function RegisterForm() {
                   id="password"
                   name="password"
                   className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
-                  placeholder="••••••••"
+                  placeholder="Minimum 6 caracteres"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -150,44 +177,51 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Message d'erreur */}
-            {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
-                <p className="text-red-400 text-sm text-center">{error}</p>
+            {/* Confirm Password */}
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-400">
+                Confirmer le mot de passe
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  placeholder="Confirmez votre mot de passe"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-            )}
+            </div>
 
-            {/* Message de succès */}
-            {success && (
-              <div className="p-3 bg-green-500/10 border border-green-500/50 rounded-lg">
-                <p className="text-green-400 text-sm text-center">{success}</p>
-              </div>
-            )}
-
-            {/* Bouton S'inscrire */}
+            {/* Submit button */}
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 text-sm shadow-lg shadow-cyan-500/20 mt-6"
+              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-cyan-500/25"
             >
-              {isLoading ? "Inscription en cours..." : "S'inscrire"}
+              S&apos;inscrire
             </button>
-
-            {/* Lien connexion */}
-            <div className="text-center text-sm text-gray-400 pt-2">
-              Déjà un compte ?{" "}
-              <Link href="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
-                Se connecter
-              </Link>
-            </div>
           </form>
 
-          {/* Politique de confidentialité */}
-          <div className="mt-6 pt-6 border-t border-gray-800">
-            <p className="text-xs text-gray-500 text-center leading-relaxed">
-              En continuant, vous acceptez nos conditions d&apos;utilisation et notre politique de confidentialité
-            </p>
-          </div>
+          {/* Link to login */}
+          <p className="mt-6 text-center text-gray-400 text-sm">
+            Deja un compte ?{" "}
+            <Link href="/login" className="text-cyan-400 hover:text-cyan-300 font-medium">
+              Se connecter
+            </Link>
+          </p>
+
+          {/* Footer */}
+          <p className="mt-6 text-center text-gray-500 text-xs">
+            En continuant, vous acceptez nos conditions d&apos;utilisation et notre politique de confidentialite
+          </p>
         </div>
       </div>
     </div>

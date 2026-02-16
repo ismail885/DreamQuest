@@ -1,9 +1,10 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 interface User {
-  id: string;
+  id: number;
   email: string;
   username: string;
   role: string;
@@ -20,28 +21,22 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const USER_STORAGE_KEY = 'dreamquest_user';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include',
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.authenticated) {
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
+      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
       } else {
         setUser(null);
       }
     } catch (error) {
-      console.error('Erreur vérification auth:', error);
+      console.error('Erreur verification auth:', error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -54,21 +49,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
+      const { data: userData, error } = await supabase
+        .from('utilisateur')
+        .select('id, nom_utilisateur, email, mot_de_passe, role')
+        .eq('email', email)
+        .single();
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setUser(data.user);
-        return { success: true };
+      if (error || !userData) {
+        return { success: false, error: 'Email ou mot de passe incorrect' };
       }
 
-      return { success: false, error: data.error || 'Erreur de connexion' };
+      if (userData.mot_de_passe !== password) {
+        return { success: false, error: 'Email ou mot de passe incorrect' };
+      }
+
+      const loggedUser: User = {
+        id: userData.id,
+        username: userData.nom_utilisateur,
+        email: userData.email,
+        role: userData.role
+      };
+
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
+      setUser(loggedUser);
+
+      return { success: true };
     } catch (error) {
       console.error('Erreur login:', error);
       return { success: false, error: 'Erreur de connexion' };
@@ -77,23 +82,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (username: string, email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ username, email, password }),
-      });
+      // Verifier si l'email existe deja
+      const { data: existingUser } = await supabase
+        .from('utilisateur')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        if (data.user) {
-          setUser(data.user);
-        }
-        return { success: true, message: data.message };
+      if (existingUser) {
+        return { success: false, error: 'Cet email est deja utilise' };
       }
 
-      return { success: false, error: data.error || 'Erreur d\'inscription' };
+      // Creer l'utilisateur
+      const { data: newUser, error } = await supabase
+        .from('utilisateur')
+        .insert({
+          nom_utilisateur: username,
+          email: email,
+          mot_de_passe: password,
+          role: 'joueur'
+        })
+        .select('id, nom_utilisateur, email, role')
+        .single();
+
+      if (error) {
+        console.error('Erreur Supabase:', error);
+        return { success: false, error: 'Erreur lors de la creation du compte' };
+      }
+
+      const registeredUser: User = {
+        id: newUser.id,
+        username: newUser.nom_utilisateur,
+        email: newUser.email,
+        role: newUser.role
+      };
+
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(registeredUser));
+      setUser(registeredUser);
+
+      return { success: true, message: 'Compte cree avec succes' };
     } catch (error) {
       console.error('Erreur register:', error);
       return { success: false, error: 'Erreur d\'inscription' };
@@ -102,10 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
+      localStorage.removeItem(USER_STORAGE_KEY);
       setUser(null);
     } catch (error) {
       console.error('Erreur logout:', error);
@@ -122,7 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuthContext() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuthContext doit être utilisé dans un AuthProvider');
+    throw new Error('useAuthContext doit etre utilise dans un AuthProvider');
   }
   return context;
 }
