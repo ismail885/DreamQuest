@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
-import Loader from "@/components/shared/Loader";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -20,19 +19,21 @@ export default function LoginForm() {
     setIsLoading(true);
     setError("");
     
-    const result = await login(email, password);
+    try {
+      const result = await login(email, password);
 
-    if (result.success) {
-      router.push("/dashboard");
-    } else {
-      setError(result.error || "Erreur lors de la connexion");
+      if (result.success) {
+        router.push("/dashboard");
+      } else {
+        setError(result.error || "Erreur lors de la connexion");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Erreur de connexion:", error);
+      setError("Une erreur est survenue");
       setIsLoading(false);
     }
   };
-
-  if (isLoading) {
-    return <Loader fullScreen message="Connexion en cours..." />;
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -163,8 +164,14 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 text-sm shadow-lg shadow-cyan-500/20"
+              className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 text-sm shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2"
             >
+              {isLoading && (
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              )}
               {isLoading ? "Connexion en cours..." : "Se connecter"}
             </button>
 

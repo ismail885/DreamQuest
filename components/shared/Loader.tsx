@@ -79,7 +79,7 @@ export default function Loader({
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0d1e]/95 backdrop-blur-sm">
+      <div className="min-h-screen flex items-center justify-center bg-[#0b0d1e]">
         {/* Effets de fond */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
