@@ -46,7 +46,7 @@ export default function Home() {
               </Link>
               
               <Link
-                href="/adventures"
+                href="/adventure"
                 className="px-8 py-3.5 bg-transparent border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-semibold rounded-lg transition-all duration-200 w-full sm:w-auto"
               >
                 Explorer les Quêtes
