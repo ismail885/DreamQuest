@@ -53,9 +53,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('utilisateur')
         .select('id, nom_utilisateur, email, mot_de_passe, role')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
-      if (error || !userData) {
+      if (error) {
+        return { success: false, error: 'Erreur de connexion à la base de données' };
+      }
+
+      if (!userData) {
         return { success: false, error: 'Email ou mot de passe incorrect' };
       }
 

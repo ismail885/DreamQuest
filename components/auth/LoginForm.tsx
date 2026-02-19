@@ -23,7 +23,9 @@ export default function LoginForm() {
       const result = await login(email, password);
 
       if (result.success) {
-        router.push("/dashboard");
+        setTimeout(() => {
+          router.replace("/dashboard");
+        }, 100);
       } else {
         setError(result.error || "Erreur lors de la connexion");
         setIsLoading(false);
