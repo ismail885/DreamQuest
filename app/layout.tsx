@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 
 export default function RootLayout({
@@ -16,6 +17,7 @@ export default function RootLayout({
       </head>
       <body className="bg-[#0b0d1e] text-white antialiased" suppressHydrationWarning>
         <AuthProvider>
+          <ThemeProvider>
           <div className="relative min-h-screen flex flex-col">
             {/* Animated Background */}
             <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -25,6 +27,7 @@ export default function RootLayout({
             </div>
             {children}
           </div>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

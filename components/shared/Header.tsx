@@ -58,13 +58,14 @@ export default function Header() {
               </Link>
               
               {/* Avatar avec initiales */}
-              <button 
-                onClick={handleLogout}
-                className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold hover:bg-cyan-600 transition-colors"
-                title="Déconnexion"
-              >
-                {getUserInitials()}
-              </button>
+              <Link href="/profil">
+                <button 
+                  className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold hover:bg-cyan-600 transition-colors"
+                  title="Mon profil"
+                >
+                  {getUserInitials()}
+                </button>
+              </Link>
             </div>
           </div>
         </div>

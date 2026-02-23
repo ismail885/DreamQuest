@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Character } from '@/types';
 import CharacterCard from './CharacterCard';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
 
 interface CharacterListProps {
   userId: number | string;
@@ -17,12 +18,13 @@ export default function CharacterList({ userId }: CharacterListProps) {
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const response = await fetch(`/characters?userId=${userId}`);
-        if (!response.ok) {
-          throw new Error('Erreur lors du chargement des personnages');
-        }
-        const data = await response.json();
-        setCharacters(data);
+        const { data, error } = await supabase
+          .from('personnage')
+          .select('*')
+          .eq('id_utilisateur', userId);
+
+        if (error) throw error;
+        setCharacters(data ?? []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Une erreur est survenue');
       } finally {
@@ -39,13 +41,12 @@ export default function CharacterList({ userId }: CharacterListProps) {
     }
 
     try {
-      const response = await fetch(`/api/characters/${characterId}`, {
-        method: 'DELETE',
-      });
+      const { error } = await supabase
+        .from('personnage')
+        .delete()
+        .eq('id_personnage', characterId);
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de la suppression');
-      }
+      if (error) throw error;
 
       setCharacters(characters.filter(c => c.id_personnage !== characterId));
     } catch (err) {
@@ -91,9 +92,9 @@ export default function CharacterList({ userId }: CharacterListProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {characters.map((character) => (
+      {characters.map((character, index) => (
         <CharacterCard
-          key={character.id_personnage}
+          key={character.id_personnage ?? index}
           character={character}
           onDelete={() => handleDelete(character.id_personnage!)}
         />

@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { User } from "@supabase/supabase-js";
 import Header from "@/components/shared/Header";
 import Loader from "@/components/shared/Loader";
 import { ExtendedUserProfile, UserStats, UserSave, UserCreation } from "@/types";
+import { useTheme } from "@/hooks/useTheme";
+import { useAuthContext } from "@/context/AuthContext";
 
 export default function ProfilPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading: authLoading, updateUser } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations">("stories");
   
@@ -33,51 +34,45 @@ export default function ProfilPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [soundEffects, setSoundEffects] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const { isDark: darkMode, toggleTheme } = useTheme();
   const [language, setLanguage] = useState("fr");
   const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        router.push("/login");
-      } else {
-        setUser(session.user);
-        await loadUserData(session.user);
-      }
-      setLoading(false);
-    };
+    if (authLoading) return;
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    loadUserData(user.id).then(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user?.id, router]);
 
-    checkUser();
-  }, [router]);
-
-  const loadUserData = async (currentUser: User) => {
+  const loadUserData = async (userId: number) => {
     try {
       const { data: profileData } = await supabase
         .from("utilisateur")
         .select("*")
-        .eq("id_utilisateur", currentUser.id)
+        .eq("id_utilisateur", userId)
         .single();
 
       if (profileData) {
         setUserProfile({
-          id_utilisateur: profileData.id_utilisateur,
-          nom_utilisateur: profileData.nom_utilisateur || currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Aventurier",
-          email: profileData.email || currentUser.email || "",
-          date_creation: profileData.date_creation || currentUser.created_at || "",
+          id: profileData.id_utilisateur,
+          nom_utilisateur: profileData.nom_utilisateur || user?.username || "Aventurier",
+          email: profileData.email || user?.email || "",
+          date_creation: profileData.date_creation || "",
           role: profileData.role || "joueur",
           niveau: profileData.niveau || 1,
           experience: profileData.experience || 0,
         });
       } else {
         setUserProfile({
-          id_utilisateur: 0,
-          nom_utilisateur: currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Aventurier",
-          email: currentUser.email || "",
-          date_creation: currentUser.created_at || "",
+          id: userId,
+          nom_utilisateur: user?.username || "Aventurier",
+          email: user?.email || "",
+          date_creation: "",
           role: "joueur",
           niveau: 1,
           experience: 0,
@@ -98,12 +93,12 @@ export default function ProfilPage() {
             titre
           )
         `)
-        .eq("id_utilisateur", currentUser.id);
+        .eq("id_utilisateur", userId);
 
       if (savesData && savesData.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formattedSaves: UserSave[] = savesData.map((save: any) => ({
-          id: String(save.id_sauvegarde),
+          id: save.id_sauvegarde,
           id_utilisateur: save.id_utilisateur,
           id_aventure: save.id_aventure,
           id_personnage: save.id_personnage,
@@ -119,7 +114,7 @@ export default function ProfilPage() {
       const { data: creationsData } = await supabase
         .from("aventure")
         .select("id_aventure, titre, popularite")
-        .eq("auteur_id", currentUser.id);
+        .eq("auteur_id", userId);
 
       if (creationsData && creationsData.length > 0) {
         setUserCreations(creationsData.map((c: { id_aventure: number; titre: string; popularite: number }) => ({
@@ -132,7 +127,7 @@ export default function ProfilPage() {
       const { count: votesCount } = await supabase
         .from("vote")
         .select("id_vote", { count: "exact" })
-        .eq("id_utilisateur", currentUser.id);
+        .eq("id_utilisateur", userId);
 
       setStats({
         storiesPlayed: savesData?.length || 0,
@@ -147,7 +142,7 @@ export default function ProfilPage() {
   };
 
   const getUserInitials = () => {
-    const username = userProfile?.nom_utilisateur || user?.user_metadata?.username || user?.email?.split("@")[0] || "U";
+    const username = userProfile?.nom_utilisateur || user?.username || "U";
     const parts = username.split(" ");
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -228,7 +223,7 @@ export default function ProfilPage() {
           .eq("id_utilisateur", user.id)
           .single();
 
-        if (error && error.code !== "PGRST116") {
+        if (error && error.code !== "PGRST116" && error.code !== "42P01") {
           console.error("Erreur lors du chargement des paramètres:", error);
           return;
         }
@@ -236,7 +231,8 @@ export default function ProfilPage() {
         if (data) {
           setNotifications(data.notifications ?? true);
           setSoundEffects(data.effets_sonores ?? true);
-          setDarkMode(data.mode_sombre ?? true);
+          const savedDark = data.mode_sombre ?? true;
+          if (savedDark !== darkMode) toggleTheme();
           setLanguage(data.langue ?? "fr");
         }
       } catch (error) {
@@ -245,7 +241,7 @@ export default function ProfilPage() {
     };
 
     loadSettings();
-  }, [user]);
+  }, [user, darkMode, toggleTheme]);
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -274,12 +270,6 @@ export default function ProfilPage() {
         if (insertError) throw insertError;
       }
 
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { username: editUsername }
-      });
-
-      if (authError) throw authError;
-
       setUserProfile(prev => prev ? {
         ...prev,
         nom_utilisateur: editUsername,
@@ -287,6 +277,7 @@ export default function ProfilPage() {
       } : null);
 
       setSaveMessage({ type: "success", text: "Profil mis à jour avec succès !" });
+      updateUser({ username: editUsername, email: editEmail });
       
       setTimeout(() => {
         closeEditModal();
@@ -614,7 +605,7 @@ export default function ProfilPage() {
                   <span className="text-white">Mode sombre</span>
                 </div>
                 <button
-                  onClick={() => setDarkMode(!darkMode)}
+                  onClick={toggleTheme}
                   className={`relative w-12 h-6 rounded-full transition-colors ${darkMode ? 'bg-cyan-500' : 'bg-gray-600'}`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${darkMode ? 'translate-x-7' : 'translate-x-1'}`} />

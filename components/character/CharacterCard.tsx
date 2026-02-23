@@ -11,14 +11,16 @@ interface CharacterCardProps {
 
 export default function CharacterCard({ character, onSelect, onDelete }: CharacterCardProps) {
   const classInfo = CHARACTER_CLASSES[character.classe];
-  const healthPercentage = (character.points_vie / character.points_vie_max) * 100;
+  const pv = character.points_vie ?? 0;
+  const pvMax = character.points_vie_max ?? 100;
+  const healthPercentage = pvMax > 0 ? (pv / pvMax) * 100 : 0;
 
   return (
     <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group">
       {/* Image et niveau */}
       <div className="relative h-48 bg-gradient-to-b from-gray-800 to-gray-900">
         <Image
-          src={classInfo.image}
+          src={classInfo?.image ?? '/illustrations_personnage/default.png'}
           alt={character.nom_personnage}
           fill
           className="object-cover"
@@ -40,7 +42,7 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
         <div className="mb-3">
           <div className="flex justify-between text-xs text-gray-400 mb-1">
             <span>Points de Vie</span>
-            <span>{character.points_vie} / {character.points_vie_max}</span>
+            <span>{pv} / {pvMax}</span>
           </div>
           <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
             <div
@@ -58,7 +60,7 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
 
         {/* Statistiques */}
         <div className="grid grid-cols-2 gap-2 mb-4">
-          {Object.entries(character.stats).map(([stat, value]) => (
+          {Object.entries(character.stats ?? {}).map(([stat, value]) => (
             <div key={stat} className="flex items-center gap-2 text-sm">
               <span className="text-xl">{STAT_ICONS[stat as keyof typeof STAT_ICONS]}</span>
               <span className="text-gray-400 capitalize">{stat}:</span>
