@@ -38,7 +38,7 @@ export default function Header() {
 
             {/* Navigation centrale */}
             <div className="flex items-center gap-8">
-              <Link href="/dashboard" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
+              <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
                 Aventures
               </Link>
               <Link href="/classement" className="text-gray-400 hover:text-white transition-colors">

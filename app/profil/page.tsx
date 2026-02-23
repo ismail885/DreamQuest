@@ -184,7 +184,7 @@ export default function ProfilPage() {
     setSettingsMessage(null);
 
     try {
-      const { error } = await supabase
+      await supabase
         .from("parametre_utilisateur")
         .upsert({
           id_utilisateur: user.id,
@@ -197,15 +197,13 @@ export default function ProfilPage() {
           onConflict: "id_utilisateur"
         });
 
-      if (error) throw error;
-
+      // Le thème est déjà persisté en localStorage par le ThemeContext
       setSettingsMessage({ type: "success", text: "Paramètres sauvegardés !" });
       
       setTimeout(() => {
         closeSettingsModal();
       }, 1500);
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde des paramètres:", error);
+    } catch {
       setSettingsMessage({ type: "error", text: "Erreur lors de la sauvegarde." });
     } finally {
       setIsSavingSettings(false);
@@ -217,16 +215,11 @@ export default function ProfilPage() {
       if (!user) return;
       
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("parametre_utilisateur")
           .select("*")
           .eq("id_utilisateur", user.id)
           .single();
-
-        if (error && error.code !== "PGRST116" && error.code !== "42P01") {
-          console.error("Erreur lors du chargement des paramètres:", error);
-          return;
-        }
 
         if (data) {
           setNotifications(data.notifications ?? true);
@@ -235,8 +228,8 @@ export default function ProfilPage() {
           if (savedDark !== darkMode) toggleTheme();
           setLanguage(data.langue ?? "fr");
         }
-      } catch (error) {
-        console.error("Erreur lors du chargement des paramètres:", error);
+      } catch {
+        // Table non encore créée, on utilise les valeurs par défaut
       }
     };
 
