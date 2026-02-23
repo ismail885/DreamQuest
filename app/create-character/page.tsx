@@ -1,12 +1,12 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/context/AuthContext';
 import CreateCharacterForm from '@/components/character/CreateCharacterForm';
 import { useRouter } from 'next/navigation';
 import type { Character } from '@/types';
 
 export default function CreateCharacterPage() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthContext();
   const router = useRouter();
 
   if (loading) {
@@ -28,13 +28,13 @@ export default function CreateCharacterPage() {
 
   const handleCharacterCreated = (character: Character) => {
     console.log('Personnage créé:', character);
-    router.push('/dashboard');
+    router.push('/adventure');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       <CreateCharacterForm
-        userEmail={user.email}
+        userId={user.id}
         onCharacterCreated={handleCharacterCreated}
       />
     </div>

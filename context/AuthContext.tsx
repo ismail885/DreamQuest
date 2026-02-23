@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 interface User {
@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USER_STORAGE_KEY = 'dreamquest_user';
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,10 +49,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
+      // Requête optimisée avec uniquement les champs nécessaires
       const { data: userData, error } = await supabase
         .from('utilisateur')
         .select('id, nom_utilisateur, email, mot_de_passe, role')
         .eq('email', email)
+        .limit(1)
         .maybeSingle();
 
       if (error) {
@@ -63,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: 'Email ou mot de passe incorrect' };
       }
 
+      // Vérification rapide du mot de passe
       if (userData.mot_de_passe !== password) {
         return { success: false, error: 'Email ou mot de passe incorrect' };
       }
@@ -74,7 +77,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: userData.role
       };
 
+      // Sauvegarde synchrone dans localStorage
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
+      // Cookie lisible par le middleware (non-HttpOnly)
+      document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
       setUser(loggedUser);
 
       return { success: true };
@@ -86,7 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (username: string, email: string, password: string) => {
     try {
-      // Verifier si l'email existe deja
       const { data: existingUser } = await supabase
         .from('utilisateur')
         .select('id')
@@ -122,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
 
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(registeredUser));
+      document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
       setUser(registeredUser);
 
       return { success: true, message: 'Compte cree avec succes' };
@@ -134,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       localStorage.removeItem(USER_STORAGE_KEY);
+      document.cookie = 'auth_user=; path=/; max-age=0; SameSite=Strict';
       setUser(null);
     } catch (error) {
       console.error('Erreur logout:', error);

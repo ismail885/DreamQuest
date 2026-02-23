@@ -6,11 +6,11 @@ import { supabase } from '@/lib/supabaseClient';
 import ClassCard from './ClassCard';
 
 interface CreateCharacterFormProps {
-  userEmail?: string;
+  userId?: number;
   onCharacterCreated?: (character: Character) => void;
 }
 
-export default function CreateCharacterForm({ userEmail, onCharacterCreated }: CreateCharacterFormProps) {
+export default function CreateCharacterForm({ userId, onCharacterCreated }: CreateCharacterFormProps) {
   const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
   const [characterName, setCharacterName] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
@@ -49,7 +49,7 @@ export default function CreateCharacterForm({ userEmail, onCharacterCreated }: C
       return;
     }
 
-    if (!userEmail) {
+    if (!userId) {
       setError('Utilisateur non connecté');
       return;
     }
@@ -58,16 +58,6 @@ export default function CreateCharacterForm({ userEmail, onCharacterCreated }: C
     setError('');
 
     try {
-      const { data: userData, error: userError } = await supabase
-        .from('utilisateur')
-        .select('id_utilisateur')
-        .eq('email', userEmail)
-        .single();
-
-      if (userError || !userData) {
-        throw new Error('Utilisateur non trouvé dans la base de données');
-      }
-
       const classInfo = CHARACTER_CLASSES[selectedClass];
       const pointsVieInitiaux = 100 + (classInfo.baseStats.endurance * 10);
 
@@ -78,7 +68,7 @@ export default function CreateCharacterForm({ userEmail, onCharacterCreated }: C
           classe: selectedClass,
           niveau: 1,
           points_vie: pointsVieInitiaux,
-          id_utilisateur: userData.id_utilisateur,
+          id_utilisateur: userId,
         })
         .select()
         .single();
