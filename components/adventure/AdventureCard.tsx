@@ -10,6 +10,7 @@ interface AdventureCardProps {
   genre: string;
   ageRange: string;
   players: number;
+  personnageId?: string;
 }
 
 export default function AdventureCard({
@@ -21,10 +22,15 @@ export default function AdventureCard({
   genre,
   ageRange,
   players,
+  personnageId,
 }: AdventureCardProps) {
+  const href = personnageId
+    ? `/adventure/${id}?personnage=${personnageId}`
+    : `/adventure/${id}`;
+
   return (
     <Link
-      href={`/adventure/${id}`}
+      href={href}
       className="group relative bg-[#0f1322] rounded-xl overflow-hidden border border-gray-800/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 hover:-translate-y-1"
     >
       {/* Image */}

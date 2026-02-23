@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Character } from '@/types';
 import CharacterCard from './CharacterCard';
 import Link from 'next/link';
@@ -11,6 +12,7 @@ interface CharacterListProps {
 }
 
 export default function CharacterList({ userId }: CharacterListProps) {
+  const router = useRouter();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -96,6 +98,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
         <CharacterCard
           key={character.id_personnage ?? index}
           character={character}
+          onSelect={() => router.push(`/adventure?personnage=${character.id_personnage}`)}
           onDelete={() => handleDelete(character.id_personnage!)}
         />
       ))}

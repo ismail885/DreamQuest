@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import AdventureCard from "@/components/adventure/AdventureCard";
@@ -71,6 +72,16 @@ const adventures = [
 ];
 
 export default function AdventurePage() {
+  return (
+    <Suspense>
+      <AdventurePageContent />
+    </Suspense>
+  );
+}
+
+function AdventurePageContent() {
+  const searchParams = useSearchParams();
+  const personnageId = searchParams.get("personnage");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<Genre>("Tous");
 
@@ -102,6 +113,22 @@ export default function AdventurePage() {
               Choisissez votre prochaine aventure parmi nos histoires épiques
             </p>
           </div>
+
+          {/* Bannière personnage sélectionné */}
+          {personnageId && (
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="flex items-center gap-3 px-5 py-3.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
+                <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="text-cyan-300 text-sm">
+                  Personnage sélectionné — choisissez une aventure pour commencer !
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Search and Filter Section */}
           <div className="max-w-4xl mx-auto space-y-6 mb-12">
@@ -153,7 +180,7 @@ export default function AdventurePage() {
           {filteredAdventures.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAdventures.map((adventure) => (
-                <AdventureCard key={adventure.id} {...adventure} />
+                <AdventureCard key={adventure.id} {...adventure} personnageId={personnageId ?? undefined} />
               ))}
             </div>
           ) : (
