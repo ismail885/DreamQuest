@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -307,15 +307,12 @@ export default function ProfilPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      {/* Contenu principal */}
       <main className="flex-1 container mx-auto px-6 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
             
-            {/* Sidebar Profil - Gauche */}
             <div className="lg:w-80 flex-shrink-0">
               <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6">
-                {/* Avatar */}
                 <div className="flex flex-col items-center mb-6">
                   <div className="w-24 h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg shadow-cyan-500/30">
                     {getUserInitials()}
@@ -324,7 +321,6 @@ export default function ProfilPage() {
                   <p className="text-gray-400 text-sm">Niveau {currentLevel}</p>
                 </div>
 
-                {/* Barre d'expérience */}
                 <div className="mb-6">
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-400">Expérience</span>
@@ -338,7 +334,6 @@ export default function ProfilPage() {
                   </div>
                 </div>
 
-                {/* Statistiques */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-cyan-400">{stats.storiesPlayed}</div>
@@ -358,7 +353,6 @@ export default function ProfilPage() {
                   </div>
                 </div>
 
-                {/* Boutons */}
                 <div className="space-y-3">
                   <button 
                     onClick={openEditModal}
@@ -391,10 +385,8 @@ export default function ProfilPage() {
               </div>
             </div>
 
-            {/* Contenu Principal - Droite */}
             <div className="flex-1">
               <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl overflow-hidden">
-                {/* Onglets */}
                 <div className="flex border-b border-gray-700/50">
                   <button
                     onClick={() => setActiveTab("stories")}
@@ -428,7 +420,6 @@ export default function ProfilPage() {
                   </button>
                 </div>
 
-                {/* Contenu des onglets */}
                 <div className="p-6">
                   {activeTab === "stories" && (
                     <div className="space-y-4">
@@ -534,18 +525,14 @@ export default function ProfilPage() {
         </div>
       </main>
 
-      {/* Modal des paramètres */}
       {isSettingsModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Overlay */}
           <div 
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={closeSettingsModal}
           />
           
-          {/* Contenu de la modal */}
           <div className="relative bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -564,9 +551,7 @@ export default function ProfilPage() {
               </button>
             </div>
 
-            {/* Options */}
             <div className="space-y-4">
-              {/* Notifications */}
               <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
                 <div className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -582,7 +567,6 @@ export default function ProfilPage() {
                 </button>
               </div>
 
-              {/* Effets sonores */}
               <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
                 <div className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -598,7 +582,6 @@ export default function ProfilPage() {
                 </button>
               </div>
 
-              {/* Mode sombre */}
               <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
                 <div className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -614,7 +597,6 @@ export default function ProfilPage() {
                 </button>
               </div>
 
-              {/* Langue */}
               <div className="p-4 bg-[#1a2235] rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -634,7 +616,6 @@ export default function ProfilPage() {
                 </select>
               </div>
 
-              {/* Message de feedback */}
               {settingsMessage && (
                 <div className={`p-3 rounded-lg text-sm ${
                   settingsMessage.type === "success" 
@@ -646,7 +627,6 @@ export default function ProfilPage() {
               )}
             </div>
 
-            {/* Boutons d'action */}
             <div className="flex gap-3 mt-6">
               <button
                 onClick={closeSettingsModal}
@@ -681,18 +661,14 @@ export default function ProfilPage() {
         </div>
       )}
 
-      {/* Modal de modification du profil */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Overlay */}
           <div 
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={closeEditModal}
           />
           
-          {/* Contenu de la modal */}
           <div className="relative bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -710,16 +686,13 @@ export default function ProfilPage() {
               </button>
             </div>
 
-            {/* Avatar preview */}
             <div className="flex justify-center mb-6">
               <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-cyan-500/30">
                 {editUsername ? editUsername.substring(0, 2).toUpperCase() : getUserInitials()}
               </div>
             </div>
 
-            {/* Formulaire */}
             <div className="space-y-4">
-              {/* Nom d'utilisateur */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Nom d&apos;utilisateur
@@ -733,7 +706,6 @@ export default function ProfilPage() {
                 />
               </div>
 
-              {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Email
@@ -747,7 +719,6 @@ export default function ProfilPage() {
                 />
               </div>
 
-              {/* Message de feedback */}
               {saveMessage && (
                 <div className={`p-3 rounded-lg text-sm ${
                   saveMessage.type === "success" 
@@ -759,7 +730,6 @@ export default function ProfilPage() {
               )}
             </div>
 
-            {/* Boutons d'action */}
             <div className="flex gap-3 mt-6">
               <button
                 onClick={closeEditModal}

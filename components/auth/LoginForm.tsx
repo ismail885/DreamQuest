@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -39,17 +39,14 @@ export default function LoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
-      {/* Background avec effets de glow bleu/cyan */}
       <div className="absolute inset-0 bg-[#0a0e1a]">
         <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/3 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Card principale */}
         <div className="bg-[#0f1623]/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-8 shadow-2xl">
           
-          {/* Logo et titre */}
           <div className="text-center space-y-3 mb-8">
             <div className="flex justify-center mb-4">
               <Image
@@ -66,7 +63,6 @@ export default function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* Boutons sociaux en premier */}
             <div className="space-y-3">
               <button
                 type="button"
@@ -92,7 +88,6 @@ export default function LoginForm() {
               </button>
             </div>
 
-            {/* Séparateur */}
             <div className="relative py-3">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-700"></div>
@@ -102,7 +97,6 @@ export default function LoginForm() {
               </div>
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-medium text-gray-400">
                 Email
@@ -125,7 +119,6 @@ export default function LoginForm() {
               </div>
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
               <label htmlFor="password" className="block text-sm font-medium text-gray-400">
                 Mot de passe
@@ -148,21 +141,18 @@ export default function LoginForm() {
               </div>
             </div>
 
-            {/* Message d'erreur */}
             {error && (
               <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
                 <p className="text-red-400 text-sm text-center">{error}</p>
               </div>
             )}
 
-            {/* Mot de passe oublié */}
             <div className="flex justify-end">
               <Link href="/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
                 Mot de passe oublié ?
               </Link>
             </div>
 
-            {/* Bouton Se connecter */}
             <button
               type="submit"
               disabled={isLoading}
@@ -177,7 +167,6 @@ export default function LoginForm() {
               {isLoading ? "Connexion en cours..." : "Se connecter"}
             </button>
 
-            {/* Lien inscription */}
             <div className="text-center text-sm text-gray-400 pt-2">
               Pas encore de compte ?{" "}
               <Link href="/register" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
@@ -186,7 +175,6 @@ export default function LoginForm() {
             </div>
           </form>
 
-          {/* Politique de confidentialité */}
           <div className="mt-6 pt-6 border-t border-gray-800">
             <p className="text-xs text-gray-500 text-center leading-relaxed">
               En continuant, vous acceptez nos conditions d&apos;utilisation et notre politique de confidentialité

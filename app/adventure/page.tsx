@@ -1,75 +1,12 @@
-"use client";
+﻿"use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import AdventureCard from "@/components/adventure/AdventureCard";
-
-type Genre = "Tous" | "Fantasy" | "Sci-Fi" | "Horreur";
-
-const adventures = [
-  {
-    id: 1,
-    title: "La Quête du Dragon Ancien",
-    description: "Une aventure médiévale épique où vous devez retrouver l'ancien dragon qui garde le trésor légendaire.",
-    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&h=400&fit=crop",
-    rating: 4.2,
-    genre: "Fantasy",
-    ageRange: "12-16 ans",
-    players: 1245,
-  },
-  {
-    id: 2,
-    title: "Les Ombres de la Forêt Maudite",
-    description: "Une forêt enchantée cache de sombres secrets. Osez-vous entrer dans la forêt interdite ?",
-    image: "https://images.unsplash.com/photo-1511497584788-876760111969?w=800&h=400&fit=crop",
-    rating: 4.5,
-    genre: "Fantasy",
-    ageRange: "16+ ans",
-    players: 2341,
-  },
-  {
-    id: 3,
-    title: "L'Académie des Arcanes",
-    description: "Entrez dans la plus prestigieuse école de magie du royaume et maîtrisez l'art de la sorcellerie.",
-    image: "https://images.unsplash.com/photo-1589308078059-be1415eab064?w=800&h=400&fit=crop",
-    rating: 4.8,
-    genre: "Fantasy",
-    ageRange: "12-16 ans",
-    players: 3267,
-  },
-  {
-    id: 4,
-    title: "Nexon Station",
-    description: "Une station spatiale abandonnée recèle une technologie extraterrestre à la recherche d'un hôte idéal.",
-    image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&h=400&fit=crop",
-    rating: 4.2,
-    genre: "Sci-Fi",
-    ageRange: "16+ ans",
-    players: 982,
-  },
-  {
-    id: 5,
-    title: "Le Trésor des Pirates",
-    description: "Naviguez sur les mers dangereuses à la recherche d'un trésor caché par un pirate légendaire.",
-    image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=400&fit=crop",
-    rating: 4.6,
-    genre: "Fantasy",
-    ageRange: "8-12 ans",
-    players: 1876,
-  },
-  {
-    id: 6,
-    title: "Le Manoir Hanté",
-    description: "Explorez un manoir obscur rempli de mystères et d'entités surnaturelles.",
-    image: "https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&h=400&fit=crop",
-    rating: 4.1,
-    genre: "Horreur",
-    ageRange: "16+ ans",
-    players: 1523,
-  },
-];
+import { supabase } from "@/lib/supabaseClient";
+import type { Adventure } from "@/types/adventure";
 
 export default function AdventurePage() {
   return (
@@ -83,28 +20,42 @@ function AdventurePageContent() {
   const searchParams = useSearchParams();
   const personnageId = searchParams.get("personnage");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState<Genre>("Tous");
+  const [adventures, setAdventures] = useState<Adventure[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredAdventures = adventures.filter((adventure) => {
-    const matchesSearch = adventure.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesGenre =
-      selectedGenre === "Tous" || adventure.genre === selectedGenre;
-    return matchesSearch && matchesGenre;
-  });
+  useEffect(() => {
+    const fetchAdventures = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("aventure")
+        .select("*")
+        .order("popularite", { ascending: false });
+
+      if (error) {
+        setError("Impossible de charger les aventures.");
+      } else {
+        setAdventures(data ?? []);
+      }
+      setLoading(false);
+    };
+
+    fetchAdventures();
+  }, []);
+
+  const filteredAdventures = adventures.filter((adventure) =>
+    adventure.titre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
 
       <main className="flex-1 relative">
-        {/* Background effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
 
         <div className="container mx-auto px-6 py-12 relative z-10">
-          {/* Header Section */}
           <div className="text-center space-y-4 mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white">
               Explorez les Aventures
@@ -114,7 +65,6 @@ function AdventurePageContent() {
             </p>
           </div>
 
-          {/* Bannière personnage sélectionné */}
           {personnageId && (
             <div className="max-w-4xl mx-auto mb-8">
               <div className="flex items-center gap-3 px-5 py-3.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
@@ -130,9 +80,7 @@ function AdventurePageContent() {
             </div>
           )}
 
-          {/* Search and Filter Section */}
           <div className="max-w-4xl mx-auto space-y-6 mb-12">
-            {/* Search Bar */}
             <div className="relative">
               <input
                 type="text"
@@ -155,32 +103,27 @@ function AdventurePageContent() {
                 />
               </svg>
             </div>
-
-            {/* Genre Filters */}
-            <div className="flex items-center gap-3 flex-wrap">
-              {(["Tous", "Fantasy", "Sci-Fi", "Horreur"] as Genre[]).map(
-                (genre) => (
-                  <button
-                    key={genre}
-                    onClick={() => setSelectedGenre(genre)}
-                    className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                      selectedGenre === genre
-                        ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/30"
-                        : "bg-[#0f1322] text-gray-400 border border-gray-800 hover:border-gray-700 hover:text-white"
-                    }`}
-                  >
-                    {genre}
-                  </button>
-                )
-              )}
-            </div>
           </div>
 
-          {/* Adventures Grid */}
-          {filteredAdventures.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-gray-400 text-lg">Chargement des aventures...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-400 text-lg">{error}</p>
+            </div>
+          ) : filteredAdventures.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAdventures.map((adventure) => (
-                <AdventureCard key={adventure.id} {...adventure} personnageId={personnageId ?? undefined} />
+                <AdventureCard
+                  key={adventure.id}
+                  id={adventure.id}
+                  titre={adventure.titre}
+                  description={adventure.description}
+                  popularite={adventure.popularite}
+                  personnageId={personnageId ?? undefined}
+                />
               ))}
             </div>
           ) : (

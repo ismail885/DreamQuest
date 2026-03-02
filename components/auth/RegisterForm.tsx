@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -65,17 +65,14 @@ export default function RegisterForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
-      {/* Background avec effets de glow bleu/cyan */}
       <div className="absolute inset-0 bg-[#0a0e1a]">
         <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/3 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Card principale */}
         <div className="bg-[#0f1623]/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-8 shadow-2xl">
           
-          {/* Logo et titre */}
           <div className="text-center space-y-3 mb-8">
             <div className="flex justify-center mb-4">
               <Image
@@ -90,14 +87,12 @@ export default function RegisterForm() {
             <p className="text-gray-400 text-sm">Creer votre compte jeune aventurier</p>
           </div>
 
-          {/* Message d'erreur */}
           {error && (
             <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 text-sm">
               {error}
             </div>
           )}
 
-          {/* Message de succes */}
           {success && (
             <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm">
               {success}
@@ -106,7 +101,6 @@ export default function RegisterForm() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* Nom d'aventurier */}
             <div className="space-y-2">
               <label htmlFor="username" className="block text-sm font-medium text-gray-400">
                 Nom d&apos;aventurier
@@ -130,7 +124,6 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-medium text-gray-400">
                 Email
@@ -154,7 +147,6 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
               <label htmlFor="password" className="block text-sm font-medium text-gray-400">
                 Mot de passe
@@ -178,7 +170,6 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div className="space-y-2">
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-400">
                 Confirmer le mot de passe
@@ -202,7 +193,6 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Submit button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -218,7 +208,6 @@ export default function RegisterForm() {
             </button>
           </form>
 
-          {/* Link to login */}
           <p className="mt-6 text-center text-gray-400 text-sm">
             Deja un compte ?{" "}
             <Link href="/login" className="text-cyan-400 hover:text-cyan-300 font-medium">
@@ -226,7 +215,6 @@ export default function RegisterForm() {
             </Link>
           </p>
 
-          {/* Footer */}
           <p className="mt-6 text-center text-gray-500 text-xs">
             En continuant, vous acceptez nos conditions d&apos;utilisation et notre politique de confidentialite
           </p>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -24,7 +24,6 @@ export default function Header() {
       <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#0a0e1a]/80 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo */}
             <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Image
                 src="/Logo_DreamQuest.png"
@@ -36,7 +35,6 @@ export default function Header() {
               <span className="text-xl font-bold text-cyan-400">DreamQuest</span>
             </Link>
 
-            {/* Navigation centrale */}
             <div className="flex items-center gap-8">
               <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
                 Aventures
@@ -49,7 +47,6 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Boutons droite */}
             <div className="flex items-center gap-4">
               <Link href="/create-character">
                 <button className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors">
@@ -57,7 +54,6 @@ export default function Header() {
                 </button>
               </Link>
               
-              {/* Avatar avec initiales */}
               <Link href="/profil">
                 <button 
                   className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold hover:bg-cyan-600 transition-colors"
@@ -77,7 +73,6 @@ export default function Header() {
     <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#0a0e1a]/80 sticky top-0 z-50">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <Image
               src="/Logo_DreamQuest.png"
@@ -89,7 +84,6 @@ export default function Header() {
             <span className="text-xl font-bold text-cyan-400">DreamQuest</span>
           </Link>
 
-          {/* Navigation centrale */}
           <div className="flex items-center gap-8">
             <Link href="/" className="text-gray-400 hover:text-white transition-colors">
               Accueil
@@ -105,7 +99,6 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Boutons droite */}
           <div className="flex items-center gap-4">
             <Link href="/login">
               <button className="px-5 py-2.5 text-white hover:text-cyan-400 font-medium transition-colors">

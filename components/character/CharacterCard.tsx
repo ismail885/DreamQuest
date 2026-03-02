@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Character, CHARACTER_CLASSES, STAT_ICONS } from '@/types';
 import Image from 'next/image';
@@ -17,7 +17,6 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
 
   return (
     <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group">
-      {/* Image et niveau */}
       <div className="relative h-48 bg-gradient-to-b from-gray-800 to-gray-900">
         <Image
           src={classInfo?.image ?? '/illustrations_personnage/default.png'}
@@ -27,18 +26,15 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
         
-        {/* Badge de niveau */}
         <div className="absolute top-2 right-2 bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold">
           Niv. {character.niveau}
         </div>
       </div>
 
-      {/* Informations */}
       <div className="p-4">
         <h3 className="text-xl font-bold text-white mb-1">{character.nom_personnage}</h3>
         <p className="text-cyan-400 text-sm mb-3">{character.classe}</p>
 
-        {/* Barre de vie */}
         <div className="mb-3">
           <div className="flex justify-between text-xs text-gray-400 mb-1">
             <span>Points de Vie</span>
@@ -58,7 +54,6 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
           </div>
         </div>
 
-        {/* Statistiques */}
         <div className="grid grid-cols-2 gap-2 mb-4">
           {Object.entries(character.stats ?? {}).map(([stat, value]) => (
             <div key={stat} className="flex items-center gap-2 text-sm">
@@ -69,7 +64,6 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
           ))}
         </div>
 
-        {/* Actions */}
         <div className="flex gap-2">
           {onSelect && (
             <button

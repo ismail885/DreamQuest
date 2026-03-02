@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -9,9 +9,7 @@ export default function Footer() {
   return (
     <footer className="app-footer mt-auto">
       <div className="footer-content px-6 py-12">
-        {/* Grid principale */}
         <div className="footer-grid">
-          {/* Section Marque */}
           <div className="footer-section footer-brand">
             <Link
               href="/"
@@ -69,7 +67,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Section Aventures */}
           <div className="footer-section">
             <h3 className="footer-title">Aventures</h3>
             <ul className="footer-links">
@@ -88,7 +85,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Section Communauté */}
           <div className="footer-section">
             <h3 className="footer-title">Communauté</h3>
             <ul className="footer-links">
@@ -107,7 +103,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Section Ressources */}
           <div className="footer-section">
             <h3 className="footer-title">Ressources</h3>
             <ul className="footer-links">
@@ -123,7 +118,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Section Légal */}
           <div className="footer-section">
             <h3 className="footer-title">Légal</h3>
             <ul className="footer-links">
@@ -143,7 +137,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Section Bottom */}
         <div className="footer-bottom">
           <p className="copyright">
             © {currentYear} DreamQuest. Tous droits réservés.

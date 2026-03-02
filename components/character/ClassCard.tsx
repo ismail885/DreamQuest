@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
 import { ClassInfo } from '@/types';
@@ -16,7 +16,6 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
       onClick={onSelect}
       className="relative bg-[#0f1623]/80 backdrop-blur-xl border border-gray-800/50 rounded-2xl overflow-hidden cursor-pointer hover:border-cyan-500/50 transition-all"
     >
-      {/* Image du personnage avec overlay */}
       <div className="relative h-72 w-full bg-gradient-to-b from-[#1a1f2e] to-[#0f1623]">
         <Image
           src={classInfo.image}
@@ -28,7 +27,6 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
       </div>
 
-      {/* Nom et description */}
       <div className="px-6 pb-4 -mt-8 relative z-10">
         <h3 className="text-2xl font-bold text-white mb-2">
           {classInfo.name}
@@ -37,7 +35,6 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
           {classInfo.description}
         </p>
 
-        {/* Statistiques avec émojis */}
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-3">
             <Sword className="w-5 h-5 text-orange-400" />
@@ -96,7 +93,6 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
           </div>
         </div>
 
-        {/* Capacités */}
         <div className="flex gap-2 flex-wrap">
           {classInfo.abilities.map((ability) => (
             <span

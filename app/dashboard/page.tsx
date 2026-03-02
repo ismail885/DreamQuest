@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -30,10 +30,8 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      {/* Contenu principal */}
       <main className="container mx-auto px-6 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* En-tête de bienvenue */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">
               Bienvenue,{" "}
@@ -47,7 +45,6 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Section des personnages */}
           <div className="mb-12">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white">Mes Personnages</h2>
@@ -74,7 +71,6 @@ export default function DashboardPage() {
             {user && <CharacterList userId={user.id} />}
           </div>
 
-          {/* Statistiques */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6">
               Vos Statistiques
@@ -99,7 +95,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Quêtes populaires */}
           <div>
             <h2 className="text-2xl font-bold text-white mb-6">
               Quêtes Populaires

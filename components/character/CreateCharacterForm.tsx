@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { CHARACTER_CLASSES, CharacterClass, Character } from '@/types';
@@ -98,7 +98,6 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
 
   return (
     <div className="container mx-auto px-6 py-12 max-w-5xl">
-      {/* En-tête */}
       <div className="mb-8">
         <button
           onClick={() => window.history.back()}
@@ -114,9 +113,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         </h1>
       </div>
 
-      {/* Carte de classe avec navigation */}
       <div className="relative mb-8">
-        {/* Bouton précédent */}
         {currentStep > 0 && (
           <button
             onClick={handlePrevious}
@@ -128,7 +125,6 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
           </button>
         )}
 
-        {/* Carte actuelle */}
         <div className="max-w-2xl mx-auto px-12">
           <ClassCard
             classInfo={currentClass}
@@ -137,7 +133,6 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
           />
         </div>
 
-        {/* Bouton suivant */}
         {currentStep < totalSteps - 1 && (
           <button
             onClick={handleNext}
@@ -150,7 +145,6 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         )}
       </div>
 
-      {/* Indicateurs de pagination */}
       <div className="flex justify-center gap-2 mb-8">
         {classes.map((_, index) => (
           <button
@@ -165,7 +159,6 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         ))}
       </div>
 
-      {/* Formulaire de nom */}
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
         <div className="mb-6">
           <label htmlFor="characterName" className="block text-gray-300 text-sm mb-2">
