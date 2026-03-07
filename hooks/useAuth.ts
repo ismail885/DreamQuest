@@ -1,28 +1,10 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import { User } from '@supabase/supabase-js';
+import { useAuthContext } from '@/context/AuthContext';
 
-interface AuthState {
-  user: User | null;
-  loading: boolean;
-}
-
-export function useAuth(): AuthState {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
+/**
+ * Raccourci vers le contexte d'authentification personnalisé.
+ * Retourne { user, loading } compatibles avec l'ensemble du projet.
+ */
+export function useAuth() {
+  const { user, loading } = useAuthContext();
   return { user, loading };
 }

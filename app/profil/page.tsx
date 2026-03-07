@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
@@ -38,6 +38,7 @@ export default function ProfilPage() {
   const [language, setLanguage] = useState("fr");
   const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const settingsLoadedRef = useRef(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -54,12 +55,12 @@ export default function ProfilPage() {
       const { data: profileData } = await supabase
         .from("utilisateur")
         .select("*")
-        .eq("id_utilisateur", userId)
+        .eq("id", userId)
         .single();
 
       if (profileData) {
         setUserProfile({
-          id: profileData.id_utilisateur,
+          id: profileData.id,
           nom_utilisateur: profileData.nom_utilisateur || user?.username || "Aventurier",
           email: profileData.email || user?.email || "",
           date_creation: profileData.date_creation || "",
@@ -212,8 +213,9 @@ export default function ProfilPage() {
 
   useEffect(() => {
     const loadSettings = async () => {
-      if (!user) return;
-      
+      if (!user || settingsLoadedRef.current) return;
+      settingsLoadedRef.current = true;
+
       try {
         const { data } = await supabase
           .from("parametre_utilisateur")
@@ -234,7 +236,8 @@ export default function ProfilPage() {
     };
 
     loadSettings();
-  }, [user, darkMode, toggleTheme]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -249,13 +252,13 @@ export default function ProfilPage() {
           nom_utilisateur: editUsername,
           email: editEmail,
         })
-        .eq("id_utilisateur", user.id);
+        .eq("id", user.id);
 
       if (profileError) {
         const { error: insertError } = await supabase
           .from("utilisateur")
           .upsert({
-            id_utilisateur: user.id,
+            id: user.id,
             nom_utilisateur: editUsername,
             email: editEmail,
           });

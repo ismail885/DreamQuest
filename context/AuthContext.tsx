@@ -13,7 +13,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (emailOrUsername: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (username: string, email: string, password: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -48,39 +48,38 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (emailOrUsername: string, password: string) => {
     try {
-      // Requête optimisée avec uniquement les champs nécessaires
-      const { data: userData, error } = await supabase
+      const isEmail = emailOrUsername.includes('@');
+      const query = supabase
         .from('utilisateur')
         .select('id, nom_utilisateur, email, mot_de_passe, role')
-        .eq('email', email)
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
 
-      if (error) {
-        return { success: false, error: 'Erreur de connexion à la base de données' };
+      const { data: userData, error } = await (
+        isEmail
+          ? query.eq('email', emailOrUsername)
+          : query.eq('nom_utilisateur', emailOrUsername)
+      ).maybeSingle();
+
+      console.log('DEBUG userData:', userData, 'error:', error);
+      if (error || !userData) {
+        return { success: false, error: 'Identifiant ou mot de passe incorrect' };
       }
 
-      if (!userData) {
-        return { success: false, error: 'Email ou mot de passe incorrect' };
-      }
-
-      // Vérification rapide du mot de passe
+      console.log('DEBUG mdp DB:', userData.mot_de_passe, '| mdp saisi:', password, '| égal:', userData.mot_de_passe === password);
       if (userData.mot_de_passe !== password) {
-        return { success: false, error: 'Email ou mot de passe incorrect' };
+        return { success: false, error: 'Identifiant ou mot de passe incorrect' };
       }
 
       const loggedUser: User = {
         id: userData.id,
         username: userData.nom_utilisateur,
         email: userData.email,
-        role: userData.role
+        role: userData.role,
       };
 
-      // Sauvegarde synchrone dans localStorage
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
-      // Cookie lisible par le middleware (non-HttpOnly)
       document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
       setUser(loggedUser);
 
@@ -100,41 +99,45 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
         .maybeSingle();
 
       if (existingUser) {
-        return { success: false, error: 'Cet email est deja utilise' };
+        return { success: false, error: 'Cet email est déjà utilisé' };
       }
 
-      // Creer l'utilisateur
+      const { data: existingUsername } = await supabase
+        .from('utilisateur')
+        .select('id')
+        .eq('nom_utilisateur', username)
+        .maybeSingle();
+
+      if (existingUsername) {
+        return { success: false, error: 'Ce pseudo est déjà utilisé' };
+      }
+
       const { data: newUser, error } = await supabase
         .from('utilisateur')
-        .insert({
-          nom_utilisateur: username,
-          email: email,
-          mot_de_passe: password,
-          role: 'joueur'
-        })
+        .insert({ nom_utilisateur: username, email, mot_de_passe: password, role: 'joueur' })
         .select('id, nom_utilisateur, email, role')
         .single();
 
       if (error) {
-        console.error('Erreur Supabase:', error);
-        return { success: false, error: 'Erreur lors de la creation du compte' };
+        console.error('Erreur Supabase register:', error.message);
+        return { success: false, error: 'Erreur lors de la création du compte' };
       }
 
       const registeredUser: User = {
         id: newUser.id,
         username: newUser.nom_utilisateur,
         email: newUser.email,
-        role: newUser.role
+        role: newUser.role,
       };
 
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(registeredUser));
       document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
       setUser(registeredUser);
 
-      return { success: true, message: 'Compte cree avec succes' };
+      return { success: true, message: 'Compte créé avec succès' };
     } catch (error) {
       console.error('Erreur register:', error);
-      return { success: false, error: 'Erreur d\'inscription' };
+      return { success: false, error: "Erreur d'inscription" };
     }
   };
 
