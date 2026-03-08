@@ -14,7 +14,7 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
   return (
     <div
       onClick={onSelect}
-      className="relative bg-[#0f1623]/80 backdrop-blur-xl border border-gray-800/50 rounded-2xl overflow-hidden cursor-pointer hover:border-cyan-500/50 transition-all"
+      className="relative bg-[#0f1623]/80 border border-gray-800/50 rounded-2xl overflow-hidden cursor-pointer hover:border-cyan-500/50 transition-all"
     >
       <div className="relative h-72 w-full bg-gradient-to-b from-[#1a1f2e] to-[#0f1623]">
         <Image

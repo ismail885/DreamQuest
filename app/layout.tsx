@@ -21,7 +21,7 @@ export default function RootLayout({
           <div className="relative min-h-screen flex flex-col">
             <div className="fixed inset-0 -z-10 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-[#0b0d1e] via-[#151829] to-[#0b0d1e]"></div>
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 animate-pulse"></div>
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
 
             </div>
             {children}

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Character } from '@/types';
+import { Character, CHARACTER_CLASSES } from '@/types';
 import CharacterCard from './CharacterCard';
+import ConfirmDeleteModal from '@/components/shared/ConfirmDeleteModal';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -16,6 +17,9 @@ export default function CharacterList({ userId }: CharacterListProps) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [pendingDelete, setPendingDelete] = useState<Character | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -26,7 +30,19 @@ export default function CharacterList({ userId }: CharacterListProps) {
           .eq('id_utilisateur', userId);
 
         if (error) throw error;
-        setCharacters(data ?? []);
+
+        // Reconstitue les stats et points_vie_max depuis la classe (non stockés en BDD)
+        const enriched: Character[] = (data ?? []).map((row) => {
+          const classInfo = CHARACTER_CLASSES[row.classe as keyof typeof CHARACTER_CLASSES];
+          return {
+            ...row,
+            stats: classInfo?.baseStats ?? { force: 0, agilite: 0, intelligence: 0, endurance: 0 },
+            points_vie_max: row.points_vie_max ?? (classInfo ? 100 + classInfo.baseStats.endurance * 10 : 100),
+            experience: row.experience ?? 0,
+          };
+        });
+
+        setCharacters(enriched);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Une erreur est survenue');
       } finally {
@@ -37,23 +53,38 @@ export default function CharacterList({ userId }: CharacterListProps) {
     fetchCharacters();
   }, [userId]);
 
-  const handleDelete = async (characterId: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce personnage ?')) {
+  const handleDeleteRequest = (character: Character) => {
+    setDeleteError('');
+    setPendingDelete(character);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!pendingDelete?.id_personnage) {
+      setPendingDelete(null);
       return;
     }
-
+    setIsDeleting(true);
+    setDeleteError('');
     try {
       const { error } = await supabase
         .from('personnage')
         .delete()
-        .eq('id_personnage', characterId);
+        .eq('id_personnage', pendingDelete.id_personnage);
 
       if (error) throw error;
 
-      setCharacters(characters.filter(c => c.id_personnage !== characterId));
+      setCharacters(prev => prev.filter(c => c.id_personnage !== pendingDelete.id_personnage));
+      setPendingDelete(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      setDeleteError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setPendingDelete(null);
+    setDeleteError('');
   };
 
   if (isLoading) {
@@ -93,15 +124,26 @@ export default function CharacterList({ userId }: CharacterListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {characters.map((character, index) => (
-        <CharacterCard
-          key={character.id_personnage ?? index}
-          character={character}
-          onSelect={() => router.push(`/adventure?personnage=${character.id_personnage}`)}
-          onDelete={() => handleDelete(character.id_personnage!)}
+    <>
+      {pendingDelete && (
+        <ConfirmDeleteModal
+          characterName={pendingDelete.nom_personnage}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+          isLoading={isDeleting}
+          error={deleteError}
         />
-      ))}
-    </div>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {characters.map((character, index) => (
+          <CharacterCard
+            key={character.id_personnage ?? index}
+            character={character}
+            onSelect={() => router.push(`/adventure?personnage=${character.id_personnage}`)}
+            onDelete={() => handleDeleteRequest(character)}
+          />
+        ))}
+      </div>
+    </>
   );
 }
