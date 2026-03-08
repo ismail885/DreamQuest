@@ -30,46 +30,111 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
 
   const checkAuth = async () => {
     try {
-      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: userData, error: dbError } = await supabase
+          .from('utilisateur')
+          .select('id, nom_utilisateur, email, role')
+          .eq('auth_id', session.user.id)
+          .maybeSingle();
+
+        if (userData) {
+          const loggedUser: User = {
+            id: userData.id,
+            username: userData.nom_utilisateur,
+            email: userData.email,
+            role: userData.role,
+          };
+          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
+          document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+          setUser(loggedUser);
+        } else {
+          if (dbError) console.warn('checkAuth DB error:', dbError.message);
+          const stored = localStorage.getItem(USER_STORAGE_KEY);
+          if (stored) {
+            setUser(JSON.parse(stored));
+          } else {
+            setUser(null);
+          }
+        }
       } else {
+        localStorage.removeItem(USER_STORAGE_KEY);
+        document.cookie = 'auth_user=; path=/; max-age=0; SameSite=Strict';
         setUser(null);
       }
     } catch (error) {
       console.error('Erreur verification auth:', error);
-      setUser(null);
+      // En cas d'erreur réseau, garder l'utilisateur du localStorage
+      const stored = localStorage.getItem(USER_STORAGE_KEY);
+      if (stored) setUser(JSON.parse(stored));
+      else setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // 1. Lire la session immédiatement pour éviter le flash loading=false/user=null
     checkAuth();
+
+    // 2. Écouter les changements de session suivants (login, logout, refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const { data: userData } = await supabase
+          .from('utilisateur')
+          .select('id, nom_utilisateur, email, role')
+          .eq('auth_id', session.user.id)
+          .maybeSingle();
+
+        if (userData) {
+          const loggedUser: User = {
+            id: userData.id,
+            username: userData.nom_utilisateur,
+            email: userData.email,
+            role: userData.role,
+          };
+          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
+          document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+          setUser(loggedUser);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        localStorage.removeItem(USER_STORAGE_KEY);
+        document.cookie = 'auth_user=; path=/; max-age=0; SameSite=Strict';
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (emailOrUsername: string, password: string) => {
     try {
-      const isEmail = emailOrUsername.includes('@');
-      const query = supabase
-        .from('utilisateur')
-        .select('id, nom_utilisateur, email, mot_de_passe, role')
-        .limit(1);
+      // Résoudre l'email si l'utilisateur a entré un pseudo
+      let email = emailOrUsername;
+      if (!emailOrUsername.includes('@')) {
+        const { data: found } = await supabase
+          .from('utilisateur')
+          .select('email')
+          .eq('nom_utilisateur', emailOrUsername)
+          .maybeSingle();
+        if (!found) return { success: false, error: 'Identifiant ou mot de passe incorrect' };
+        email = found.email;
+      }
 
-      const { data: userData, error } = await (
-        isEmail
-          ? query.eq('email', emailOrUsername)
-          : query.eq('nom_utilisateur', emailOrUsername)
-      ).maybeSingle();
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
-      console.log('DEBUG userData:', userData, 'error:', error);
-      if (error || !userData) {
+      if (authError || !authData.user) {
         return { success: false, error: 'Identifiant ou mot de passe incorrect' };
       }
 
-      console.log('DEBUG mdp DB:', userData.mot_de_passe, '| mdp saisi:', password, '| égal:', userData.mot_de_passe === password);
-      if (userData.mot_de_passe !== password) {
-        return { success: false, error: 'Identifiant ou mot de passe incorrect' };
+      const { data: userData, error } = await supabase
+        .from('utilisateur')
+        .select('id, nom_utilisateur, email, role')
+        .eq('auth_id', authData.user.id)
+        .maybeSingle();
+
+      if (error || !userData) {
+        return { success: false, error: 'Utilisateur introuvable' };
       }
 
       const loggedUser: User = {
@@ -112,27 +177,25 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
         return { success: false, error: 'Ce pseudo est déjà utilisé' };
       }
 
-      const { data: newUser, error } = await supabase
+      // Créer le compte dans Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+
+      if (authError || !authData.user) {
+        console.error('Erreur Supabase Auth register:', authError?.message);
+        return { success: false, error: authError?.message || 'Erreur lors de la création du compte' };
+      }
+
+      // Insérer dans la table utilisateur avec auth_id
+      const { error } = await supabase
         .from('utilisateur')
-        .insert({ nom_utilisateur: username, email, mot_de_passe: password, role: 'joueur' })
-        .select('id, nom_utilisateur, email, role')
-        .single();
+        .insert({ nom_utilisateur: username, email, mot_de_passe: '', role: 'joueur', auth_id: authData.user.id });
 
       if (error) {
         console.error('Erreur Supabase register:', error.message);
-        return { success: false, error: 'Erreur lors de la création du compte' };
+        return { success: false, error: 'Erreur lors de la création du compte : ' + error.message };
       }
 
-      const registeredUser: User = {
-        id: newUser.id,
-        username: newUser.nom_utilisateur,
-        email: newUser.email,
-        role: newUser.role,
-      };
-
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(registeredUser));
       document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
-      setUser(registeredUser);
 
       return { success: true, message: 'Compte créé avec succès' };
     } catch (error) {
@@ -152,6 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
 
   const logout = async () => {
     try {
+      await supabase.auth.signOut();
       localStorage.removeItem(USER_STORAGE_KEY);
       document.cookie = 'auth_user=; path=/; max-age=0; SameSite=Strict';
       setUser(null);

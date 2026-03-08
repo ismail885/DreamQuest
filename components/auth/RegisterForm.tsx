@@ -51,7 +51,7 @@ export default function RegisterForm() {
 
       if (result.success) {
         setSuccess(result.message || "Inscription reussie !");
-        router.push("/dashboard");
+        router.push("/login");
       } else {
         setError(result.error || "Erreur lors de l'inscription");
         setIsLoading(false);

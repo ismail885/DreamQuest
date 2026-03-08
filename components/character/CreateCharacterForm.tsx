@@ -73,6 +73,8 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         .select()
         .single();
 
+      console.log('DEBUG insert personnage → userId:', userId, '| error:', insertError, '| data:', data);
+
       if (insertError) {
         throw new Error('Erreur lors de la création du personnage');
       }
