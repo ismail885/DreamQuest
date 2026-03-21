@@ -1,16 +1,25 @@
 ﻿"use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import Loader from "@/components/shared/Loader";
 import CharacterList from "@/components/character/CharacterList";
 
+interface UserStats {
+  charactersCount: number;
+  completedQuests: number;
+  totalXp: number;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuthContext();
+  const [stats, setStats] = useState<UserStats>({ charactersCount: 0, completedQuests: 0, totalXp: 0 });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -18,7 +27,42 @@ export default function DashboardPage() {
     }
   }, [loading, user, router]);
 
-  if (loading) {
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!user) return;
+      setStatsLoading(true);
+      try {
+        const { count: charactersCount } = await supabase
+          .from("personnage")
+          .select("id_personnage", { count: "exact", head: true })
+          .eq("id_utilisateur", user.id);
+
+        const { data: saves } = await supabase
+          .from("sauvegarde")
+          .select("progression")
+          .eq("id_utilisateur", user.id);
+        
+        const completedQuests = saves?.filter(s => s.progression >= 100).length ?? 0;
+
+        const { data: characters } = await supabase
+          .from("personnage")
+          .select("experience")
+          .eq("id_utilisateur", user.id);
+        
+        const totalXp = characters?.reduce((sum, c) => sum + (c.experience ?? 0), 0) ?? 0;
+
+        setStats({ charactersCount: charactersCount ?? 0, completedQuests, totalXp });
+      } catch (err) {
+        console.error("Erreur stats:", err);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    if (user) fetchStats();
+  }, [user]);
+
+  if (loading || statsLoading) {
     return <Loader fullScreen message="Chargement de votre espace..." />;
   }
 
@@ -77,20 +121,20 @@ export default function DashboardPage() {
             </h2>
             <div className="grid md:grid-cols-4 gap-6">
               <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-cyan-400 mb-2">0</div>
+                <div className="text-3xl font-bold text-cyan-400 mb-2">{stats.charactersCount}</div>
                 <div className="text-gray-400 text-sm">Personnages créés</div>
               </div>
               <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-purple-400 mb-2">0</div>
+                <div className="text-3xl font-bold text-purple-400 mb-2">{stats.completedQuests}</div>
                 <div className="text-gray-400 text-sm">Quêtes complétées</div>
               </div>
               <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-yellow-400 mb-2">0</div>
-                <div className="text-gray-400 text-sm">Niveau</div>
+                <div className="text-3xl font-bold text-yellow-400 mb-2">{stats.totalXp}</div>
+                <div className="text-gray-400 text-sm">Points d&apos;XP</div>
               </div>
               <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-green-400 mb-2">0</div>
-                <div className="text-gray-400 text-sm">Points d&apos;XP</div>
+                <div className="text-3xl font-bold text-green-400 mb-2">-</div>
+                <div className="text-gray-400 text-sm">Niveau max</div>
               </div>
             </div>
           </div>
