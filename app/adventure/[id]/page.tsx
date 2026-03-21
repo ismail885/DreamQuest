@@ -5,7 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Loader from "@/components/shared/Loader";
 import { useAdventure } from "@/hooks/useAdventure";
+import { useSave } from "@/hooks/useSave";
 import { supabase } from "@/lib/supabaseClient";
+import { useAuthContext } from "@/context/AuthContext";
 import type { Character } from "@/types";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
@@ -37,11 +39,25 @@ function AdventureReader({ params }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const personnageId = searchParams.get("personnage");
+  const { user } = useAuthContext();
 
   const [character, setCharacter] = useState<Character | null>(null);
 
   const { adventure, currentBranch, loading, error, isEnd, history, chooseOption, restart } =
     useAdventure(adventureId);
+
+  const characterIdNum = personnageId ? parseInt(personnageId, 10) : null;
+  const progression = Math.min(Math.round((history.length / MAX_STEPS) * 100), 100);
+
+  const { isSaving, lastSaved, save } = useSave({
+    userId: user?.id ?? null,
+    adventureId: adventureId,
+    characterId: characterIdNum,
+    branchId: currentBranch?.id ?? null,
+    progression,
+    enabled: !!user && !!characterIdNum && !isEnd,
+    intervalMs: 30_000,
+  });
 
   useEffect(() => {
     if (!personnageId) return;
@@ -55,7 +71,12 @@ function AdventureReader({ params }: Props) {
       });
   }, [personnageId]);
 
-  const progression = Math.min(Math.round((history.length / MAX_STEPS) * 100), 100);
+  useEffect(() => {
+    if (isEnd && user && characterIdNum) {
+      save();
+    }
+  }, [isEnd, user, characterIdNum, save]);
+
   const image = ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
 
   if (loading) {
@@ -98,6 +119,23 @@ function AdventureReader({ params }: Props) {
         <span className="text-gray-500 text-sm font-medium">
           Page de Lecture d&apos;histoire
         </span>
+
+        <div className="flex items-center gap-2">
+          {isSaving && (
+            <span className="flex items-center gap-1.5 text-xs text-cyan-400">
+              <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Sauvegarde...
+            </span>
+          )}
+          {!isSaving && lastSaved && (
+            <span className="text-xs text-gray-500">
+              Sauvegardé
+            </span>
+          )}
+        </div>
 
         <button
           onClick={restart}
