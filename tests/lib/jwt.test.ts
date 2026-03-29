@@ -1,8 +1,3 @@
-/**
- * Tests unitaires pour les fonctions JWT
- * Fichier: __tests__/lib/jwt.test.ts
- */
-
 import {
   signToken,
   verifyToken,

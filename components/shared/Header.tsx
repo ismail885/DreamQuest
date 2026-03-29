@@ -1,18 +1,11 @@
 ﻿"use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthContext } from "@/context/AuthContext";
 
 export default function Header() {
-  const router = useRouter();
-  const { user, logout } = useAuthContext();
-
-  const handleLogout = async () => {
-    await logout();
-    router.push("/");
-  };
+  const { user } = useAuthContext();
 
   const getUserInitials = () => {
     const username = user?.username || user?.email || "U";

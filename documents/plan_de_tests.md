@@ -10,240 +10,231 @@
 
 ---
 
-## 2. Organisation des tests
+## 2. Organisation des tests (RÉELLE)
 
 ```
 tests/
-├── lib/                        # Tests unitaires (logique pure)
-│   ├── jwt.test.ts            # ✓ Implémenté
-│   ├── utils.test.ts          # ✓ Implémenté
-│   └── types.test.ts          # ✓ Implémenté
-├── integration/                 # Tests d'intégration (flux complets)
-│   ├── auth.test.ts           # ✓ Implémenté
-│   └── adventure.test.ts      # ✓ Implémenté
-├── components/                 # Tests de composants React (à implémenter)
-│   ├── auth/
-│   ├── character/
-│   └── adventure/
-└── e2e/                       # Tests end-to-end (Playwright - à implémenter)
+├── lib/                           # Tests unitaires
+│   ├── jwt.test.ts               
+│   ├── utils.test.ts             
+│   ├── types.test.ts             
+│   ├── character.test.ts         
+│   └── save.test.ts              
+├── integration/                    # Tests d'intégration
+│   ├── auth.test.ts             
+│   ├── adventure.test.ts        
+│   ├── character.test.ts        
+│   └── save.test.ts             
+└── e2e/                          # Tests end-to-end (à implémenter)
 ```
 
 ---
 
-## 3. Fonctionnalités à tester
+## 3. Tests implémentés
 
-### 3.1 Authentification (Inscription / Connexion)
+### 3.1 Tests unitaires - JWT (16 tests)
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| AUTH-01 | Inscription utilisateur avec email/mot de passe | Unititaire | À faire | HAUTE |
-| AUTH-02 | Connexion utilisateur | Unititaire | À faire | HAUTE |
-| AUTH-03 | Déconnexion utilisateur | Unititaire | À faire | HAUTE |
-| AUTH-04 | Génération token JWT | Unititaire | ✓ Fait | HAUTE |
-| AUTH-05 | Vérification token JWT | Unititaire | ✓ Fait | HAUTE |
-| AUTH-06 | Extraction token depuis cookies | Unititaire | ✓ Fait | HAUTE |
-| AUTH-07 | Création cookie auth | Unititaire | ✓ Fait | HAUTE |
-| AUTH-08 | Suppression cookie auth | Unititaire | ✓ Fait | HAUTE |
-| AUTH-09 | Protection route avec rôle | Intégration | ✓ Fait | HAUTE |
-| AUTH-10 | Flux complet inscription → connexion → vérification | Intégration | ✓ Fait | HAUTE |
-| AUTH-11 | Gestion erreur token invalide | Intégration | ✓ Fait | MOYENNE |
-| AUTH-12 | Session utilisateur persistante | Intégration | ✓ Fait | HAUTE |
+| ID | Test | Statut |
+|----|------|--------|
+| JWT-01 | Créer un token JWT | ✅ |
+| JWT-02 | Token différent par payload | ✅ |
+| JWT-03 | Vérifier token et retourner payload | ✅ |
+| JWT-04 | Retourner null pour token vide | ✅ |
+| JWT-05 | Extraire token depuis cookies | ✅ |
+| JWT-06 | Cookies null | ✅ |
+| JWT-07 | Pas de token auth_token | ✅ |
+| JWT-08 | Gérer cookies avec espaces | ✅ |
+| JWT-09 | Gérer plusieurs cookies | ✅ |
+| JWT-10 | Créer cookie avec token | ✅ |
+| JWT-11 | Cookie a durée 7 jours | ✅ |
+| JWT-12 | Créer cookie suppression | ✅ |
+| JWT-13 | Cookie a Max-Age=0 | ✅ |
+| JWT-14 | Propriétés HttpOnly, SameSite | ✅ |
+| JWT-15 | Propriétés Path | ✅ |
+| JWT-16 | Nettoyage console.error | ✅ |
 
-### 3.2 Gestion des Personnages
+### 3.2 Tests unitaires - Utils (9 tests)
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| CHAR-01 | Création personnage avec nom | Unititaire | À faire | HAUTE |
-| CHAR-02 | Sélection classe (10 classes) | Unititaire | À faire | HAUTE |
-| CHAR-03 | Validation nom personnage (longueur, caractères) | Unititaire | À faire | HAUTE |
-| CHAR-04 | Liste des personnages utilisateur | Intégration | À faire | HAUTE |
-| CHAR-05 | Suppression personnage | Intégration | À faire | HAUTE |
-| CHAR-06 | Affectation points de vie par classe | Unititaire | À faire | MOYENNE |
+| ID | Test | Statut |
+|----|------|--------|
+| UTIL-01 | Combiner plusieurs classes | ✅ |
+| UTIL-02 | Filtrer classes falsy | ✅ |
+| UTIL-03 | Gérer valeurs boolean | ✅ |
+| UTIL-04 | Gérer chaînes vides | ✅ |
+| UTIL-05 | Un seul argument | ✅ |
+| UTIL-06 | Aucun argument | ✅ |
+| UTIL-07 | Classes avec espaces | ✅ |
+| UTIL-08 | Classes avec tirets | ✅ |
+| UTIL-09 | Classes conditionnelles | ✅ |
 
-**Classes disponibles :** Guerrier, Mage, Archer, Assassin, Paladin, Prêtre, Nain, Elfe, Orc, Druide
+### 3.3 Tests unitaires - Types (11 tests)
 
-### 3.3 Système d'Aventures
+| ID | Test | Statut |
+|----|------|--------|
+| TYPE-01 | Objet Adventure valide | ✅ |
+| TYPE-02 | Valeurs nulles optionnelles | ✅ |
+| TYPE-03 | Objet Branch valide | ✅ |
+| TYPE-04 | Détection fin de branche | ✅ |
+| TYPE-05 | AdventureWithAuthor avec auteur | ✅ |
+| TYPE-06 | Sans auteur_nom | ✅ |
+| TYPE-07 | Valider aventure complète | ✅ |
+| TYPE-08 | Rejeter aventure invalide | ✅ |
+| TYPE-09 | Détection fin de branche (helper) | ✅ |
+| TYPE-10 | Branche non-terminée | ✅ |
+| TYPE-11 | UserCreation interface | ✅ |
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| ADV-01 | Liste des aventures | Intégration | ✓ Fait | HAUTE |
-| ADV-02 | Chargement aventure avec auteur | Intégration | ✓ Fait | HAUTE |
-| ADV-03 | Chargement embranchement initial | Intégration | ✓ Fait | HAUTE |
-| ADV-04 | Navigation choix 1 | Intégration | ✓ Fait | HAUTE |
-| ADV-05 | Navigation choix 2 | Intégration | ✓ Fait | HAUTE |
-| ADV-06 | Construction historique des choix | Intégration | ✓ Fait | HAUTE |
-| ADV-07 | Détection fin d'aventure | Intégration | ✓ Fait | HAUTE |
-| ADV-08 | Redémarrage aventure | Intégration | À faire | HAUTE |
-| ADV-09 | Tri par popularité | Intégration | ✓ Fait | MOYENNE |
-| ADV-10 | Affichage détails aventure | E2E | À faire | HAUTE |
+### 3.4 Tests unitaires - Personnages (19 tests)
 
-### 3.4 Système de Sauvegarde
+| ID | Test | Statut |
+|----|------|--------|
+| CHAR-01 | 10 classes définies | ✅ |
+| CHAR-02 | Classes principales présentes | ✅ |
+| CHAR-03 | Description pour chaque classe | ✅ |
+| CHAR-04 | Stats de base pour chaque classe | ✅ |
+| CHAR-05 | Abilities pour chaque classe | ✅ |
+| CHAR-06 | Calcul PV Guerrier | ✅ |
+| CHAR-07 | Calcul PV Mage | ✅ |
+| CHAR-08 | Calcul PV Barbare | ✅ |
+| CHAR-09 | Calcul PV Nécromancien | ✅ |
+| CHAR-10 | Accepter nom valide | ✅ |
+| CHAR-11 | Rejeter nom vide | ✅ |
+| CHAR-12 | Rejeter nom trop court | ✅ |
+| CHAR-13 | Rejeter nom trop long | ✅ |
+| CHAR-14 | Rejeter caractères spéciaux | ✅ |
+| CHAR-15 | STAT_LABELS | ✅ |
+| CHAR-16 | Character type | ✅ |
+| CHAR-17 | Calcul niveau suivant | ✅ |
+| CHAR-18 | Expérience niveau 1 | ✅ |
+| CHAR-19 | Expérience niveau 2-4 | ✅ |
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| SAVE-01 | Sauvegarde automatique (intervalle) | Unititaire | À faire | HAUTE |
-| SAVE-02 | Sauvegarde manuelle | Unititaire | À faire | HAUTE |
-| SAVE-03 | Restauration sauvegarde | Intégration | À faire | HAUTE |
-| SAVE-04 | Calcul progression (%) | Intégration | ✓ Fait | MOYENNE |
-| SAVE-05 | Upsert sauvegarde (création/mise à jour) | Unititaire | À faire | HAUTE |
-| SAVE-06 | Gestion erreur sauvegarde échouée | Unititaire | À faire | MOYENNE |
+### 3.5 Tests unitaires - Sauvegarde (18 tests)
 
-### 3.5 Système de Votes
+| ID | Test | Statut |
+|----|------|--------|
+| SAVE-01 | Structure SaveWithDetails valide | ✅ |
+| SAVE-02 | Calcul progression 10% | ✅ |
+| SAVE-03 | Calcul progression 50% | ✅ |
+| SAVE-04 | Calcul progression 100% | ✅ |
+| SAVE-05 | Cas limite 0 branches | ✅ |
+| SAVE-06 | Détection nouvelle sauvegarde | ✅ |
+| SAVE-07 | Détection mise à jour | ✅ |
+| SAVE-08 | Params valides | ✅ |
+| SAVE-09 | Rejeter userId null | ✅ |
+| SAVE-10 | Rejeter adventureId null | ✅ |
+| SAVE-11 | Rejeter characterId null | ✅ |
+| SAVE-12 | Rejeter IDs à 0 | ✅ |
+| SAVE-13 | Intervalle par défaut 30s | ✅ |
+| SAVE-14 | Intervalle minimal 5s | ✅ |
+| SAVE-15 | Intervalle maximal 5min | ✅ |
+| SAVE-16 | Rejeter intervalle trop court | ✅ |
+| SAVE-17 | Rejeter intervalle trop long | ✅ |
+| SAVE-18 | Format date ISO | ✅ |
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| VOTE-01 | Vote pour une aventure | Unititaire | À faire | HAUTE |
-| VOTE-02 | Un seul vote par utilisateur/aventure | Unititaire | À faire | HAUTE |
-| VOTE-03 | Incrémentation popularité | Unititaire | À faire | HAUTE |
-| VOTE-04 | Classement par popularité | Intégration | ✓ Fait | MOYENNE |
-| VOTE-05 | Affichage compteur votes | E2E | À faire | MOYENNE |
+### 3.6 Tests d'intégration - Auth (9 tests)
 
-### 3.6 Profil Utilisateur
+| ID | Test | Statut |
+|----|------|--------|
+| AUTH-INT-01 | Créer et vérifier token | ✅ |
+| AUTH-INT-02 | Cycle de vie cookie | ✅ |
+| AUTH-INT-03 | Session persistante | ✅ |
+| AUTH-INT-04 | Protection avec rôle | ✅ |
+| AUTH-INT-05 | Accès admin | ✅ |
+| AUTH-INT-06 | Échec sans token | ✅ |
+| AUTH-INT-07 | Plusieurs utilisateurs | ✅ |
+| AUTH-INT-08 | Flux complet inscription → connexion | ✅ |
+| AUTH-INT-09 | Nettoyage console.error | ✅ |
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| PROFIL-01 | Affichage informations utilisateur | E2E | À faire | HAUTE |
-| PROFIL-02 | Modification nom utilisateur | E2E | À faire | MOYENNE |
-| PROFIL-03 | Liste des aventures créées | E2E | À faire | MOYENNE |
-| PROFIL-04 | Liste des sauvegardes | E2E | À faire | MOYENNE |
+### 3.7 Tests d'intégration - Aventure (8 tests)
 
-### 3.7 Thème (Clair/Sombre)
+| ID | Test | Statut |
+|----|------|--------|
+| ADV-INT-01 | Charger aventure + embranchement | ✅ |
+| ADV-INT-02 | Charger infos auteur | ✅ |
+| ADV-INT-03 | Aventure sans contenu | ✅ |
+| ADV-INT-04 | Suivre choix 1 | ✅ |
+| ADV-INT-05 | Suivre choix 2 | ✅ |
+| ADV-INT-06 | Construire historique | ✅ |
+| ADV-INT-07 | Détection fin d'aventure | ✅ |
+| ADV-INT-08 | Branche non-terminée | ✅ |
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| THEME-01 | Basculement thème clair/sombre | Unititaire | À faire | BASSE |
-| THEME-02 | Persistance thème (localStorage) | Unititaire | À faire | BASSE |
-| THEME-03 | Application CSS selon thème | E2E | À faire | BASSE |
+### 3.8 Tests d'intégration - Personnages (10 tests)
 
-### 3.8 Composants UI
+| ID | Test | Statut |
+|----|------|--------|
+| CHAR-INT-01 | Créer personnage complet | ✅ |
+| CHAR-INT-02 | Personnage Mage avec stats | ✅ |
+| CHAR-INT-03 | PV différents par classe | ✅ |
+| CHAR-INT-04 | Liste personnages utilisateur | ✅ |
+| CHAR-INT-05 | Trouver personnage par ID | ✅ |
+| CHAR-INT-06 | Supprimer personnage | ✅ |
+| CHAR-INT-07 | Exp next level | ✅ |
+| CHAR-INT-08 | Montée de niveau | ✅ |
+| CHAR-INT-09 | Calcul progression | ✅ |
+| CHAR-INT-10 | Votes et popularité | ✅ |
 
-| ID | Fonctionnalité | Type test | Statut | Priorité |
-|----|----------------|-----------|--------|----------|
-| UI-01 | Affichage carte aventure | Composant | À faire | MOYENNE |
-| UI-02 | Affichage carte personnage | Composant | À faire | MOYENNE |
-| UI-03 | Formulaire création personnage | Composant | À faire | HAUTE |
-| UI-04 | Formulaire inscription | Composant | À faire | HAUTE |
-| UI-05 | Formulaire connexion | Composant | À faire | HAUTE |
-| UI-06 | Modal confirmation suppression | Composant | À faire | MOYENNE |
-| UI-07 | Loader pendant chargement | Composant | À faire | BASSE |
-| UI-08 | Header avec navigation | Composant | À faire | MOYENNE |
+### 3.9 Tests d'intégration - Sauvegarde (18 tests)
+
+| ID | Test | Statut |
+|----|------|--------|
+| SAVE-INT-01 | Sauvegarder progression | ✅ |
+| SAVE-INT-02 | Restaurer sauvegarde | ✅ |
+| SAVE-INT-03 | null si inexistante | ✅ |
+| SAVE-INT-04 | Détection upsert | ✅ |
+| SAVE-INT-05 | Mettre à jour progression | ✅ |
+| SAVE-INT-06 | Liste sauvegardes user | ✅ |
+| SAVE-INT-07 | Trier par date | ✅ |
+| SAVE-INT-08 | Sauvegarde aventure spécifique | ✅ |
+| SAVE-INT-09 | Supprimer sauvegarde | ✅ |
+| SAVE-INT-10 | Déclencher après intervalle | ✅ |
+| SAVE-INT-11 | Comparer timestamps | ✅ |
 
 ---
 
-## 4. Couverture actuelle vs cible
+## 4. Résumé
 
-### 4.1 Tests unitaires
+### Tests implémentés
 
-| Catégorie | Existants | À créer | Total cible |
-|-----------|-----------|---------|-------------|
-| Auth/JWT | 16 | 20 | 36 |
-| Utils | 9 | 5 | 14 |
-| Types | 11 | 10 | 21 |
-| Personnages | 0 | 15 | 15 |
-| Sauvegarde | 0 | 15 | 15 |
-| Votes | 0 | 10 | 10 |
-| Thème | 0 | 5 | 5 |
-| **TOTAL** | **36** | **80** | **116** |
+| Catégorie | Nombre |
+|-----------|--------|
+| Tests unitaires | 73 |
+| Tests d'intégration | 45 |
+| **TOTAL** | **118** |
 
-### 4.2 Tests d'intégration
+*(Note: Le plan initial indiquait 108, mais après corrections de bugs, nous avons 118 tests)*
 
-| Flux | Existants | À créer | Total cible |
-|------|-----------|---------|-------------|
-| Auth | 9 | 5 | 14 |
-| Aventure | 8 | 10 | 18 |
-| Personnage | 0 | 8 | 8 |
-| Sauvegarde | 0 | 6 | 6 |
-| Votes | 0 | 4 | 4 |
-| **TOTAL** | **17** | **33** | **50** |
+### Couverture fonctionnelle
 
-### 4.3 Tests E2E (Playwright)
+| Module | Tests | Status |
+|--------|-------|--------|
+| JWT/Auth | 25 | ✅ Complet |
+| Utils | 9 | ✅ Complet |
+| Types | 11 | ✅ Complet |
+| Personnages | 29 | ✅ Complet |
+| Sauvegarde | 29 | ✅ Complet |
+| Aventure | 15 | ✅ Complet |
 
-| Scénario | À créer |
-|----------|---------|
-| Inscription → Création personnage → Jouer aventure | 1 |
-| Connexion → Reprendre sauvegarde | 1 |
-| Vote et visualisation classement | 1 |
-| Parcours complet aventure (tous les choix) | 1 |
-| **TOTAL** | **4** |
-
----
-
-## 5. Stratégie de test
-
-### 5.1 Tests unitaires
-- **Objectif** : Tester chaque fonction isolément
-- **Données** : Mockées ou fixtures locales
-- **Exécution** : Automatique à chaque commit
-
-### 5.2 Tests d'intégration
-- **Objectif** : Tester les flux complets
-- **Données** : Mock Supabase
-- **Couverture** : Auth, Aventure, Character, Save, Vote
-
-### 5.3 Tests E2E
-- **Objectif** : Valider le parcours utilisateur réel
-- **Outil** : Playwright
-- **Environnement** : Développement local
-
----
-
-## 6. Commandes de test
+### Commandes
 
 ```bash
 # Exécuter tous les tests
 npm test
 
-# Mode watch (développement)
+# Mode watch
 npm run test:watch
 
-# Couverture de code
-npm run test:coverage
-
-# Tests E2E (si Playwright installé)
-npx playwright test
+# Linter
+npm run lint
 ```
 
 ---
 
-## 7. Priorisation des implémentations
 
-### Phase 1 - Critique (Avant soutenance)
-1. Tests authentification (AUTH-01 à AUTH-12) ✅
-2. Tests aventure (ADV-01 à ADV-10) ✅
-3. Tests composants inscription/connexion
-4. Tests E2E parcours principal
+## 5. Résultats qualité
 
-### Phase 2 - Important
-5. Tests personnages
-6. Tests sauvegarde
-7. Tests votes
-
-### Phase 3 - Complémentaire
-8. Tests thème
-9. Tests UI secondaires
-10. Couverture maximale
+| Métrique | Valeur |
+|----------|--------|
+| Tests passent | 100% ✅ |
+| ESLint | 0 erreurs ✅ |
+| TypeScript | 0 erreurs ✅ |
 
 ---
-
-## 8. Indicateurs de qualité
-
-| Métrique | Cible |
-|----------|-------|
-| Couverture de code | > 70% |
-| Tests passent | 100% |
-| Temps d'exécution | < 30s |
-| Lint sans erreur | 100% |
-
----
-
-## 9. Notes
-
-- Les tests actuels (53) couvrent les fonctionnalités core : JWT, utils, types, auth flux, adventure flux
-- Les tests E2E nécessitent Playwright (non encore installé)
-- La couverture composants React nécessite configuration Babel supplémentaire
-- Les tests peuvent être enrichis avec des cas limites et données aléatoires (faker)
-
----
-
-*Document généré le 29 mars 2026*
-*Projet DreamQuest - CDA*

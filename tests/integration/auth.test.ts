@@ -1,8 +1,3 @@
-/**
- * Tests d'intégration - Authentification
- * Fichier: tests/integration/auth.test.ts
- */
-
 import { signToken, verifyToken, createAuthCookie, clearAuthCookie } from '@/lib/jwt'
 
 describe('Intégration - Authentification', () => {

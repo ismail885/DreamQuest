@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import util from 'util'
 
 // Suppress console.error for expected error scenarios in tests
 const originalConsoleError = console.error
@@ -19,7 +20,6 @@ afterAll(() => {
 })
 
 // Polyfill TextEncoder/TextDecoder for jsdom
-const util = require('util')
 Object.defineProperty(globalThis, 'TextEncoder', {
   value: util.TextEncoder,
 })

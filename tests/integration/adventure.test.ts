@@ -1,8 +1,3 @@
-/**
- * Tests d'intégration - Flux d'aventure
- * Fichier: tests/integration/adventure.test.ts
- */
-
 import type { Adventure, Branch, AdventureWithAuthor } from '@/types/adventure'
 
 describe('Intégration - Flux d\'aventure', () => {

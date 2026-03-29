@@ -1,8 +1,3 @@
-/**
- * Tests unitaires pour les types et validation
- * Fichier: tests/lib/types.test.ts
- */
-
 import type { Adventure, Branch, AdventureWithAuthor } from '@/types/adventure'
 
 describe('Types - Adventure', () => {

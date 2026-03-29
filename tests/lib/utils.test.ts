@@ -1,8 +1,3 @@
-/**
- * Tests unitaires pour les utilitaires
- * Fichier: __tests__/lib/utils.test.ts
- */
-
 import { classNames } from '@/lib/utils'
 
 describe('Utils - classNames', () => {
@@ -13,7 +8,7 @@ describe('Utils - classNames', () => {
     })
 
     it('devrait filtrer les classes falsy', () => {
-      const result = classNames('foo', '', 'bar', null, 'baz', undefined)
+      const result = classNames('foo', '', 'bar', null as unknown as string, 'baz', undefined as unknown as string)
       expect(result).toBe('foo bar baz')
     })
 
@@ -21,7 +16,8 @@ describe('Utils - classNames', () => {
       const isActive = true
       const isDisabled = false
       
-      const result = classNames('base', isActive && 'active', isDisabled && 'disabled')
+      // Using unknown as intermediate type for boolean to string conversion
+      const result = classNames('base', (isActive && 'active') as unknown as string, (isDisabled && 'disabled') as unknown as string)
       expect(result).toBe('base active')
     })
 
