@@ -218,5 +218,4 @@ Projet développé dans un cadre éducatif (CDA).
 ## Support
 
 Pour toute question :
-- Ouvrir une issue sur GitHub
 - Consulter la documentation dans `documents/`
