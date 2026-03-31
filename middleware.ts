@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/adventure'];
-const authRoutes = ['/login', '/register'];
+const authRoutes = ['/auth/login', '/auth/register'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
 
   if (isProtectedRoute && !isAuthenticated) {
-    const loginUrl = new URL('/login', request.url);
+    const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
@@ -30,7 +30,7 @@ export const config = {
     '/profil/:path*',
     '/create-character/:path*',
     '/adventure/:path*',
-    '/login',
-    '/register',
+    '/auth/login',
+    '/auth/register',
   ],
 };

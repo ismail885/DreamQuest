@@ -13,13 +13,7 @@ export default function Footer() {
               href="/"
               className="footer-logo hover:opacity-80 transition-opacity"
             >
-              <Image
-                src="/Logo_DreamQuest.png"
-                alt="DreamQuest Logo"
-                width={36}
-                height={36}
-                className="object-contain"
-              />
+              <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={36} height={36} className="object-contain" />
               <span className="logo-text">DreamQuest</span>
             </Link>
             <p className="footer-description">

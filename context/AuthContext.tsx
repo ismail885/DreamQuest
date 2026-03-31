@@ -15,6 +15,8 @@ interface AuthContextType {
   loading: boolean;
   login: (emailOrUsername: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (username: string, email: string, password: string) => Promise<{ success: boolean; message?: string; error?: string }>;
+  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  loginWithApple: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;
@@ -213,6 +215,48 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
     });
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        console.error('Erreur Google OAuth:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Erreur login Google:', error);
+      return { success: false, error: 'Erreur de connexion avec Google' };
+    }
+  };
+
+  const loginWithApple = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        console.error('Erreur Apple OAuth:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Erreur login Apple:', error);
+      return { success: false, error: 'Erreur de connexion avec Apple' };
+    }
+  };
+
   const logout = async () => {
     try {
       await supabase.auth.signOut();
@@ -225,7 +269,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, checkAuth, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, loginWithApple, logout, checkAuth, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -18,13 +18,7 @@ export default function Header() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <Image
-                src="/Logo_DreamQuest.png"
-                alt="DreamQuest Logo"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
+              <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={40} height={40} className="object-contain" />
               <span className="text-xl font-bold text-cyan-400">DreamQuest</span>
             </Link>
 
@@ -67,13 +61,7 @@ export default function Header() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Image
-              src="/Logo_DreamQuest.png"
-              alt="DreamQuest Logo"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
+            <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={40} height={40} className="object-contain" />
             <span className="text-xl font-bold text-cyan-400">DreamQuest</span>
           </Link>
 
@@ -93,12 +81,12 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/login">
+            <Link href="/auth/login">
               <button className="px-5 py-2.5 text-white hover:text-cyan-400 font-medium transition-colors">
                 Connexion
               </button>
             </Link>
-            <Link href="/register">
+            <Link href="/auth/register">
               <button className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors">
                 S&apos;inscrire
               </button>

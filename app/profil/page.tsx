@@ -43,7 +43,7 @@ export default function ProfilPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      router.push("/login");
+      router.push("/auth/login");
       return;
     }
     loadUserData(user.id).then(() => setLoading(false));

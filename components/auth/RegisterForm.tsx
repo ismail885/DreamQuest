@@ -51,7 +51,7 @@ export default function RegisterForm() {
 
       if (result.success) {
         setSuccess(result.message || "Inscription reussie !");
-        router.push("/login");
+        router.push("/auth/login");
       } else {
         setError(result.error || "Erreur lors de l'inscription");
         setIsLoading(false);
@@ -75,13 +75,7 @@ export default function RegisterForm() {
           
           <div className="text-center space-y-3 mb-8">
             <div className="flex justify-center mb-4">
-              <Image
-                src="/Logo_DreamQuest.png"
-                alt="DreamQuest Logo"
-                width={60}
-                height={60}
-                className="object-contain"
-              />
+              <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={60} height={60} className="object-contain" />
             </div>
             <h1 className="text-2xl font-bold text-cyan-400">DreamQuest</h1>
             <p className="text-gray-400 text-sm">Creer votre compte jeune aventurier</p>
@@ -210,7 +204,7 @@ export default function RegisterForm() {
 
           <p className="mt-6 text-center text-gray-400 text-sm">
             Deja un compte ?{" "}
-            <Link href="/login" className="text-cyan-400 hover:text-cyan-300 font-medium">
+            <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300 font-medium">
               Se connecter
             </Link>
           </p>
