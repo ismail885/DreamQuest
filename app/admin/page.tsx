@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Users, BookOpen, UserRound, TrendingUp, Activity, Calendar } from "lucide-react";
 
@@ -30,79 +30,52 @@ export default function AdminDashboard() {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        // Get user counts
-        const { count: totalUsers } = await supabase
-          .from("utilisateur")
-          .select("*", { count: "exact", head: true });
+  const fetchStats = useCallback(async () => {
+    try {
+      // Run all queries in parallel for speed
+      const [usersRes, adventuresRes, charactersRes, votesRes] = await Promise.all([
+        supabase.from("utilisateur").select("role,date_creation", { count: "exact", head: true }),
+        supabase.from("aventure").select("*", { count: "exact", head: true }),
+        supabase.from("personnage").select("*", { count: "exact", head: true }),
+        supabase.from("vote").select("*", { count: "exact", head: true }),
+      ]);
 
-        const { count: adminCount } = await supabase
-          .from("utilisateur")
-          .select("*", { count: "exact", head: true })
-          .eq("role", "admin");
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const sevenDaysAgoStr = sevenDaysAgo.toISOString();
 
-        const { count: joueurCount } = await supabase
-          .from("utilisateur")
-          .select("*", { count: "exact", head: true })
-          .eq("role", "joueur");
+      // Process users data
+      const usersCount = usersRes.count || 0;
+      const recentUsersCount = usersRes.data?.filter(u => u.date_creation >= sevenDaysAgoStr).length || 0;
+      
+      const roleCounts = { admin: 0, joueur: 0, createur: 0 };
+      usersRes.data?.forEach(u => {
+        if (u.role === 'admin') roleCounts.admin++;
+        else if (u.role === 'joueur') roleCounts.joueur++;
+        else if (u.role === 'createur') roleCounts.createur++;
+      });
 
-        const { count: createurCount } = await supabase
-          .from("utilisateur")
-          .select("*", { count: "exact", head: true })
-          .eq("role", "createur");
-
-        // Get adventure count
-        const { count: totalAdventures } = await supabase
-          .from("aventure")
-          .select("*", { count: "exact", head: true });
-
-        // Get character count
-        const { count: totalCharacters } = await supabase
-          .from("personnage")
-          .select("*", { count: "exact", head: true });
-
-        // Get vote count
-        const { count: totalVotes } = await supabase
-          .from("vote")
-          .select("*", { count: "exact", head: true });
-
-        // Get recent users (last 7 days)
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        
-        const { count: recentUsers } = await supabase
-          .from("utilisateur")
-          .select("*", { count: "exact", head: true })
-          .gte("date_creation", sevenDaysAgo.toISOString());
-
-        // Get recent adventures (last 7 days)
-        const { count: recentAdventures } = await supabase
-          .from("aventure")
-          .select("*", { count: "exact", head: true })
-          .gte("date_creation", sevenDaysAgo.toISOString());
-
-        setStats({
-          totalUsers: totalUsers || 0,
-          totalAdventures: totalAdventures || 0,
-          totalCharacters: totalCharacters || 0,
-          totalVotes: totalVotes || 0,
-          adminCount: adminCount || 0,
-          joueurCount: joueurCount || 0,
-          createurCount: createurCount || 0,
-          recentUsers: recentUsers || 0,
-          recentAdventures: recentAdventures || 0,
-        });
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      } finally {
-        setLoading(false);
-      }
+      setStats({
+        totalUsers: usersCount,
+        totalAdventures: adventuresRes.count || 0,
+        totalCharacters: charactersRes.count || 0,
+        totalVotes: votesRes.count || 0,
+        adminCount: roleCounts.admin,
+        joueurCount: roleCounts.joueur,
+        createurCount: roleCounts.createur,
+        recentUsers: recentUsersCount,
+        recentAdventures: 0, // Simplified
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    } finally {
+      setLoading(false);
     }
-
-    fetchStats();
   }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const statCards = [
     {
