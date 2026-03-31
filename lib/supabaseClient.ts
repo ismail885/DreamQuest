@@ -20,6 +20,7 @@ export interface Utilisateur {
   mot_de_passe: string
   date_creation: string
   role: UserRole
+  auth_id?: string | null
 }
 
 export interface Personnage {
