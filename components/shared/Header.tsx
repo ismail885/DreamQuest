@@ -26,6 +26,11 @@ export default function Header() {
               <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
                 Aventures
               </Link>
+              {user?.role === 'admin' && (
+                <Link href="/admin" className="text-red-400 hover:text-red-300 transition-colors font-medium font-bold">
+                  ADMIN
+                </Link>
+              )}
               <Link href="/classement" className="text-gray-400 hover:text-white transition-colors">
                 Classement
               </Link>
