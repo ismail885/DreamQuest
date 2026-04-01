@@ -49,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
           };
           localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
           document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+          document.cookie = `auth_role=${loggedUser.role}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
           setUser(loggedUser);
         } else {
           if (dbError) console.warn('checkAuth DB error:', dbError.message);
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       } else {
         localStorage.removeItem(USER_STORAGE_KEY);
         document.cookie = 'auth_user=; path=/; max-age=0; SameSite=Strict';
+        document.cookie = 'auth_role=; path=/; max-age=0; SameSite=Strict';
         setUser(null);
       }
     } catch (error) {
@@ -97,11 +99,13 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
           };
           localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
           document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+          document.cookie = `auth_role=${loggedUser.role}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
           setUser(loggedUser);
         }
       } else if (event === 'SIGNED_OUT') {
         localStorage.removeItem(USER_STORAGE_KEY);
         document.cookie = 'auth_user=; path=/; max-age=0; SameSite=Strict';
+        document.cookie = 'auth_role=; path=/; max-age=0; SameSite=Strict';
         setUser(null);
       }
     });
@@ -148,6 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
 
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
       document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+      document.cookie = `auth_role=${loggedUser.role}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
       setUser(loggedUser);
 
       return { success: true };
@@ -198,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       }
 
       document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+      document.cookie = `auth_role=joueur; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
 
       return { success: true, message: 'Compte créé avec succès' };
     } catch (error) {
@@ -262,6 +268,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       await supabase.auth.signOut();
       localStorage.removeItem(USER_STORAGE_KEY);
       document.cookie = 'auth_user=; path=/; max-age=0; SameSite=Strict';
+      document.cookie = 'auth_role=; path=/; max-age=0; SameSite=Strict';
       setUser(null);
     } catch (error) {
       console.error('Erreur logout:', error);

@@ -1,6 +1,10 @@
 import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_key_change_in_production';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env.local file.');
+}
 
 export interface UserJWTPayload extends JWTPayload {
   userId: string;
