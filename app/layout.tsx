@@ -1,6 +1,7 @@
-﻿import "../styles/globals.css";
+﻿import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { Toaster } from "react-hot-toast";
 
 
 export default function RootLayout({
@@ -26,6 +27,28 @@ export default function RootLayout({
             </div>
             {children}
           </div>
+          <Toaster 
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#1a1d2e',
+                color: '#fff',
+                border: '1px solid #374151',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
           </ThemeProvider>
         </AuthProvider>
       </body>

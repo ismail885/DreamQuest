@@ -8,10 +8,10 @@ const adminRoutes = ['/admin'];
 // Public auth routes
 const authRoutes = ['/auth/login', '/auth/register'];
 
-function getRoleFromToken(token: string): string | null {
+async function getRoleFromToken(token: string): Promise<string | null> {
   try {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret);
     return payload.role as string | null;
   } catch {
     return null;
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!token;
   
   // Extract role from JWT if token exists
-  const role = token ? getRoleFromToken(token) : null;
+  const role = token ? await getRoleFromToken(token) : null;
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
