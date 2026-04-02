@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
+import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
 import { ExtendedUserProfile, UserStats, UserSave, UserCreation } from "@/types";
 import { useTheme } from "@/hooks/useTheme";
@@ -310,7 +311,7 @@ export default function ProfilPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      <main className="flex-1 container mx-auto px-6 py-8">
+      <main className="flex-1 container mx-auto px-6 py-8 pb-24 md:pb-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
             
@@ -766,6 +767,7 @@ export default function ProfilPage() {
           </div>
         </div>
       )}
+      <BottomNav />
     </div>
   );
 }

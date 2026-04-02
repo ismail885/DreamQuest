@@ -6,6 +6,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
+import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
 import CharacterList from "@/components/character/CharacterList";
 
@@ -74,7 +75,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-6 py-8 pb-24 md:pb-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">
@@ -232,6 +233,7 @@ export default function DashboardPage() {
         </div>
       </main>
 
+      <BottomNav />
       <Footer />
     </div>
   );

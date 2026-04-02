@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
+import BottomNav from "@/components/shared/BottomNav";
 import AdventureCard from "@/components/adventure/AdventureCard";
 import { supabase } from "@/lib/supabaseClient";
 import type { Adventure } from "@/types/adventure";
@@ -51,7 +52,7 @@ function AdventurePageContent() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-1 relative">
+      <main className="flex-1 relative pb-24 md:pb-0">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
 
@@ -154,6 +155,7 @@ function AdventurePageContent() {
         </div>
       </main>
 
+      <BottomNav />
       <Footer />
     </div>
   );

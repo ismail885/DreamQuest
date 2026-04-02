@@ -2,6 +2,7 @@
 
 import { useAuthContext } from '@/context/AuthContext';
 import CreateCharacterForm from '@/components/character/CreateCharacterForm';
+import BottomNav from '@/components/shared/BottomNav';
 import { useRouter } from 'next/navigation';
 import type { Character } from '@/types';
 
@@ -32,11 +33,12 @@ export default function CreateCharacterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 pb-24 md:pb-0">
       <CreateCharacterForm
         userId={user.id}
         onCharacterCreated={handleCharacterCreated}
       />
+      <BottomNav />
     </div>
   );
 }
