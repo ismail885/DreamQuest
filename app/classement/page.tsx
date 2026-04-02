@@ -1,0 +1,172 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
+import Header from "@/components/shared/Header";
+import BottomNav from "@/components/shared/BottomNav";
+import { useAuthContext } from "@/context/AuthContext";
+
+interface RankingAdventure {
+  id: number;
+  titre: string;
+  description: string | null;
+  popularite: number;
+  auteur_nom?: string;
+}
+
+export default function ClassementPage() {
+  const { user } = useAuthContext();
+  const [adventures, setAdventures] = useState<RankingAdventure[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [timeFilter, setTimeFilter] = useState<"all" | "week" | "month">("all");
+
+  useEffect(() => {
+    const fetchRanking = async () => {
+      setLoading(true);
+      
+      const query = supabase
+        .from("aventure")
+        .select(`
+          id,
+          titre,
+          description,
+          popularite,
+          auteur:utilisateur(nom_utilisateur)
+        `)
+        .order("popularite", { ascending: false })
+        .limit(50);
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Erreur:", error);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const formatted = (data ?? []).map((a: any) => ({
+          id: a.id,
+          titre: a.titre,
+          description: a.description,
+          popularite: a.popularite,
+          auteur_nom: a.auteur?.[0]?.nom_utilisateur || a.auteur?.nom_utilisateur || "Auteur inconnu",
+        }));
+        setAdventures(formatted);
+      }
+      setLoading(false);
+    };
+
+    fetchRanking();
+  }, [timeFilter]);
+
+  const getMedalColor = (rank: number) => {
+    switch (rank) {
+      case 1: return "text-yellow-400";
+      case 2: return "text-gray-300";
+      case 3: return "text-amber-600";
+      default: return "text-gray-500";
+    }
+  };
+
+  const getMedalEmoji = (rank: number) => {
+    switch (rank) {
+      case 1: return "🥇";
+      case 2: return "🥈";
+      case 3: return "🥉";
+      default: return `#${rank}`;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
+      <Header />
+
+      <main className="flex-1 container mx-auto px-6 py-8 pb-24 md:pb-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              🏆 Classement
+            </h1>
+            <p className="text-gray-400 text-lg">
+              Découvrez les aventures les plus populaires
+            </p>
+          </div>
+
+          {/* Filters */}
+          <div className="flex justify-center gap-2 mb-8">
+            {(["all", "week", "month"] as const).map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setTimeFilter(filter)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  timeFilter === filter
+                    ? "bg-cyan-500 text-white"
+                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                }`}
+              >
+                {filter === "all" ? "Tout temps" : filter === "week" ? "Cette semaine" : "Ce mois"}
+              </button>
+            ))}
+          </div>
+
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto"></div>
+              <p className="text-gray-400 mt-4">Chargement du classement...</p>
+            </div>
+          ) : adventures.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">📚</div>
+              <h2 className="text-xl font-bold text-white mb-2">Aucun classement disponible</h2>
+              <p className="text-gray-400">Soyez le premier à créer une aventure !</p>
+              {user && (
+                <Link
+                  href="/create-character"
+                  className="inline-block mt-6 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors"
+                >
+                  Créer une aventure
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {adventures.map((adventure, index) => {
+                const rank = index + 1;
+                return (
+                  <Link
+                    key={adventure.id}
+                    href={`/adventure/${adventure.id}`}
+                    className="flex items-center gap-4 p-4 bg-[#0d1526] border border-gray-700/50 rounded-xl hover:border-cyan-500/50 transition-all"
+                  >
+                    <div className={`text-3xl font-bold w-12 ${getMedalColor(rank)}`}>
+                      {getMedalEmoji(rank)}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-semibold text-lg truncate">
+                        {adventure.titre}
+                      </h3>
+                      {adventure.auteur_nom && (
+                        <p className="text-gray-400 text-sm">
+                          par {adventure.auteur_nom}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-cyan-400">
+                        {adventure.popularite}
+                      </div>
+                      <div className="text-gray-500 text-xs">votes</div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </main>
+
+      <BottomNav />
+    </div>
+  );
+}

@@ -101,7 +101,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 5
     },
     abilities: ['Invisibilité', 'Attaque Sournoise', 'Évasion'],
-    image: '/illustrations_personnage/paladin.jpeg'
+    image: '/illustrations_personnage/assassin.jpeg'
   },
   Prêtre: {
     name: 'Prêtre',
@@ -137,7 +137,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 4
     },
     abilities: ['Tir Perçant', 'Pluie de Flèches', 'Vision d\'Aigle'],
-    image: '/illustrations_personnage/paladin.jpeg'
+    image: '/illustrations_personnage/archer.jpeg'
   },
   Druide: {
     name: 'Druide',
@@ -149,7 +149,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 6
     },
     abilities: ['Forme Animale', 'Épines Venimeuses', 'Régénération'],
-    image: '/illustrations_personnage/prêtre.jpeg'
+    image: '/illustrations_personnage/druide.jpeg'
   },
   Nécromancien: {
     name: 'Nécromancien',
@@ -161,7 +161,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 3
     },
     abilities: ['Drain de Vie', 'Armée de Morts', 'Malédiction'],
-    image: '/illustrations_personnage/paladin.jpeg'
+    image: '/illustrations_personnage/necromancien.jpeg'
   },
   Voleur: {
     name: 'Voleur',
@@ -173,7 +173,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 4
     },
     abilities: ['Crochetage', 'Pickpocket', 'Évasion Rapide'],
-    image: '/illustrations_personnage/prêtre.jpeg'
+    image: '/illustrations_personnage/voleur.jpeg'
   },
   Barbare: {
     name: 'Barbare',
@@ -185,7 +185,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 8
     },
     abilities: ['Rage Bestiale', 'Coup Dévastateur', 'Berserker'],
-    image: '/illustrations_personnage/paladin.jpeg'
+    image: '/illustrations_personnage/barbare.jpeg'
   }
 };
 
