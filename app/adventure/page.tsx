@@ -6,6 +6,7 @@ import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import AdventureCard from "@/components/adventure/AdventureCard";
+import { SkeletonAdventureList } from "@/components/shared/Skeleton";
 import { supabase } from "@/lib/supabaseClient";
 import type { Adventure } from "@/types/adventure";
 
@@ -107,9 +108,7 @@ function AdventurePageContent() {
           </div>
 
           {loading ? (
-            <div className="text-center py-20">
-              <p className="text-gray-400 text-lg">Chargement des aventures...</p>
-            </div>
+            <SkeletonAdventureList count={6} />
           ) : error ? (
             <div className="text-center py-20">
               <p className="text-red-400 text-lg">{error}</p>

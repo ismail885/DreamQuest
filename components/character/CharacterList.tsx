@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Character, CHARACTER_CLASSES } from '@/types';
 import CharacterCard from './CharacterCard';
 import ConfirmDeleteModal from '@/components/shared/ConfirmDeleteModal';
+import Skeleton, { SkeletonCharacterList } from '@/components/shared/Skeleton';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -88,11 +89,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
-      </div>
-    );
+    return <SkeletonCharacterList count={3} />;
   }
 
   if (error) {
