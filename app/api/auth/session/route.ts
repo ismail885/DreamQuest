@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signToken, verifyToken, UserJWTPayload, createAuthCookie, clearAuthCookie } from '@/lib/jwt';
+import { signToken, UserJWTPayload, createAuthCookie, clearAuthCookie } from '@/lib/jwt';
 
 type SessionPayload = {
   userId: string;
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         'Set-Cookie': cookie,
       },
     });
-  } catch (e) {
+  } catch {
     return new NextResponse(JSON.stringify({ error: 'Server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 }
 
 // DELETE: Clear the httpOnly auth cookie
-export async function DELETE(_request: NextRequest) {
+export async function DELETE() {
   const cookie = clearAuthCookie();
   return new NextResponse(JSON.stringify({ ok: true }), {
     status: 200,

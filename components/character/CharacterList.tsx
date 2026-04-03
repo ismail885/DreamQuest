@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Character, CHARACTER_CLASSES } from '@/types';
 import CharacterCard from './CharacterCard';
 import ConfirmDeleteModal from '@/components/shared/ConfirmDeleteModal';
-import Skeleton, { SkeletonCharacterList } from '@/components/shared/Skeleton';
+import { SkeletonCharacterList } from '@/components/shared/Skeleton';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
