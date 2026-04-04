@@ -282,7 +282,7 @@ export default function AdminCharactersPage() {
                 </div>
                 <div>
                   <label className="text-gray-400 text-xs">Agilité</label>
-                  <p className="text-white font-bold">{viewCharacter.stats?.agilite || 0}</p>
+                  <p className="text-white font-bold">{viewCharacter.stats?.agility || 0}</p>
                 </div>
                 <div>
                   <label className="text-gray-400 text-xs">Intelligence</label>

@@ -56,11 +56,11 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
             <div className="flex-1 bg-[#1a1f2e] rounded-full h-2 overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-cyan-400 to-cyan-500 transition-all duration-500"
-                style={{ width: `${(classInfo.baseStats.agilite / 10) * 100}%` }}
+                style={{ width: `${(classInfo.baseStats.agility / 10) * 100}%` }}
               />
             </div>
             <span className="text-cyan-400 font-medium text-sm w-12 text-right">
-              {classInfo.baseStats.agilite}/10
+              {classInfo.baseStats.agility}/10
             </span>
           </div>
 

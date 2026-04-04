@@ -1,3 +1,5 @@
+import { Zap, Brain, Heart, Sword, LucideIcon } from 'lucide-react';
+
 export type CharacterClass = 'Guerrier' | 'Mage' | 'Assassin' | 'Prêtre' | 'Paladin' | 'Archer' | 'Druide' | 'Nécromancien' | 'Voleur' | 'Barbare';
 
 export type CharacterAbility = 
@@ -34,7 +36,7 @@ export type CharacterAbility =
 
 export interface CharacterStats {
   force: number;
-  agilite: number;
+  agility: number;
   intelligence: number;
   endurance: number;
 }
@@ -72,7 +74,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Maître du combat rapproché, force et endurance exceptionnelles',
     baseStats: {
       force: 8,
-      agilite: 5,
+      agility: 5,
       intelligence: 3,
       endurance: 7
     },
@@ -84,7 +86,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Manipulateur de magie élémentaire, intelligence supérieure',
     baseStats: {
       force: 3,
-      agilite: 4,
+      agility: 4,
       intelligence: 9,
       endurance: 4
     },
@@ -96,7 +98,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Expert en furtivité et attaques rapides',
     baseStats: {
       force: 5,
-      agilite: 9,
+      agility: 9,
       intelligence: 4,
       endurance: 5
     },
@@ -108,7 +110,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Guérisseur et protecteur, équilibre entre force et magie',
     baseStats: {
       force: 4,
-      agilite: 4,
+      agility: 4,
       intelligence: 7,
       endurance: 6
     },
@@ -120,7 +122,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Chevalier sacré, défenseur de la justice et de la lumière',
     baseStats: {
       force: 7,
-      agilite: 4,
+      agility: 4,
       intelligence: 5,
       endurance: 8
     },
@@ -132,7 +134,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Tireur d\'élite, précision mortelle à distance',
     baseStats: {
       force: 4,
-      agilite: 9,
+      agility: 9,
       intelligence: 5,
       endurance: 4
     },
@@ -144,7 +146,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Gardien de la nature, maître des métamorphoses',
     baseStats: {
       force: 5,
-      agilite: 6,
+      agility: 6,
       intelligence: 7,
       endurance: 6
     },
@@ -156,7 +158,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Maître des ténèbres et des âmes perdues',
     baseStats: {
       force: 2,
-      agilite: 4,
+      agility: 4,
       intelligence: 9,
       endurance: 3
     },
@@ -168,7 +170,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Spécialiste du vol et de la discrétion',
     baseStats: {
       force: 4,
-      agilite: 10,
+      agility: 10,
       intelligence: 5,
       endurance: 4
     },
@@ -180,7 +182,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
     description: 'Guerrier sauvage, force brute et rage incontrôlable',
     baseStats: {
       force: 10,
-      agilite: 6,
+      agility: 6,
       intelligence: 2,
       endurance: 8
     },
@@ -189,16 +191,21 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
   }
 };
 
+// French labels for stats
 export const STAT_LABELS: Record<keyof CharacterStats, string> = {
   force: 'Force',
-  agilite: 'Agilité',
+  agility: 'Agilité',
   intelligence: 'Intelligence',
   endurance: 'Endurance'
 };
 
-export const STAT_ICONS: Record<keyof CharacterStats, string> = {
-  force: '💪',
-  agilite: '⚡',
-  intelligence: '🧠',
-  endurance: '❤️'
+// French key names
+export type StatKey = keyof CharacterStats;
+
+export const STAT_ICONS: Record<StatKey, LucideIcon> = {
+  force: Sword,
+  agility: Zap,
+  intelligence: Brain,
+  endurance: Heart
 };
+

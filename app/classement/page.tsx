@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Trophy, Medal, BookOpen } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
@@ -67,12 +68,12 @@ export default function ClassementPage() {
     }
   };
 
-  const getMedalEmoji = (rank: number) => {
+  const getMedalIcon = (rank: number) => {
     switch (rank) {
-      case 1: return "🥇";
-      case 2: return "🥈";
-      case 3: return "🥉";
-      default: return `#${rank}`;
+      case 1: return <Medal className="w-8 h-8 text-yellow-400" />;
+      case 2: return <Medal className="w-8 h-8 text-gray-300" />;
+      case 3: return <Medal className="w-8 h-8 text-amber-600" />;
+      default: return <span className="text-gray-500 font-bold">#{rank}</span>;
     }
   };
 
@@ -83,8 +84,9 @@ export default function ClassementPage() {
       <main className="flex-1 container mx-auto px-6 py-8 pb-24 md:pb-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              🏆 Classement
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+              <Trophy className="w-10 h-10 text-yellow-400" />
+              Classement
             </h1>
             <p className="text-gray-400 text-lg">
               Découvrez les aventures les plus populaires
@@ -115,7 +117,7 @@ export default function ClassementPage() {
             </div>
           ) : adventures.length === 0 ? (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">📚</div>
+              <BookOpen className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <h2 className="text-xl font-bold text-white mb-2">Aucun classement disponible</h2>
               <p className="text-gray-400">Soyez le premier à créer une aventure !</p>
               {user && (
@@ -137,8 +139,8 @@ export default function ClassementPage() {
                     href={`/adventure/${adventure.id}`}
                     className="flex items-center gap-4 p-4 bg-[#0d1526] border border-gray-700/50 rounded-xl hover:border-cyan-500/50 transition-all"
                   >
-                    <div className={`text-3xl font-bold w-12 ${getMedalColor(rank)}`}>
-                      {getMedalEmoji(rank)}
+                    <div className={`font-bold w-12 ${getMedalColor(rank)}`}>
+                      {getMedalIcon(rank)}
                     </div>
                     
                     <div className="flex-1 min-w-0">

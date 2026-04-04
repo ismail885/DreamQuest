@@ -17,9 +17,15 @@ export default function LoginForm() {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     setError("");
-    const result = await loginWithGoogle();
-    if (!result.success) {
-      setError(result.error || "Erreur avec Google");
+    try {
+      const result = await loginWithGoogle();
+      if (!result.success) {
+        setError(result.error || "Erreur avec Google");
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      setError("Erreur inattendue");
+    } finally {
       setIsLoading(false);
     }
   };

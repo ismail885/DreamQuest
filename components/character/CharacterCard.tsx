@@ -1,5 +1,4 @@
-﻿'use client';
-
+﻿import React from 'react';
 import { Character, CHARACTER_CLASSES, STAT_ICONS } from '@/types';
 import Image from 'next/image';
 
@@ -57,7 +56,7 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
         <div className="grid grid-cols-2 gap-2 mb-4">
           {Object.entries(character.stats ?? {}).map(([stat, value]) => (
             <div key={stat} className="flex items-center gap-2 text-sm">
-              <span className="text-xl">{STAT_ICONS[stat as keyof typeof STAT_ICONS]}</span>
+              <span className="text-xl">{React.createElement(STAT_ICONS[stat as keyof typeof STAT_ICONS], { className: "w-5 h-5" })}</span>
               <span className="text-gray-400 capitalize">{stat}:</span>
               <span className="text-white font-bold">{value}</span>
             </div>

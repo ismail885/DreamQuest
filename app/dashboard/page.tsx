@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
+import { Star } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
@@ -168,7 +169,7 @@ export default function DashboardPage() {
                   Affrontez le dragon légendaire...
                 </p>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-cyan-400">⭐ 4.8</span>
+                  <span className="text-cyan-400 flex items-center gap-1"><Star className="w-4 h-4 fill-current" /> 4.8</span>
                   <span className="text-gray-500">1.2k joueurs</span>
                 </div>
               </div>
