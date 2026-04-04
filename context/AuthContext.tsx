@@ -231,13 +231,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       });
 
       if (error) {
-        console.error('Erreur Google OAuth:', error);
         return { success: false, error: error.message };
       }
 
       return { success: true };
     } catch (error) {
-      console.error('Erreur login Google:', error);
       return { success: false, error: 'Erreur de connexion avec Google' };
     }
   };

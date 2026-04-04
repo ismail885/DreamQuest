@@ -112,11 +112,9 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Vérifier la session après le redirect
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError) {
-          console.error("Erreur de session:", sessionError);
           setError("Erreur lors de la connexion");
           return;
         }
@@ -126,12 +124,22 @@ export default function AuthCallback() {
           document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
           router.replace("/dashboard");
         } else {
-          // Pas de session, erreur
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          
+          if (accessToken) {
+            const { data: newSession } = await supabase.auth.refreshSession();
+            if (newSession?.user) {
+              await ensureUtilisateurAfterOAuth(newSession.user);
+              router.replace("/dashboard");
+              return;
+            }
+          }
+          
           setError("Aucun utilisateur trouvé");
         }
-      } catch (err) {
-        console.error("Erreur callback OAuth:", err);
-        setError("Erreur lors de la creation du profil utilisateur");
+      } catch {
+        setError("Erreur lors de la création du profil utilisateur");
       }
     };
 

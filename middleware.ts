@@ -6,27 +6,17 @@ const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/adventu
 // Admin routes are protected separately with role checks
 const adminRoutes = ['/admin'];
 // Public auth routes
-const authRoutes = ['/auth/login', '/auth/register'];
-
-async function getRoleFromToken(token: string): Promise<string | null> {
-  try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-    return payload.role as string | null;
-  } catch {
-    return null;
-  }
-}
+const authRoutes = ['/auth/login', '/auth/register', '/auth/callback'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Get JWT token from HttpOnly cookie
-  const token = request.cookies.get('auth_token')?.value;
-  const isAuthenticated = !!token;
+  // Get auth check from cookie (set by AuthContext after login)
+  const authUser = request.cookies.get('auth_user')?.value;
+  const isAuthenticated = !!authUser;
   
-  // Extract role from JWT if token exists
-  const role = token ? await getRoleFromToken(token) : null;
+  // Extract role from cookie
+  const role = request.cookies.get('auth_role')?.value || null;
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));

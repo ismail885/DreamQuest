@@ -22,8 +22,7 @@ export default function LoginForm() {
       if (!result.success) {
         setError(result.error || "Erreur avec Google");
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
+    } catch {
       setError("Erreur inattendue");
     } finally {
       setIsLoading(false);
