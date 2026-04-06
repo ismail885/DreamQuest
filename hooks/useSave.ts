@@ -48,7 +48,12 @@ export function useSave({
   const save = useCallback(async (): Promise<boolean> => {
     const { userId, adventureId, characterId, branchId, progression } = paramsRef.current;
 
-    if (!userId || !adventureId || !characterId) return false;
+    console.log('Tentative de sauvegarde:', { userId, adventureId, characterId, branchId, progression });
+
+    if (!userId || !adventureId || !characterId) {
+      console.log('Sauvegarde annulée: paramètres manquants');
+      return false;
+    }
 
     setState(prev => ({ ...prev, isSaving: true, error: null }));
 
@@ -64,18 +69,21 @@ export function useSave({
             progression,
             date_sauvegarde: new Date().toISOString(),
           },
-          { onConflict: 'id_utilisateur,id_aventure' }
+          { onConflict: 'id_utilisateur,id_aventure,id_personnage' }
         )
-        .select('id_sauvegarde')
+        .select('id')
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur sauvegarde:', error);
+        throw error;
+      }
 
       setState({
         isSaving: false,
         lastSaved: new Date(),
         error: null,
-        saveId: data?.id_sauvegarde ?? null,
+        saveId: data?.id ?? null,
       });
       return true;
     } catch (err) {

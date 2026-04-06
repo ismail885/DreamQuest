@@ -51,6 +51,26 @@ export default function ProfilPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user?.id, router]);
 
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!document.hidden && user?.id) {
+        loadUserData(user.id);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    const handleFocus = () => {
+      if (user?.id) {
+        loadUserData(user.id);
+      }
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleFocus);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
   const loadUserData = async (userId: number) => {
     try {
       const { data: profileData } = await supabase
@@ -311,17 +331,17 @@ export default function ProfilPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      <main className="flex-1 container mx-auto px-6 py-8 pb-24 md:pb-8">
+      <main className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             
             <div className="lg:w-80 flex-shrink-0">
-              <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6">
-                <div className="flex flex-col items-center mb-6">
-                  <div className="w-24 h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg shadow-cyan-500/30">
+              <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl lg:rounded-2xl p-4 md:p-6">
+                <div className="flex flex-col items-center mb-4 md:mb-6">
+                  <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-cyan-500/30">
                     {getUserInitials()}
                   </div>
-                  <h2 className="text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
+                  <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
                   <p className="text-gray-400 text-sm">Niveau {currentLevel}</p>
                 </div>
 

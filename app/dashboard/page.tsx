@@ -76,27 +76,27 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      <main className="container mx-auto px-6 py-8 pb-24 md:pb-8">
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
               Bienvenue,{" "}
               <span className="text-cyan-400">
                 {user?.username || "Aventurier"}
               </span>{" "}
               !
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-sm md:text-base">
               Prêt à vivre de nouvelles aventures ?
             </p>
           </div>
 
-          <div className="mb-12">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">Mes Personnages</h2>
+          <div className="mb-8 md:mb-12">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-white">Mes Personnages</h2>
               <button
                 onClick={() => router.push("/create-character")}
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all flex items-center gap-2"
+                className="w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -117,35 +117,35 @@ export default function DashboardPage() {
             {user && <CharacterList userId={user.id} />}
           </div>
 
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">
+          <div className="mb-8 md:mb-12">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">
               Vos Statistiques
             </h2>
-            <div className="grid md:grid-cols-4 gap-6">
-              <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-cyan-400 mb-2">{stats.charactersCount}</div>
-                <div className="text-gray-400 text-sm">Personnages créés</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+              <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
+                <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">{stats.charactersCount}</div>
+                <div className="text-gray-400 text-xs md:text-sm">Personnages</div>
               </div>
-              <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-purple-400 mb-2">{stats.completedQuests}</div>
-                <div className="text-gray-400 text-sm">Quêtes complétées</div>
+              <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
+                <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-1 md:mb-2">{stats.completedQuests}</div>
+                <div className="text-gray-400 text-xs md:text-sm">Quêtes</div>
               </div>
-              <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-yellow-400 mb-2">{stats.totalXp}</div>
-                <div className="text-gray-400 text-sm">Points d&apos;XP</div>
+              <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
+                <div className="text-2xl md:text-3xl font-bold text-yellow-400 mb-1 md:mb-2">{stats.totalXp}</div>
+                <div className="text-gray-400 text-xs md:text-sm">Points XP</div>
               </div>
-              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6">
-                <div className="text-3xl font-bold text-green-400 mb-2">-</div>
-                <div className="text-gray-400 text-sm">Niveau max</div>
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
+                <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">-</div>
+                <div className="text-gray-400 text-xs md:text-sm">Niveau max</div>
               </div>
             </div>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-white mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">
               Quêtes Populaires
             </h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-6">
               <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer">
                 <div className="aspect-video bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg mb-4 flex items-center justify-center">
                   <svg

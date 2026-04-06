@@ -55,16 +55,56 @@ function AdventurePageContent() {
 
       <main className="flex-1 relative pb-24 md:pb-0">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent pointer-events-none"></div>
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
+        <div className="absolute top-1/4 right-1/4 w-64 md:w-96 h-64 md:h-96 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
 
-        <div className="container mx-auto px-6 py-12 relative z-10">
-          <div className="text-center space-y-4 mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-white">
+        <div className="container mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
+          <div className="text-center space-y-3 md:space-y-4 mb-8 md:mb-12">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
               Explorez les Aventures
             </h1>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-sm md:text-lg max-w-xl mx-auto">
               Choisissez votre prochaine aventure parmi nos histoires épiques
             </p>
+          </div>
+
+          {personnageId && (
+            <div className="max-w-4xl mx-auto mb-6 md:mb-8">
+              <div className="flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
+                <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="text-cyan-300 text-sm">
+                  Personnage sélectionné — choosez une aventure !
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="max-w-4xl mx-auto space-y-4 md:space-y-6 mb-8 md:mb-12">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Rechercher une histoire"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 md:px-6 py-3 md:py-4 bg-[#0f1322] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm md:text-base"
+              />
+              <svg
+                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
           </div>
 
           {personnageId && (

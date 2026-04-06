@@ -37,7 +37,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
           const classInfo = CHARACTER_CLASSES[row.classe as keyof typeof CHARACTER_CLASSES];
           return {
             ...row,
-            stats: classInfo?.baseStats ?? { force: 0, agilite: 0, intelligence: 0, endurance: 0 },
+            stats: classInfo?.baseStats ?? { force: 0, agility: 0, intelligence: 0, endurance: 0 },
             points_vie_max: row.points_vie_max ?? (classInfo ? 100 + classInfo.baseStats.endurance * 10 : 100),
             experience: row.experience ?? 0,
           };

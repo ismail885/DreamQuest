@@ -103,7 +103,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 5
     },
     abilities: ['Invisibilité', 'Attaque Sournoise', 'Évasion'],
-    image: '/illustrations_personnage/assassin.jpeg'
+    image: '/illustrations_personnage/assassin.jpg'
   },
   Prêtre: {
     name: 'Prêtre',
