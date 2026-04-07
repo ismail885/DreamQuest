@@ -40,36 +40,47 @@ export function useSave({
   const save = useCallback(async (): Promise<boolean> => {
     const { userId, adventureId, characterId, branchId, progression } = paramsRef.current;
 
-    console.log('Sauvegarde appelée:', { userId, adventureId, characterId, branchId, progression });
+    console.log('[Save] Tentative:', { userId, adventureId, characterId, branchId, progression });
 
-    if (!userId || !adventureId || !characterId) {
-      console.log('Sauvegarde annulée: paramètres manquants', { userId: !!userId, adventureId: !!adventureId, characterId: !!characterId });
+    if (!userId) {
+      console.log('[Save] ERREUR: userId manquant');
+      return false;
+    }
+    if (!adventureId) {
+      console.log('[Save] ERREUR: adventureId manquant');
+      return false;
+    }
+    if (!characterId) {
+      console.log('[Save] ERREUR: characterId manquant');
       return false;
     }
 
     setState(prev => ({ ...prev, isSaving: true, error: null }));
 
     try {
-      // Utiliser insert au lieu de upsert pour éviter les problèmes de contrainte
+      const insertData = {
+        id_utilisateur: userId,
+        id_aventure: adventureId,
+        id_personnage: characterId,
+        id_embranchement_actuel: branchId,
+        progression: progression,
+        date_sauvegarde: new Date().toISOString(),
+      };
+
+      console.log('[Save] Données à insérer:', insertData);
+
       const { data, error } = await supabase
         .from('sauvegarde')
-        .insert({
-          id_utilisateur: userId,
-          id_aventure: adventureId,
-          id_personnage: characterId,
-          id_embranchement_actuel: branchId,
-          progression,
-          date_sauvegarde: new Date().toISOString(),
-        })
+        .insert(insertData)
         .select('id')
         .single();
 
       if (error) {
-        console.error('Erreur sauvegarde:', error);
+        console.error('[Save] Erreur Supabase:', error);
         throw error;
       }
 
-      console.log('Sauvegarde réussie:', data);
+      console.log('[Save] SUCCÈS:', data);
 
       setState({
         isSaving: false,
@@ -80,26 +91,37 @@ export function useSave({
       return true;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
-      console.error('Erreur catch:', message);
+      console.error('[Save] Erreur catch:', message);
       setState(prev => ({ ...prev, isSaving: false, error: message }));
       return false;
     }
   }, []);
 
   useEffect(() => {
-    if (!enabled || !userId || !adventureId || !characterId) {
-      console.log('Sauvegarde automatique désactivée:', { enabled, userId: !!userId, adventureId: !!adventureId, characterId: !!characterId });
+    if (!enabled) {
+      console.log('[Save] Désactivé par enabled');
+      return;
+    }
+    if (!userId || !adventureId || !characterId) {
+      console.log('[Save] Désactivé - paramètres manquants:', { userId: !!userId, adventureId: !!adventureId, characterId: !!characterId });
       return;
     }
 
-    console.log('Sauvegarde automatique activée, interval:', intervalMs);
+    console.log('[Save] Auto activée, interval:', intervalMs);
+
     const interval = setInterval(() => {
-      console.log('Sauvegarde automatique déclenchée');
       save();
     }, intervalMs);
 
     return () => clearInterval(interval);
   }, [enabled, userId, adventureId, characterId, intervalMs, save]);
+
+  useEffect(() => {
+    if (enabled && userId && adventureId && characterId) {
+      console.log('[Save] Sauvegarde immédiate au démarrage');
+      save();
+    }
+  }, [enabled, userId, adventureId, characterId]);
 
   return { ...state, save };
 }
