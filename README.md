@@ -5,7 +5,12 @@ Application web de jeu de rôle textuel interactif permettant de créer des pers
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![Supabase](https://img.shields.io/badge/Supabase-3-green)
+![Vercel](https://img.shields.io/badge/Vercel-Deployed-brightgreen)
 ![License](https://img.shields.io/badge/License-Éducatif-orange)
+
+---
+
+**Site en ligne** : [https://dream-quest-theta.vercel.app](https://dream-quest-theta.vercel.app)
 
 ---
 
@@ -157,38 +162,22 @@ npm run build        # Build production
 npm run start        # Serveur production
 npm run lint         # Vérification code
 npm run test         # Exécuter les tests
-npm run test:watch   # Tests en mode watch
 ```
-
----
-
-## Tests
-
-**118 tests** implémentés (unitaires + intégration) :
-
-```bash
-npm test
-```
-
-Résultats :
-- Tests unitaires : 73
-- Tests d'intégration : 45
-- Couverture : Fonctionnalités principales
 
 ---
 
 ## Déploiement
 
-### Vercel (Recommandé)
+### Vercel (En ligne)
 
-1. Créer un projet sur [Vercel](https://vercel.com)
-2. Connecter le dépôt GitHub
-3. Configurer les variables d'environnement :
+**URL** : https://dream-quest-theta.vercel.app
+
+1. Le projet est connecté à Vercel via GitHub
+2. Déploiement automatique à chaque push sur main
+3. Variables d'environnement configurées :
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `JWT_SECRET`
-4. Déployer
-
 ---
 
 ## API Routes
@@ -206,6 +195,8 @@ Résultats :
 
 **Ismail Abou-zaid**
 - GitHub: [@ismail885](https://github.com/ismail885)
+- Projet en ligne : https://dream-quest-theta.vercel.app
+
 
 ---
 
@@ -214,8 +205,3 @@ Résultats :
 Projet développé dans un cadre éducatif (CDA).
 
 ---
-
-## Support
-
-Pour toute question :
-- Consulter la documentation dans `documents/`

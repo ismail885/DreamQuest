@@ -121,7 +121,7 @@ export function useSave({
       console.log('[Save] Sauvegarde immédiate au démarrage');
       save();
     }
-  }, [enabled, userId, adventureId, characterId]);
+  }, [enabled, userId, adventureId, characterId, save]);
 
   return { ...state, save };
 }
