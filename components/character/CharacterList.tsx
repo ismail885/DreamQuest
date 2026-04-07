@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Character, CHARACTER_CLASSES } from '@/types';
 import CharacterCard from './CharacterCard';
@@ -21,38 +21,63 @@ export default function CharacterList({ userId }: CharacterListProps) {
   const [pendingDelete, setPendingDelete] = useState<Character | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const lastUserIdRef = useRef(userId);
+
+  const fetchCharacters = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('personnage')
+        .select('*')
+        .eq('id_utilisateur', userId);
+
+      if (error) {
+        console.error('Erreur fetch personnages:', error);
+        setError(error.message);
+        return;
+      }
+
+      const enriched: Character[] = (data ?? []).map((row) => {
+        const classInfo = CHARACTER_CLASSES[row.classe as keyof typeof CHARACTER_CLASSES];
+        return {
+          ...row,
+          stats: classInfo?.baseStats ?? { force: 0, agility: 0, intelligence: 0, endurance: 0 },
+          points_vie_max: row.points_vie_max ?? (classInfo ? 100 + classInfo.baseStats.endurance * 10 : 100),
+          experience: row.experience ?? 0,
+        };
+      });
+
+      setCharacters(enriched);
+      setError('');
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCharacters = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('personnage')
-          .select('*')
-          .eq('id_utilisateur', userId);
-
-        if (error) throw error;
-
-        // Reconstitue les stats et points_vie_max depuis la classe (non stockés en BDD)
-        const enriched: Character[] = (data ?? []).map((row) => {
-          const classInfo = CHARACTER_CLASSES[row.classe as keyof typeof CHARACTER_CLASSES];
-          return {
-            ...row,
-            stats: classInfo?.baseStats ?? { force: 0, agility: 0, intelligence: 0, endurance: 0 },
-            points_vie_max: row.points_vie_max ?? (classInfo ? 100 + classInfo.baseStats.endurance * 10 : 100),
-            experience: row.experience ?? 0,
-          };
-        });
-
-        setCharacters(enriched);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Une erreur est survenue');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCharacters();
+    if (userId !== lastUserIdRef.current) {
+      lastUserIdRef.current = userId;
+      fetchCharacters();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
+
+  useEffect(() => {
+    fetchCharacters();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchCharacters();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDeleteRequest = (character: Character) => {
     setDeleteError('');
@@ -76,6 +101,8 @@ export default function CharacterList({ userId }: CharacterListProps) {
 
       setCharacters(prev => prev.filter(c => c.id_personnage !== pendingDelete.id_personnage));
       setPendingDelete(null);
+      // Recharger pour être sûr
+      fetchCharacters();
     } catch (err) {
       setDeleteError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
     } finally {

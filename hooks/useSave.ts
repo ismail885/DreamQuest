@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 interface SaveParams {
@@ -7,9 +7,7 @@ interface SaveParams {
   characterId: number | null;
   branchId: number | null;
   progression: number;
-  /** Active ou désactive la sauvegarde automatique (défaut: true) */
   enabled?: boolean;
-  /** Intervalle en ms entre deux sauvegardes automatiques (défaut: 30 000) */
   intervalMs?: number;
 }
 
@@ -20,11 +18,6 @@ interface SaveState {
   saveId: number | null;
 }
 
-/**
- * Hook de sauvegarde automatique.
- * Sauvegarde la progression d'une aventure toutes les `intervalMs` ms.
- * Expose aussi une fonction `save()` pour déclencher une sauvegarde manuelle.
- */
 export function useSave({
   userId,
   adventureId,
@@ -41,36 +34,33 @@ export function useSave({
     saveId: null,
   });
 
-  // Garde les dernières valeurs en ref pour que `save` n'ait pas de dépendances instables
   const paramsRef = useRef({ userId, adventureId, characterId, branchId, progression });
   paramsRef.current = { userId, adventureId, characterId, branchId, progression };
 
   const save = useCallback(async (): Promise<boolean> => {
     const { userId, adventureId, characterId, branchId, progression } = paramsRef.current;
 
-    console.log('Tentative de sauvegarde:', { userId, adventureId, characterId, branchId, progression });
+    console.log('Sauvegarde appelée:', { userId, adventureId, characterId, branchId, progression });
 
     if (!userId || !adventureId || !characterId) {
-      console.log('Sauvegarde annulée: paramètres manquants');
+      console.log('Sauvegarde annulée: paramètres manquants', { userId: !!userId, adventureId: !!adventureId, characterId: !!characterId });
       return false;
     }
 
     setState(prev => ({ ...prev, isSaving: true, error: null }));
 
     try {
+      // Utiliser insert au lieu de upsert pour éviter les problèmes de contrainte
       const { data, error } = await supabase
         .from('sauvegarde')
-        .upsert(
-          {
-            id_utilisateur: userId,
-            id_aventure: adventureId,
-            id_personnage: characterId,
-            id_embranchement_actuel: branchId,
-            progression,
-            date_sauvegarde: new Date().toISOString(),
-          },
-          { onConflict: 'id_utilisateur,id_aventure,id_personnage' }
-        )
+        .insert({
+          id_utilisateur: userId,
+          id_aventure: adventureId,
+          id_personnage: characterId,
+          id_embranchement_actuel: branchId,
+          progression,
+          date_sauvegarde: new Date().toISOString(),
+        })
         .select('id')
         .single();
 
@@ -78,6 +68,8 @@ export function useSave({
         console.error('Erreur sauvegarde:', error);
         throw error;
       }
+
+      console.log('Sauvegarde réussie:', data);
 
       setState({
         isSaving: false,
@@ -88,16 +80,21 @@ export function useSave({
       return true;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
+      console.error('Erreur catch:', message);
       setState(prev => ({ ...prev, isSaving: false, error: message }));
       return false;
     }
   }, []);
 
-  // Sauvegarde automatique à intervalle régulier
   useEffect(() => {
-    if (!enabled || !userId || !adventureId || !characterId) return;
+    if (!enabled || !userId || !adventureId || !characterId) {
+      console.log('Sauvegarde automatique désactivée:', { enabled, userId: !!userId, adventureId: !!adventureId, characterId: !!characterId });
+      return;
+    }
 
+    console.log('Sauvegarde automatique activée, interval:', intervalMs);
     const interval = setInterval(() => {
+      console.log('Sauvegarde automatique déclenchée');
       save();
     }, intervalMs);
 
@@ -106,4 +103,3 @@ export function useSave({
 
   return { ...state, save };
 }
-

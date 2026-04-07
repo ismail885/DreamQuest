@@ -28,7 +28,7 @@ describe('Unitaires - Personnages', () => {
       Object.values(CHARACTER_CLASSES).forEach((cls: ClassInfo) => {
         expect(cls.baseStats).toBeDefined()
         expect(cls.baseStats.force).toBeGreaterThan(0)
-        expect(cls.baseStats.agilite).toBeGreaterThan(0)
+        expect(cls.baseStats.agility).toBeGreaterThan(0)
         expect(cls.baseStats.intelligence).toBeGreaterThan(0)
         expect(cls.baseStats.endurance).toBeGreaterThan(0)
       })
@@ -106,7 +106,7 @@ describe('Unitaires - Personnages', () => {
   describe('STAT_LABELS', () => {
     it('devrait avoir les 4 labels', () => {
       expect(STAT_LABELS.force).toBe('Force')
-      expect(STAT_LABELS.agilite).toBe('Agilité')
+      expect(STAT_LABELS.agility).toBe('Agilité')
       expect(STAT_LABELS.intelligence).toBe('Intelligence')
       expect(STAT_LABELS.endurance).toBe('Endurance')
     })
