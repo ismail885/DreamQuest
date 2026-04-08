@@ -64,7 +64,7 @@ function AdventureReader({ params }: Props) {
     supabase
       .from("personnage")
       .select("*")
-      .eq("id_personnage", personnageId)
+      .eq("id", personnageId)
       .single()
       .then(({ data }) => {
         if (data) setCharacter(data as Character);

@@ -85,7 +85,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!pendingDelete?.id_personnage) {
+    if (!pendingDelete?.id) {
       setPendingDelete(null);
       return;
     }
@@ -95,11 +95,11 @@ export default function CharacterList({ userId }: CharacterListProps) {
       const { error } = await supabase
         .from('personnage')
         .delete()
-        .eq('id_personnage', pendingDelete.id_personnage);
+        .eq('id', pendingDelete.id);
 
       if (error) throw error;
 
-      setCharacters(prev => prev.filter(c => c.id_personnage !== pendingDelete.id_personnage));
+      setCharacters(prev => prev.filter(c => c.id !== pendingDelete.id));
       setPendingDelete(null);
       // Recharger pour être sûr
       fetchCharacters();
@@ -161,9 +161,9 @@ export default function CharacterList({ userId }: CharacterListProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {characters.map((character, index) => (
           <CharacterCard
-            key={character.id_personnage ?? index}
+            key={character.id ?? index}
             character={character}
-            onSelect={() => router.push(`/adventure?personnage=${character.id_personnage}`)}
+            onSelect={() => router.push(`/adventure?personnage=${character.id}`)}
             onDelete={() => handleDeleteRequest(character)}
           />
         ))}

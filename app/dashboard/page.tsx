@@ -36,7 +36,7 @@ export default function DashboardPage() {
       try {
         const { count: charactersCount } = await supabase
           .from("personnage")
-          .select("id_personnage", { count: "exact", head: true })
+          .select("id", { count: "exact", head: true })
           .eq("id_utilisateur", user.id);
 
         const { data: saves } = await supabase

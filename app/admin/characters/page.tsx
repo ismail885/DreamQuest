@@ -71,12 +71,12 @@ export default function AdminCharactersPage() {
   async function handleDelete(characterId: number) {
     try {
       // Delete related saves first
-      await supabase.from("sauvegarde").delete().eq("id_personnage", characterId);
+      await supabase.from("sauvegarde").delete().eq("id", characterId);
       
       const { error } = await supabase
         .from("personnage")
         .delete()
-        .eq("id_personnage", characterId);
+        .eq("id", characterId);
 
       if (error) throw error;
       setDeleteConfirm(null);
@@ -157,7 +157,7 @@ export default function AdminCharactersPage() {
                 </tr>
               ) : (
                 characters.map((character) => (
-                  <tr key={character.id_personnage} className="hover:bg-gray-800/30 transition-colors">
+                  <tr key={character.id} className="hover:bg-gray-800/30 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
@@ -197,7 +197,7 @@ export default function AdminCharactersPage() {
                           <Search className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => setDeleteConfirm(character.id_personnage!)}
+                          onClick={() => setDeleteConfirm(character.id!)}
                           className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Supprimer"
                         >

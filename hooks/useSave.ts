@@ -58,20 +58,25 @@ export function useSave({
     setState(prev => ({ ...prev, isSaving: true, error: null }));
 
     try {
-      const insertData = {
+      console.log('[Save] Trying to save with:', {
         id_utilisateur: userId,
         id_aventure: adventureId,
         id_personnage: characterId,
         id_embranchement_actuel: branchId,
         progression: progression,
         date_sauvegarde: new Date().toISOString(),
-      };
-
-      console.log('[Save] Données à insérer:', insertData);
+      });
 
       const { data, error } = await supabase
         .from('sauvegarde')
-        .insert(insertData)
+        .insert({
+          id_utilisateur: userId,
+          id_aventure: adventureId,
+          id_personnage: characterId,
+          id_embranchement_actuel: branchId,
+          progression: progression,
+          date_sauvegarde: new Date().toISOString(),
+        })
         .select('id')
         .single();
 

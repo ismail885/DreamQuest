@@ -50,7 +50,7 @@ export interface ClassInfo {
 }
 
 export interface Character {
-  id_personnage?: number;
+  id?: number;
   nom_personnage: string;
   classe: CharacterClass;
   niveau: number;
