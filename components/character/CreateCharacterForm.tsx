@@ -5,7 +5,7 @@ import { CHARACTER_CLASSES, CharacterClass, Character } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import ClassCard from './ClassCard';
 import toast from 'react-hot-toast';
-import { CheckCircle2, Sword, Zap, Brain, Heart, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface CreateCharacterFormProps {
   userId?: number;
@@ -193,60 +193,10 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         )}
 
         {selectedClass && characterName.trim() && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border border-cyan-500/30 rounded-lg">
-            <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-cyan-400" />
-              Vous êtes sur le point de créer :
-            </h3>
-            <div className="text-center mb-3">
-              <span className="text-2xl font-bold text-cyan-300">{characterName}</span>
-              <span className="text-gray-400 mx-2">en tant que</span>
-              <span className="text-xl font-semibold text-blue-300">{selectedClass}</span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
-              {selectedClass && (() => {
-                const stats = CHARACTER_CLASSES[selectedClass].baseStats;
-                return (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <Sword className="w-4 h-4 text-orange-400" />
-                      <span className="text-gray-400">Force:</span>
-                      <span className="text-white font-medium">{stats.force}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-yellow-400" />
-                      <span className="text-gray-400">Agilité:</span>
-                      <span className="text-white font-medium">{stats.agility}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Brain className="w-4 h-4 text-purple-400" />
-                      <span className="text-gray-400">Intelligence:</span>
-                      <span className="text-white font-medium">{stats.intelligence}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-red-400" />
-                      <span className="text-gray-400">Endurance:</span>
-                      <span className="text-white font-medium">{stats.endurance}</span>
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {CHARACTER_CLASSES[selectedClass].abilities.map((ability, index) => (
-                <span
-                  key={ability}
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    index === 0
-                      ? 'bg-cyan-900/50 text-cyan-300'
-                      : 'bg-gray-800 text-gray-500'
-                  }`}
-                >
-                  {ability}
-                  {index === 0 && ' (Nv.1)'}
-                </span>
-              ))}
-            </div>
+          <div className="mb-6 p-4 bg-gray-800/50 border border-gray-700 rounded-lg text-center">
+            <span className="text-lg text-gray-400">Créer </span>
+            <span className="text-xl font-bold text-cyan-400">{characterName}</span>
+            <span className="text-lg text-gray-400"> - {selectedClass}</span>
           </div>
         )}
 

@@ -8,7 +8,7 @@ import ConfirmDeleteModal from '@/components/shared/ConfirmDeleteModal';
 import { SkeletonCharacterList } from '@/components/shared/Skeleton';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { SortAsc } from 'lucide-react';
+
 
 type SortOption = 'nom' | 'niveau' | 'date';
 
@@ -50,7 +50,8 @@ export default function CharacterList({ userId }: CharacterListProps) {
       const { data, error } = await supabase
         .from('personnage')
         .select('*')
-        .eq('id_utilisateur', userId);
+        .eq('id_utilisateur', userId)
+        .order('id', { ascending: false });
 
       if (error) {
         console.error('Erreur fetch personnages:', error);
@@ -195,18 +196,15 @@ export default function CharacterList({ userId }: CharacterListProps) {
       {/* Menu de tri */}
       {characters.length > 1 && (
         <div className="flex justify-end mb-4">
-          <div className="flex items-center gap-2">
-            <SortAsc className="w-4 h-4 text-gray-400" />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="bg-[#1a1f2e] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
-            >
-              <option value="date">Plus récents</option>
-              <option value="niveau">Niveau</option>
-              <option value="nom">Nom</option>
-            </select>
-          </div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 cursor-pointer"
+          >
+            <option value="date">Plus récents</option>
+            <option value="niveau">Niveau</option>
+            <option value="nom">Nom</option>
+          </select>
         </div>
       )}
 
