@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Character, CHARACTER_CLASSES } from '@/types';
 import CharacterCard from './CharacterCard';
@@ -8,6 +8,9 @@ import ConfirmDeleteModal from '@/components/shared/ConfirmDeleteModal';
 import { SkeletonCharacterList } from '@/components/shared/Skeleton';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import { SortAsc } from 'lucide-react';
+
+type SortOption = 'nom' | 'niveau' | 'date';
 
 interface CharacterListProps {
   userId: number | string;
@@ -21,7 +24,25 @@ export default function CharacterList({ userId }: CharacterListProps) {
   const [pendingDelete, setPendingDelete] = useState<Character | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('date');
   const lastUserIdRef = useRef(userId);
+
+  const sortedCharacters = useMemo(() => {
+    const chars = [...characters];
+    switch (sortBy) {
+      case 'nom':
+        return chars.sort((a, b) => a.nom_personnage.localeCompare(b.nom_personnage));
+      case 'niveau':
+        return chars.sort((a, b) => (b.niveau ?? 0) - (a.niveau ?? 0));
+      case 'date':
+      default:
+        return chars.sort((a, b) => {
+          const dateA = a.date_creation ? new Date(a.date_creation).getTime() : 0;
+          const dateB = b.date_creation ? new Date(b.date_creation).getTime() : 0;
+          return dateB - dateA;
+        });
+    }
+  }, [characters, sortBy]);
 
   const fetchCharacters = async () => {
     try {
@@ -79,8 +100,20 @@ export default function CharacterList({ userId }: CharacterListProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDeleteRequest = (character: Character) => {
+  const handleDeleteRequest = async (character: Character) => {
     setDeleteError('');
+    
+    // Vérifier si le personnage a des sauvegardes
+    if (character.id) {
+      const { data: saves } = await supabase
+        .from('sauvegarde')
+        .select('id')
+        .eq('id_personnage', character.id);
+      
+      const saveCount = saves?.length ?? 0;
+      setDeleteError(saveCount > 0 ? `Ce personnage a ${saveCount} sauvegarde(s)` : '');
+    }
+    
     setPendingDelete(character);
   };
 
@@ -158,8 +191,27 @@ export default function CharacterList({ userId }: CharacterListProps) {
           error={deleteError}
         />
       )}
+      
+      {/* Menu de tri */}
+      {characters.length > 1 && (
+        <div className="flex justify-end mb-4">
+          <div className="flex items-center gap-2">
+            <SortAsc className="w-4 h-4 text-gray-400" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="bg-[#1a1f2e] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+            >
+              <option value="date">Plus récents</option>
+              <option value="niveau">Niveau</option>
+              <option value="nom">Nom</option>
+            </select>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {characters.map((character, index) => (
+        {sortedCharacters.map((character, index) => (
           <CharacterCard
             key={character.id ?? index}
             character={character}

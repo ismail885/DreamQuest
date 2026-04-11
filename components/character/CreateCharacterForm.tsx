@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { CHARACTER_CLASSES, CharacterClass, Character } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import ClassCard from './ClassCard';
+import toast from 'react-hot-toast';
+import { CheckCircle2, Sword, Zap, Brain, Heart, Check } from 'lucide-react';
 
 interface CreateCharacterFormProps {
   userId?: number;
@@ -89,6 +91,13 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
       if (onCharacterCreated) {
         onCharacterCreated(character);
       }
+      toast.success(
+        <div className="flex items-center gap-2">
+          <Check className="w-5 h-5 text-green-400" />
+          <span>Personnage « {characterName} » créé avec succès !</span>
+        </div>,
+        { duration: 3000 }
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
@@ -119,7 +128,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         {currentStep > 0 && (
           <button
             onClick={handlePrevious}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 hover:bg-[#1a2332] rounded-full p-2 transition-colors"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 hover:bg-cyan-600/50 hover:scale-110 rounded-full p-3 transition-all duration-200 active:scale-95"
           >
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -127,7 +136,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
           </button>
         )}
 
-        <div className="max-w-2xl mx-auto px-12">
+        <div className="max-w-2xl mx-auto px-12 transition-all duration-300">
           <ClassCard
             classInfo={currentClass}
             isSelected={selectedClass === currentClass.name}
@@ -138,7 +147,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         {currentStep < totalSteps - 1 && (
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 hover:bg-[#1a2332] rounded-full p-2 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 hover:bg-cyan-600/50 hover:scale-110 rounded-full p-3 transition-all duration-200 active:scale-95"
           >
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -152,10 +161,10 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
           <button
             key={index}
             onClick={() => setCurrentStep(index)}
-            className={`h-2 rounded-full transition-all ${
+            className={`h-2 rounded-full transition-all duration-200 ${
               index === currentStep
-                ? 'bg-cyan-400 w-8'
-                : 'bg-gray-700 w-2 hover:bg-gray-600'
+                ? 'bg-cyan-400 w-8 shadow-lg shadow-cyan-400/30'
+                : 'bg-gray-700 w-2 hover:bg-gray-500 hover:w-4'
             }`}
           />
         ))}
@@ -180,6 +189,64 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
             {error}
+          </div>
+        )}
+
+        {selectedClass && characterName.trim() && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border border-cyan-500/30 rounded-lg">
+            <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-cyan-400" />
+              Vous êtes sur le point de créer :
+            </h3>
+            <div className="text-center mb-3">
+              <span className="text-2xl font-bold text-cyan-300">{characterName}</span>
+              <span className="text-gray-400 mx-2">en tant que</span>
+              <span className="text-xl font-semibold text-blue-300">{selectedClass}</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
+              {selectedClass && (() => {
+                const stats = CHARACTER_CLASSES[selectedClass].baseStats;
+                return (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <Sword className="w-4 h-4 text-orange-400" />
+                      <span className="text-gray-400">Force:</span>
+                      <span className="text-white font-medium">{stats.force}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-yellow-400" />
+                      <span className="text-gray-400">Agilité:</span>
+                      <span className="text-white font-medium">{stats.agility}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-4 h-4 text-purple-400" />
+                      <span className="text-gray-400">Intelligence:</span>
+                      <span className="text-white font-medium">{stats.intelligence}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-red-400" />
+                      <span className="text-gray-400">Endurance:</span>
+                      <span className="text-white font-medium">{stats.endurance}</span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {CHARACTER_CLASSES[selectedClass].abilities.map((ability, index) => (
+                <span
+                  key={ability}
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    index === 0
+                      ? 'bg-cyan-900/50 text-cyan-300'
+                      : 'bg-gray-800 text-gray-500'
+                  }`}
+                >
+                  {ability}
+                  {index === 0 && ' (Nv.1)'}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 

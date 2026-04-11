@@ -94,12 +94,17 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
         </div>
 
         <div className="flex gap-2 flex-wrap">
-          {classInfo.abilities.map((ability) => (
+          {classInfo.abilities.map((ability, index) => (
             <span
               key={ability}
-              className="px-3 py-1.5 bg-[#1a1f2e] text-cyan-400 text-xs font-medium rounded-full border border-gray-700"
+              className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
+                index === 0
+                  ? 'bg-cyan-900/50 text-cyan-300 border-cyan-500/50'
+                  : 'bg-[#1a1f2e] text-gray-500 border-gray-700'
+              }`}
             >
               {ability}
+              {index === 0 && ' (Nv.1)'}
             </span>
           ))}
         </div>
