@@ -311,13 +311,13 @@ export default function ProfilPage() {
   const getStatusBadge = (status: string) => {
     if (status === "completed") {
       return (
-        <span className="px-3 py-1 text-xs font-medium rounded-full border border-cyan-500/50 text-cyan-400 bg-cyan-500/10">
+        <span className="px-3 py-1 text-xs font-medium rounded-full border border-green-500/50 text-green-400 bg-green-500/10">
           Complétée
         </span>
       );
     }
     return (
-      <span className="px-3 py-1 text-xs font-medium rounded-full border border-cyan-500/50 text-cyan-400 bg-cyan-500/10">
+      <span className="px-3 py-1 text-xs font-medium rounded-full border border-orange-500/50 text-orange-400 bg-orange-500/10">
         En cours
       </span>
     );
@@ -342,36 +342,36 @@ export default function ProfilPage() {
                     {getUserInitials()}
                   </div>
                   <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
-                  <p className="text-gray-400 text-sm">Niveau {currentLevel}</p>
+                  <p className="text-gray-400 text-sm">Niveau {currentLevel} • Rang +{Math.floor(currentLevel * 3 + stats.likes / 100)}</p>
                 </div>
 
                 <div className="mb-6">
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-400">Expérience</span>
-                    <span className="text-gray-400">{currentExperience.toLocaleString()} / {maxExperience.toLocaleString()}</span>
+                    <span className="text-red-400 font-semibold">{currentExperience.toLocaleString()} / {maxExperience.toLocaleString()}</span>
                   </div>
                   <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-cyan-500 to-green-500 rounded-full transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-red-500 to-cyan-500 rounded-full transition-all duration-500"
                       style={{ width: `${experiencePercentage}%` }}
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="text-center">
+                  <div className="text-center p-2 bg-gray-800/30 rounded-lg">
                     <div className="text-2xl font-bold text-cyan-400">{stats.storiesPlayed}</div>
                     <div className="text-xs text-gray-400">Histoires</div>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center p-2 bg-gray-800/30 rounded-lg">
                     <div className="text-2xl font-bold text-cyan-400">{stats.storiesCreated}</div>
                     <div className="text-xs text-gray-400">Créées</div>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center p-2 bg-gray-800/30 rounded-lg">
                     <div className="text-2xl font-bold text-cyan-400">{stats.likes}</div>
                     <div className="text-xs text-gray-400">Likes</div>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center p-2 bg-gray-800/30 rounded-lg">
                     <div className="text-2xl font-bold text-cyan-400">{stats.trophies}</div>
                     <div className="text-xs text-gray-400">Trophées</div>
                   </div>
@@ -411,33 +411,33 @@ export default function ProfilPage() {
 
             <div className="flex-1">
               <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl overflow-hidden">
-                <div className="flex border-b border-gray-700/50">
+                <div className="flex border-b border-gray-700/50 bg-[#0a0e1a]">
                   <button
                     onClick={() => setActiveTab("stories")}
-                    className={`flex-1 py-4 px-6 text-sm font-medium transition-colors ${
+                    className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "stories"
-                        ? "bg-[#1a2a40] text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-white hover:bg-[#151f30]"
+                        ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
+                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
                     }`}
                   >
                     Mes Histoires
                   </button>
                   <button
                     onClick={() => setActiveTab("achievements")}
-                    className={`flex-1 py-4 px-6 text-sm font-medium transition-colors ${
+                    className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "achievements"
-                        ? "bg-[#1a2a40] text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-white hover:bg-[#151f30]"
+                        ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
+                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
                     }`}
                   >
                     Réalisations
                   </button>
                   <button
                     onClick={() => setActiveTab("creations")}
-                    className={`flex-1 py-4 px-6 text-sm font-medium transition-colors ${
+                    className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "creations"
-                        ? "bg-[#1a2a40] text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-white hover:bg-[#151f30]"
+                        ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
+                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
                     }`}
                   >
                     Créations
