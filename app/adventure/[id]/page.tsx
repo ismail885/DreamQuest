@@ -8,7 +8,7 @@ import { useAdventure } from "@/hooks/useAdventure";
 import { useSave } from "@/hooks/useSave";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
-import type { Character } from "@/types";
+import type { Character, ConsequenceEffect } from "@/types";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -42,9 +42,53 @@ function AdventureReader({ params }: Props) {
   const { user } = useAuthContext();
 
   const [character, setCharacter] = useState<Character | null>(null);
+  const [lastConsequence, setLastConsequence] = useState<ConsequenceEffect | null>(null);
+  const [showEffect, setShowEffect] = useState(false);
+
+  const applyConsequence = async (choixNum: 1 | 2, consequencesJson: string | null | undefined) => {
+    if (!character || !consequencesJson) return;
+    
+    try {
+      const effect = JSON.parse(consequencesJson);
+      if (!effect) return;
+
+      const newStats = {
+        force: (character.stats?.force ?? 0) + (effect.force ?? 0),
+        agility: (character.stats?.agility ?? 0) + (effect.agility ?? 0),
+        intelligence: (character.stats?.intelligence ?? 0) + (effect.intelligence ?? 0),
+        endurance: (character.stats?.endurance ?? 0) + (effect.endurance ?? 0),
+      };
+      const newPv = Math.max(0, (character.points_vie ?? 0) + (effect.pv ?? 0));
+
+      if (character.id) {
+        await supabase.from('personnage').update({
+          points_vie: newPv,
+        }).eq('id', character.id);
+      }
+
+      setCharacter({
+        ...character,
+        points_vie: newPv,
+        stats: newStats,
+      });
+
+      setLastConsequence({
+        pv_change: effect.pv,
+        force_change: effect.force,
+        agility_change: effect.agility,
+        intelligence_change: effect.intelligence,
+        endurance_change: effect.endurance,
+        text: effect.text,
+      });
+      setShowEffect(true);
+      setTimeout(() => setShowEffect(false), 3000);
+    } catch {
+      // Si JSON invalide, on ignore
+    }
+  };
 
   const { adventure, currentBranch, loading, error, isEnd, history, chooseOption, restart } =
-    useAdventure(adventureId);
+    useAdventure(adventureId, user?.id ?? null);
 
   const characterIdNum = personnageId ? parseInt(personnageId, 10) : null;
   const progression = Math.min(Math.round((history.length / MAX_STEPS) * 100), 100);
@@ -104,7 +148,6 @@ function AdventureReader({ params }: Props) {
   return (
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
 
-      {/* ── Barre du haut ── */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800/60">
         <button
           onClick={() => router.back()}
@@ -151,7 +194,44 @@ function AdventureReader({ params }: Props) {
         </button>
       </div>
 
-      {/* Stats personnage */}
+      {showEffect && lastConsequence && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-bounce">
+          <div className="bg-gray-900 border border-cyan-500/50 rounded-xl px-4 py-3 shadow-lg shadow-cyan-500/20">
+            <p className="text-cyan-400 text-sm font-semibold text-center mb-2">Impact du choix</p>
+            <div className="flex gap-3 text-xs">
+              {lastConsequence.pv_change !== undefined && lastConsequence.pv_change !== 0 && (
+                <span className={lastConsequence.pv_change > 0 ? 'text-green-400' : 'text-red-400'}>
+                  {lastConsequence.pv_change > 0 ? '+' : ''}{lastConsequence.pv_change} PV
+                </span>
+              )}
+              {lastConsequence.force_change !== undefined && lastConsequence.force_change !== 0 && (
+                <span className={lastConsequence.force_change > 0 ? 'text-green-400' : 'text-red-400'}>
+                  {lastConsequence.force_change > 0 ? '+' : ''}{lastConsequence.force_change} Force
+                </span>
+              )}
+              {lastConsequence.agility_change !== undefined && lastConsequence.agility_change !== 0 && (
+                <span className={lastConsequence.agility_change > 0 ? 'text-green-400' : 'text-red-400'}>
+                  {lastConsequence.agility_change > 0 ? '+' : ''}{lastConsequence.agility_change} Agilité
+                </span>
+              )}
+              {lastConsequence.intelligence_change !== undefined && lastConsequence.intelligence_change !== 0 && (
+                <span className={lastConsequence.intelligence_change > 0 ? 'text-green-400' : 'text-red-400'}>
+                  {lastConsequence.intelligence_change > 0 ? '+' : ''}{lastConsequence.intelligence_change} Intelligence
+                </span>
+              )}
+              {lastConsequence.endurance_change !== undefined && lastConsequence.endurance_change !== 0 && (
+                <span className={lastConsequence.endurance_change > 0 ? 'text-green-400' : 'text-red-400'}>
+                  {lastConsequence.endurance_change > 0 ? '+' : ''}{lastConsequence.endurance_change} Endurance
+                </span>
+              )}
+            </div>
+            {lastConsequence.text && (
+              <p className="text-gray-400 text-xs mt-2 text-center">{lastConsequence.text}</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {character && (
         <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-800/40">
           <div className="flex items-center gap-3 flex-1 bg-[#131929] border border-gray-800 rounded-xl px-4 py-3">
@@ -186,7 +266,6 @@ function AdventureReader({ params }: Props) {
         </div>
       )}
 
-      {/* Contenu principal */}
       <main className="flex-1 flex flex-col items-center px-4 py-6">
         <div className="w-full max-w-2xl space-y-5">
 
@@ -247,7 +326,7 @@ function AdventureReader({ params }: Props) {
             <div className="space-y-3">
               {currentBranch.choix1 && currentBranch.choix1_lien && (
                 <button
-                  onClick={() => chooseOption(currentBranch.choix1_lien)}
+                  onClick={() => { applyConsequence(1, currentBranch?.choix1_consequences); chooseOption(currentBranch.choix1_lien); }}
                   className="w-full text-left px-5 py-4 bg-[#111827] border border-gray-700 hover:border-cyan-500/60 hover:bg-[#131929] rounded-xl text-gray-200 hover:text-white transition-all duration-200 text-sm leading-relaxed"
                 >
                   {currentBranch.choix1}
@@ -255,7 +334,7 @@ function AdventureReader({ params }: Props) {
               )}
               {currentBranch.choix2 && currentBranch.choix2_lien && (
                 <button
-                  onClick={() => chooseOption(currentBranch.choix2_lien)}
+                  onClick={() => { applyConsequence(2, currentBranch?.choix2_consequences); chooseOption(currentBranch.choix2_lien); }}
                   className="w-full text-left px-5 py-4 bg-[#111827] border border-gray-700 hover:border-cyan-500/60 hover:bg-[#131929] rounded-xl text-gray-200 hover:text-white transition-all duration-200 text-sm leading-relaxed"
                 >
                   {currentBranch.choix2}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import type { Aventure, Embranchement } from '@/lib/supabaseClient';
 
@@ -11,7 +11,7 @@ interface UseAdventureState {
   history: Embranchement[];
 }
 
-export function useAdventure(adventureId: number) {
+export function useAdventure(adventureId: number, userId: number | null = null) {
   const [state, setState] = useState<UseAdventureState>({
     adventure: null,
     currentBranch: null,
@@ -20,6 +20,9 @@ export function useAdventure(adventureId: number) {
     isEnd: false,
     history: [],
   });
+
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
 
   useEffect(() => {
     if (!adventureId) return;
@@ -94,9 +97,22 @@ export function useAdventure(adventureId: number) {
     }
   }, []);
 
-  const restart = useCallback(() => {
+  const restart = useCallback(async () => {
     if (!state.adventure?.embranchement_initial_id) return;
     setState((s) => ({ ...s, loading: true }));
+
+    // Supprimer l'ancienne sauvegarde si elle existe
+    if (state.adventure && userIdRef.current) {
+      try {
+        await supabase
+          .from('sauvegarde')
+          .delete()
+          .eq('id_aventure', state.adventure.id)
+          .eq('id_utilisateur', userIdRef.current);
+      } catch {
+        // Ignore l'erreur de suppression
+      }
+    }
 
     supabase
       .from('embranchement')

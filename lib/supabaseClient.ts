@@ -9,10 +9,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Types de roles disponibles
 export type UserRole = 'admin' | 'joueur' | 'createur'
 
-// Types pour la base de donnees Supabase
 export interface Utilisateur {
   id: number
   nom_utilisateur: string
@@ -50,6 +48,9 @@ export interface Embranchement {
   choix2: string
   choix2_lien: number | null
   id_aventure: number
+  // Conséquences par choix (stockées en JSON dans la DB)
+  choix1_consequences?: string | null
+  choix2_consequences?: string | null
 }
 
 export interface Sauvegarde {
