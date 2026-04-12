@@ -172,7 +172,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <label htmlFor="characterName" className="block text-gray-300 text-sm mb-2">
+          <label htmlFor="characterName" className="block text-white text-sm mb-3 font-medium">
             Nom du Personnage
           </label>
           <input
@@ -181,7 +181,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
             value={characterName}
             onChange={(e) => setCharacterName(e.target.value)}
             placeholder="Entrez le nom de votre personnage..."
-            className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all"
+            className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all"
             maxLength={50}
           />
         </div>
