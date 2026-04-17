@@ -235,7 +235,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       }
 
       return { success: true };
-    } catch (error) {
+    } catch {
       return { success: false, error: 'Erreur de connexion avec Google' };
     }
   };
