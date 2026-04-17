@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Character, CHARACTER_CLASSES } from '@/types';
 import CharacterCard from './CharacterCard';
 import ConfirmDeleteModal from '@/components/shared/ConfirmDeleteModal';
@@ -18,6 +18,7 @@ interface CharacterListProps {
 
 export default function CharacterList({ userId }: CharacterListProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,7 +26,16 @@ export default function CharacterList({ userId }: CharacterListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('date');
+  const [selectedCharacterId, setSelectedCharacterId] = useState<number | string | null>(null);
   const lastUserIdRef = useRef(userId);
+
+  // Read initial selection from URL
+  useEffect(() => {
+    const personnageParam = searchParams.get('personnage');
+    if (personnageParam) {
+      setSelectedCharacterId(personnageParam);
+    }
+  }, [searchParams]);
 
   const sortedCharacters = useMemo(() => {
     const chars = [...characters];
@@ -213,8 +223,15 @@ export default function CharacterList({ userId }: CharacterListProps) {
           <CharacterCard
             key={character.id ?? index}
             character={character}
-            onSelect={() => router.push(`/adventure?personnage=${character.id}`)}
+            onSelect={() => {
+              if (selectedCharacterId === character.id) {
+                router.push(`/adventure?personnage=${character.id}`);
+              } else {
+                setSelectedCharacterId(character.id!);
+              }
+            }}
             onDelete={() => handleDeleteRequest(character)}
+            isSelected={selectedCharacterId === character.id}
           />
         ))}
       </div>

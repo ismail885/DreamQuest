@@ -6,16 +6,17 @@ interface CharacterCardProps {
   character: Character;
   onSelect?: () => void;
   onDelete?: () => void;
+  isSelected?: boolean;
 }
 
-export default function CharacterCard({ character, onSelect, onDelete }: CharacterCardProps) {
+export default function CharacterCard({ character, onSelect, onDelete, isSelected }: CharacterCardProps) {
   const classInfo = CHARACTER_CLASSES[character.classe];
   const pv = character.points_vie ?? 0;
   const pvMax = character.points_vie_max ?? 100;
   const healthPercentage = pvMax > 0 ? (pv / pvMax) * 100 : 0;
 
   return (
-    <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group">
+    <div className={`bg-gray-900/50 backdrop-blur-sm border rounded-lg overflow-hidden transition-all duration-300 group ${isSelected ? 'border-cyan-400 ring-2 ring-cyan-400/50' : 'border-gray-800 hover:border-cyan-400'}`}>
       <div className="relative h-48 bg-gradient-to-b from-gray-800 to-gray-900">
         <Image
           src={classInfo?.image ?? '/illustrations_personnage/default.png'}
@@ -25,8 +26,15 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
         
-        <div className="absolute top-2 right-2 bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold">
-          Niv. {character.niveau}
+        <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+          {isSelected && (
+            <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold text-sm">
+              ✓Sélectionné
+            </span>
+          )}
+          <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold">
+            Niv. {character.niveau}
+          </span>
         </div>
       </div>
 
@@ -69,7 +77,7 @@ export default function CharacterCard({ character, onSelect, onDelete }: Charact
               onClick={onSelect}
               className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
             >
-              Sélectionner
+              {isSelected ? '▶ Jouez' : 'Sélectionner'}
             </button>
           )}
           {onDelete && (
