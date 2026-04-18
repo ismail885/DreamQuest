@@ -5,8 +5,7 @@ import { CHARACTER_CLASSES, CharacterClass, Character } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import ClassCard from './ClassCard';
 import toast from 'react-hot-toast';
-import { Check, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 interface CreateCharacterFormProps {
   userId?: number;
@@ -109,45 +108,20 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
   const currentClass = classes[currentStep];
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-5xl">
-      {/* Header */}
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full mb-4">
-          <Sparkles className="w-4 h-4 text-cyan-400" />
-          <span className="text-cyan-400 text-sm font-medium">Créez votre héros</span>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+    <div className="container mx-auto px-6 py-12 max-w-5xl">
+      <div className="mb-8">
+        <button
+          onClick={() => window.history.back()}
+          className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 mb-6 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Retour
+        </button>
+        <h1 className="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">
           Création de Personnage
         </h1>
-        <p className="text-gray-400">Choisissez votre classe et donnez-lui un nom</p>
-      </div>
-
-      {/* Progress indicator */}
-      <div className="flex justify-center gap-2 mb-8">
-        {classes.map((cls, index) => (
-          <button
-            key={cls.name}
-            onClick={() => setCurrentStep(index)}
-            className={`h-2 rounded-full transition-all duration-200 ${
-              index === currentStep
-                ? 'bg-cyan-400 w-8 shadow-lg shadow-cyan-400/30'
-                : selectedClass === cls.name
-                ? 'bg-cyan-500/50 w-4'
-                : 'bg-gray-700 w-2 hover:bg-gray-500 hover:w-4'
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* Class name indicator */}
-      <div className="text-center mb-6">
-        <span className="text-cyan-400 font-semibold text-lg">
-          {currentClass.name}
-        </span>
-        <span className="text-gray-500 mx-2">•</span>
-        <span className="text-gray-400 text-sm">
-          Classe {currentStep + 1} sur {totalSteps}
-        </span>
       </div>
 
       <div className="relative mb-8">
@@ -163,21 +137,11 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         )}
 
         <div className="max-w-2xl mx-auto px-12 transition-all duration-300">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ClassCard
-                classInfo={currentClass}
-                isSelected={selectedClass === currentClass.name}
-                onSelect={() => handleClassSelect(currentClass.name)}
-              />
-            </motion.div>
-          </AnimatePresence>
+          <ClassCard
+            classInfo={currentClass}
+            isSelected={selectedClass === currentClass.name}
+            onSelect={() => handleClassSelect(currentClass.name)}
+          />
         </div>
 
         {currentStep < totalSteps - 1 && (
@@ -190,6 +154,20 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
             </svg>
           </button>
         )}
+      </div>
+
+      <div className="flex justify-center gap-2 mb-8">
+        {classes.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentStep(index)}
+            className={`h-2 rounded-full transition-all duration-200 ${
+              index === currentStep
+                ? 'bg-cyan-400 w-8 shadow-lg shadow-cyan-400/30'
+                : 'bg-gray-700 w-2 hover:bg-gray-500 hover:w-4'
+            }`}
+          />
+        ))}
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
