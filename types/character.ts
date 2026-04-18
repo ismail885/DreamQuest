@@ -163,7 +163,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 3
     },
     abilities: ['Drain de Vie', 'Armée de Morts', 'Malédiction'],
-    image: '/illustrations_personnage/necromancien.jpeg'
+    image: '/illustrations_personnage/necromancien.jpg'
   },
   Voleur: {
     name: 'Voleur',
