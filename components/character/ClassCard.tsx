@@ -1,8 +1,9 @@
-﻿'use client';
+'use client';
 
 import Image from 'next/image';
 import { ClassInfo } from '@/types';
 import { Sword, Zap, Brain, Heart } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface ClassCardProps {
   classInfo: ClassInfo;
@@ -10,11 +11,19 @@ interface ClassCardProps {
   onSelect: () => void;
 }
 
-export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
+export default function ClassCard({ classInfo, isSelected, onSelect }: ClassCardProps) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
       onClick={onSelect}
-      className="relative bg-[#0f1623]/80 border border-gray-800/50 rounded-2xl overflow-hidden cursor-pointer hover:border-cyan-500/50 transition-all"
+      className={`relative bg-[#0f1623]/80 border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
+        isSelected 
+          ? 'border-cyan-400 shadow-lg shadow-cyan-400/20 scale-[1.02]' 
+          : 'border-gray-800/50 hover:border-cyan-500/50'
+      }`}
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
         {/* Colonne gauche - Contenu */}
@@ -114,6 +123,6 @@ export default function ClassCard({ classInfo, onSelect }: ClassCardProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
