@@ -12,6 +12,7 @@ const config: Config = {
       fontFamily: {
         cinzel: ['var(--font-cinzel)', 'serif'],
         inter: ['var(--font-inter)', 'sans-serif'],
+        plusJakarta: ['var(--font-plus-jakarta)', 'sans-serif'],
       },
       colors: {
         primary: {

@@ -1,8 +1,25 @@
-﻿import "@/styles/globals.css";
+import "@/styles/globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from "react-hot-toast";
 
+
+import { Plus_Jakarta_Sans } from 'next/font/google';
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta',
+  display: 'swap',
+});
+
+export const metadata = {
+  title: "DreamQuest - RPG Textuel Interactif",
+  description: "Créez votre personnage et partez à l'aventure dans des histoires interactives à embranchements multiples.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -10,13 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" data-scroll-behavior="smooth">
+    <html lang="fr" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/DreamQuest/public/Logo_DreamQuest.png" sizes="any" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <meta name="theme-color" content="#00d4ff" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-[#0b0d1e] text-white antialiased" suppressHydrationWarning>
+      <body className={`${plusJakartaSans.variable} bg-[#0b0d1e] text-white antialiased`}>
         <AuthProvider>
           <ThemeProvider>
           <div className="relative min-h-screen flex flex-col">
