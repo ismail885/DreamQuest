@@ -171,7 +171,7 @@ export default function ClassementPage() {
             players.length === 0 ? (
               <div className="text-center py-20">
                 <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h2 className="text-xl font-bold text-white mb-2">Aucun joueur排名</h2>
+                <h2 className="text-xl font-bold text-white mb-2">Aucun joueur</h2>
                 <p className="text-gray-400">Rejoignez la communauté pour apparaître !</p>
               </div>
             ) : (
