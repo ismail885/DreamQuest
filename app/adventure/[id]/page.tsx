@@ -147,7 +147,6 @@ function AdventureReader({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
-
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800/60">
         <button
           onClick={() => router.back()}
@@ -268,8 +267,6 @@ function AdventureReader({ params }: Props) {
 
       <main className="flex-1 flex flex-col items-center px-4 py-6">
         <div className="w-full max-w-2xl space-y-5">
-
-
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">
@@ -344,7 +341,6 @@ function AdventureReader({ params }: Props) {
               )}
             </div>
           )}
-
         </div>
       </main>
     </div>
