@@ -91,7 +91,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
       endurance: 4
     },
     abilities: ['Boule de Feu', 'Éclair', 'Bouclier Magique'],
-    image: '/illustrations_personnage/prêtre.jpeg'
+    image: '/illustrations_personnage/mage.jpg'
   },
   Assassin: {
     name: 'Assassin',
