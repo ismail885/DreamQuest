@@ -272,7 +272,9 @@ function AdventureReader({ params }: Props) {
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Progression de l&apos;histoire</span>
+              <span className="text-gray-400 text-sm">
+                {isEnd ? 'Aventure terminée' : `Étape ${history.length + 1} sur ${MAX_STEPS}`}
+              </span>
               <span className="text-gray-400 text-sm">{progression}%</span>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
