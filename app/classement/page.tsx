@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Trophy, Medal, BookOpen } from "lucide-react";
+import { Trophy, Medal, BookOpen, Users } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
@@ -16,9 +16,18 @@ interface RankingAdventure {
   auteur_nom?: string;
 }
 
+interface RankingPlayer {
+  id: number;
+  nom_utilisateur: string;
+  niveau: number;
+  experience: number;
+}
+
 export default function ClassementPage() {
   const { user } = useAuthContext();
+  const [activeTab, setActiveTab] = useState<"adventures" | "players">("adventures");
   const [adventures, setAdventures] = useState<RankingAdventure[]>([]);
+  const [players, setPlayers] = useState<RankingPlayer[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState<"all" | "week" | "month">("all");
 
@@ -26,6 +35,7 @@ export default function ClassementPage() {
     const fetchRanking = async () => {
       setLoading(true);
       
+      // Fetch adventures
       const query = supabase
         .from("aventure")
         .select(`
@@ -56,8 +66,25 @@ export default function ClassementPage() {
       setLoading(false);
     };
 
-    fetchRanking();
-  }, [timeFilter]);
+    const fetchPlayers = async () => {
+      const { data, error } = await supabase
+        .from("utilisateur")
+        .select("id, nom_utilisateur, niveau, experience")
+        .order("niveau", { ascending: false })
+        .order("experience", { ascending: false })
+        .limit(50);
+
+      if (!error && data) {
+        setPlayers(data);
+      }
+    };
+
+    if (activeTab === "adventures") {
+      fetchRanking();
+    } else {
+      fetchPlayers();
+    }
+  }, [timeFilter, activeTab]);
 
   const getMedalColor = (rank: number) => {
     switch (rank) {
@@ -89,25 +116,36 @@ export default function ClassementPage() {
               Classement
             </h1>
             <p className="text-gray-400 text-lg">
-              Découvrez les aventures les plus populaires
+              {activeTab === "adventures" 
+                ? "Découvrez les aventures les plus populaires"
+                : "Les meilleurs aventuriers du royaume"}
             </p>
           </div>
 
-          {/* Filters */}
+          {/* Tabs */}
           <div className="flex justify-center gap-2 mb-8">
-            {(["all", "week", "month"] as const).map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setTimeFilter(filter)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  timeFilter === filter
-                    ? "bg-cyan-500 text-white"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                }`}
-              >
-                {filter === "all" ? "Tout temps" : filter === "week" ? "Cette semaine" : "Ce mois"}
-              </button>
-            ))}
+            <button
+              onClick={() => setActiveTab("adventures")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === "adventures"
+                  ? "bg-cyan-500 text-white"
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+              }`}
+            >
+              <BookOpen className="w-4 h-4 inline mr-2" />
+              Aventures
+            </button>
+            <button
+              onClick={() => setActiveTab("players")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === "players"
+                  ? "bg-cyan-500 text-white"
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+              }`}
+            >
+              <Users className="w-4 h-4 inline mr-2" />
+              Joueurs
+            </button>
           </div>
 
           {loading ? (
@@ -129,6 +167,46 @@ export default function ClassementPage() {
                 </Link>
               )}
             </div>
+          ) : activeTab === "players" ? (
+            players.length === 0 ? (
+              <div className="text-center py-20">
+                <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                <h2 className="text-xl font-bold text-white mb-2">Aucun joueur排名</h2>
+                <p className="text-gray-400">Rejoignez la communauté pour apparaître !</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {players.map((player, index) => {
+                  const rank = index + 1;
+                  return (
+                    <div
+                      key={player.id}
+                      className="flex items-center gap-4 p-4 bg-[#0d1526] border border-gray-700/50 rounded-xl hover:border-cyan-500/50 transition-all"
+                    >
+                      <div className={`font-bold w-12 ${getMedalColor(rank)}`}>
+                        {getMedalIcon(rank)}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-white font-semibold text-lg truncate">
+                          {player.nom_utilisateur}
+                        </h3>
+                        <p className="text-gray-400 text-sm">
+                          Niveau {player.niveau ?? 1}
+                        </p>
+                      </div>
+                      
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-cyan-400">
+                          {player.experience ?? 0}
+                        </div>
+                        <div className="text-gray-500 text-xs">XP</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
           ) : (
             <div className="space-y-4">
               {adventures.map((adventure, index) => {
