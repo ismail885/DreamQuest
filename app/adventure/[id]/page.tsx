@@ -9,6 +9,7 @@ import { useSave } from "@/hooks/useSave";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
+import { motion } from "framer-motion";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -294,11 +295,16 @@ function AdventureReader({ params }: Props) {
           </div>
 
           {currentBranch && (
-            <div className="bg-[#111827] border border-gray-800 rounded-xl p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-[#111827] border border-gray-800 rounded-xl p-6"
+            >
               <p className="text-gray-200 leading-relaxed text-base">
                 {currentBranch.texte}
               </p>
-            </div>
+            </motion.div>
           )}
 
           {isEnd && (
@@ -322,24 +328,33 @@ function AdventureReader({ params }: Props) {
           )}
 
           {!isEnd && currentBranch && (
-            <div className="space-y-3">
+            <motion.div 
+              className="space-y-3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
               {currentBranch.choix1 && currentBranch.choix1_lien && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => { applyConsequence(1, currentBranch?.choix1_consequences); chooseOption(currentBranch.choix1_lien); }}
                   className="w-full text-left px-5 py-4 bg-[#111827] border border-gray-700 hover:border-cyan-500/60 hover:bg-[#131929] rounded-xl text-gray-200 hover:text-white transition-all duration-200 text-sm leading-relaxed"
                 >
                   {currentBranch.choix1}
-                </button>
+                </motion.button>
               )}
               {currentBranch.choix2 && currentBranch.choix2_lien && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => { applyConsequence(2, currentBranch?.choix2_consequences); chooseOption(currentBranch.choix2_lien); }}
                   className="w-full text-left px-5 py-4 bg-[#111827] border border-gray-700 hover:border-cyan-500/60 hover:bg-[#131929] rounded-xl text-gray-200 hover:text-white transition-all duration-200 text-sm leading-relaxed"
                 >
                   {currentBranch.choix2}
-                </button>
+                </motion.button>
               )}
-            </div>
+            </motion.div>
           )}
         </div>
       </main>

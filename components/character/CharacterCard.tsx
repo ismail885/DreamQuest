@@ -1,6 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { Character, CHARACTER_CLASSES, STAT_ICONS } from '@/types';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface CharacterCardProps {
   character: Character;
@@ -16,7 +17,11 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
   const healthPercentage = pvMax > 0 ? (pv / pvMax) * 100 : 0;
 
   return (
-    <div className={`bg-gray-900/50 backdrop-blur-sm border rounded-lg overflow-hidden transition-all duration-300 group ${isSelected ? 'border-cyan-400 ring-2 ring-cyan-400/50' : 'border-gray-800 hover:border-cyan-400'}`}>
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+      className={`bg-gray-900/50 backdrop-blur-sm border rounded-lg overflow-hidden transition-all duration-300 group ${isSelected ? 'border-cyan-400 ring-2 ring-cyan-400/50' : 'border-gray-800 hover:border-cyan-400'}`}
+    >
       <div className="relative h-48 bg-gradient-to-b from-gray-800 to-gray-900">
         <Image
           src={classInfo?.image ?? '/illustrations_personnage/default.png'}
@@ -73,12 +78,13 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
 
         <div className="flex gap-2">
           {onSelect && (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={onSelect}
               className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
             >
               {isSelected ? '▶ Jouez' : 'Sélectionner'}
-            </button>
+            </motion.button>
           )}
           {onDelete && (
             <button
@@ -93,6 +99,6 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

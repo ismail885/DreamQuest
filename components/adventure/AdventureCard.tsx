@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import { useVote } from "@/hooks/useVote";
 import { supabase } from "@/lib/supabaseClient";
+import { motion } from "framer-motion";
 
 interface AdventureCardProps {
   id: number;
@@ -60,10 +61,14 @@ export default function AdventureCard({
   };
 
   return (
-    <Link
-      href={href}
-      className="group relative bg-[#0f1322] rounded-xl overflow-hidden border border-gray-800/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 hover:-translate-y-1"
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
     >
+      <Link
+        href={href}
+        className="group relative bg-[#0f1322] rounded-xl overflow-hidden border border-gray-800/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20"
+      >
       <div className="p-5 space-y-3">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-white font-semibold text-lg line-clamp-1 group-hover:text-cyan-400 transition-colors">
@@ -90,5 +95,6 @@ export default function AdventureCard({
         </p>
       </div>
     </Link>
+    </motion.div>
   );
 }
