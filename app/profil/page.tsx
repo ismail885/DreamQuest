@@ -10,18 +10,21 @@ import { ExtendedUserProfile, UserStats, UserSave, UserCreation } from "@/types"
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthContext } from "@/context/AuthContext";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
+import { getDailyQuests, DailyQuest, getTotalXPReward } from "@/lib/dailyQuests";
+import { getActiveEvent, getTimeRemaining } from "@/lib/specialEvents";
 import * as LucideIcons from "lucide-react";
 
 export default function ProfilPage() {
   const router = useRouter();
   const { user, loading: authLoading, updateUser, logout } = useAuthContext();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations">("stories");
+  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests">("stories");
   
   const [userProfile, setUserProfile] = useState<ExtendedUserProfile | null>(null);
   const [userSaves, setUserSaves] = useState<UserSave[]>([]);
   const [userCreations, setUserCreations] = useState<UserCreation[]>([]);
   const [userAchievements, setUserAchievements] = useState<UserAchievements | null>(null);
+  const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
   const [stats, setStats] = useState<UserStats>({
     storiesPlayed: 0,
     storiesCreated: 0,
@@ -76,6 +79,9 @@ export default function ProfilPage() {
 
   const loadUserData = async (userId: number) => {
     try {
+      const questData = getDailyQuests(userId);
+      setDailyQuests(questData.quests);
+
       const { data: profileData } = await supabase
         .from("utilisateur")
         .select("*")
@@ -355,14 +361,33 @@ export default function ProfilPage() {
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             
             <div className="lg:w-80 flex-shrink-0">
-              <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl lg:rounded-2xl p-4 md:p-6">
-                <div className="flex flex-col items-center mb-4 md:mb-6">
-                  <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-cyan-500/30">
-                    {getUserInitials()}
-                  </div>
-                  <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
-                  <p className="text-gray-400 text-sm">Niveau {currentLevel} • Rang +{Math.floor(currentLevel * 3 + stats.likes / 100)}</p>
-                </div>
+              {(() => {
+                const activeEvent = getActiveEvent();
+                const timeLeft = activeEvent ? getTimeRemaining(activeEvent) : null;
+                return (
+                  <>
+                    {activeEvent && timeLeft && (
+                      <div className="mb-4 p-4 bg-gradient-to-r from-purple-900/80 to-red-900/80 border border-purple-500/50 rounded-xl">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-purple-400 font-bold text-sm">{activeEvent.name}</span>
+                          <span className="text-yellow-400 text-xs">
+                            {timeLeft.days > 0 && `${timeLeft.days}j `}{timeLeft.hours}h {timeLeft.minutes}m
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-xs mb-2">{activeEvent.description}</p>
+                        <div className="text-center">
+                          <span className="text-cyan-400 text-sm font-bold">+{activeEvent.reward} XP</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl lg:rounded-2xl p-4 md:p-6">
+                      <div className="flex flex-col items-center mb-4 md:mb-6">
+                        <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-cyan-500/30">
+                          {getUserInitials()}
+                        </div>
+                        <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
+                        <p className="text-gray-400 text-sm">Niveau {currentLevel} • Rang +{Math.floor(currentLevel * 3 + stats.likes / 100)}</p>
+                      </div>
 
                 <div className="mb-6">
                   <div className="flex justify-between text-sm mb-2">
@@ -426,6 +451,9 @@ export default function ProfilPage() {
                   </button>
                 </div>
               </div>
+                  </>
+                );
+              })()}
             </div>
 
             <div className="flex-1">
@@ -452,14 +480,14 @@ export default function ProfilPage() {
                     Réalisations
                   </button>
                   <button
-                    onClick={() => setActiveTab("creations")}
+                    onClick={() => setActiveTab("quests")}
                     className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
-                      activeTab === "creations"
+                      activeTab === "quests"
                         ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
                         : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
                     }`}
                   >
-                    Créations
+                    Quêtes
                   </button>
                 </div>
 
@@ -607,6 +635,63 @@ export default function ProfilPage() {
                           >
                             Créer une aventure
                           </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === "quests" && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-white">Quêtes du jour</h3>
+                        <span className="text-cyan-400 font-bold">+{getTotalXPReward({ quests: dailyQuests, lastReset: "" })} XP</span>
+                      </div>
+                      {dailyQuests.length > 0 ? (
+                        dailyQuests.map((quest) => {
+                          const percent = Math.round((quest.progress / quest.target) * 100);
+                          return (
+                            <div
+                              key={quest.id}
+                              className={`p-4 rounded-xl border ${
+                                quest.completed
+                                  ? "bg-green-500/10 border-green-500/30"
+                                  : "bg-[#151f30] border-gray-700/30"
+                              }`}
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex items-center gap-2">
+                                  {quest.completed && (
+                                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  )}
+                                  <h4 className={`font-semibold ${quest.completed ? "text-green-400" : "text-white"}`}>
+                                    {quest.title}
+                                  </h4>
+                                </div>
+                                <span className="text-yellow-400 text-sm">+{quest.xpReward} XP</span>
+                              </div>
+                              <p className="text-gray-400 text-sm mb-2">{quest.description}</p>
+                              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>{quest.progress} / {quest.target}</span>
+                              </div>
+                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all ${
+                                    quest.completed
+                                      ? "bg-green-500"
+                                      : "bg-gradient-to-r from-cyan-500 to-blue-500"
+                                  }`}
+                                  style={{ width: `${percent}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="text-center py-12">
+                          <p className="text-gray-400">Chargement des quêtes...</p>
                         </div>
                       )}
                     </div>

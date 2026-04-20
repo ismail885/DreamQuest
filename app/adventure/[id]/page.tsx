@@ -9,6 +9,7 @@ import { useSave } from "@/hooks/useSave";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
+import { LEVEL_BONUS } from "@/lib/randomGenerator";
 import { motion } from "framer-motion";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
@@ -116,11 +117,48 @@ function AdventureReader({ params }: Props) {
       });
   }, [personnageId]);
 
+  const loadCharacterProgress = () => {
+    if (!user || !characterIdNum) return null;
+    const key = `dq_char_${user.id}_${characterIdNum}`;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return null; }
+    }
+    return null;
+  };
+
+  const saveCharacterProgress = (niveau: number, stats: { force: number; agility: number; intelligence: number; endurance: number }, experience: number) => {
+    if (!user || !characterIdNum) return;
+    const key = `dq_char_${user.id}_${characterIdNum}`;
+    localStorage.setItem(key, JSON.stringify({ niveau, stats, experience, updatedAt: new Date().toISOString() }));
+  };
+
   useEffect(() => {
     if (isEnd && user && characterIdNum) {
       save();
+      const progress = loadCharacterProgress() || { niveau: character?.niveau ?? 1, stats: { force: 5, agility: 5, intelligence: 5, endurance: 5 }, experience: 0 };
+      const xpGained = history.length * 50;
+      const newExperience = progress.experience + xpGained;
+      const newLevel = Math.min(Math.floor(newExperience / 500) + 1, 10);
+      const bonus = LEVEL_BONUS[newLevel] || {};
+      const newStats = {
+        force: (progress.stats?.force ?? 5) + (bonus.force ?? 0),
+        agility: (progress.stats?.agility ?? 5) + (bonus.agility ?? 0),
+        intelligence: (progress.stats?.intelligence ?? 5) + (bonus.intelligence ?? 0),
+        endurance: (progress.stats?.endurance ?? 5) + (bonus.endurance ?? 0),
+      };
+      if (newLevel > progress.niveau) {
+        supabase.from('personnage').update({ niveau: newLevel }).eq('id', characterIdNum).then();
+      }
+      saveCharacterProgress(newLevel, newStats, newExperience);
+      setCharacter({
+        ...character!,
+        niveau: newLevel,
+        stats: newStats,
+        experience: newExperience,
+      });
     }
-  }, [isEnd, user, characterIdNum, save]);
+  }, [isEnd, user, characterIdNum, save, history.length]);
 
   const image = ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
 
@@ -318,6 +356,11 @@ function AdventureReader({ params }: Props) {
               <p className="text-gray-400 text-sm">
                 Complétée en {history.length} étape{history.length > 1 ? "s" : ""}
               </p>
+              {character && character.niveau > 1 && (
+                <p className="text-yellow-400 font-semibold">
+                  Niveau {character.niveau} atteint !
+                </p>
+              )}
               <button
                 onClick={restart}
                 className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-semibold transition-colors"
