@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
-import { canCreateStory, type UserRole } from "@/types";
+
 import { Home, Users, BookOpen, User, PlusCircle } from "lucide-react";
 
 const navItems = [
@@ -16,7 +16,8 @@ const navItems = [
 export default function BottomNav() {
   const pathname = usePathname();
   const { user } = useAuthContext();
-  const isCreator = user && (canCreateStory(user.role as UserRole) || user.role === "admin");
+  const userRole = user?.role as string;
+  const isCreator = user && (userRole === "createur" || userRole === "admin");
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0e1a]/95 backdrop-blur-md border-t border-gray-800/50 md:hidden z-50 safe-area-bottom">
