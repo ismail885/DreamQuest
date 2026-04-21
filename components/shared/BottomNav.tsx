@@ -51,7 +51,7 @@ export default function BottomNav() {
             }`}
           >
             <PlusCircle size={24} strokeWidth={pathname.startsWith("/create-adventure") ? 2.5 : 2} />
-            <span className="text-xs font-medium">Creator</span>
+            <span className="text-xs font-medium">Créateur</span>
           </Link>
         )}
       </div>

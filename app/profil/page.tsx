@@ -387,6 +387,9 @@ export default function ProfilPage() {
                         </div>
                         <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
                         <p className="text-gray-400 text-sm">Niveau {currentLevel} • Rang +{Math.floor(currentLevel * 3 + stats.likes / 100)}</p>
+                        <a href={`/profil/${userProfile?.nom_utilisateur}`} className="text-cyan-400 text-sm hover:underline mt-2">
+                          Voir profil public
+                        </a>
                       </div>
 
                 <div className="mb-6">
