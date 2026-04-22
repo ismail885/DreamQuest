@@ -41,6 +41,29 @@ export default function ProfilPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [soundEffects, setSoundEffects] = useState(true);
+
+  const loadSettings = () => {
+    if (!user) return;
+    const notif = localStorage.getItem(`dq_settings_${user.id}_notifications`);
+    const sound = localStorage.getItem(`dq_settings_${user.id}_soundEffects`);
+    if (notif) setNotifications(JSON.parse(notif));
+    if (sound) setSoundEffects(JSON.parse(sound));
+  };
+
+  useEffect(() => { if (user) loadSettings(); }, [user]);
+
+  const toggleNotifications = () => {
+    const newVal = !notifications;
+    setNotifications(newVal);
+    if (user) localStorage.setItem(`dq_settings_${user.id}_notifications`, JSON.stringify(newVal));
+  };
+
+  const toggleSoundEffects = () => {
+    const newVal = !soundEffects;
+    setSoundEffects(newVal);
+    if (user) localStorage.setItem(`dq_settings_${user.id}_soundEffects`, JSON.stringify(newVal));
+  };
+
   const { isDark: darkMode, toggleTheme } = useTheme();
   const [language, setLanguage] = useState("fr");
   const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -741,7 +764,7 @@ export default function ProfilPage() {
                   <span className="text-white">Notifications</span>
                 </div>
                 <button
-                  onClick={() => setNotifications(!notifications)}
+                  onClick={toggleNotifications}
                   className={`relative w-12 h-6 rounded-full transition-colors ${notifications ? 'bg-cyan-500' : 'bg-gray-600'}`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications ? 'translate-x-7' : 'translate-x-1'}`} />
@@ -756,7 +779,7 @@ export default function ProfilPage() {
                   <span className="text-white">Effets sonores</span>
                 </div>
                 <button
-                  onClick={() => setSoundEffects(!soundEffects)}
+                  onClick={toggleSoundEffects}
                   className={`relative w-12 h-6 rounded-full transition-colors ${soundEffects ? 'bg-cyan-500' : 'bg-gray-600'}`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${soundEffects ? 'translate-x-7' : 'translate-x-1'}`} />
