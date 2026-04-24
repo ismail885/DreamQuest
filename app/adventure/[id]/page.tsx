@@ -9,8 +9,9 @@ import { useSave } from "@/hooks/useSave";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
-import { LEVEL_BONUS } from "@/lib/randomGenerator";
+import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
 import { motion } from "framer-motion";
+import type { CharacterClass } from "@/types";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -46,6 +47,9 @@ function AdventureReader({ params }: Props) {
   const [character, setCharacter] = useState<Character | null>(null);
   const [lastConsequence, setLastConsequence] = useState<ConsequenceEffect | null>(null);
   const [showEffect, setShowEffect] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState<typeof RANDOM_EVENTS[0] | null>(null);
+  const [availableAbilities, setAvailableAbilities] = useState<string[]>([]);
+  const [usedAbilities, setUsedAbilities] = useState<string[]>([]);
 
   const applyConsequence = async (choixNum: 1 | 2, consequencesJson: string | null | undefined) => {
     if (!character || !consequencesJson) return;
@@ -116,6 +120,25 @@ function AdventureReader({ params }: Props) {
         if (data) setCharacter(data as Character);
       });
   }, [personnageId]);
+
+  // Charger les abilities du personnage lors du chargement
+  useEffect(() => {
+    if (!character?.classe) return;
+    const classAbilities = ABILITIES_POOL[character.classe as CharacterClass] || [];
+    // Sélectionner les 3 premières abilities comme disponibles
+    setAvailableAbilities(classAbilities.slice(0, 3));
+  }, [character?.classe]);
+
+  // Déclencher un événement aléatoire (15% de chance)
+  useEffect(() => {
+    if (!currentBranch || currentEvent || isEnd) return;
+    
+    const shouldTrigger = Math.random() < 0.15;
+    if (shouldTrigger) {
+      const event = getRandomEvent();
+      setCurrentEvent(event);
+    }
+  }, [currentBranch?.id]);
 
   const loadCharacterProgress = () => {
     if (!user || !characterIdNum) return null;
@@ -370,6 +393,34 @@ function AdventureReader({ params }: Props) {
             </div>
           )}
 
+          {currentEvent && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[#1a1f2e]/80 border border-amber-500/30 rounded-xl p-5 mb-4"
+            >
+              <p className="text-amber-400 text-xs font-semibold mb-2">ÉVÉNEMENT ALÉATOIRE</p>
+              <p className="text-gray-200 leading-relaxed text-sm">{currentEvent.text}</p>
+              <div className="flex flex-col gap-2 mt-4">
+                {currentEvent.choices.map((choice, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      applyConsequence(1, JSON.stringify(choice.consequence));
+                      setCurrentEvent(null);
+                      if (currentBranch?.choix1_lien) {
+                        chooseOption(currentBranch.choix1_lien);
+                      }
+                    }}
+                    className="w-full text-left px-4 py-3 bg-[#111827] border border-gray-700 hover:border-amber-500/50 rounded-lg text-gray-300 hover:text-white text-sm transition-all"
+                  >
+                    {choice.text}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {!isEnd && currentBranch && (
             <motion.div 
               className="space-y-3"
@@ -396,6 +447,51 @@ function AdventureReader({ params }: Props) {
                 >
                   {currentBranch.choix2}
                 </motion.button>
+              )}
+
+              {/* Compétences de classe */}
+              {availableAbilities.length > 0 && character?.classe && !currentEvent && (
+                <div className="mt-4 pt-4 border-t border-gray-800">
+                  <p className="text-purple-400 text-xs font-semibold mb-3">
+                    ✨ COMPÉTENCE {character.classe.toUpperCase()}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {availableAbilities.map((ability) => (
+                      <button
+                        key={ability}
+                        disabled={usedAbilities.includes(ability)}
+                        onClick={() => {
+                          setUsedAbilities([...usedAbilities, ability]);
+                          // Appliquer l'effet de la compétence (bonus temporaire)
+                          const newPv = Math.min(
+                            (character.points_vie ?? 100) + 10,
+                            (character.points_vie ?? 100)
+                          );
+                          setCharacter({
+                            ...character,
+                            points_vie: newPv,
+                          });
+                          // Avancer dans l'aventure
+                          if (currentBranch?.choix1_lien) {
+                            chooseOption(currentBranch.choix1_lien);
+                          }
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all ${
+                          usedAbilities.includes(ability)
+                            ? "bg-gray-800/50 border border-gray-700 text-gray-500 opacity-50 cursor-not-allowed"
+                            : "bg-[#111827] border border-purple-500/30 hover:border-purple-500/60 text-gray-300 hover:text-white"
+                        }`}
+                      >
+                        <span className="font-medium">{ability}</span>
+                        {!usedAbilities.includes(ability) && (
+                          <span className="text-gray-500 ml-2">
+                            (1 rest) • +10 PV
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </motion.div>
           )}

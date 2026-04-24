@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export default function Header() {
       </Link>
       {(user?.role === 'createur' || user?.role === 'admin') && (
         <Link href="/create-adventure" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
-          Creator
+          Créateur
         </Link>
       )}
       {user?.role === 'admin' && (
