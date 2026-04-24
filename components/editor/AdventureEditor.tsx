@@ -14,6 +14,48 @@ interface BranchNode {
   choice2Link: string;
 }
 
+// Générateurs de contenus par genre
+const STORY_TEMPLATES = {
+  fantasy: {
+    openings: [
+      "Vous vous réveillez dans une forêt mystique où les arbres scintillent d'une lumière surnaturelle.",
+      "Le château de Valdoria apparaît devant vous, ses tours s'élevant vers un ciel violet.",
+      "Dans la taverne du village, un étranger vous tend une carte anciennes recouverte de runes."
+    ],
+    events: [
+      { text: "Vous rencontrez un dragon endormi", choices: ["Combattre", "Fuire", "Parler"] },
+      { text: "Uneportal magique apparaît", choices: ["Entrer", "L'ignorer", "L'étudier"] },
+      { text: "Un magicien vous propose une quète", choices: ["Accepter", "Refuser", "Négocier"] }
+    ]
+  },
+  horror: {
+    openings: [
+      "La maison abandonnée semble vous appeler depuis l'obscurité.",
+      "Un froid glacial vous parcour l'échine alors que vous entrez dans le cimetière.",
+      "Les murmures ne cessent de s'intensifier dans la pièce obscure."
+    ],
+    events: [
+      { text: "Une silhouette apparaît dans l'ombre", choices: ["Investiguer", "Courir", "Se cacher"] },
+      { text: "Vous trouvez un journal étrange", choices: ["Le lire", "Le brûler", "Le prendre"] },
+      { text: "Des pas approchent", choices: ["Se prépare à combattre", "Se taire", "Appeler à l'aide"] }
+    ]
+  },
+  scifi: {
+    openings: [
+      "Le vaisseau spatial tremble alors que vous approchez de la Station Omicron.",
+      "Dans le futur año 2157, la Terre n'existe plus que dans vos souvenirs.",
+      "L'intelligence artificelle vous transmits un message urgent."
+    ],
+    events: [
+      { text: "Un signal misterioso provient de l'espace", choices: ["Répondre", "Analyser", "Ignorer"] },
+      { text: "Vous découvre un androïde thérapeut", choices: ["L'activer", "Le détruite", "L'étudier"] },
+      { text: "Une alerte résonne dans le vaisseau", choices: ["Investiguer", "Fuir", "Demander de l'aide"] }
+    ]
+  }
+};
+
+type Genre = keyof typeof STORY_TEMPLATES;
+
 export default function AdventureEditor() {
   const router = useRouter();
   const { user } = useAuthContext();
@@ -34,6 +76,36 @@ export default function AdventureEditor() {
   const [draftId, setDraftId] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [status, setStatus] = useState<"draft" | "pending" | "published">("draft");
+  const [generating, setGenerating] = useState(false);
+  const [genre, setGenre] = useState<Genre>("fantasy");
+
+  // Générer une histoire avec l'IA (templates)
+  const generateWithAI = async () => {
+    if (!title.trim()) {
+      setError("Donnez d'abord un titre");
+      return;
+    }
+    setGenerating(true);
+    setError(null);
+
+    try {
+      // Simuler une génération AI avec des templates
+      const templates = STORY_TEMPLATES[genre];
+      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomEvent = templates.events[Math.floor(Math.random() * templates.events.length)];
+      
+      setInitialBranch({
+        ...initialBranch,
+        text: `${title}: ${randomOpening}`,
+        choice1: randomEvent.choices[0],
+        choice2: randomEvent.choices[1],
+      });
+    } catch {
+      setError("Erreur lors de la génération");
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const handlePublish = async () => {
     if (!user || !title.trim() || !initialBranch.text.trim()) {
@@ -158,7 +230,7 @@ export default function AdventureEditor() {
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-cyan-400">
-            Creer une aventure
+            Créer une aventure
           </h1>
           <div className="flex gap-2">
             {title && initialBranch.text && (
@@ -166,7 +238,7 @@ export default function AdventureEditor() {
                 onClick={() => setPreviewMode(!previewMode)}
                 className="px-4 py-2 bg-purple-500/20 border border-purple-500/50 text-purple-400 rounded-lg text-sm hover:bg-purple-500/30 transition-colors"
               >
-                {previewMode ? "Retourner" : "Preview"}
+                {previewMode ? "Retourner" : "Aperçu"}
               </button>
             )}
             <button
@@ -233,6 +305,32 @@ export default function AdventureEditor() {
                 className="w-full px-4 py-3 bg-[#1a2235] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-24"
                 placeholder="Une courte description"
               />
+            </div>
+
+            {/* Générateur AI */}
+            <div className="bg-[#1a2235] border border-purple-500/30 rounded-lg p-4">
+              <h3 className="font-semibold mb-3 text-purple-400">Générateur IA</h3>
+              <div className="flex gap-3 mb-3">
+                <select
+                  value={genre}
+                  onChange={(e) => setGenre(e.target.value as Genre)}
+                  className="px-3 py-2 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white text-sm"
+                >
+                  <option value="fantasy">Fantasy</option>
+                  <option value="horror">Horreur</option>
+                  <option value="scifi">Science-Fiction</option>
+                </select>
+                <button
+                  onClick={generateWithAI}
+                  disabled={generating}
+                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 disabled:bg-purple-500/50 rounded-lg text-white text-sm font-medium transition-colors"
+                >
+                  {generating ? "Génération..." : "Générer avec IA"}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500">
+                L'IA génère un début d'histoire basé sur le genre sélectionné
+              </p>
             </div>
 
             <div className="bg-[#1a2235] border border-gray-700 rounded-lg p-4">
