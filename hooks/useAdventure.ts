@@ -33,7 +33,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
         // Fetch adventure
         const { data: adventure, error: advError } = await supabase
           .from('aventure')
-          .select('*')
+          .select('id,titre,description,auteur_id,date_creation,popularite,embranchement_initial_id')
           .eq('id', adventureId)
           .single();
 
@@ -46,7 +46,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
         if (adventure.embranchement_initial_id) {
           const { data: branch, error: branchError } = await supabase
             .from('embranchement')
-            .select('*')
+            .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
             .eq('id', adventure.embranchement_initial_id)
             .single();
 
@@ -75,7 +75,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
     try {
       const { data: branch, error } = await supabase
         .from('embranchement')
-        .select('*')
+        .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
         .eq('id', branchId)
         .single();
 
@@ -116,7 +116,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
 
     supabase
       .from('embranchement')
-      .select('*')
+      .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
       .eq('id', state.adventure!.embranchement_initial_id!)
       .single()
       .then(({ data: branch, error }) => {

@@ -34,11 +34,16 @@ export default function DashboardPage() {
       if (!user) return;
       setStatsLoading(true);
       try {
-        const { count: charactersCount } = await supabase
+        // Une seule requête pour les personnages
+        const { data: characters } = await supabase
           .from("personnage")
-          .select("id", { count: "exact", head: true })
+          .select("experience")
           .eq("id_utilisateur", user.id);
+        
+        const charactersCount = characters?.length ?? 0;
+        const totalXp = characters?.reduce((sum, c) => sum + (c.experience ?? 0), 0) ?? 0;
 
+        // Une seule requête pour les sauvegardes
         const { data: saves } = await supabase
           .from("sauvegarde")
           .select("progression")
@@ -46,14 +51,7 @@ export default function DashboardPage() {
         
         const completedQuests = saves?.filter(s => s.progression >= 100).length ?? 0;
 
-        const { data: characters } = await supabase
-          .from("personnage")
-          .select("experience")
-          .eq("id_utilisateur", user.id);
-        
-        const totalXp = characters?.reduce((sum, c) => sum + (c.experience ?? 0), 0) ?? 0;
-
-        setStats({ charactersCount: charactersCount ?? 0, completedQuests, totalXp });
+        setStats({ charactersCount, completedQuests, totalXp });
       } catch (err) {
         console.error("Erreur stats:", err);
       } finally {

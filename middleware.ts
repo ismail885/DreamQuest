@@ -4,8 +4,18 @@ const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/adventu
 const adminRoutes = ['/admin'];
 const authRoutes = ['/auth/login', '/auth/register', '/auth/callback'];
 
+// Pages statiques à cache
+const staticPaths = ['/adventure', '/classement'];
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Ajouter headers cache pour pages publiques
+  if (staticPaths.some(path => pathname.startsWith(path))) {
+    const response = NextResponse.next();
+    response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
+    return response;
+  }
 
   const authUser = request.cookies.get('auth_user')?.value;
   const isAuthenticated = !!authUser;

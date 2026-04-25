@@ -189,9 +189,9 @@ export async function getBranchById(branchId: number) {
   try {
     const { data, error } = await supabase
       .from('embranchement')
-      .select('*')
+      .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
       .eq('id', branchId)
-      .single()
+      .single();
 
     if (error) throw error
     return data
