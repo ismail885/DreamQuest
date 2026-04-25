@@ -77,7 +77,6 @@ describe('Intégration - Personnages', () => {
   describe('Flux: Parcours utilisateur avec personnages', () => {
     const mockUserCharacters: Character[] = [
       {
-        id_personnage: 1,
         nom_personnage: 'Gandalf',
         classe: 'Mage',
         niveau: 5,
@@ -88,7 +87,6 @@ describe('Intégration - Personnages', () => {
         experience: 450,
       },
       {
-        id_personnage: 2,
         nom_personnage: 'Aragorn',
         classe: 'Guerrier',
         niveau: 3,
@@ -108,16 +106,16 @@ describe('Intégration - Personnages', () => {
     })
 
     it('devrait trouver un personnage par son ID', () => {
-      const characterId = 2
-      const character = mockUserCharacters.find((c) => c.id_personnage === characterId)
+      const characterName = 'Aragorn'
+      const character = mockUserCharacters.find((c) => c.nom_personnage === characterName)
 
       expect(character?.nom_personnage).toBe('Aragorn')
     })
 
     it('devrait supprimer un personnage', () => {
-      const characterIdToDelete = 1
+      const characterNameToDelete = 'Gandalf'
       const updatedList = mockUserCharacters.filter(
-        (c) => c.id_personnage !== characterIdToDelete
+        (c) => c.nom_personnage !== characterNameToDelete
       )
 
       expect(updatedList).toHaveLength(1)

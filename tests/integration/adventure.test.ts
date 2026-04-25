@@ -18,8 +18,10 @@ describe('Intégration - Flux d\'aventure', () => {
       texte: 'Vous vous tenez devant la grotte du dragon. L\'odeur de soufre vous monte au nez.',
       choix1: 'Entrer courageusement',
       choix1_lien: 2,
+      choix1_consequences: null,
       choix2: 'Attendre et observer',
       choix2_lien: 3,
+      choix2_consequences: null,
       id_aventure: 1,
     },
     {
@@ -27,8 +29,10 @@ describe('Intégration - Flux d\'aventure', () => {
       texte: 'Vous avancez dans la grotte. Le dragon dormez devant un tas d\'or.',
       choix1: 'Attaquer par surprise',
       choix1_lien: 4,
+      choix1_consequences: null,
       choix2: 'Tenter de négocier',
       choix2_lien: 5,
+      choix2_consequences: null,
       id_aventure: 1,
     },
     {
@@ -36,8 +40,10 @@ describe('Intégration - Flux d\'aventure', () => {
       texte: 'Vous observez. Après quelques heures, vous voyez un enfant entrer dans la grotte.',
       choix1: 'Courir sauver l\'enfant',
       choix1_lien: 6,
+      choix1_consequences: null,
       choix2: 'Continuer à observer',
       choix2_lien: 7,
+      choix2_consequences: null,
       id_aventure: 1,
     },
     {
@@ -45,8 +51,10 @@ describe('Intégration - Flux d\'aventure', () => {
       texte: 'Votre attaque surprend le dragon ! Vous réussissez à le blesser grievement.',
       choix1: 'Finir le coup fatal',
       choix1_lien: null,
+      choix1_consequences: null,
       choix2: 'L\'épargner',
       choix2_lien: null,
+      choix2_consequences: null,
       id_aventure: 1,
     },
     {
@@ -54,8 +62,10 @@ describe('Intégration - Flux d\'aventure', () => {
       texte: 'Le dragon refuse de négocier. Il crache du feu !',
       choix1: 'Esquiver',
       choix1_lien: 8,
+      choix1_consequences: null,
       choix2: 'Riposter',
       choix2_lien: 4,
+      choix2_consequences: null,
       id_aventure: 1,
     },
   ]
@@ -147,8 +157,10 @@ describe('Intégration - Flux d\'aventure', () => {
         texte: 'Félicitations ! Vous avez vaincu le dragon et sauvé le village.',
         choix1: 'Recommencer',
         choix1_lien: null,
+        choix1_consequences: null,
         choix2: '',
         choix2_lien: null,
+        choix2_consequences: null,
         id_aventure: 1,
       }
 

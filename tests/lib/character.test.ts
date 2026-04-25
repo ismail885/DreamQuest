@@ -115,13 +115,12 @@ describe('Unitaires - Personnages', () => {
   describe('Character type', () => {
     it('devrait créer un personnage valide', () => {
       const character: Character = {
-        id_personnage: 1,
         nom_personnage: 'Héros',
         classe: 'Guerrier',
         niveau: 1,
         points_vie: 170,
         points_vie_max: 170,
-        stats: { force: 8, agilite: 5, intelligence: 3, endurance: 7 },
+        stats: { force: 8, agility: 5, intelligence: 3, endurance: 7 },
         id_utilisateur: 1,
         experience: 0,
       }

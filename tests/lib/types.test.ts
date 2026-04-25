@@ -44,8 +44,10 @@ describe('Types - Adventure', () => {
         texte: 'Vous trouvez une épée brillante.',
         choix1: 'Prendre l\'épée',
         choix1_lien: 2,
+        choix1_consequences: null,
         choix2: 'Ignorer l\'épée',
         choix2_lien: 3,
+        choix2_consequences: null,
         id_aventure: 1,
       }
 
@@ -61,8 +63,10 @@ describe('Types - Adventure', () => {
         texte: 'Fin de l\'aventure.',
         choix1: 'Recommencer',
         choix1_lien: null,
+        choix1_consequences: null,
         choix2: '',
         choix2_lien: null,
+        choix2_consequences: null,
         id_aventure: 1,
       }
 
@@ -139,8 +143,10 @@ describe('Types - Adventure', () => {
         texte: 'Fin',
         choix1: '',
         choix1_lien: null,
+        choix1_consequences: null,
         choix2: '',
         choix2_lien: null,
+        choix2_consequences: null,
         id_aventure: 1,
       }
 
@@ -153,8 +159,10 @@ describe('Types - Adventure', () => {
         texte: 'Suite',
         choix1: 'Continuer',
         choix1_lien: 2,
+        choix1_consequences: null,
         choix2: 'Retourner',
         choix2_lien: 3,
+        choix2_consequences: null,
         id_aventure: 1,
       }
 
