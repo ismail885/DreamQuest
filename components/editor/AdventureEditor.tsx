@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
@@ -12,6 +12,16 @@ interface BranchNode {
   choice1Link: string;
   choice2: string;
   choice2Link: string;
+}
+
+interface GenrePreview {
+  key: Genre;
+  title: string;
+  subtitle: string;
+  summary: string;
+  accent: string;
+  bars: Array<{ label: string; value: number; color: string }>;
+  tags: string[];
 }
 
 // Générateurs de contenus par genre
@@ -83,6 +93,54 @@ const STORY_TEMPLATES = {
 
 type Genre = keyof typeof STORY_TEMPLATES;
 
+const GENRE_PREVIEWS: GenrePreview[] = [
+  {
+    key: "fantasy",
+    title: "Fantasy",
+    subtitle: "Royaumes anciens, quêtes sacrées et magie en éveil.",
+    summary:
+      "Idéal pour une aventure héroïque avec artefacts, créatures mythiques et choix moraux forts.",
+    accent: "from-cyan-500 to-blue-500",
+    bars: [
+      { label: "Épique", value: 8, color: "bg-cyan-400" },
+      { label: "Mystère", value: 6, color: "bg-blue-400" },
+      { label: "Aventure", value: 9, color: "bg-sky-400" },
+      { label: "Danger", value: 7, color: "bg-indigo-400" },
+    ],
+    tags: ["Quête", "Magie", "Héritage"],
+  },
+  {
+    key: "horror",
+    title: "Horreur",
+    subtitle: "Ambiance oppressante, tension lente et révélations inquiétantes.",
+    summary:
+      "Parfait pour une histoire sombre où l'exploration et la survie priment sur la force brute.",
+    accent: "from-rose-500 to-red-500",
+    bars: [
+      { label: "Tension", value: 9, color: "bg-rose-400" },
+      { label: "Mystère", value: 8, color: "bg-red-400" },
+      { label: "Survie", value: 7, color: "bg-orange-400" },
+      { label: "Violence", value: 6, color: "bg-pink-400" },
+    ],
+    tags: ["Brume", "Secrets", "Survie"],
+  },
+  {
+    key: "scifi",
+    title: "Science-fiction",
+    subtitle: "Stations orbitales, IA instables et mondes à redécouvrir.",
+    summary:
+      "Idéal pour une aventure technologique avec exploration spatiale et dilemmes futuristes.",
+    accent: "from-violet-500 to-cyan-500",
+    bars: [
+      { label: "Technologie", value: 9, color: "bg-violet-400" },
+      { label: "Exploration", value: 8, color: "bg-cyan-400" },
+      { label: "Rythme", value: 7, color: "bg-sky-400" },
+      { label: "Intrigue", value: 8, color: "bg-fuchsia-400" },
+    ],
+    tags: ["IA", "Espace", "Futur"],
+  },
+];
+
 export default function AdventureEditor() {
   const router = useRouter();
   const { user } = useAuthContext();
@@ -98,16 +156,39 @@ export default function AdventureEditor() {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [previewMode, setPreviewMode] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [draftId, setDraftId] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [status, setStatus] = useState<"draft" | "pending" | "published">(
-    "draft",
-  );
   const [generating, setGenerating] = useState(false);
-  const [genre, setGenre] = useState<Genre>("fantasy");
-  const [showConsequences, setShowConsequences] = useState(false);
+  const [genreIndex, setGenreIndex] = useState(0);
+
+  const selectedGenre = GENRE_PREVIEWS[genreIndex];
+  const genre = selectedGenre.key;
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    const saved = localStorage.getItem(`dq_draft_${user.id}`);
+    if (!saved) {
+      return;
+    }
+
+    try {
+      const draft = JSON.parse(saved);
+      setTitle(draft.title);
+      setDescription(draft.description || "");
+      setInitialBranch(draft.initialBranch);
+      setDraftId(draft.id);
+    } catch {
+      // Ignore malformed drafts and keep the editor usable.
+    }
+  }, [user]);
+
+  const selectGenre = (nextIndex: number) => {
+    const normalizedIndex = (nextIndex + GENRE_PREVIEWS.length) % GENRE_PREVIEWS.length;
+    setGenreIndex(normalizedIndex);
+  };
 
   // Générer une histoire avec l'IA (templates)
   const generateWithAI = async () => {
@@ -141,47 +222,6 @@ export default function AdventureEditor() {
     }
   };
 
-  const handlePublish = async () => {
-    if (!user || !title.trim() || !initialBranch.text.trim()) {
-      setError("Titre et premier texte requis");
-      return;
-    }
-    setSaving(true);
-    setError(null);
-    try {
-      const { data: adventure, error: advError } = await supabase
-        .from("aventure")
-        .insert({
-          titre: title,
-          description,
-          auteur_id: user.id,
-        })
-        .select()
-        .single();
-      if (advError) throw advError;
-      const { error: branchError } = await supabase
-        .from("embranchement")
-        .insert({
-          texte: initialBranch.text,
-          choix1: initialBranch.choice1 || null,
-          choix1_lien: null,
-          choix2: initialBranch.choice2 || null,
-          choix2_lien: null,
-          id_aventure: adventure.id,
-        });
-      if (branchError) throw branchError;
-      setStatus("pending");
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
-    } catch {
-      setError("Erreur lors de la publication");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const saveDraft = () => {
     if (!user || !title.trim()) {
       setError("Titre requis");
@@ -199,24 +239,10 @@ export default function AdventureEditor() {
       localStorage.setItem(`dq_draft_${user.id}`, JSON.stringify(draft));
       setDraftId(id);
       setError(null);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 2000);
+      setNotice("Brouillon enregistré");
+      setTimeout(() => setNotice(null), 2000);
     } catch {
       setError("Erreur lors de la sauvegarde en local");
-    }
-  };
-
-  const loadDraft = () => {
-    if (!user) return;
-    const saved = localStorage.getItem(`dq_draft_${user.id}`);
-    if (saved) {
-      try {
-        const draft = JSON.parse(saved);
-        setTitle(draft.title);
-        setDescription(draft.description || "");
-        setInitialBranch(draft.initialBranch);
-        setDraftId(draft.id);
-      } catch {}
     }
   };
 
@@ -260,7 +286,7 @@ export default function AdventureEditor() {
         .update({ embranchement_initial_id: 1 })
         .eq("id", adventure.id);
 
-      setSuccess(true);
+      setNotice("Aventure créée ! Redirection...");
       setTimeout(() => {
         router.push("/dashboard");
       }, 1500);
@@ -273,251 +299,262 @@ export default function AdventureEditor() {
 
   if (!user) return null;
 
-  if (!loaded) {
-    loadDraft();
-    setLoaded(true);
-  }
-
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="px-4 py-2 bg-gray-700/50 border border-gray-600 hover:bg-gray-600 rounded-lg text-gray-300 hover:text-white text-sm transition-colors"
-            >
-              Retour
-            </button>
-            <h1 className="text-2xl font-bold text-cyan-400">
-              Créer une aventure
-            </h1>
-          </div>
-          <div className="flex gap-2">
-            {title && initialBranch.text && (
-              <button
-                onClick={() => setPreviewMode(!previewMode)}
-                className="px-4 py-2 bg-purple-500/20 border border-purple-500/50 text-purple-400 rounded-lg text-sm hover:bg-purple-500/30 transition-colors"
-              >
-                {previewMode ? "Retourner" : "Aperçu"}
-              </button>
-            )}
-            <button
-              onClick={saveDraft}
-              className="px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 rounded-lg text-sm hover:bg-yellow-500/30 transition-colors"
-            >
-              Brouillon
-            </button>
-            {(status === "draft" || status === "pending") && (
-              <button
-                onClick={handlePublish}
-                disabled={saving}
-                className="px-4 py-2 bg-green-500/20 border border-green-500/50 text-green-400 rounded-lg text-sm hover:bg-green-500/30 transition-colors disabled:opacity-50"
-              >
-                {status === "pending" ? "En attente" : "Publier"}
-              </button>
-            )}
-            {status === "published" && (
-              <span className="px-4 py-2 bg-green-500/20 border border-green-500/50 text-green-400 rounded-lg text-sm">
-                Publiee
-              </span>
-            )}
-          </div>
+    <div className="min-h-screen bg-[#0a0e1a] px-4 py-8 text-white">
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-8">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="inline-flex items-center gap-2 text-cyan-400 transition-colors hover:text-cyan-300"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Retour
+          </button>
+          <h1 className="mt-6 text-3xl font-bold text-cyan-400 md:text-4xl">
+            Création d&apos;Aventure
+          </h1>
         </div>
 
-        {previewMode ? (
-          <div className="bg-[#1a2235] border border-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold mb-4">{title}</h2>
-            <p className="text-gray-400 mb-6">{description}</p>
-            <div className="bg-[#0a0e1a] border border-gray-700 rounded-lg p-4 mb-4">
-              <p className="text-gray-200 leading-relaxed">
-                {initialBranch.text}
-              </p>
-            </div>
-            <div className="space-y-3">
-              {initialBranch.choice1 && (
-                <button className="w-full text-left px-4 py-3 bg-[#0a0e1a] border border-gray-700 rounded-lg text-gray-200 hover:border-cyan-500/60 transition-colors">
-                  {initialBranch.choice1}
-                </button>
-              )}
-              {initialBranch.choice2 && (
-                <button className="w-full text-left px-4 py-3 bg-[#0a0e1a] border border-gray-700 rounded-lg text-gray-200 hover:border-cyan-500/60 transition-colors">
-                  {initialBranch.choice2}
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Titre</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 bg-[#1a2235] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
-                placeholder="Le titre de votre histoire"
-              />
-            </div>
+        <div className="relative mb-8">
+          {genreIndex > 0 && (
+            <button
+              onClick={() => selectGenre(genreIndex - 1)}
+              className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#1a2332]/90 p-3 transition-all duration-200 hover:scale-110 hover:bg-cyan-600/50 active:scale-95"
+              aria-label="Genre précédent"
+            >
+              <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
 
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-3 bg-[#1a2235] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-24"
-                placeholder="Une courte description"
-              />
-            </div>
-
-            {/* Générateur AI */}
-            <div className="bg-[#1a2235] border border-purple-500/30 rounded-lg p-4">
-              <h3 className="font-semibold mb-3 text-purple-400">
-                Générateur IA
-              </h3>
-              <div className="flex gap-3 mb-3">
-                <select
-                  value={genre}
-                  onChange={(e) => setGenre(e.target.value as Genre)}
-                  className="px-3 py-2 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white text-sm"
-                >
-                  <option value="fantasy">Fantasy</option>
-                  <option value="horror">Horreur</option>
-                  <option value="scifi">Science-Fiction</option>
-                </select>
-                <button
-                  onClick={generateWithAI}
-                  disabled={generating}
-                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 disabled:bg-purple-500/50 rounded-lg text-white text-sm font-medium transition-colors"
-                >
-                  {generating ? "Génération..." : "Générer avec IA"}
-                </button>
-              </div>
-              <p className="text-xs text-gray-500">
-                L&apos;IA génère un début d&apos;histoire basé sur le genre
-                sélectionné
-              </p>
-            </div>
-
-            <div className="bg-[#1a2235] border border-gray-700 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-cyan-400">
-                  Début de l&apos;histoire
-                </h3>
-                <button
-                  onClick={() => setShowConsequences(!showConsequences)}
-                  className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition-colors"
-                >
-                  {showConsequences ? "Masquer" : "Conséquences"}
-                </button>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm text-gray-400 mb-2">
-                  Texte initial
-                </label>
-                <textarea
-                  value={initialBranch.text}
-                  onChange={(e) =>
-                    setInitialBranch({ ...initialBranch, text: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-32"
-                  placeholder="Le premier paragraphe..."
-                />
-              </div>
-
-              {/* Conséquences pour le choix 1 */}
-              {showConsequences && (
-                <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                  <p className="text-xs text-green-400 mb-2">
-                    Effets du Choix 1
+          <div className="mx-auto max-w-2xl px-12 transition-all duration-300">
+            <div className="rounded-[28px] border border-white/10 bg-[#111827]/90 p-6 shadow-[0_30px_60px_-20px_rgba(8,145,178,0.35)] backdrop-blur-sm md:p-8">
+              <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                <div className="max-w-md">
+                  <p className="text-xs uppercase tracking-[0.3em] text-cyan-400/80">
+                    {selectedGenre.title}
                   </p>
-                  <div className="grid grid-cols-4 gap-2">
-                    <input
-                      type="number"
-                      placeholder="PV"
-                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Force"
-                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Agilité"
-                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
-                    />
-                    <input
-                      type="number"
-                      placeholder="INT"
-                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
-                    />
+                  <h2 className="mt-3 text-3xl font-bold text-white">
+                    {selectedGenre.title}
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-slate-400">
+                    {selectedGenre.subtitle}
+                  </p>
+                  <p className="mt-4 text-sm leading-6 text-slate-300">
+                    {selectedGenre.summary}
+                  </p>
+                </div>
+
+                <div className={`flex h-40 w-40 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${selectedGenre.accent} p-[1px] shadow-lg shadow-cyan-950/40`}>
+                  <div className="flex h-full w-full items-center justify-center rounded-2xl bg-[#0a0e1a] text-center">
+                    <div>
+                      <div className="text-xs uppercase tracking-[0.35em] text-slate-500">
+                        Mode
+                      </div>
+                      <div className="mt-2 text-2xl font-bold text-white">
+                        {selectedGenre.title}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Choix 1
-                  </label>
-                  <input
-                    type="text"
-                    value={initialBranch.choice1}
-                    onChange={(e) =>
-                      setInitialBranch({
-                        ...initialBranch,
-                        choice1: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white text-sm"
-                    placeholder="Premier choix"
-                  />
+              <div className="mt-8 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-end">
+                <div className="space-y-3">
+                  {selectedGenre.bars.map((bar) => (
+                    <div key={bar.label} className="flex items-center gap-4">
+                      <div className="flex w-24 items-center gap-2 text-sm text-slate-300">
+                        <span className={`h-3 w-3 rounded-full ${bar.color}`} />
+                        {bar.label}
+                      </div>
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className={`h-full rounded-full ${bar.color}`}
+                          style={{ width: `${bar.value * 10}%` }}
+                        />
+                      </div>
+                      <div className="w-10 text-right text-sm font-semibold text-cyan-300">
+                        {bar.value}/10
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Choix 2
-                  </label>
-                  <input
-                    type="text"
-                    value={initialBranch.choice2}
-                    onChange={(e) =>
-                      setInitialBranch({
-                        ...initialBranch,
-                        choice2: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white text-sm"
-                    placeholder="Deuxieme choix"
-                  />
+
+                <div className="flex flex-wrap gap-2 md:justify-end">
+                  {selectedGenre.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-slate-300"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
+          </div>
 
-            {error && (
-              <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="p-3 bg-green-500/20 border border-green-500 rounded-lg text-green-400 text-sm">
-                Aventure creee ! Redirection...
-              </div>
-            )}
-
+          {genreIndex < GENRE_PREVIEWS.length - 1 && (
             <button
+              onClick={() => selectGenre(genreIndex + 1)}
+              className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#1a2332]/90 p-3 transition-all duration-200 hover:scale-110 hover:bg-cyan-600/50 active:scale-95"
+              aria-label="Genre suivant"
+            >
+              <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        <div className="mb-8 flex justify-center gap-2">
+          {GENRE_PREVIEWS.map((preview, index) => (
+            <button
+              key={preview.key}
+              onClick={() => selectGenre(index)}
+              className={`h-2 rounded-full transition-all duration-200 ${
+                index === genreIndex
+                  ? "w-8 bg-cyan-400 shadow-lg shadow-cyan-400/30"
+                  : "w-2 bg-gray-700 hover:w-4 hover:bg-gray-500"
+              }`}
+              aria-label={`Sélectionner ${preview.title}`}
+            />
+          ))}
+        </div>
+
+        <form className="mx-auto max-w-2xl space-y-4" onSubmit={(event) => event.preventDefault()}>
+          <div>
+            <label htmlFor="title" className="mb-3 block text-sm font-medium text-white">
+              Nom de l&apos;Aventure
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Entrez le nom de votre aventure..."
+              className="w-full rounded-lg border border-gray-700 bg-gray-900/50 px-4 py-3 text-white transition-all placeholder:text-gray-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              maxLength={80}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="description" className="mb-3 block text-sm font-medium text-white">
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Une courte description pour planter le décor..."
+              className="h-24 w-full rounded-lg border border-gray-700 bg-gray-900/50 px-4 py-3 text-white transition-all placeholder:text-gray-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+            />
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-[#111827]/90 p-5 shadow-lg shadow-black/20">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-bold text-cyan-400">Générateur IA</h3>
+                <p className="mt-1 text-xs text-gray-500">
+                  Le début est généré à partir du genre sélectionné.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={generateWithAI}
+                disabled={generating}
+                className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-purple-500/50"
+              >
+                {generating ? "Génération..." : "Générer"}
+              </button>
+            </div>
+
+            <div>
+              <label htmlFor="initialText" className="mb-3 block text-sm font-medium text-white">
+                Texte initial
+              </label>
+              <textarea
+                id="initialText"
+                value={initialBranch.text}
+                onChange={(e) => setInitialBranch({ ...initialBranch, text: e.target.value })}
+                placeholder="Le premier paragraphe de votre aventure..."
+                className="h-32 w-full rounded-lg border border-gray-700 bg-[#0a0e1a] px-4 py-3 text-white transition-all placeholder:text-gray-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              />
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div>
+                <label htmlFor="choice1" className="mb-3 block text-sm font-medium text-white">
+                  Choix 1
+                </label>
+                <input
+                  id="choice1"
+                  type="text"
+                  value={initialBranch.choice1}
+                  onChange={(e) =>
+                    setInitialBranch({
+                      ...initialBranch,
+                      choice1: e.target.value,
+                    })
+                  }
+                  placeholder="Premier choix"
+                  className="w-full rounded-lg border border-gray-700 bg-[#0a0e1a] px-4 py-3 text-sm text-white transition-all placeholder:text-gray-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="choice2" className="mb-3 block text-sm font-medium text-white">
+                  Choix 2
+                </label>
+                <input
+                  id="choice2"
+                  type="text"
+                  value={initialBranch.choice2}
+                  onChange={(e) =>
+                    setInitialBranch({
+                      ...initialBranch,
+                      choice2: e.target.value,
+                    })
+                  }
+                  placeholder="Deuxième choix"
+                  className="w-full rounded-lg border border-gray-700 bg-[#0a0e1a] px-4 py-3 text-sm text-white transition-all placeholder:text-gray-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <div className="rounded-lg border border-red-500/60 bg-red-500/10 p-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
+
+          {notice && (
+            <div className="rounded-lg border border-green-500/60 bg-green-500/10 p-3 text-sm text-green-300">
+              {notice}
+            </div>
+          )}
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <button
+              type="button"
+              onClick={saveDraft}
+              className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 font-semibold text-yellow-300 transition-colors hover:bg-yellow-500/20"
+            >
+              Enregistrer le brouillon
+            </button>
+            <button
+              type="button"
               onClick={handleSave}
               disabled={saving}
-              className="w-full py-3 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 rounded-lg font-semibold transition-colors"
+              className="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-3 font-semibold text-white shadow-lg shadow-cyan-500/20 transition-all hover:from-cyan-400 hover:to-blue-400 disabled:cursor-not-allowed disabled:from-gray-500 disabled:to-gray-600"
             >
-              Publier
+              {saving ? "Création en cours..." : "Créer votre Aventure"}
             </button>
           </div>
-        )}
+        </form>
       </div>
     </div>
   );
