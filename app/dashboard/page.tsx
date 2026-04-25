@@ -27,11 +27,21 @@ interface PopularAdventure {
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuthContext();
-  const [stats, setStats] = useState<UserStats>({ charactersCount: 0, completedQuests: 0, totalXp: 0 });
+  const [stats, setStats] = useState<UserStats>({
+    charactersCount: 0,
+    completedQuests: 0,
+    totalXp: 0,
+  });
   const [statsLoading, setStatsLoading] = useState(true);
-  const [popularAdventures, setPopularAdventures] = useState<PopularAdventure[]>([]);
+  const [popularAdventures, setPopularAdventures] = useState<
+    PopularAdventure[]
+  >([]);
   const [loadingAdventures, setLoadingAdventures] = useState(true);
-  const [globalStats, setGlobalStats] = useState({ totalAdventures: 0, totalPlayers: 0, totalPlays: 0 });
+  const [globalStats, setGlobalStats] = useState({
+    totalAdventures: 0,
+    totalPlayers: 0,
+    totalPlays: 0,
+  });
   const [loadingGlobalStats, setLoadingGlobalStats] = useState(true);
   const [suggestions, setSuggestions] = useState<PopularAdventure[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
@@ -52,17 +62,19 @@ export default function DashboardPage() {
           .from("personnage")
           .select("experience")
           .eq("id_utilisateur", user.id);
-        
+
         const charactersCount = characters?.length ?? 0;
-        const totalXp = characters?.reduce((sum, c) => sum + (c.experience ?? 0), 0) ?? 0;
+        const totalXp =
+          characters?.reduce((sum, c) => sum + (c.experience ?? 0), 0) ?? 0;
 
         // Une seule requête pour les sauvegardes
         const { data: saves } = await supabase
           .from("sauvegarde")
           .select("progression")
           .eq("id_utilisateur", user.id);
-        
-        const completedQuests = saves?.filter(s => s.progression >= 100).length ?? 0;
+
+        const completedQuests =
+          saves?.filter((s) => s.progression >= 100).length ?? 0;
 
         setStats({ charactersCount, completedQuests, totalXp });
       } catch (err) {
@@ -103,7 +115,9 @@ export default function DashboardPage() {
         const [advCount, userCount, savesCount] = await Promise.all([
           supabase.from("aventure").select("id", { count: "exact" }),
           supabase.from("utilisateur").select("id", { count: "exact" }),
-          supabase.from("sauvegarde").select("id_sauvegarde", { count: "exact" }),
+          supabase
+            .from("sauvegarde")
+            .select("id_sauvegarde", { count: "exact" }),
         ]);
         setGlobalStats({
           totalAdventures: advCount.count ?? 0,
@@ -122,7 +136,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (!user) return;
-      
+
       setLoadingSuggestions(true);
       try {
         // Get played adventure IDs
@@ -130,22 +144,22 @@ export default function DashboardPage() {
           .from("sauvegarde")
           .select("id_aventure")
           .eq("id_utilisateur", user.id);
-        
-        const playedIds = saves?.map(s => s.id_aventure) ?? [];
-        
+
+        const playedIds = saves?.map((s) => s.id_aventure) ?? [];
+
         // Get unplayed adventures, ordered by popularity
         let query = supabase
           .from("aventure")
           .select("id, titre, description, popularite")
           .order("popularite", { ascending: false })
           .limit(3);
-        
+
         if (playedIds.length > 0) {
           query = query.not("id", "in", `(${playedIds.join(",")})`);
         }
-        
+
         const { data } = await query;
-        
+
         if (data) setSuggestions(data);
       } catch (err) {
         console.error("Erreur suggestions:", err);
@@ -186,7 +200,9 @@ export default function DashboardPage() {
 
           <div className="mb-8 md:mb-12">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
-              <h2 className="text-xl md:text-2xl font-bold text-white">Mes Personnages</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-white">
+                Mes Personnages
+              </h2>
               <button
                 onClick={() => router.push("/create-character")}
                 className="w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
@@ -216,41 +232,34 @@ export default function DashboardPage() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
               <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-                <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">{stats.charactersCount}</div>
-                <div className="text-gray-400 text-xs md:text-sm">Personnages</div>
+                <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">
+                  {stats.charactersCount}
+                </div>
+                <div className="text-gray-400 text-xs md:text-sm">
+                  Personnages
+                </div>
               </div>
               <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-                <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-1 md:mb-2">{stats.completedQuests}</div>
+                <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-1 md:mb-2">
+                  {stats.completedQuests}
+                </div>
                 <div className="text-gray-400 text-xs md:text-sm">Quêtes</div>
               </div>
               <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-                <div className="text-2xl md:text-3xl font-bold text-yellow-400 mb-1 md:mb-2">{stats.totalXp}</div>
-                <div className="text-gray-400 text-xs md:text-sm">Points XP</div>
+                <div className="text-2xl md:text-3xl font-bold text-yellow-400 mb-1 md:mb-2">
+                  {stats.totalXp}
+                </div>
+                <div className="text-gray-400 text-xs md:text-sm">
+                  Points XP
+                </div>
               </div>
               <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-                <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">-</div>
-                <div className="text-gray-400 text-xs md:text-sm">Niveau max</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats globales */}
-          <div className="mb-8 md:mb-12">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-[#0d1526] border border-gray-700/30 rounded-xl">
-                <BookOpen className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{globalStats.totalAdventures}</div>
-                <div className="text-xs text-gray-400">Aventures</div>
-              </div>
-              <div className="text-center p-4 bg-[#0d1526] border border-gray-700/30 rounded-xl">
-                <Users className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{globalStats.totalPlayers}</div>
-                <div className="text-xs text-gray-400">Joueurs</div>
-              </div>
-              <div className="text-center p-4 bg-[#0d1526] border border-gray-700/30 rounded-xl">
-                <Trophy className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{globalStats.totalPlays}</div>
-                <div className="text-xs text-gray-400">Parties</div>
+                <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">
+                  -
+                </div>
+                <div className="text-gray-400 text-xs md:text-sm">
+                  Niveau max
+                </div>
               </div>
             </div>
           </div>
@@ -263,31 +272,45 @@ export default function DashboardPage() {
                 Pour Vous
               </h2>
               <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-                {loadingSuggestions ? (
-                  [1, 2, 3].map((i) => (
-                    <div key={i} className="bg-[#0d1526] border border-yellow-500/20 rounded-xl p-5 animate-pulse">
-                      <div className="h-5 bg-gray-700/50 rounded w-1/3 mb-3" />
-                      <div className="h-4 bg-gray-700/50 rounded w-2/3" />
-                    </div>
-                  ))
-                ) : suggestions.length > 0 ? (
-                  suggestions.map((adventure) => (
-                    <div
-                      key={adventure.id}
-                      onClick={() => router.push(`/adventure/${adventure.id}?personnage=${user.id}`)}
-                      className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
-                          <Sparkles className="w-4 h-4 text-yellow-400" />
-                        </div>
-                        <span className="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">Recommandé</span>
+                {loadingSuggestions
+                  ? [1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="bg-[#0d1526] border border-yellow-500/20 rounded-xl p-5 animate-pulse"
+                      >
+                        <div className="h-5 bg-gray-700/50 rounded w-1/3 mb-3" />
+                        <div className="h-4 bg-gray-700/50 rounded w-2/3" />
                       </div>
-                      <h3 className="text-white font-semibold mb-2 line-clamp-1">{adventure.titre}</h3>
-                      <p className="text-gray-400 text-sm line-clamp-2">{adventure.description || "Une aventure palpitante vous attend..."}</p>
-                    </div>
-                  ))
-                ) : null}
+                    ))
+                  : suggestions.length > 0
+                    ? suggestions.map((adventure) => (
+                        <div
+                          key={adventure.id}
+                          onClick={() =>
+                            router.push(
+                              `/adventure/${adventure.id}?personnage=${user.id}`,
+                            )
+                          }
+                          className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
+                        >
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                              <Sparkles className="w-4 h-4 text-yellow-400" />
+                            </div>
+                            <span className="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
+                              Recommandé
+                            </span>
+                          </div>
+                          <h3 className="text-white font-semibold mb-2 line-clamp-1">
+                            {adventure.titre}
+                          </h3>
+                          <p className="text-gray-400 text-sm line-clamp-2">
+                            {adventure.description ||
+                              "Une aventure palpitante vous attend..."}
+                          </p>
+                        </div>
+                      ))
+                    : null}
               </div>
             </div>
           )}
