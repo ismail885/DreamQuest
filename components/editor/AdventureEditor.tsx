@@ -330,13 +330,13 @@ export default function AdventureEditor() {
                 </button>
               </div>
               <p className="text-xs text-gray-500">
-                L'IA génère un début d'histoire basé sur le genre sélectionné
+                L&apos;IA génère un début d&apos;histoire basé sur le genre sélectionné
               </p>
             </div>
 
 <div className="bg-[#1a2235] border border-gray-700 rounded-lg p-4">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-cyan-400">Début de l'histoire</h3>
+                <h3 className="font-semibold text-cyan-400">Début de l&apos;histoire</h3>
                 <button
                   onClick={() => setShowConsequences(!showConsequences)}
                   className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition-colors"
