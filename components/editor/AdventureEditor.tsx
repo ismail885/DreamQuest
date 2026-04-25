@@ -20,38 +20,65 @@ const STORY_TEMPLATES = {
     openings: [
       "Vous vous réveillez dans une forêt mystique où les arbres scintillent d'une lumière surnaturelle.",
       "Le château de Valdoria apparaît devant vous, ses tours s'élevant vers un ciel violet.",
-      "Dans la taverne du village, un étranger vous tend une carte anciennes recouverte de runes."
+      "Dans la taverne du village, un étranger vous tend une carte anciennes recouverte de runes.",
     ],
     events: [
-      { text: "Vous rencontrez un dragon endormi", choices: ["Combattre", "Fuire", "Parler"] },
-      { text: "Uneportal magique apparaît", choices: ["Entrer", "L'ignorer", "L'étudier"] },
-      { text: "Un magicien vous propose une quète", choices: ["Accepter", "Refuser", "Négocier"] }
-    ]
+      {
+        text: "Vous rencontrez un dragon endormi",
+        choices: ["Combattre", "Fuire", "Parler"],
+      },
+      {
+        text: "Uneportal magique apparaît",
+        choices: ["Entrer", "L'ignorer", "L'étudier"],
+      },
+      {
+        text: "Un magicien vous propose une quète",
+        choices: ["Accepter", "Refuser", "Négocier"],
+      },
+    ],
   },
   horror: {
     openings: [
       "La maison abandonnée semble vous appeler depuis l'obscurité.",
       "Un froid glacial vous parcour l'échine alors que vous entrez dans le cimetière.",
-      "Les murmures ne cessent de s'intensifier dans la pièce obscure."
+      "Les murmures ne cessent de s'intensifier dans la pièce obscure.",
     ],
     events: [
-      { text: "Une silhouette apparaît dans l'ombre", choices: ["Investiguer", "Courir", "Se cacher"] },
-      { text: "Vous trouvez un journal étrange", choices: ["Le lire", "Le brûler", "Le prendre"] },
-      { text: "Des pas approchent", choices: ["Se prépare à combattre", "Se taire", "Appeler à l'aide"] }
-    ]
+      {
+        text: "Une silhouette apparaît dans l'ombre",
+        choices: ["Investiguer", "Courir", "Se cacher"],
+      },
+      {
+        text: "Vous trouvez un journal étrange",
+        choices: ["Le lire", "Le brûler", "Le prendre"],
+      },
+      {
+        text: "Des pas approchent",
+        choices: ["Se prépare à combattre", "Se taire", "Appeler à l'aide"],
+      },
+    ],
   },
   scifi: {
     openings: [
       "Le vaisseau spatial tremble alors que vous approchez de la Station Omicron.",
       "Dans le futur año 2157, la Terre n'existe plus que dans vos souvenirs.",
-      "L'intelligence artificelle vous transmits un message urgent."
+      "L'intelligence artificelle vous transmits un message urgent.",
     ],
     events: [
-      { text: "Un signal misterioso provient de l'espace", choices: ["Répondre", "Analyser", "Ignorer"] },
-      { text: "Vous découvre un androïde thérapeut", choices: ["L'activer", "Le détruite", "L'étudier"] },
-      { text: "Une alerte résonne dans le vaisseau", choices: ["Investiguer", "Fuir", "Demander de l'aide"] }
-    ]
-  }
+      {
+        text: "Un signal misterioso provient de l'espace",
+        choices: ["Répondre", "Analyser", "Ignorer"],
+      },
+      {
+        text: "Vous découvre un androïde thérapeut",
+        choices: ["L'activer", "Le détruite", "L'étudier"],
+      },
+      {
+        text: "Une alerte résonne dans le vaisseau",
+        choices: ["Investiguer", "Fuir", "Demander de l'aide"],
+      },
+    ],
+  },
 };
 
 type Genre = keyof typeof STORY_TEMPLATES;
@@ -75,7 +102,9 @@ export default function AdventureEditor() {
   const [previewMode, setPreviewMode] = useState(false);
   const [draftId, setDraftId] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [status, setStatus] = useState<"draft" | "pending" | "published">("draft");
+  const [status, setStatus] = useState<"draft" | "pending" | "published">(
+    "draft",
+  );
   const [generating, setGenerating] = useState(false);
   const [genre, setGenre] = useState<Genre>("fantasy");
   const [showConsequences, setShowConsequences] = useState(false);
@@ -92,9 +121,13 @@ export default function AdventureEditor() {
     try {
       // Simuler une génération AI avec des templates
       const templates = STORY_TEMPLATES[genre];
-      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
-      const randomEvent = templates.events[Math.floor(Math.random() * templates.events.length)];
-      
+      const randomOpening =
+        templates.openings[
+          Math.floor(Math.random() * templates.openings.length)
+        ];
+      const randomEvent =
+        templates.events[Math.floor(Math.random() * templates.events.length)];
+
       setInitialBranch({
         ...initialBranch,
         text: `${title}: ${randomOpening}`,
@@ -139,7 +172,9 @@ export default function AdventureEditor() {
       if (branchError) throw branchError;
       setStatus("pending");
       setSuccess(true);
-      setTimeout(() => { router.push("/dashboard"); }, 1500);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1500);
     } catch {
       setError("Erreur lors de la publication");
     } finally {
@@ -148,10 +183,19 @@ export default function AdventureEditor() {
   };
 
   const saveDraft = () => {
-    if (!user || !title.trim()) { setError("Titre requis"); return; }
+    if (!user || !title.trim()) {
+      setError("Titre requis");
+      return;
+    }
     try {
       const id = draftId || `draft_${Date.now()}`;
-      const draft = { id, title, description, initialBranch, savedAt: new Date().toISOString() };
+      const draft = {
+        id,
+        title,
+        description,
+        initialBranch,
+        savedAt: new Date().toISOString(),
+      };
       localStorage.setItem(`dq_draft_${user.id}`, JSON.stringify(draft));
       setDraftId(id);
       setError(null);
@@ -172,7 +216,7 @@ export default function AdventureEditor() {
         setDescription(draft.description || "");
         setInitialBranch(draft.initialBranch);
         setDraftId(draft.id);
-      } catch { }
+      } catch {}
     }
   };
 
@@ -217,7 +261,9 @@ export default function AdventureEditor() {
         .eq("id", adventure.id);
 
       setSuccess(true);
-      setTimeout(() => { router.push("/dashboard"); }, 1500);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1500);
     } catch {
       setError("Erreur lors de la sauvegarde");
     } finally {
@@ -227,14 +273,22 @@ export default function AdventureEditor() {
 
   if (!user) return null;
 
-  if (!loaded) { loadDraft(); setLoaded(true); }
+  if (!loaded) {
+    loadDraft();
+    setLoaded(true);
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0e1a] text-white p-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
-          
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="px-4 py-2 bg-gray-700/50 border border-gray-600 hover:bg-gray-600 rounded-lg text-gray-300 hover:text-white text-sm transition-colors"
+            >
+              Retour
+            </button>
             <h1 className="text-2xl font-bold text-cyan-400">
               Créer une aventure
             </h1>
@@ -276,7 +330,9 @@ export default function AdventureEditor() {
             <h2 className="text-xl font-bold mb-4">{title}</h2>
             <p className="text-gray-400 mb-6">{description}</p>
             <div className="bg-[#0a0e1a] border border-gray-700 rounded-lg p-4 mb-4">
-              <p className="text-gray-200 leading-relaxed">{initialBranch.text}</p>
+              <p className="text-gray-200 leading-relaxed">
+                {initialBranch.text}
+              </p>
             </div>
             <div className="space-y-3">
               {initialBranch.choice1 && (
@@ -305,7 +361,9 @@ export default function AdventureEditor() {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Description</label>
+              <label className="block text-sm text-gray-400 mb-2">
+                Description
+              </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -316,7 +374,9 @@ export default function AdventureEditor() {
 
             {/* Générateur AI */}
             <div className="bg-[#1a2235] border border-purple-500/30 rounded-lg p-4">
-              <h3 className="font-semibold mb-3 text-purple-400">Générateur IA</h3>
+              <h3 className="font-semibold mb-3 text-purple-400">
+                Générateur IA
+              </h3>
               <div className="flex gap-3 mb-3">
                 <select
                   value={genre}
@@ -336,13 +396,16 @@ export default function AdventureEditor() {
                 </button>
               </div>
               <p className="text-xs text-gray-500">
-                L&apos;IA génère un début d&apos;histoire basé sur le genre sélectionné
+                L&apos;IA génère un début d&apos;histoire basé sur le genre
+                sélectionné
               </p>
             </div>
 
-<div className="bg-[#1a2235] border border-gray-700 rounded-lg p-4">
+            <div className="bg-[#1a2235] border border-gray-700 rounded-lg p-4">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-cyan-400">Début de l&apos;histoire</h3>
+                <h3 className="font-semibold text-cyan-400">
+                  Début de l&apos;histoire
+                </h3>
                 <button
                   onClick={() => setShowConsequences(!showConsequences)}
                   className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition-colors"
@@ -350,12 +413,16 @@ export default function AdventureEditor() {
                   {showConsequences ? "Masquer" : "Conséquences"}
                 </button>
               </div>
-               
+
               <div className="mb-4">
-                <label className="block text-sm text-gray-400 mb-2">Texte initial</label>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Texte initial
+                </label>
                 <textarea
                   value={initialBranch.text}
-                  onChange={(e) => setInitialBranch({ ...initialBranch, text: e.target.value })}
+                  onChange={(e) =>
+                    setInitialBranch({ ...initialBranch, text: e.target.value })
+                  }
                   className="w-full px-4 py-3 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-32"
                   placeholder="Le premier paragraphe..."
                 />
@@ -364,33 +431,65 @@ export default function AdventureEditor() {
               {/* Conséquences pour le choix 1 */}
               {showConsequences && (
                 <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                  <p className="text-xs text-green-400 mb-2">Effets du Choix 1</p>
+                  <p className="text-xs text-green-400 mb-2">
+                    Effets du Choix 1
+                  </p>
                   <div className="grid grid-cols-4 gap-2">
-                    <input type="number" placeholder="PV" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
-                    <input type="number" placeholder="Force" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
-                    <input type="number" placeholder="Agilité" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
-                    <input type="number" placeholder="INT" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
+                    <input
+                      type="number"
+                      placeholder="PV"
+                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Force"
+                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Agilité"
+                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
+                    />
+                    <input
+                      type="number"
+                      placeholder="INT"
+                      className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center"
+                    />
                   </div>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Choix 1</label>
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Choix 1
+                  </label>
                   <input
                     type="text"
                     value={initialBranch.choice1}
-                    onChange={(e) => setInitialBranch({ ...initialBranch, choice1: e.target.value })}
+                    onChange={(e) =>
+                      setInitialBranch({
+                        ...initialBranch,
+                        choice1: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-2 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white text-sm"
                     placeholder="Premier choix"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Choix 2</label>
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Choix 2
+                  </label>
                   <input
                     type="text"
                     value={initialBranch.choice2}
-                    onChange={(e) => setInitialBranch({ ...initialBranch, choice2: e.target.value })}
+                    onChange={(e) =>
+                      setInitialBranch({
+                        ...initialBranch,
+                        choice2: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-2 bg-[#0a0e1a] border border-gray-700 rounded-lg text-white text-sm"
                     placeholder="Deuxieme choix"
                   />
