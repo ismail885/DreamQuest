@@ -12,6 +12,14 @@ import type { AdventureListItem } from "@/types/adventure";
 
 const ITEMS_PER_PAGE = 12;
 
+type SortOption = 'popularite' | 'date' | 'alpha';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'popularite', label: 'Popularite' },
+  { value: 'date', label: 'Recent' },
+  { value: 'alpha', label: 'A-Z' },
+];
+
 export default function AdventurePage() {
   return (
     <Suspense>
@@ -29,6 +37,7 @@ function AdventurePageContent() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortOption, setSortOption] = useState<SortOption>('popularite');
 
   useEffect(() => {
     const fetchAdventures = async () => {
@@ -37,11 +46,24 @@ function AdventurePageContent() {
       const from = (currentPage - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
       
-      const { data, error, count } = await supabase
+      let query = supabase
         .from("aventure")
-        .select("id, titre, description, popularite", { count: "exact" })
-        .order("popularite", { ascending: false })
-        .range(from, to);
+        .select("id, titre, description, popularite", { count: "exact" });
+
+      // Apply sorting
+      switch (sortOption) {
+        case 'popularite':
+          query = query.order("popularite", { ascending: false });
+          break;
+        case 'date':
+          query = query.order("date_creation", { ascending: false });
+          break;
+        case 'alpha':
+          query = query.order("titre", { ascending: true });
+          break;
+      }
+
+      const { data, error, count } = await query.range(from, to);
 
       if (error) {
         setError("Impossible de charger les aventures.");
@@ -53,7 +75,13 @@ function AdventurePageContent() {
     };
 
     fetchAdventures();
-  }, [currentPage]);
+  }, [currentPage, sortOption]);
+
+  // Reset to page 1 when sort option changes
+  const handleSortChange = (option: SortOption) => {
+    setSortOption(option);
+    setCurrentPage(1);
+  };
 
   const filteredAdventures = adventures.filter((adventure) =>
     adventure.titre.toLowerCase().includes(searchQuery.toLowerCase())
@@ -111,6 +139,26 @@ function AdventurePageContent() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
+            </div>
+
+            {/* Tri */}
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500 text-xs uppercase tracking-wider">Trier par</span>
+              <div className="flex gap-2">
+                {SORT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => handleSortChange(option.value)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      sortOption === option.value
+                        ? 'bg-cyan-500/20 border border-cyan-500/60 text-cyan-400 shadow-lg shadow-cyan-500/20'
+                        : 'bg-[#0d1526] border border-gray-700/50 text-gray-400 hover:text-white hover:border-gray-600'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

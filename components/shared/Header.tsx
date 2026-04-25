@@ -19,6 +19,9 @@ export default function Header() {
 
   const NavLinks = () => (
     <>
+      <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+        Accueil
+      </Link>
       <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
         Aventures
       </Link>
