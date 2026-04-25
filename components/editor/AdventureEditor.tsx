@@ -78,6 +78,7 @@ export default function AdventureEditor() {
   const [status, setStatus] = useState<"draft" | "pending" | "published">("draft");
   const [generating, setGenerating] = useState(false);
   const [genre, setGenre] = useState<Genre>("fantasy");
+  const [showConsequences, setShowConsequences] = useState(false);
 
   // Générer une histoire avec l'IA (templates)
   const generateWithAI = async () => {
@@ -333,9 +334,17 @@ export default function AdventureEditor() {
               </p>
             </div>
 
-            <div className="bg-[#1a2235] border border-gray-700 rounded-lg p-4">
-              <h3 className="font-semibold mb-4 text-cyan-400">Debut de l histoire</h3>
-              
+<div className="bg-[#1a2235] border border-gray-700 rounded-lg p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-cyan-400">Début de l'histoire</h3>
+                <button
+                  onClick={() => setShowConsequences(!showConsequences)}
+                  className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                >
+                  {showConsequences ? "Masquer" : "Conséquences"}
+                </button>
+              </div>
+               
               <div className="mb-4">
                 <label className="block text-sm text-gray-400 mb-2">Texte initial</label>
                 <textarea
@@ -345,6 +354,19 @@ export default function AdventureEditor() {
                   placeholder="Le premier paragraphe..."
                 />
               </div>
+
+              {/* Conséquences pour le choix 1 */}
+              {showConsequences && (
+                <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <p className="text-xs text-green-400 mb-2">Effets du Choix 1</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    <input type="number" placeholder="PV" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
+                    <input type="number" placeholder="Force" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
+                    <input type="number" placeholder="Agilité" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
+                    <input type="number" placeholder="INT" className="px-2 py-1 bg-[#0a0e1a] border border-gray-700 rounded text-xs text-center" />
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
