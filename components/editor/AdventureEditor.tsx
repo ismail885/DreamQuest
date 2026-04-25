@@ -122,7 +122,6 @@ export default function AdventureEditor() {
           titre: title,
           description,
           auteur_id: user.id,
-          status: "pending",
         })
         .select()
         .single();
@@ -150,13 +149,17 @@ export default function AdventureEditor() {
 
   const saveDraft = () => {
     if (!user || !title.trim()) { setError("Titre requis"); return; }
-    const id = draftId || `draft_${Date.now()}`;
-    const draft = { id, title, description, initialBranch, savedAt: new Date().toISOString() };
-    localStorage.setItem(`dq_draft_${user.id}`, JSON.stringify(draft));
-    setDraftId(id);
-    setError(null);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 2000);
+    try {
+      const id = draftId || `draft_${Date.now()}`;
+      const draft = { id, title, description, initialBranch, savedAt: new Date().toISOString() };
+      localStorage.setItem(`dq_draft_${user.id}`, JSON.stringify(draft));
+      setDraftId(id);
+      setError(null);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
+    } catch {
+      setError("Erreur lors de la sauvegarde en local");
+    }
   };
 
   const loadDraft = () => {
@@ -230,9 +233,17 @@ export default function AdventureEditor() {
     <div className="min-h-screen bg-[#0a0e1a] text-white p-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-cyan-400">
-            Créer une aventure
-          </h1>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.back()}
+              className="px-4 py-2 bg-gray-700/50 border border-gray-600 hover:bg-gray-600 rounded-lg text-gray-300 hover:text-white text-sm transition-colors"
+            >
+              Retour
+            </button>
+            <h1 className="text-2xl font-bold text-cyan-400">
+              Créer une aventure
+            </h1>
+          </div>
           <div className="flex gap-2">
             {title && initialBranch.text && (
               <button
