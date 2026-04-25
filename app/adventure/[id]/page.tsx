@@ -51,6 +51,31 @@ function AdventureReader({ params }: Props) {
   const [availableAbilities, setAvailableAbilities] = useState<string[]>([]);
   const [usedAbilities, setUsedAbilities] = useState<string[]>([]);
 
+  // Parse consequence JSON to show impact indicator
+  const getConsequenceImpact = (consequencesJson: string | null | undefined): { hasImpact: boolean; isPositive: boolean; impactText: string } => {
+    if (!consequencesJson) return { hasImpact: false, isPositive: true, impactText: "" };
+    
+    try {
+      const effect = JSON.parse(consequencesJson);
+      if (!effect || (effect.pv === 0 && !effect.force && !effect.agility && !effect.intelligence && !effect.endurance)) {
+        return { hasImpact: false, isPositive: true, impactText: "" };
+      }
+      
+      const impacts: string[] = [];
+      let isPositive = true;
+      
+      if (effect.pv) { impacts.push(`${effect.pv > 0 ? '+' : ''}${effect.pv} PV`); if (effect.pv < 0) isPositive = false; }
+      if (effect.force) { impacts.push(`${effect.force > 0 ? '+' : ''}${effect.force} Force`); if (effect.force < 0) isPositive = false; }
+      if (effect.agility) { impacts.push(`${effect.agility > 0 ? '+' : ''}${effect.agility} Agilité`); if (effect.agility < 0) isPositive = false; }
+      if (effect.intelligence) { impacts.push(`${effect.intelligence > 0 ? '+' : ''}${effect.intelligence} Intelligence`); if (effect.intelligence < 0) isPositive = false; }
+      if (effect.endurance) { impacts.push(`${effect.endurance > 0 ? '+' : ''}${effect.endurance} Endurance`); if (effect.endurance < 0) isPositive = false; }
+      
+      return { hasImpact: impacts.length > 0, isPositive, impactText: impacts.join(" • ") };
+    } catch {
+      return { hasImpact: false, isPositive: true, impactText: "" };
+    }
+  };
+
   const applyConsequence = async (choixNum: 1 | 2, consequencesJson: string | null | undefined) => {
     if (!character || !consequencesJson) return;
     
@@ -428,26 +453,84 @@ function AdventureReader({ params }: Props) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              {currentBranch.choix1 && currentBranch.choix1_lien && (
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { applyConsequence(1, currentBranch?.choix1_consequences); chooseOption(currentBranch.choix1_lien); }}
-                  className="w-full text-left px-5 py-4 bg-[#111827] border border-gray-700 hover:border-cyan-500/60 hover:bg-[#131929] rounded-xl text-gray-200 hover:text-white transition-all duration-200 text-sm leading-relaxed"
-                >
-                  {currentBranch.choix1}
-                </motion.button>
-              )}
-              {currentBranch.choix2 && currentBranch.choix2_lien && (
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { applyConsequence(2, currentBranch?.choix2_consequences); chooseOption(currentBranch.choix2_lien); }}
-                  className="w-full text-left px-5 py-4 bg-[#111827] border border-gray-700 hover:border-cyan-500/60 hover:bg-[#131929] rounded-xl text-gray-200 hover:text-white transition-all duration-200 text-sm leading-relaxed"
-                >
-                  {currentBranch.choix2}
-                </motion.button>
-              )}
+              {currentBranch.choix1 && currentBranch.choix1_lien && (() => {
+                const impact = getConsequenceImpact(currentBranch.choix1_consequences);
+                return (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => { applyConsequence(1, currentBranch?.choix1_consequences); chooseOption(currentBranch.choix1_lien); }}
+                    className={`w-full text-left px-5 py-4 bg-[#111827] border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
+                      impact.hasImpact 
+                        ? impact.isPositive 
+                          ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
+                          : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
+                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-gray-200 hover:text-white'
+                    }`}
+                  >
+                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
+                      impact.hasImpact 
+                        ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                        : 'bg-gray-700 text-gray-400'
+                    }`}>
+                      {impact.hasImpact ? (
+                        impact.isPositive ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        )
+                      ) : <span className="text-xs font-bold">1</span>}
+                    </div>
+                    <div className="flex-1">
+                      <span className="block">{currentBranch.choix1}</span>
+                      {impact.hasImpact && (
+                        <span className={`text-xs mt-1 block ${impact.isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                          {impact.impactText}
+                        </span>
+                      )}
+                    </div>
+                  </motion.button>
+                );
+              })()}
+              {currentBranch.choix2 && currentBranch.choix2_lien && (() => {
+                const impact = getConsequenceImpact(currentBranch.choix2_consequences);
+                return (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => { applyConsequence(2, currentBranch?.choix2_consequences); chooseOption(currentBranch.choix2_lien); }}
+                    className={`w-full text-left px-5 py-4 bg-[#111827] border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
+                      impact.hasImpact 
+                        ? impact.isPositive 
+                          ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
+                          : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
+                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-gray-200 hover:text-white'
+                    }`}
+                  >
+                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
+                      impact.hasImpact 
+                        ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                        : 'bg-gray-700 text-gray-400'
+                    }`}>
+                      {impact.hasImpact ? (
+                        impact.isPositive ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        )
+                      ) : <span className="text-xs font-bold">2</span>}
+                    </div>
+                    <div className="flex-1">
+                      <span className="block">{currentBranch.choix2}</span>
+                      {impact.hasImpact && (
+                        <span className={`text-xs mt-1 block ${impact.isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                          {impact.impactText}
+                        </span>
+                      )}
+                    </div>
+                  </motion.button>
+                );
+              })()}
 
               {/* Compétences de classe */}
               {availableAbilities.length > 0 && character?.classe && !currentEvent && (

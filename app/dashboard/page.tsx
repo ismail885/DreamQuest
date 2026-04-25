@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { Star } from "lucide-react";
+import { Star, Sparkles, Users, BookOpen, Trophy } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
@@ -17,11 +17,24 @@ interface UserStats {
   totalXp: number;
 }
 
+interface PopularAdventure {
+  id: number;
+  titre: string;
+  description: string | null;
+  popularite: number;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuthContext();
   const [stats, setStats] = useState<UserStats>({ charactersCount: 0, completedQuests: 0, totalXp: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [popularAdventures, setPopularAdventures] = useState<PopularAdventure[]>([]);
+  const [loadingAdventures, setLoadingAdventures] = useState(true);
+  const [globalStats, setGlobalStats] = useState({ totalAdventures: 0, totalPlayers: 0, totalPlays: 0 });
+  const [loadingGlobalStats, setLoadingGlobalStats] = useState(true);
+  const [suggestions, setSuggestions] = useState<PopularAdventure[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -60,6 +73,88 @@ export default function DashboardPage() {
     };
 
     if (user) fetchStats();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchPopularAdventures = async () => {
+      setLoadingAdventures(true);
+      try {
+        const { data } = await supabase
+          .from("aventure")
+          .select("id, titre, description, popularite")
+          .order("popularite", { ascending: false })
+          .limit(3);
+
+        if (data) setPopularAdventures(data);
+      } catch (err) {
+        console.error("Erreur quêtes populaires:", err);
+      } finally {
+        setLoadingAdventures(false);
+      }
+    };
+
+    fetchPopularAdventures();
+  }, []);
+
+  useEffect(() => {
+    const fetchGlobalStats = async () => {
+      setLoadingGlobalStats(true);
+      try {
+        const [advCount, userCount, savesCount] = await Promise.all([
+          supabase.from("aventure").select("id", { count: "exact" }),
+          supabase.from("utilisateur").select("id", { count: "exact" }),
+          supabase.from("sauvegarde").select("id_sauvegarde", { count: "exact" }),
+        ]);
+        setGlobalStats({
+          totalAdventures: advCount.count ?? 0,
+          totalPlayers: userCount.count ?? 0,
+          totalPlays: savesCount.count ?? 0,
+        });
+      } catch (err) {
+        console.error("Erreur stats globales:", err);
+      } finally {
+        setLoadingGlobalStats(false);
+      }
+    };
+    fetchGlobalStats();
+  }, []);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (!user) return;
+      
+      setLoadingSuggestions(true);
+      try {
+        // Get played adventure IDs
+        const { data: saves } = await supabase
+          .from("sauvegarde")
+          .select("id_aventure")
+          .eq("id_utilisateur", user.id);
+        
+        const playedIds = saves?.map(s => s.id_aventure) ?? [];
+        
+        // Get unplayed adventures, ordered by popularity
+        let query = supabase
+          .from("aventure")
+          .select("id, titre, description, popularite")
+          .order("popularite", { ascending: false })
+          .limit(3);
+        
+        if (playedIds.length > 0) {
+          query = query.not("id", "in", `(${playedIds.join(",")})`);
+        }
+        
+        const { data } = await query;
+        
+        if (data) setSuggestions(data);
+      } catch (err) {
+        console.error("Erreur suggestions:", err);
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    };
+
+    if (user) fetchSuggestions();
   }, [user]);
 
   if (loading || statsLoading) {
@@ -139,94 +234,102 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Stats globales */}
+          <div className="mb-8 md:mb-12">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-[#0d1526] border border-gray-700/30 rounded-xl">
+                <BookOpen className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">{globalStats.totalAdventures}</div>
+                <div className="text-xs text-gray-400">Aventures</div>
+              </div>
+              <div className="text-center p-4 bg-[#0d1526] border border-gray-700/30 rounded-xl">
+                <Users className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">{globalStats.totalPlayers}</div>
+                <div className="text-xs text-gray-400">Joueurs</div>
+              </div>
+              <div className="text-center p-4 bg-[#0d1526] border border-gray-700/30 rounded-xl">
+                <Trophy className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">{globalStats.totalPlays}</div>
+                <div className="text-xs text-gray-400">Parties</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Suggestions personnalisées */}
+          {user && (
+            <div className="mb-8 md:mb-12">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-yellow-400" />
+                Pour Vous
+              </h2>
+              <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+                {loadingSuggestions ? (
+                  [1, 2, 3].map((i) => (
+                    <div key={i} className="bg-[#0d1526] border border-yellow-500/20 rounded-xl p-5 animate-pulse">
+                      <div className="h-5 bg-gray-700/50 rounded w-1/3 mb-3" />
+                      <div className="h-4 bg-gray-700/50 rounded w-2/3" />
+                    </div>
+                  ))
+                ) : suggestions.length > 0 ? (
+                  suggestions.map((adventure) => (
+                    <div
+                      key={adventure.id}
+                      onClick={() => router.push(`/adventure/${adventure.id}?personnage=${user.id}`)}
+                      className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 text-yellow-400" />
+                        </div>
+                        <span className="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">Recommandé</span>
+                      </div>
+                      <h3 className="text-white font-semibold mb-2 line-clamp-1">{adventure.titre}</h3>
+                      <p className="text-gray-400 text-sm line-clamp-2">{adventure.description || "Une aventure palpitante vous attend..."}</p>
+                    </div>
+                  ))
+                ) : null}
+              </div>
+            </div>
+          )}
+
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">
               Quêtes Populaires
             </h2>
             <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-              <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer">
-                <div className="aspect-video bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg mb-4 flex items-center justify-center">
-                  <svg
-                    className="w-12 h-12 text-cyan-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {loadingAdventures ? (
+                [1, 2, 3].map((i) => (
+                  <div key={i} className="bg-gray-800/30 border border-gray-700/30 rounded-2xl p-6 animate-pulse">
+                    <div className="aspect-video bg-gray-700/50 rounded-lg mb-4" />
+                    <div className="h-6 bg-gray-700/50 rounded w-3/4 mb-2" />
+                    <div className="h-4 bg-gray-700/50 rounded w-full" />
+                  </div>
+                ))
+              ) : popularAdventures.length > 0 ? (
+                popularAdventures.map((adventure) => (
+                  <div
+                    key={adventure.id}
+                    onClick={() => router.push(`/adventure/${adventure.id}`)}
+                    className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer group"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                    <div className="aspect-video bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg mb-4 flex items-center justify-center">
+                      <svg className="w-12 h-12 text-cyan-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">{adventure.titre}</h3>
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{adventure.description || "Une aventure palpitante vous attend..."}</p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-cyan-400 flex items-center gap-1"><Star className="w-4 h-4 fill-current" /> {(adventure.popularite / 10).toFixed(1)}</span>
+                      <span className="text-gray-500">{adventure.popularite}+ joueurs</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-3 text-center py-12 bg-[#0d1526] border border-gray-700/30 rounded-2xl">
+                  <p className="text-gray-400">Aucune aventure disponible</p>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">
-                  La Quête du Dragon
-                </h3>
-                <p className="text-gray-400 text-sm mb-4">
-                  Affrontez le dragon légendaire...
-                </p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-cyan-400 flex items-center gap-1"><Star className="w-4 h-4 fill-current" /> 4.8</span>
-                  <span className="text-gray-500">1.2k joueurs</span>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer">
-                <div className="aspect-video bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg mb-4 flex items-center justify-center">
-                  <svg
-                    className="w-12 h-12 text-purple-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">
-                  Le Mystère de l&apos;Alchimiste
-                </h3>
-                <p className="text-gray-400 text-sm mb-4">
-                  Découvrez les secrets de la magie...
-                </p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-cyan-400">⭐ 4.6</span>
-                  <span className="text-gray-500">856 joueurs</span>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer">
-                <div className="aspect-video bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-lg mb-4 flex items-center justify-center">
-                  <svg
-                    className="w-12 h-12 text-yellow-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">
-                  L&apos;Épée de Feu
-                </h3>
-                <p className="text-gray-400 text-sm mb-4">
-                  Trouvez l&apos;arme légendaire...
-                </p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-cyan-400">⭐ 4.9</span>
-                  <span className="text-gray-500">2.1k joueurs</span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
