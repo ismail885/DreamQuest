@@ -43,3 +43,13 @@ export interface UserCreation {
   titre: string
   popularite: number
 }
+
+export interface AdventureListItem {
+  id: number
+  titre: string
+  description: string | null
+  popularite: number
+  difficulte?: 'facile' | 'normal' | 'difficile'
+  duree?: 'courte' | 'moyenne' | 'longue'
+  genre?: string
+}

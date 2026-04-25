@@ -8,7 +8,7 @@ import BottomNav from "@/components/shared/BottomNav";
 import AdventureCard from "@/components/adventure/AdventureCard";
 import { SkeletonAdventureList } from "@/components/shared/Skeleton";
 import { supabase } from "@/lib/supabaseClient";
-import type { Adventure } from "@/types/adventure";
+import type { AdventureListItem } from "@/types/adventure";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -24,7 +24,7 @@ function AdventurePageContent() {
   const searchParams = useSearchParams();
   const personnageId = searchParams.get("personnage");
   const [searchQuery, setSearchQuery] = useState("");
-  const [adventures, setAdventures] = useState<Adventure[]>([]);
+  const [adventures, setAdventures] = useState<AdventureListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
