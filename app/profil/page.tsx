@@ -6,23 +6,23 @@ import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
-import { ExtendedUserProfile, UserStats, UserSave, UserCreation } from "@/types";
+import { ExtendedUserProfile, UserStats, UserSave, UserCreation, Character } from "@/types";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthContext } from "@/context/AuthContext";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
 import { getDailyQuests, DailyQuest, getTotalXPReward } from "@/lib/dailyQuests";
-import { getActiveEvent, getTimeRemaining } from "@/lib/specialEvents";
 import * as LucideIcons from "lucide-react";
 
 export default function ProfilPage() {
   const router = useRouter();
   const { user, loading: authLoading, updateUser, logout } = useAuthContext();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests">("stories");
+  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters">("stories");
   
   const [userProfile, setUserProfile] = useState<ExtendedUserProfile | null>(null);
   const [userSaves, setUserSaves] = useState<UserSave[]>([]);
   const [userCreations, setUserCreations] = useState<UserCreation[]>([]);
+  const [userCharacters, setUserCharacters] = useState<Character[]>([]);
   const [userAchievements, setUserAchievements] = useState<UserAchievements | null>(null);
   const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
   const [stats, setStats] = useState<UserStats>({
@@ -96,8 +96,62 @@ export default function ProfilPage() {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("focus", handleFocus);
-    };
+};
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Rafraichir les donnees quand on change d'onglet
+  useEffect(() => {
+    if (activeTab === "achievements" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "characters" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "stories" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "quests" && user?.id) {
+      loadUserData(user.id);
+    }
+  }, [activeTab, user?.id]);
+
+  // Rafraichir quand on revient sur la page (tab/window refocus)
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!document.hidden && user?.id) {
+        loadUserData(user.id);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [user?.id]);
+
+  // Rafraichir les realisations quand on affiche l'onglet
+  useEffect(() => {
+    if (activeTab === "achievements" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "characters" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "stories" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "quests" && user?.id) {
+      loadUserData(user.id);
+    }
+  }, [activeTab]);
+
+  // Rafraichir les stats quand la page devient visible
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!document.hidden && user?.id) {
+        loadUserData(user.id);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [user?.id]);
 
   const loadUserData = async (userId: number) => {
@@ -136,7 +190,7 @@ export default function ProfilPage() {
       const { data: savesData } = await supabase
         .from("sauvegarde")
         .select(`
-          id_sauvegarde,
+          id,
           id_utilisateur,
           id_aventure,
           id_personnage,
@@ -152,17 +206,19 @@ export default function ProfilPage() {
       if (savesData && savesData.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formattedSaves: UserSave[] = savesData.map((save: any) => ({
-          id: save.id_sauvegarde,
+          id: save.id,
           id_utilisateur: save.id_utilisateur,
           id_aventure: save.id_aventure,
           id_personnage: save.id_personnage,
           id_embranchement_actuel: save.id_embranchement_actuel,
-          progression: save.progression || 0,
+          progression: save.progression ?? 0,
           date_sauvegarde: save.date_sauvegarde,
           aventure_titre: save.aventure?.titre || "Aventure inconnue",
-          status: save.progression >= 100 ? "completed" as const : "in-progress" as const,
+          status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,
         }));
         setUserSaves(formattedSaves);
+      } else {
+        setUserSaves([]);
       }
 
       const { data: creationsData } = await supabase
@@ -187,6 +243,17 @@ export default function ProfilPage() {
         .from("personnage")
         .select("id_personnage", { count: "exact" })
         .eq("id_utilisateur", userId);
+
+      // Fetch user characters
+      const { data: charactersData } = await supabase
+        .from("personnage")
+        .select("*")
+        .eq("id_utilisateur", userId)
+        .order("date_creation", { ascending: false });
+
+      if (charactersData) {
+        setUserCharacters(charactersData);
+      }
 
       setStats({
         storiesPlayed: savesData?.length || 0,
@@ -384,36 +451,17 @@ export default function ProfilPage() {
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             
             <div className="lg:w-80 flex-shrink-0">
-              {(() => {
-                const activeEvent = getActiveEvent();
-                const timeLeft = activeEvent ? getTimeRemaining(activeEvent) : null;
-                return (
-                  <>
-                    {activeEvent && timeLeft && (
-                      <div className="mb-4 p-4 bg-gradient-to-r from-purple-900/80 to-red-900/80 border border-purple-500/50 rounded-xl">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-purple-400 font-bold text-sm">{activeEvent.name}</span>
-                          <span className="text-yellow-400 text-xs">
-                            {timeLeft.days > 0 && `${timeLeft.days}j `}{timeLeft.hours}h {timeLeft.minutes}m
-                          </span>
-                        </div>
-                        <p className="text-gray-400 text-xs mb-2">{activeEvent.description}</p>
-                        <div className="text-center">
-                          <span className="text-cyan-400 text-sm font-bold">+{activeEvent.reward} XP</span>
-                        </div>
-                      </div>
-                    )}
-                    <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl lg:rounded-2xl p-4 md:p-6">
-                      <div className="flex flex-col items-center mb-4 md:mb-6">
-                        <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-cyan-500/30">
-                          {getUserInitials()}
-                        </div>
-                        <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
-                        <p className="text-gray-400 text-sm">Niveau {currentLevel} • Rang +{Math.floor(currentLevel * 3 + stats.likes / 100)}</p>
-                        <a href={`/profil/${userProfile?.nom_utilisateur}`} className="text-cyan-400 text-sm hover:underline mt-2">
-                          Voir profil public
-                        </a>
-                      </div>
+              <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl lg:rounded-2xl p-4 md:p-6">
+                <div className="flex flex-col items-center mb-4 md:mb-6">
+                  <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-cyan-500/30">
+                    {getUserInitials()}
+                  </div>
+                  <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
+                  <p className="text-gray-400 text-sm">Niveau {currentLevel} • Rang +{Math.floor(currentLevel * 3 + stats.likes / 100)}</p>
+                  <a href={`/profil/${userProfile?.nom_utilisateur}`} className="text-cyan-400 text-sm hover:underline mt-2">
+                    Voir profil public
+                  </a>
+                </div>
 
                 <div className="mb-6">
                   <div className="flex justify-between text-sm mb-2">
@@ -477,9 +525,6 @@ export default function ProfilPage() {
                   </button>
                 </div>
               </div>
-                  </>
-                );
-              })()}
             </div>
 
             <div className="flex-1">
@@ -514,6 +559,16 @@ export default function ProfilPage() {
                     }`}
                   >
                     Quêtes
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("characters")}
+                    className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
+                      activeTab === "characters"
+                        ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
+                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
+                    }`}
+                  >
+                    Mes Persos
                   </button>
                 </div>
 
@@ -718,6 +773,76 @@ export default function ProfilPage() {
                       ) : (
                         <div className="text-center py-12">
                           <p className="text-gray-400">Chargement des quêtes...</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === "characters" && (
+                    <div className="space-y-4">
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => router.push("/create-character")}
+                          className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                          Nouveau Personnage
+                        </button>
+                      </div>
+                      {userCharacters.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {userCharacters.map((char) => (
+                            <div
+                              key={char.id}
+                              className="bg-[#151f30] border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl font-bold flex-shrink-0">
+                                  {char.nom_personnage?.charAt(0).toUpperCase() || "?"}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="text-lg font-semibold text-white truncate">{char.nom_personnage}</h3>
+                                  <p className="text-gray-400 text-sm">{char.classe}</p>
+                                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                    <span>Niveau {char.niveau || 1}</span>
+                                    <span>{char.points_vie || 100} PV</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 mt-4">
+                                <button
+                                  onClick={() => router.push(`/adventure?personnage=${char.id}`)}
+                                  className="flex-1 py-2 px-3 bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium"
+                                >
+                                  Jouer
+                                </button>
+                                <button
+                                  onClick={() => router.push(`/profil/personnage/${char.id}`)}
+                                  className="flex-1 py-2 px-3 bg-[#1a2235] border border-gray-600/30 text-gray-300 rounded-lg hover:bg-[#1f2940] transition-colors text-sm font-medium"
+                                >
+                                  Détails
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-700/50 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white mb-2">Aucun personnage</h3>
+                          <p className="text-gray-400 mb-4">Créez votre premier personnage pour commencer l'aventure.</p>
+                          <button
+                            onClick={() => router.push("/create-character")}
+                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
+                          >
+                            Créer un personnage
+                          </button>
                         </div>
                       )}
                     </div>

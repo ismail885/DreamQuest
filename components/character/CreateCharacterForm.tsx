@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { CHARACTER_CLASSES, CharacterClass, Character } from '@/types';
@@ -6,6 +6,17 @@ import { supabase } from '@/lib/supabaseClient';
 import ClassCard from './ClassCard';
 import toast from 'react-hot-toast';
 import { Check } from 'lucide-react';
+
+const COLOR_PALETTE = [
+  { name: 'Cyan', value: '#06b6d4', class: 'cyan' },
+  { name: 'Violet', value: '#a855f7', class: 'purple' },
+  { name: 'Or', value: '#eab308', class: 'yellow' },
+  { name: 'Rouge', value: '#ef4444', class: 'red' },
+  { name: 'Vert', value: '#22c55e', class: 'green' },
+  { name: 'Bleu', value: '#3b82f6', class: 'blue' },
+  { name: 'Rose', value: '#ec4899', class: 'pink' },
+  { name: 'Orange', value: '#f97316', class: 'orange' },
+];
 
 interface CreateCharacterFormProps {
   userId?: number;
@@ -15,6 +26,7 @@ interface CreateCharacterFormProps {
 export default function CreateCharacterForm({ userId, onCharacterCreated }: CreateCharacterFormProps) {
   const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
   const [characterName, setCharacterName] = useState('');
+  const [selectedColor, setSelectedColor] = useState(COLOR_PALETTE[0]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -186,6 +198,36 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
           />
         </div>
 
+        <div className="mb-6">
+          <label className="block text-white text-sm mb-3 font-medium">
+            Couleur du Personnage
+          </label>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-2">
+              {COLOR_PALETTE.map((color) => (
+                <button
+                  key={color.name}
+                  type="button"
+                  onClick={() => setSelectedColor(color)}
+                  className={`w-8 h-8 rounded-full transition-all duration-200 ${
+                    selectedColor.name === color.name
+                      ? 'ring-2 ring-white ring-offset-2 ring-offset-[#0a0e1a] scale-110'
+                      : 'hover:scale-110'
+                  }`}
+                  style={{ backgroundColor: color.value }}
+                  title={color.name}
+                />
+              ))}
+            </div>
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold"
+              style={{ backgroundColor: selectedColor.value + '40', borderColor: selectedColor.value, borderWidth: 2 }}
+            >
+              {characterName.charAt(0).toUpperCase() || '?'}
+            </div>
+          </div>
+        </div>
+
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
             {error}
@@ -194,9 +236,16 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
 
         {selectedClass && characterName.trim() && (
           <div className="mb-6 p-4 bg-gray-800/50 border border-gray-700 rounded-lg text-center">
-            <span className="text-lg text-gray-400">Créer </span>
-            <span className="text-xl font-bold text-cyan-400">{characterName}</span>
-            <span className="text-lg text-gray-400"> - {selectedClass}</span>
+            <div
+              className="inline-flex items-center justify-center w-16 h-16 rounded-full text-2xl font-bold mb-3"
+              style={{ backgroundColor: selectedColor.value + '30', borderColor: selectedColor.value, borderWidth: 3, color: selectedColor.value }}
+            >
+              {characterName.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <span className="text-xl font-bold" style={{ color: selectedColor.value }}>{characterName}</span>
+              <span className="text-lg text-gray-400"> - {selectedClass}</span>
+            </div>
           </div>
         )}
 
