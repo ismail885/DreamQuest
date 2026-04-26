@@ -2,13 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuthContext } from "@/context/AuthContext";
-import type { Enemy, CombatState } from "@/lib/combat";
-import { getRandomEnemy, playerAttack, enemyAttack, initCombat } from "@/lib/combat";
+import type { CombatState } from "@/lib/combat";
+import { playerAttack, enemyAttack, initCombat } from "@/lib/combat";
 
 interface CombatUIProps {
   playerStats: { force: number; agility: number; intelligence: number; endurance: number };
-  playerPv: number;
   playerPvMax: number;
   onPlayerHpChange: (hp: number) => void;
   onWin: (xp: number, loot: string) => void;
@@ -18,7 +16,6 @@ interface CombatUIProps {
 
 export default function CombatUI({
   playerStats,
-  playerPv,
   playerPvMax,
   onPlayerHpChange,
   onWin,

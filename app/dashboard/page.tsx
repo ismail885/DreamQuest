@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { Star, Sparkles, Users, BookOpen, Trophy } from "lucide-react";
+import { Star, Sparkles } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
@@ -33,16 +33,6 @@ export default function DashboardPage() {
     totalXp: 0,
   });
   const [statsLoading, setStatsLoading] = useState(true);
-  const [popularAdventures, setPopularAdventures] = useState<
-    PopularAdventure[]
-  >([]);
-  const [loadingAdventures, setLoadingAdventures] = useState(true);
-  const [globalStats, setGlobalStats] = useState({
-    totalAdventures: 0,
-    totalPlayers: 0,
-    totalPlays: 0,
-  });
-  const [loadingGlobalStats, setLoadingGlobalStats] = useState(true);
   const [suggestions, setSuggestions] = useState<PopularAdventure[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
 
@@ -86,52 +76,6 @@ export default function DashboardPage() {
 
     if (user) fetchStats();
   }, [user]);
-
-  useEffect(() => {
-    const fetchPopularAdventures = async () => {
-      setLoadingAdventures(true);
-      try {
-        const { data } = await supabase
-          .from("aventure")
-          .select("id, titre, description, popularite")
-          .order("popularite", { ascending: false })
-          .limit(3);
-
-        if (data) setPopularAdventures(data);
-      } catch (err) {
-        console.error("Erreur quêtes populaires:", err);
-      } finally {
-        setLoadingAdventures(false);
-      }
-    };
-
-    fetchPopularAdventures();
-  }, []);
-
-  useEffect(() => {
-    const fetchGlobalStats = async () => {
-      setLoadingGlobalStats(true);
-      try {
-        const [advCount, userCount, savesCount] = await Promise.all([
-          supabase.from("aventure").select("id", { count: "exact" }),
-          supabase.from("utilisateur").select("id", { count: "exact" }),
-          supabase
-            .from("sauvegarde")
-            .select("id_sauvegarde", { count: "exact" }),
-        ]);
-        setGlobalStats({
-          totalAdventures: advCount.count ?? 0,
-          totalPlayers: userCount.count ?? 0,
-          totalPlays: savesCount.count ?? 0,
-        });
-      } catch (err) {
-        console.error("Erreur stats globales:", err);
-      } finally {
-        setLoadingGlobalStats(false);
-      }
-    };
-    fetchGlobalStats();
-  }, []);
 
   useEffect(() => {
     const fetchSuggestions = async () => {

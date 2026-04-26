@@ -159,7 +159,7 @@ export function getRandomAbility(classe: CharacterClass, ownedAbilities: string[
   return available[Math.floor(Math.random() * available.length)];
 }
 
-export function getAbilitiesForLevel(classe: CharacterClass, niveau: number, ownedAbilities: string[] = []): string[] {
+export function getAbilitiesForLevel(classe: CharacterClass, niveau: number, _ownedAbilities: string[] = []): string[] {
   const abilities: string[] = [];
   
   if (niveau >= 4) {

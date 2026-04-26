@@ -29,7 +29,7 @@ export default function ClassementPage() {
   const [adventures, setAdventures] = useState<RankingAdventure[]>([]);
   const [players, setPlayers] = useState<RankingPlayer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timeFilter, setTimeFilter] = useState<"all" | "week" | "month">("all");
+  const [timeFilter] = useState<"all" | "week" | "month">("all");
 
   useEffect(() => {
     const fetchRanking = async () => {
