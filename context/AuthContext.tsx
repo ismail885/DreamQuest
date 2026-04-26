@@ -55,7 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
           if (dbError) console.warn('checkAuth DB error:', dbError.message);
           const stored = localStorage.getItem(USER_STORAGE_KEY);
           if (stored) {
-            setUser(JSON.parse(stored));
+            const parsed = JSON.parse(stored);
+            // Nettoyer l'ID au cas ou il serait mal formate
+            if (parsed.id && String(parsed.id).includes(':')) {
+              parsed.id = parseInt(String(parsed.id).split(':')[0], 10);
+              localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(parsed));
+            }
+            setUser(parsed);
           } else {
             setUser(null);
           }

@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
-import { ExtendedUserProfile, UserStats, UserSave, UserCreation, Character } from "@/types";
+import { ExtendedUserProfile, UserStats, UserSave, UserCreation, Character, CharacterClass } from "@/types";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthContext } from "@/context/AuthContext";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
@@ -77,55 +77,35 @@ export default function ProfilPage() {
       return;
     }
     loadUserData(user.id).then(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user?.id, router]);
 
+  // Rechargement des donnees
   useEffect(() => {
-    const handleVisibility = () => {
-      if (!document.hidden && user?.id) {
-        loadUserData(user.id);
-      }
+    const refresh = () => {
+      if (user?.id) loadUserData(user.id);
     };
-    document.addEventListener("visibilitychange", handleVisibility);
-    const handleFocus = () => {
-      if (user?.id) {
-        loadUserData(user.id);
-      }
-    };
+
+    // Rechargement quand on revient sur l'onglet
+    const handleFocus = () => refresh();
     window.addEventListener("focus", handleFocus);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("focus", handleFocus);
-};
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
 
-  // Rafraichir les donnees quand on change d'onglet
-  useEffect(() => {
-    if (activeTab === "achievements" && user?.id) {
-      loadUserData(user.id);
-    }
-    if (activeTab === "characters" && user?.id) {
-      loadUserData(user.id);
-    }
-    if (activeTab === "stories" && user?.id) {
-      loadUserData(user.id);
-    }
-    if (activeTab === "quests" && user?.id) {
-      loadUserData(user.id);
-    }
-  }, [activeTab, user?.id]);
-
-  // Rafraichir quand on revient sur la page (tab/window refocus)
-  useEffect(() => {
+    // Rechargement quand on revient sur la page
     const handleVisibility = () => {
-      if (!document.hidden && user?.id) {
-        loadUserData(user.id);
-      }
+      if (!document.hidden) refresh();
     };
     document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [user?.id]);
+
+  // Rechargement quand on change d'onglet
+  useEffect(() => {
+    if (user?.id) loadUserData(user.id);
+  }, [activeTab, user?.id]);
 
   // Rafraichir les realisations quand on affiche l'onglet
   useEffect(() => {
@@ -155,8 +135,11 @@ export default function ProfilPage() {
   }, [user?.id]);
 
   const loadUserData = async (userId: number) => {
+    // Normaliser l'ID (au cas ou il serait mal formate)
+    const cleanUserId = typeof userId === 'number' && !isNaN(userId) ? userId : parseInt(String(userId).split(':')[0], 10);
+    
     try {
-      const questData = getDailyQuests(userId);
+      const questData = getDailyQuests(cleanUserId);
       setDailyQuests(questData.quests);
 
       const { data: profileData } = await supabase
@@ -201,7 +184,7 @@ export default function ProfilPage() {
             titre
           )
         `)
-        .eq("id_utilisateur", userId);
+        .eq("id_utilisateur", cleanUserId);
 
       if (savesData && savesData.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -237,22 +220,40 @@ export default function ProfilPage() {
       const { count: votesCount } = await supabase
         .from("vote")
         .select("id_vote", { count: "exact" })
-        .eq("id_utilisateur", userId);
+        .eq("id_utilisateur", cleanUserId);
 
       const { count: charactersCount } = await supabase
         .from("personnage")
         .select("id_personnage", { count: "exact" })
-        .eq("id_utilisateur", userId);
+        .eq("id_utilisateur", cleanUserId);
 
       // Fetch user characters
-      const { data: charactersData } = await supabase
+      const { data: charactersData, error: charactersError } = await supabase
         .from("personnage")
         .select("*")
         .eq("id_utilisateur", userId)
         .order("date_creation", { ascending: false });
 
-      if (charactersData) {
-        setUserCharacters(charactersData);
+      if (charactersError) {
+        console.error("Erreur personnages:", charactersError);
+      }
+
+      if (charactersData && charactersData.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const formattedCharacters: Character[] = charactersData.map((c: any) => ({
+          id: c.id ?? c.id_personnage,
+          nom_personnage: c.nom_personnage,
+          classe: c.classe as CharacterClass,
+          niveau: c.niveau ?? 1,
+          points_vie: c.points_vie ?? 100,
+          points_vie_max: c.points_vie_max ?? c.points_vie ?? 100,
+          stats: c.stats ?? { force: 0, agility: 0, intelligence: 0, endurance: 0 },
+          id_utilisateur: c.id_utilisateur,
+          date_creation: c.date_creation,
+        }));
+        setUserCharacters(formattedCharacters);
+      } else {
+        setUserCharacters([]);
       }
 
       setStats({
