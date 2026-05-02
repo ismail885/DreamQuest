@@ -105,17 +105,17 @@ export default function ClassementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
+    <div className="min-h-screen bg-[#0a0e1a] text-content-primary flex flex-col">
       <Header />
 
       <main className="flex-1 container mx-auto px-6 py-8 pb-24 md:pb-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+            <h1 className="text-4xl md:text-5xl font-bold text-content-primary mb-4 flex items-center justify-center gap-3">
               <Trophy className="w-10 h-10 text-yellow-400" />
               Classement
             </h1>
-            <p className="text-gray-400 text-lg">
+            <p className="text-content-secondary text-lg">
               {activeTab === "adventures" 
                 ? "Découvrez les aventures les plus populaires"
                 : "Les meilleurs aventuriers du royaume"}
@@ -128,8 +128,8 @@ export default function ClassementPage() {
               onClick={() => setActiveTab("adventures")}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "adventures"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                  ? "bg-cyan-500 text-content-primary"
+                  : "bg-gray-800 text-content-secondary hover:bg-gray-700"
               }`}
             >
               <BookOpen className="w-4 h-4 inline mr-2" />
@@ -139,8 +139,8 @@ export default function ClassementPage() {
               onClick={() => setActiveTab("players")}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "players"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                  ? "bg-cyan-500 text-content-primary"
+                  : "bg-gray-800 text-content-secondary hover:bg-gray-700"
               }`}
             >
               <Users className="w-4 h-4 inline mr-2" />
@@ -151,17 +151,17 @@ export default function ClassementPage() {
           {loading ? (
             <div className="text-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto"></div>
-              <p className="text-gray-400 mt-4">Chargement du classement...</p>
+              <p className="text-content-secondary mt-4">Chargement du classement...</p>
             </div>
           ) : adventures.length === 0 ? (
             <div className="text-center py-20">
               <BookOpen className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-white mb-2">Aucun classement disponible</h2>
-              <p className="text-gray-400">Soyez le premier à créer une aventure !</p>
+              <h2 className="text-xl font-bold text-content-primary mb-2">Aucun classement disponible</h2>
+              <p className="text-content-secondary">Soyez le premier à créer une aventure !</p>
               {user && (
                 <Link
                   href="/create-character"
-                  className="inline-block mt-6 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors"
+                  className="inline-block mt-6 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-content-primary font-semibold rounded-lg transition-colors"
                 >
                   Créer une aventure
                 </Link>
@@ -171,8 +171,8 @@ export default function ClassementPage() {
             players.length === 0 ? (
               <div className="text-center py-20">
                 <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h2 className="text-xl font-bold text-white mb-2">Aucun joueur</h2>
-                <p className="text-gray-400">Rejoignez la communauté pour apparaître !</p>
+                <h2 className="text-xl font-bold text-content-primary mb-2">Aucun joueur</h2>
+                <p className="text-content-secondary">Rejoignez la communauté pour apparaître !</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -188,10 +188,10 @@ export default function ClassementPage() {
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-semibold text-lg truncate">
+                        <h3 className="text-content-primary font-semibold text-lg truncate">
                           {player.nom_utilisateur}
                         </h3>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-content-secondary text-sm">
                           Niveau {player.niveau ?? 1}
                         </p>
                       </div>
@@ -222,11 +222,11 @@ export default function ClassementPage() {
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-semibold text-lg truncate">
+                      <h3 className="text-content-primary font-semibold text-lg truncate">
                         {adventure.titre}
                       </h3>
                       {adventure.auteur_nom && (
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-content-secondary text-sm">
                           par {adventure.auteur_nom}
                         </p>
                       )}

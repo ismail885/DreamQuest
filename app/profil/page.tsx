@@ -49,14 +49,11 @@ export default function ProfilPage() {
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
-  const [soundEffects, setSoundEffects] = useState(true);
 
   const loadSettings = () => {
     if (!user) return;
     const notif = localStorage.getItem(`dq_settings_${user.id}_notifications`);
-    const sound = localStorage.getItem(`dq_settings_${user.id}_soundEffects`);
     if (notif) setNotifications(JSON.parse(notif));
-    if (sound) setSoundEffects(JSON.parse(sound));
   };
 
   useEffect(() => { if (user) loadSettings(); }, [user]);
@@ -65,12 +62,6 @@ export default function ProfilPage() {
     const newVal = !notifications;
     setNotifications(newVal);
     if (user) localStorage.setItem(`dq_settings_${user.id}_notifications`, JSON.stringify(newVal));
-  };
-
-  const toggleSoundEffects = () => {
-    const newVal = !soundEffects;
-    setSoundEffects(newVal);
-    if (user) localStorage.setItem(`dq_settings_${user.id}_soundEffects`, JSON.stringify(newVal));
   };
 
   const { isDark: darkMode, toggleTheme } = useTheme();
@@ -218,7 +209,7 @@ export default function ProfilPage() {
       const { data: creationsData } = await supabase
         .from("aventure")
         .select("id_aventure, titre, popularite")
-        .eq("auteur_id", userId);
+        .eq("auteur_id", numericUserId);
 
       if (creationsData && creationsData.length > 0) {
         setUserCreations(creationsData.map((c: { id_aventure: number; titre: string; popularite: number }) => ({
@@ -325,21 +316,13 @@ export default function ProfilPage() {
     setSettingsMessage(null);
 
     try {
-      await supabase
-        .from("parametre_utilisateur")
-        .upsert({
-          id_utilisateur: user.id,
-          notifications,
-          effets_sonores: soundEffects,
-          mode_sombre: darkMode,
-          langue: language,
-          date_modification: new Date().toISOString(),
-        }, {
-          onConflict: "id_utilisateur"
-        });
-
-      // Le thème est déjà persisté en localStorage par le ThemeContext
-      setSettingsMessage({ type: "success", text: "Paramètres sauvegardés !" });
+      // Sauvegarder en localStorage uniquement
+      if (user) {
+        localStorage.setItem(`dq_settings_${user.id}_notifications`, JSON.stringify(notifications));
+        localStorage.setItem(`dq_settings_${user.id}_lang`, language);
+        // darkMode deja persiste par ThemeContext
+      }
+      setSettingsMessage({ type: "success", text: "Parametres sauvegardes !" });
       
       setTimeout(() => {
         closeSettingsModal();
@@ -357,21 +340,15 @@ export default function ProfilPage() {
       settingsLoadedRef.current = true;
 
       try {
-        const { data } = await supabase
-          .from("parametre_utilisateur")
-          .select("*")
-          .eq("id_utilisateur", user.id)
-          .single();
-
-        if (data) {
-          setNotifications(data.notifications ?? true);
-          setSoundEffects(data.effets_sonores ?? true);
-          const savedDark = data.mode_sombre ?? true;
-          if (savedDark !== darkMode) toggleTheme();
-          setLanguage(data.langue ?? "fr");
+        // Charger depuis localStorage uniquement
+        if (user) {
+          const savedNotif = localStorage.getItem(`dq_settings_${user.id}_notifications`);
+          const savedLang = localStorage.getItem(`dq_settings_${user.id}_lang`);
+          if (savedNotif) setNotifications(JSON.parse(savedNotif));
+          if (savedLang) setLanguage(savedLang);
         }
       } catch {
-        // Table non encore créée, on utilise les valeurs par défaut
+        // Erreur, on utilise les valeurs par defaut
       }
     };
 
@@ -881,12 +858,12 @@ export default function ProfilPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-surface-tertiary rounded-lg">
                 <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
-                  <span className="text-white">Notifications</span>
+                  <span className="text-content-primary">Notifications</span>
                 </div>
                 <button
                   onClick={toggleNotifications}
@@ -896,27 +873,12 @@ export default function ProfilPage() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-surface-tertiary rounded-lg">
                 <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                  </svg>
-                  <span className="text-white">Effets sonores</span>
-                </div>
-                <button
-                  onClick={toggleSoundEffects}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${soundEffects ? 'bg-cyan-500' : 'bg-gray-600'}`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${soundEffects ? 'translate-x-7' : 'translate-x-1'}`} />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-[#1a2235] rounded-lg">
-                <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                   </svg>
-                  <span className="text-white">Mode sombre</span>
+                  <span className="text-content-primary">Mode sombre</span>
                 </div>
                 <button
                   onClick={toggleTheme}
@@ -926,17 +888,17 @@ export default function ProfilPage() {
                 </button>
               </div>
 
-              <div className="p-4 bg-[#1a2235] rounded-lg">
+              <div className="p-4 bg-surface-tertiary rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
-                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                   </svg>
-                  <span className="text-white">Langue</span>
+                  <span className="text-content-primary">Langue</span>
                 </div>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full px-4 py-2 bg-[#0d1526] border border-gray-600/50 rounded-lg text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full px-4 py-2 bg-surface-secondary border border-content-secondary/30 rounded-lg text-content-primary focus:outline-none focus:border-primary transition-colors"
                 >
                   <option value="fr">Français</option>
                   <option value="en">English</option>

@@ -35,12 +35,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${plusJakartaSans.variable} bg-[#0b0d1e] text-white antialiased`}>
+      <body className={`${plusJakartaSans.variable} bg-[var(--surface-primary)] text-[var(--content-primary)] antialiased`}>
         <AuthProvider>
           <ThemeProvider>
           <div className="relative min-h-screen flex flex-col">
             <div className="fixed inset-0 -z-10 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#0b0d1e] via-[#151829] to-[#0b0d1e]"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--surface-primary)] via-[var(--surface-secondary)] to-[var(--surface-primary)]"></div>
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
 
             </div>
@@ -50,9 +50,9 @@ export default function RootLayout({
             position="bottom-right"
             toastOptions={{
               style: {
-                background: '#1a1d2e',
-                color: '#fff',
-                border: '1px solid #374151',
+                background: 'var(--surface-secondary)',
+                color: 'var(--content-primary)',
+                border: '1px solid var(--surface-tertiary)',
               },
               success: {
                 iconTheme: {

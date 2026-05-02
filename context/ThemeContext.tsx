@@ -43,15 +43,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 function applyThemeVars(dark: boolean) {
   const root = document.documentElement;
   if (dark) {
-    root.style.setProperty("--bg-primary", "#0b0d1e");
-    root.style.setProperty("--bg-secondary", "#151829");
-    root.style.setProperty("--text-primary", "#ffffff");
-    root.style.setProperty("--text-secondary", "#9ca3af");
+    // Dark mode
+    root.style.setProperty("--surface-primary", "#0b0d1e");
+    root.style.setProperty("--surface-secondary", "#151829");
+    root.style.setProperty("--surface-tertiary", "#1a2235");
+    root.style.setProperty("--content-primary", "#ffffff");
+    root.style.setProperty("--content-secondary", "#9ca3af");
   } else {
-    root.style.setProperty("--bg-primary", "#f1f5f9");
-    root.style.setProperty("--bg-secondary", "#e2e8f0");
-    root.style.setProperty("--text-primary", "#0f172a");
-    root.style.setProperty("--text-secondary", "#475569");
+    // Light mode
+    root.style.setProperty("--surface-primary", "#f1f5f9");
+    root.style.setProperty("--surface-secondary", "#e2e8f0");
+    root.style.setProperty("--surface-tertiary", "#cbd5e1");
+    root.style.setProperty("--content-primary", "#0f172a");
+    root.style.setProperty("--content-secondary", "#475569");
   }
 }
 

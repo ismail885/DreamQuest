@@ -31,16 +31,16 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 bg-[#0a0e1a] text-white">
+    <main className="min-h-screen flex items-center justify-center px-4 bg-surface-primary text-content-primary">
       <section className="w-full max-w-md rounded-2xl border border-gray-800/60 bg-[#111827]/70 p-8 backdrop-blur-sm">
         <h1 className="text-2xl font-bold text-cyan-400">Mot de passe oublie</h1>
-        <p className="mt-2 text-sm text-gray-400">
+        <p className="mt-2 text-sm text-content-secondary">
           Entrez votre email pour recevoir un lien de reinitialisation.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="email" className="mb-2 block text-sm text-gray-300">
+            <label htmlFor="email" className="mb-2 block text-sm text-content-secondary">
               Email
             </label>
             <input
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
           </button>
         </form>
 
-        <div className="mt-5 text-center text-sm text-gray-400">
+        <div className="mt-5 text-center text-sm text-content-secondary">
           <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300">
             Retour a la connexion
           </Link>

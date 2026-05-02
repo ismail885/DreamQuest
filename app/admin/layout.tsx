@@ -68,10 +68,10 @@ export default function AdminLayout({
         <div className="p-6 border-b border-gray-800">
           <Link href="/dashboard" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-cyan-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">D</span>
+              <span className="text-content-primary font-bold text-xl">D</span>
             </div>
             <div>
-              <span className="text-xl font-bold text-white">DreamQuest</span>
+              <span className="text-xl font-bold text-content-primary">DreamQuest</span>
               <span className="block text-xs text-cyan-400">Administration</span>
             </div>
           </Link>
@@ -89,7 +89,7 @@ export default function AdminLayout({
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                   active
                     ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
-                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-content-primary"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -102,18 +102,18 @@ export default function AdminLayout({
         {/* User info & logout */}
         <div className="p-4 border-t border-gray-800">
           <div className="flex items-center gap-3 mb-4 px-4">
-            <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-content-primary font-bold">
               {user?.username?.substring(0, 2).toUpperCase() || "AD"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{user?.username || "Admin"}</p>
+              <p className="text-content-primary font-medium truncate">{user?.username || "Admin"}</p>
               <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
           <div className="space-y-2">
             <Link
               href="/dashboard"
-              className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all"
+              className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-content-primary transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>Retour au site</span>

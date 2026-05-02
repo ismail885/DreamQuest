@@ -124,32 +124,32 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
+    <div className="min-h-screen bg-surface-primary text-content-primary flex flex-col">
       <Header />
 
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-content-primary mb-2">
               Bienvenue,{" "}
               <span className="text-cyan-400">
                 {user?.username || "Aventurier"}
               </span>{" "}
               !
             </h1>
-            <p className="text-gray-400 text-sm md:text-base">
+            <p className="text-content-secondary text-sm md:text-base">
               Prêt à vivre de nouvelles aventures ?
             </p>
           </div>
 
           <div className="mb-8 md:mb-12">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
-              <h2 className="text-xl md:text-2xl font-bold text-white">
+              <h2 className="text-xl md:text-2xl font-bold text-content-primary">
                 Mes Personnages
               </h2>
               <button
                 onClick={() => router.push("/create-character")}
-                className="w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-content-primary font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -171,7 +171,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="mb-8 md:mb-12">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-content-primary mb-4 md:mb-6">
               Vos Statistiques
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
@@ -179,7 +179,7 @@ export default function DashboardPage() {
                 <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">
                   {stats.charactersCount}
                 </div>
-                <div className="text-gray-400 text-xs md:text-sm">
+                <div className="text-content-secondary text-xs md:text-sm">
                   Personnages
                 </div>
               </div>
@@ -187,13 +187,13 @@ export default function DashboardPage() {
                 <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-1 md:mb-2">
                   {stats.completedQuests}
                 </div>
-                <div className="text-gray-400 text-xs md:text-sm">Quêtes</div>
+                <div className="text-content-secondary text-xs md:text-sm">Quêtes</div>
               </div>
               <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
                 <div className="text-2xl md:text-3xl font-bold text-yellow-400 mb-1 md:mb-2">
                   {stats.totalXp}
                 </div>
-                <div className="text-gray-400 text-xs md:text-sm">
+                <div className="text-content-secondary text-xs md:text-sm">
                   Points XP
                 </div>
               </div>
@@ -201,7 +201,7 @@ export default function DashboardPage() {
                 <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">
                   -
                 </div>
-                <div className="text-gray-400 text-xs md:text-sm">
+                <div className="text-content-secondary text-xs md:text-sm">
                   Niveau max
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function DashboardPage() {
           {/* Suggestions personnalisées */}
           {user && (
             <div className="mb-8 md:mb-12">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2">
+              <h2 className="text-xl md:text-2xl font-bold text-content-primary mb-4 md:mb-6 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-yellow-400" />
                 Pour Vous
               </h2>
@@ -245,10 +245,10 @@ export default function DashboardPage() {
                               Recommandé
                             </span>
                           </div>
-                          <h3 className="text-white font-semibold mb-2 line-clamp-1">
+                          <h3 className="text-content-primary font-semibold mb-2 line-clamp-1">
                             {adventure.titre}
                           </h3>
-                          <p className="text-gray-400 text-sm line-clamp-2">
+                          <p className="text-content-secondary text-sm line-clamp-2">
                             {adventure.description ||
                               "Une aventure palpitante vous attend..."}
                           </p>

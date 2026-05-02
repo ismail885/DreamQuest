@@ -224,7 +224,7 @@ function AdventureReader({ params }: Props) {
         <p className="text-red-400 text-lg">{error}</p>
         <button
           onClick={() => router.push("/adventure")}
-          className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-medium transition-colors"
+          className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-content-primary rounded-lg font-medium transition-colors"
         >
           Retour aux aventures
         </button>
@@ -233,11 +233,11 @@ function AdventureReader({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
+    <div className="min-h-screen bg-surface-primary text-content-primary flex flex-col">
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800/60">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 px-4 py-2 bg-[#131929] border border-gray-700 hover:border-gray-500 rounded-lg text-gray-300 hover:text-white transition-all text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2 bg-[#131929] border border-gray-700 hover:border-gray-500 rounded-lg text-content-secondary hover:text-content-primary transition-all text-sm font-medium"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -245,7 +245,7 @@ function AdventureReader({ params }: Props) {
           Retour
         </button>
 
-        <span className="text-gray-500 text-sm font-medium">
+        <span className="text-content-secondary text-sm font-medium">
           Page de Lecture d&apos;histoire
         </span>
 
@@ -260,7 +260,7 @@ function AdventureReader({ params }: Props) {
             </span>
           )}
           {!isSaving && lastSaved && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-content-secondary">
               Sauvegardé
             </span>
           )}
@@ -312,7 +312,7 @@ function AdventureReader({ params }: Props) {
               )}
             </div>
             {lastConsequence.text && (
-              <p className="text-gray-400 text-xs mt-2 text-center">{lastConsequence.text}</p>
+              <p className="text-content-secondary text-xs mt-2 text-center">{lastConsequence.text}</p>
             )}
           </div>
         </div>
@@ -325,8 +325,8 @@ function AdventureReader({ params }: Props) {
               <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
             </svg>
             <div>
-              <p className="text-gray-500 text-xs">Santé</p>
-              <p className="text-white font-bold text-lg leading-none">{character.points_vie}</p>
+              <p className="text-content-secondary text-xs">Santé</p>
+              <p className="text-content-primary font-bold text-lg leading-none">{character.points_vie}</p>
             </div>
           </div>
 
@@ -335,8 +335,8 @@ function AdventureReader({ params }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <p className="text-gray-500 text-xs">Force</p>
-              <p className="text-white font-bold text-lg leading-none">{character.stats?.force ?? 0}</p>
+              <p className="text-content-secondary text-xs">Force</p>
+              <p className="text-content-primary font-bold text-lg leading-none">{character.stats?.force ?? 0}</p>
             </div>
           </div>
 
@@ -345,8 +345,8 @@ function AdventureReader({ params }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
             <div>
-              <p className="text-gray-500 text-xs">Intelligence</p>
-              <p className="text-white font-bold text-lg leading-none">{character.stats?.intelligence ?? 0}</p>
+              <p className="text-content-secondary text-xs">Intelligence</p>
+              <p className="text-content-primary font-bold text-lg leading-none">{character.stats?.intelligence ?? 0}</p>
             </div>
           </div>
         </div>
@@ -356,10 +356,10 @@ function AdventureReader({ params }: Props) {
         <div className="w-full max-w-2xl space-y-5">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">
+              <span className="text-content-secondary text-sm">
                 {isEnd ? 'Aventure terminée' : `Étape ${history.length + 1} sur ${MAX_STEPS}`}
               </span>
-              <span className="text-gray-400 text-sm">{progression}%</span>
+              <span className="text-content-secondary text-sm">{progression}%</span>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
               <div
@@ -387,7 +387,7 @@ function AdventureReader({ params }: Props) {
               transition={{ duration: 0.4 }}
               className="bg-[#111827] border border-gray-800 rounded-xl p-6"
             >
-              <p className="text-gray-200 leading-relaxed text-base">
+              <p className="text-content-secondary leading-relaxed text-base">
                 {currentBranch.texte}
               </p>
             </motion.div>
@@ -400,8 +400,8 @@ function AdventureReader({ params }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-white font-bold text-xl">Aventure terminée !</p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-content-primary font-bold text-xl">Aventure terminée !</p>
+              <p className="text-content-secondary text-sm">
                 Complétée en {history.length} étape{history.length > 1 ? "s" : ""}
               </p>
               {character && character.niveau > 1 && (
@@ -411,7 +411,7 @@ function AdventureReader({ params }: Props) {
               )}
               <button
                 onClick={restart}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-semibold transition-colors"
+                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-content-primary rounded-lg font-semibold transition-colors"
               >
                 Recommencer
               </button>
@@ -425,7 +425,7 @@ function AdventureReader({ params }: Props) {
               className="bg-[#1a1f2e]/80 border border-amber-500/30 rounded-xl p-5 mb-4"
             >
               <p className="text-amber-400 text-xs font-semibold mb-2">ÉVÉNEMENT ALÉATOIRE</p>
-              <p className="text-gray-200 leading-relaxed text-sm">{currentEvent.text}</p>
+              <p className="text-content-secondary leading-relaxed text-sm">{currentEvent.text}</p>
               <div className="flex flex-col gap-2 mt-4">
                 {currentEvent.choices.map((choice, idx) => (
                   <button
@@ -437,7 +437,7 @@ function AdventureReader({ params }: Props) {
                         chooseOption(currentBranch.choix1_lien);
                       }
                     }}
-                    className="w-full text-left px-4 py-3 bg-[#111827] border border-gray-700 hover:border-amber-500/50 rounded-lg text-gray-300 hover:text-white text-sm transition-all"
+                    className="w-full text-left px-4 py-3 bg-[#111827] border border-gray-700 hover:border-amber-500/50 rounded-lg text-content-secondary hover:text-content-primary text-sm transition-all"
                   >
                     {choice.text}
                   </button>
@@ -465,13 +465,13 @@ function AdventureReader({ params }: Props) {
                         ? impact.isPositive 
                           ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
                           : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-gray-200 hover:text-white'
+                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-content-secondary hover:text-content-primary'
                     }`}
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
                       impact.hasImpact 
                         ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        : 'bg-gray-700 text-gray-400'
+                        : 'bg-gray-700 text-content-secondary'
                     }`}>
                       {impact.hasImpact ? (
                         impact.isPositive ? (
@@ -504,13 +504,13 @@ function AdventureReader({ params }: Props) {
                         ? impact.isPositive 
                           ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
                           : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-gray-200 hover:text-white'
+                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-content-secondary hover:text-content-primary'
                     }`}
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
                       impact.hasImpact 
                         ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        : 'bg-gray-700 text-gray-400'
+                        : 'bg-gray-700 text-content-secondary'
                     }`}>
                       {impact.hasImpact ? (
                         impact.isPositive ? (
@@ -561,13 +561,13 @@ function AdventureReader({ params }: Props) {
                         }}
                         className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all ${
                           usedAbilities.includes(ability)
-                            ? "bg-gray-800/50 border border-gray-700 text-gray-500 opacity-50 cursor-not-allowed"
-                            : "bg-[#111827] border border-purple-500/30 hover:border-purple-500/60 text-gray-300 hover:text-white"
+                            ? "bg-gray-800/50 border border-gray-700 text-content-secondary opacity-50 cursor-not-allowed"
+                            : "bg-[#111827] border border-purple-500/30 hover:border-purple-500/60 text-content-secondary hover:text-content-primary"
                         }`}
                       >
                         <span className="font-medium">{ability}</span>
                         {!usedAbilities.includes(ability) && (
-                          <span className="text-gray-500 ml-2">
+                          <span className="text-content-secondary ml-2">
                             (1 rest) • +10 PV
                           </span>
                         )}

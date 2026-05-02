@@ -78,7 +78,7 @@ export default function AdminSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Paramètres</h1>
+          <h1 className="text-3xl font-bold text-content-primary">Paramètres</h1>
           <p className="text-gray-400 mt-2">Configurez les options de votre application</p>
         </div>
       </div>
@@ -90,7 +90,7 @@ export default function AdminSettingsPage() {
             <div key={index} className="bg-[#1a1f2e] border border-gray-800 rounded-xl">
               <div className="px-6 py-4 border-b border-gray-800 flex items-center gap-3">
                 <Icon className="w-5 h-5 text-cyan-400" />
-                <h2 className="text-lg font-bold text-white">{category.name}</h2>
+                <h2 className="text-lg font-bold text-content-primary">{category.name}</h2>
               </div>
               <div className="p-6 space-y-4">
                 {category.fields.map((field) => (
@@ -115,14 +115,14 @@ export default function AdminSettingsPage() {
                         type="number"
                         value={settings[field.key as keyof typeof settings] as number}
                         onChange={(e) => setSettings({ ...settings, [field.key]: parseInt(e.target.value) || 0 })}
-                        className="w-24 px-3 py-2 bg-gray-900 border border-gray-800 rounded-lg text-white text-center focus:outline-none focus:border-cyan-500"
+                        className="w-24 px-3 py-2 bg-gray-900 border border-gray-800 rounded-lg text-content-primary text-center focus:outline-none focus:border-cyan-500"
                       />
                     ) : (
                       <input
                         type="text"
                         value={settings[field.key as keyof typeof settings] as string}
                         onChange={(e) => setSettings({ ...settings, [field.key]: e.target.value })}
-                        className="w-64 px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                        className="w-64 px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg text-content-primary focus:outline-none focus:border-cyan-500"
                       />
                     )}
                   </div>
@@ -140,7 +140,7 @@ export default function AdminSettingsPage() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-content-primary font-medium rounded-lg transition-colors"
           >
             {saving ? (
               <>

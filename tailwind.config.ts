@@ -24,6 +24,15 @@ const config: Config = {
           DEFAULT: '#9333ea',
           dark: '#7c3aed',
         },
+        surface: {
+          primary: 'var(--surface-primary)',
+          secondary: 'var(--surface-secondary)',
+          tertiary: 'var(--surface-tertiary)',
+        },
+        content: {
+          primary: 'var(--content-primary)',
+          secondary: 'var(--content-secondary)',
+        },
       },
       animation: {
         'pulse-slow': 'pulse 4s ease-in-out infinite',

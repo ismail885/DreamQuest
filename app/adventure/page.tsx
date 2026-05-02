@@ -99,10 +99,10 @@ function AdventurePageContent() {
 
         <div className="container mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
           <div className="text-center space-y-3 md:space-y-4 mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-content-primary">
               Explorez les Aventures
             </h1>
-            <p className="text-gray-400 text-sm md:text-lg max-w-xl mx-auto">
+            <p className="text-content-secondary text-sm md:text-lg max-w-xl mx-auto">
               Choisissez votre prochaine aventure parmi nos histoires épiques
             </p>
           </div>
@@ -129,10 +129,10 @@ function AdventurePageContent() {
                 placeholder="Rechercher une histoire"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="w-full px-4 md:px-6 py-3 md:py-4 bg-[#0f1322] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm md:text-base"
+                className="w-full px-4 md:px-6 py-3 md:py-4 bg-[#0f1322] border border-gray-800 rounded-xl text-content-primary placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm md:text-base"
               />
               <svg
-                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"
+                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-content-secondary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -143,7 +143,7 @@ function AdventurePageContent() {
 
             {/* Tri */}
             <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-xs uppercase tracking-wider">Trier par</span>
+              <span className="text-content-secondary text-xs uppercase tracking-wider">Trier par</span>
               <div className="flex gap-2">
                 {SORT_OPTIONS.map((option) => (
                   <button
@@ -152,7 +152,7 @@ function AdventurePageContent() {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       sortOption === option.value
                         ? 'bg-cyan-500/20 border border-cyan-500/60 text-cyan-400 shadow-lg shadow-cyan-500/20'
-                        : 'bg-[#0d1526] border border-gray-700/50 text-gray-400 hover:text-white hover:border-gray-600'
+                        : 'bg-[#0d1526] border border-gray-700/50 text-content-secondary hover:text-content-primary hover:border-gray-600'
                     }`}
                   >
                     {option.label}
@@ -188,7 +188,7 @@ function AdventurePageContent() {
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-[#1a2235] border border-gray-700 rounded-lg text-gray-300 hover:bg-[#1f2940] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-[#1a2235] border border-gray-700 rounded-lg text-content-secondary hover:bg-[#1f2940] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -214,8 +214,8 @@ function AdventurePageContent() {
                           onClick={() => setCurrentPage(pageNum)}
                           className={`w-10 h-10 rounded-lg font-medium transition-colors ${
                             currentPage === pageNum
-                              ? "bg-cyan-500 text-white"
-                              : "bg-[#1a2235] border border-gray-700 text-gray-300 hover:bg-[#1f2940]"
+                              ? "bg-cyan-500 text-content-primary"
+                              : "bg-[#1a2235] border border-gray-700 text-content-secondary hover:bg-[#1f2940]"
                           }`}
                         >
                           {pageNum}
@@ -227,7 +227,7 @@ function AdventurePageContent() {
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-[#1a2235] border border-gray-700 rounded-lg text-gray-300 hover:bg-[#1f2940] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-[#1a2235] border border-gray-700 rounded-lg text-content-secondary hover:bg-[#1f2940] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -236,7 +236,7 @@ function AdventurePageContent() {
                 </div>
               )}
               
-              <p className="text-center text-gray-500 text-sm mt-4">
+              <p className="text-center text-content-secondary text-sm mt-4">
                 {totalCount} aventures • Page {currentPage}/{totalPages}
               </p>
             </>
@@ -247,8 +247,8 @@ function AdventurePageContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-gray-400 text-lg">Aucune aventure trouvée</p>
-              <p className="text-gray-500 text-sm mt-2">Essayez de modifier vos critères de recherche</p>
+              <p className="text-content-secondary text-lg">Aucune aventure trouvée</p>
+              <p className="text-content-secondary text-sm mt-2">Essayez de modifier vos critères de recherche</p>
             </div>
           )}
         </div>
