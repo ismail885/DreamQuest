@@ -7,6 +7,15 @@ import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
 import { ExtendedUserProfile, UserStats, UserSave, UserCreation, Character, CharacterClass } from "@/types";
+
+interface RawCharacter {
+  id: number;
+  nom_personnage: string;
+  classe: string;
+  niveau: number | null;
+  points_vie: number | null;
+  id_utilisateur: number;
+}
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthContext } from "@/context/AuthContext";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
@@ -235,7 +244,7 @@ export default function ProfilPage() {
         .eq("id_utilisateur", numericUserId);
 
       if (charactersData && charactersData.length > 0) {
-        const formattedCharacters: Character[] = charactersData.map((c: any) => ({
+        const formattedCharacters: Character[] = charactersData.map((c: RawCharacter) => ({
           id: c.id,
           nom_personnage: c.nom_personnage,
           classe: c.classe as CharacterClass,
