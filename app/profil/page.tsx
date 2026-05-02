@@ -135,11 +135,13 @@ export default function ProfilPage() {
   }, [user?.id]);
 
   const loadUserData = async (userId: number) => {
-    // Normaliser l'ID (au cas ou il serait mal formate)
-    const cleanUserId = typeof userId === 'number' && !isNaN(userId) ? userId : parseInt(String(userId).split(':')[0], 10);
+    // Extraire l'ID numerique au cas ou
+    const numericUserId = typeof userId === 'number' && !isNaN(userId) 
+      ? userId 
+      : parseInt(String(userId).replace(/[^0-9]/g, ''), 10) || userId;
     
     try {
-      const questData = getDailyQuests(cleanUserId);
+      const questData = getDailyQuests(numericUserId);
       setDailyQuests(questData.quests);
 
       const { data: profileData } = await supabase
@@ -184,7 +186,7 @@ export default function ProfilPage() {
             titre
           )
         `)
-        .eq("id_utilisateur", cleanUserId);
+        .eq("id_utilisateur", numericUserId);
 
       if (savesData && savesData.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -220,17 +222,17 @@ export default function ProfilPage() {
       const { count: votesCount } = await supabase
         .from("vote")
         .select("id_vote", { count: "exact" })
-        .eq("id_utilisateur", cleanUserId);
+        .eq("id_utilisateur", numericUserId);
 
       const { count: charactersCount } = await supabase
         .from("personnage")
         .select("id", { count: "exact" })
-        .eq("id_utilisateur", cleanUserId);
+        .eq("id_utilisateur", numericUserId);
 
       const { data: charactersData } = await supabase
         .from("personnage")
         .select("*")
-        .eq("id_utilisateur", cleanUserId);
+        .eq("id_utilisateur", numericUserId);
 
       if (charactersData && charactersData.length > 0) {
         const formattedCharacters: Character[] = charactersData.map((c: any) => ({
