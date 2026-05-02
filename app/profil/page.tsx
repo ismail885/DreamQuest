@@ -796,37 +796,33 @@ export default function ProfilPage() {
                         </button>
                       </div>
                       {userCharacters.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {userCharacters.map((char) => (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {userCharacters.map((char, index) => (
                             <div
-                              key={char.id}
-                              className="bg-[#151f30] border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all"
+                              key={char.id ?? index}
+                              className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 hover:border-cyan-400 rounded-lg overflow-hidden transition-all duration-300 group"
                             >
-                              <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl font-bold flex-shrink-0">
-                                  {char.nom_personnage?.charAt(0).toUpperCase() || "?"}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h3 className="text-lg font-semibold text-white truncate">{char.nom_personnage}</h3>
-                                  <p className="text-gray-400 text-sm">{char.classe}</p>
-                                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                                    <span>Niveau {char.niveau || 1}</span>
-                                    <span>{char.points_vie || 100} PV</span>
-                                  </div>
+                              <div className="relative h-32 bg-gradient-to-b from-gray-800 to-gray-900">
+                                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
+                                <div className="absolute top-2 right-2">
+                                  <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold text-sm">
+                                    Niv. {char.niveau || 1}
+                                  </span>
                                 </div>
                               </div>
-                              <div className="flex gap-2 mt-4">
+                              <div className="p-4">
+                                <h3 className="text-lg font-bold text-white mb-1">{char.nom_personnage}</h3>
+                                <p className="text-cyan-400 text-sm mb-3">{char.classe}</p>
+                                <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                  <span>{char.points_vie || 100} PV</span>
+                                </div>
+                              </div>
+                              <div className="px-4 pb-4 flex gap-2">
                                 <button
                                   onClick={() => router.push(`/adventure?personnage=${char.id}`)}
-                                  className="flex-1 py-2 px-3 bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium"
+                                  className="flex-1 py-2 px-3 bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium text-center"
                                 >
                                   Jouer
-                                </button>
-                                <button
-                                  onClick={() => router.push(`/profil/personnage/${char.id}`)}
-                                  className="flex-1 py-2 px-3 bg-[#1a2235] border border-gray-600/30 text-gray-300 rounded-lg hover:bg-[#1f2940] transition-colors text-sm font-medium"
-                                >
-                                  Détails
                                 </button>
                               </div>
                             </div>
