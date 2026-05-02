@@ -224,32 +224,24 @@ export default function ProfilPage() {
 
       const { count: charactersCount } = await supabase
         .from("personnage")
-        .select("id_personnage", { count: "exact" })
+        .select("id", { count: "exact" })
         .eq("id_utilisateur", cleanUserId);
 
-      // Fetch user characters
-      const { data: charactersData, error: charactersError } = await supabase
+      const { data: charactersData } = await supabase
         .from("personnage")
         .select("*")
-        .eq("id_utilisateur", userId)
-        .order("date_creation", { ascending: false });
-
-      if (charactersError) {
-        console.error("Erreur personnages:", charactersError);
-      }
+        .eq("id_utilisateur", cleanUserId);
 
       if (charactersData && charactersData.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formattedCharacters: Character[] = charactersData.map((c: any) => ({
-          id: c.id ?? c.id_personnage,
+          id: c.id,
           nom_personnage: c.nom_personnage,
           classe: c.classe as CharacterClass,
           niveau: c.niveau ?? 1,
           points_vie: c.points_vie ?? 100,
-          points_vie_max: c.points_vie_max ?? c.points_vie ?? 100,
-          stats: c.stats ?? { force: 0, agility: 0, intelligence: 0, endurance: 0 },
+          points_vie_max: c.points_vie ?? 100,
+          stats: { force: 0, agility: 0, intelligence: 0, endurance: 0 },
           id_utilisateur: c.id_utilisateur,
-          date_creation: c.date_creation,
         }));
         setUserCharacters(formattedCharacters);
       } else {
