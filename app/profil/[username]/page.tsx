@@ -50,9 +50,9 @@ export default function PublicProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white p-4">
+    <div className="min-h-screen bg-surface-primary text-white p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl p-6 mb-6">
+        <div className="bg-surface-secondary border border-gray-700/50 rounded-xl p-6 mb-6">
           <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
             {username.substring(0, 2).toUpperCase()}
           </div>
@@ -62,12 +62,12 @@ export default function PublicProfilePage() {
           </p>
         </div>
 
-        <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl p-6 mb-6">
+        <div className="bg-surface-secondary border border-gray-700/50 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold text-cyan-400 mb-4">Personnages</h2>
           {characters.length > 0 ? (
             <div className="space-y-3">
               {characters.map((c, i) => (
-                <div key={i} className="flex justify-between items-center p-3 bg-[#1a2235] rounded-lg">
+                <div key={i} className="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
                   <div>
                     <p className="font-semibold">{c.nom_personnage}</p>
                     <p className="text-gray-400 text-sm">{c.classe}</p>
@@ -81,12 +81,12 @@ export default function PublicProfilePage() {
           )}
         </div>
 
-        <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl p-6">
+        <div className="bg-surface-secondary border border-gray-700/50 rounded-xl p-6">
           <h2 className="text-lg font-bold text-cyan-400 mb-4">Aventures</h2>
           {adventures.length > 0 ? (
             <div className="space-y-3">
               {adventures.map((a, i) => (
-                <div key={i} className="flex justify-between items-center p-3 bg-[#1a2235] rounded-lg">
+                <div key={i} className="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
                   <p className="font-semibold">{a.titre}</p>
                   <span className="text-yellow-400">{a.popularite} votes</span>
                 </div>

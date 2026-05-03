@@ -124,12 +124,12 @@ export default function AdminCharactersPage() {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-12 pr-4 py-3 bg-[#1a1f2e] border border-gray-800 rounded-lg text-content-primary placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+          className="w-full pl-12 pr-4 py-3 bg-surface-tertiary border border-gray-800 rounded-lg text-content-primary placeholder:text-content-secondary focus:outline-none focus:border-cyan-500"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-[#1a1f2e] border border-gray-800 rounded-xl overflow-hidden">
+      <div className="bg-surface-tertiary border border-gray-800 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-900/50">
@@ -257,7 +257,7 @@ export default function AdminCharactersPage() {
       {/* View Modal */}
       {viewCharacter && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1f2e] border border-gray-800 rounded-xl w-full max-w-lg">
+          <div className="bg-surface-tertiary border border-gray-800 rounded-xl w-full max-w-lg">
             <div className="flex items-center justify-between p-6 border-b border-gray-800">
               <h2 className="text-xl font-bold text-content-primary">{viewCharacter.nom_personnage}</h2>
               <button onClick={() => setViewCharacter(null)} className="text-content-secondary hover:text-content-primary">
@@ -327,7 +327,7 @@ export default function AdminCharactersPage() {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1f2e] border border-gray-800 rounded-xl w-full max-w-sm">
+          <div className="bg-surface-tertiary border border-gray-800 rounded-xl w-full max-w-sm">
             <div className="p-6 text-center">
               <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-8 h-8 text-red-400" />

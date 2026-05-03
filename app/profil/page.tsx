@@ -424,7 +424,7 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
+    <div className="min-h-screen bg-surface-primary text-content-primary flex flex-col">
       <Header />
 
       <main className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
@@ -432,12 +432,12 @@ export default function ProfilPage() {
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             
             <div className="lg:w-80 flex-shrink-0">
-              <div className="bg-[#0d1526] border border-gray-700/50 rounded-xl lg:rounded-2xl p-4 md:p-6">
+              <div className="bg-surface-secondary border border-gray-700/50 rounded-xl lg:rounded-2xl p-4 md:p-6">
                 <div className="flex flex-col items-center mb-4 md:mb-6">
-                  <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-cyan-500/30">
+                  <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-cyan-500 flex items-center justify-center text-content-primary text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-cyan-500/30">
                     {getUserInitials()}
                   </div>
-                  <h2 className="text-lg md:text-xl font-bold text-white">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
+                  <h2 className="text-lg md:text-xl font-bold text-content-primary">{userProfile?.nom_utilisateur || "Aventurier"}</h2>
                   <p className="text-gray-400 text-sm">Niveau {currentLevel} • Rang +{Math.floor(currentLevel * 3 + stats.likes / 100)}</p>
                   <a href={`/profil/${userProfile?.nom_utilisateur}`} className="text-cyan-400 text-sm hover:underline mt-2">
                     Voir profil public
@@ -479,7 +479,7 @@ export default function ProfilPage() {
                 <div className="space-y-3">
                   <button 
                     onClick={openEditModal}
-                    className="w-full py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white font-medium hover:bg-[#1f2940] transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 px-4 bg-surface-tertiary border border-gray-600/50 rounded-lg text-content-primary font-medium hover:bg-surface-tertiary transition-colors flex items-center justify-center gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -488,7 +488,7 @@ export default function ProfilPage() {
                   </button>
                   <button 
                     onClick={openSettingsModal}
-                    className="w-full py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white font-medium hover:bg-[#1f2940] transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 px-4 bg-surface-tertiary border border-gray-600/50 rounded-lg text-content-primary font-medium hover:bg-surface-tertiary transition-colors flex items-center justify-center gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -509,14 +509,14 @@ export default function ProfilPage() {
             </div>
 
             <div className="flex-1">
-              <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl overflow-hidden">
-                <div className="flex border-b border-gray-700/50 bg-[#0a0e1a]">
+              <div className="bg-surface-secondary border border-gray-700/50 rounded-2xl overflow-hidden">
+                <div className="flex border-b border-gray-700/50 bg-surface-primary">
                   <button
                     onClick={() => setActiveTab("stories")}
                     className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "stories"
                         ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
+                        : "text-gray-400 hover:text-content-primary hover:bg-gray-700/20"
                     }`}
                   >
                     Mes Histoires
@@ -526,7 +526,7 @@ export default function ProfilPage() {
                     className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "achievements"
                         ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
+                        : "text-gray-400 hover:text-content-primary hover:bg-gray-700/20"
                     }`}
                   >
                     Réalisations
@@ -536,7 +536,7 @@ export default function ProfilPage() {
                     className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "quests"
                         ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
+                        : "text-gray-400 hover:text-content-primary hover:bg-gray-700/20"
                     }`}
                   >
                     Quêtes
@@ -546,7 +546,7 @@ export default function ProfilPage() {
                     className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "characters"
                         ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-gray-300 hover:bg-gray-700/20"
+                        : "text-gray-400 hover:text-content-primary hover:bg-gray-700/20"
                     }`}
                   >
                     Mes Persos
@@ -560,10 +560,10 @@ export default function ProfilPage() {
                         userSaves.map((save) => (
                           <div
                             key={save.id}
-                            className="bg-[#151f30] border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
+                            className="bg-surface-secondary border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
                           >
                             <div className="flex justify-between items-start mb-3">
-                              <h3 className="text-lg font-semibold text-white">{save.aventure_titre}</h3>
+                              <h3 className="text-lg font-semibold text-content-primary">{save.aventure_titre}</h3>
                               {getStatusBadge(save.status)}
                             </div>
                             <div className="mb-2">
@@ -588,11 +588,11 @@ export default function ProfilPage() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
                           </div>
-                          <h3 className="text-lg font-semibold text-white mb-2">Aucune histoire jouée</h3>
+                          <h3 className="text-lg font-semibold text-content-primary mb-2">Aucune histoire jouée</h3>
                           <p className="text-gray-400 mb-4">Commencez une aventure pour voir votre progression ici.</p>
                           <button 
                             onClick={() => router.push("/dashboard")}
-                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
+                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-content-primary font-medium rounded-lg transition-colors"
                           >
                             Découvrir les aventures
                           </button>
@@ -638,7 +638,7 @@ export default function ProfilPage() {
                                     {iconName === 'Compass' && <LucideIcons.Compass className={iconClass} />}
                                     {!['BookOpen', 'Medal', 'Award', 'UserPlus', 'Users', 'ThumbsUp', 'MessageSquare', 'Edit3', 'Star', 'TrendingUp', 'Zap', 'Moon', 'Compass'].includes(iconName) && <LucideIcons.HelpCircle className={iconClass} />}
                                   </div>
-                                  <h4 className={`font-semibold ${achievement.unlocked ? "text-white" : "text-gray-500"}`}>
+                                  <h4 className={`font-semibold ${achievement.unlocked ? "text-content-primary" : "text-gray-500"}`}>
                                     {achievement.title}
                                   </h4>
                                   <p className={`text-xs ${achievement.unlocked ? "text-gray-400" : "text-gray-600"}`}>
@@ -656,7 +656,7 @@ export default function ProfilPage() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                             </svg>
                           </div>
-                          <h3 className="text-lg font-semibold text-white mb-2">Aucune réalisation</h3>
+                          <h3 className="text-lg font-semibold text-content-primary mb-2">Aucune réalisation</h3>
                           <p className="text-gray-400">Vos trophées et badges apparaîtront ici quand vous les débloquerez.</p>
                         </div>
                       )}
@@ -669,10 +669,10 @@ export default function ProfilPage() {
                         userCreations.map((creation) => (
                           <div
                             key={creation.id}
-                            className="bg-[#151f30] border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
+                            className="bg-surface-secondary border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
                           >
                             <div className="flex justify-between items-start">
-                              <h3 className="text-lg font-semibold text-white">{creation.titre}</h3>
+                              <h3 className="text-lg font-semibold text-content-primary">{creation.titre}</h3>
                               <div className="flex items-center gap-1 text-cyan-400">
                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -689,11 +689,11 @@ export default function ProfilPage() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
                           </div>
-                          <h3 className="text-lg font-semibold text-white mb-2">Aucune création</h3>
+                          <h3 className="text-lg font-semibold text-content-primary mb-2">Aucune création</h3>
                           <p className="text-gray-400 mb-4">Créez votre première aventure pour la voir apparaître ici.</p>
                           <button 
                             onClick={() => router.push("/create")}
-                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
+                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-content-primary font-medium rounded-lg transition-colors"
                           >
                             Créer une aventure
                           </button>
@@ -705,7 +705,7 @@ export default function ProfilPage() {
                   {activeTab === "quests" && (
                     <div className="space-y-4">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-white">Quêtes du jour</h3>
+                        <h3 className="text-lg font-semibold text-content-primary">Quêtes du jour</h3>
                         <span className="text-cyan-400 font-bold">+{getTotalXPReward({ quests: dailyQuests, lastReset: "" })} XP</span>
                       </div>
                       {dailyQuests.length > 0 ? (
@@ -717,7 +717,7 @@ export default function ProfilPage() {
                               className={`p-4 rounded-xl border ${
                                 quest.completed
                                   ? "bg-green-500/10 border-green-500/30"
-                                  : "bg-[#151f30] border-gray-700/30"
+                                  : "bg-surface-secondary border-gray-700/30"
                               }`}
                             >
                               <div className="flex justify-between items-start mb-2">
@@ -727,7 +727,7 @@ export default function ProfilPage() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                     </svg>
                                   )}
-                                  <h4 className={`font-semibold ${quest.completed ? "text-green-400" : "text-white"}`}>
+                                  <h4 className={`font-semibold ${quest.completed ? "text-green-400" : "text-content-primary"}`}>
                                     {quest.title}
                                   </h4>
                                 </div>
@@ -788,7 +788,7 @@ export default function ProfilPage() {
                                 </div>
                               </div>
                               <div className="p-4">
-                                <h3 className="text-lg font-bold text-white mb-1">{char.nom_personnage}</h3>
+                                <h3 className="text-lg font-bold text-content-primary mb-1">{char.nom_personnage}</h3>
                                 <p className="text-cyan-400 text-sm mb-3">{char.classe}</p>
                                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                                   <span>{char.points_vie || 100} PV</span>
@@ -812,11 +812,11 @@ export default function ProfilPage() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                           </div>
-                          <h3 className="text-lg font-semibold text-white mb-2">Aucun personnage</h3>
+                          <h3 className="text-lg font-semibold text-content-primary mb-2">Aucun personnage</h3>
                           <p className="text-gray-400 mb-4">Creez votre premier personnage pour commencer l&apos;aventure.</p>
                           <button
                             onClick={() => router.push("/create-character")}
-                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
+                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-content-primary font-medium rounded-lg transition-colors"
                           >
                             Créer un personnage
                           </button>
@@ -838,9 +838,9 @@ export default function ProfilPage() {
             onClick={closeSettingsModal}
           />
           
-          <div className="relative bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-surface-secondary border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <h3 className="text-xl font-bold text-content-primary flex items-center gap-2">
                 <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -921,14 +921,14 @@ export default function ProfilPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={closeSettingsModal}
-                className="flex-1 py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-gray-300 font-medium hover:bg-[#1f2940] hover:text-white transition-colors"
+                className="flex-1 py-3 px-4 bg-surface-tertiary border border-gray-600/50 rounded-lg text-content-primary font-medium hover:bg-surface-tertiary hover:text-content-primary transition-colors"
               >
                 Annuler
               </button>
               <button
                 onClick={handleSaveSettings}
                 disabled={isSavingSettings}
-                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed rounded-lg text-content-primary font-medium transition-colors flex items-center justify-center gap-2"
               >
                 {isSavingSettings ? (
                   <>
@@ -959,9 +959,9 @@ export default function ProfilPage() {
             onClick={closeEditModal}
           />
           
-          <div className="relative bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-surface-secondary border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <h3 className="text-xl font-bold text-content-primary flex items-center gap-2">
                 <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
@@ -978,34 +978,34 @@ export default function ProfilPage() {
             </div>
 
             <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-cyan-500/30">
+              <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-content-primary text-2xl font-bold shadow-lg shadow-cyan-500/30">
                 {editUsername ? editUsername.substring(0, 2).toUpperCase() : getUserInitials()}
               </div>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-content-primary mb-2">
                   Nom d&apos;utilisateur
                 </label>
                 <input
                   type="text"
                   value={editUsername}
                   onChange={(e) => setEditUsername(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                  className="w-full px-4 py-3 bg-surface-tertiary border border-gray-600/50 rounded-lg text-content-primary placeholder:text-content-secondary focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
                   placeholder="Votre nom d'utilisateur"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-content-primary mb-2">
                   Email
                 </label>
                 <input
                   type="email"
                   value={editEmail}
                   onChange={(e) => setEditEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#1a2235] border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                  className="w-full px-4 py-3 bg-surface-tertiary border border-gray-600/50 rounded-lg text-content-primary placeholder:text-content-secondary focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
                   placeholder="Votre email"
                 />
               </div>
@@ -1024,14 +1024,14 @@ export default function ProfilPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={closeEditModal}
-                className="flex-1 py-3 px-4 bg-[#1a2235] border border-gray-600/50 rounded-lg text-gray-300 font-medium hover:bg-[#1f2940] hover:text-white transition-colors"
+                className="flex-1 py-3 px-4 bg-surface-tertiary border border-gray-600/50 rounded-lg text-content-primary font-medium hover:bg-surface-tertiary hover:text-content-primary transition-colors"
               >
                 Annuler
               </button>
               <button
                 onClick={handleSaveProfile}
                 disabled={isSaving || !editUsername.trim()}
-                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed rounded-lg text-content-primary font-medium transition-colors flex items-center justify-center gap-2"
               >
                 {isSaving ? (
                   <>

@@ -212,7 +212,7 @@ function AdventureReader({ params }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+      <div className="min-h-screen bg-surface-primary flex items-center justify-center">
         <Loader />
       </div>
     );
@@ -220,7 +220,7 @@ function AdventureReader({ params }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-surface-primary flex flex-col items-center justify-center gap-4">
         <p className="text-red-400 text-lg">{error}</p>
         <button
           onClick={() => router.push("/adventure")}
@@ -237,7 +237,7 @@ function AdventureReader({ params }: Props) {
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800/60">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 px-4 py-2 bg-[#131929] border border-gray-700 hover:border-gray-500 rounded-lg text-content-secondary hover:text-content-primary transition-all text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2 bg-surface-tertiary border border-gray-700 hover:border-gray-500 rounded-lg text-content-secondary hover:text-content-primary transition-all text-sm font-medium"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -320,7 +320,7 @@ function AdventureReader({ params }: Props) {
 
       {character && (
         <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-800/40">
-          <div className="flex items-center gap-3 flex-1 bg-[#131929] border border-gray-800 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 flex-1 bg-surface-tertiary border border-gray-800 rounded-xl px-4 py-3">
             <svg className="w-6 h-6 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
             </svg>
@@ -330,7 +330,7 @@ function AdventureReader({ params }: Props) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-1 bg-[#131929] border border-gray-800 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 flex-1 bg-surface-tertiary border border-gray-800 rounded-xl px-4 py-3">
             <svg className="w-6 h-6 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -340,7 +340,7 @@ function AdventureReader({ params }: Props) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-1 bg-[#131929] border border-gray-800 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 flex-1 bg-surface-tertiary border border-gray-800 rounded-xl px-4 py-3">
             <svg className="w-6 h-6 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
@@ -385,7 +385,7 @@ function AdventureReader({ params }: Props) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-[#111827] border border-gray-800 rounded-xl p-6"
+              className="bg-surface-tertiary border border-gray-800 rounded-xl p-6"
             >
               <p className="text-content-secondary leading-relaxed text-base">
                 {currentBranch.texte}
@@ -422,7 +422,7 @@ function AdventureReader({ params }: Props) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#1a1f2e]/80 border border-amber-500/30 rounded-xl p-5 mb-4"
+              className="bg-surface-tertiary/80 border border-amber-500/30 rounded-xl p-5 mb-4"
             >
               <p className="text-amber-400 text-xs font-semibold mb-2">ÉVÉNEMENT ALÉATOIRE</p>
               <p className="text-content-secondary leading-relaxed text-sm">{currentEvent.text}</p>
@@ -437,7 +437,7 @@ function AdventureReader({ params }: Props) {
                         chooseOption(currentBranch.choix1_lien);
                       }
                     }}
-                    className="w-full text-left px-4 py-3 bg-[#111827] border border-gray-700 hover:border-amber-500/50 rounded-lg text-content-secondary hover:text-content-primary text-sm transition-all"
+                    className="w-full text-left px-4 py-3 bg-surface-tertiary border border-gray-700 hover:border-amber-500/50 rounded-lg text-content-secondary hover:text-content-primary text-sm transition-all"
                   >
                     {choice.text}
                   </button>
@@ -460,12 +460,12 @@ function AdventureReader({ params }: Props) {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => { applyConsequence(1, currentBranch?.choix1_consequences); chooseOption(currentBranch.choix1_lien); }}
-                    className={`w-full text-left px-5 py-4 bg-[#111827] border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
+                    className={`w-full text-left px-5 py-4 bg-surface-tertiary border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
                       impact.hasImpact 
                         ? impact.isPositive 
                           ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
                           : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-content-secondary hover:text-content-primary'
+                        : 'hover:border-cyan-500/60 hover:bg-surface-tertiary border-gray-700 text-content-secondary hover:text-content-primary'
                     }`}
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
@@ -499,12 +499,12 @@ function AdventureReader({ params }: Props) {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => { applyConsequence(2, currentBranch?.choix2_consequences); chooseOption(currentBranch.choix2_lien); }}
-                    className={`w-full text-left px-5 py-4 bg-[#111827] border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
+                    className={`w-full text-left px-5 py-4 bg-surface-tertiary border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
                       impact.hasImpact 
                         ? impact.isPositive 
                           ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
                           : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-[#131929] border-gray-700 text-content-secondary hover:text-content-primary'
+                        : 'hover:border-cyan-500/60 hover:bg-surface-tertiary border-gray-700 text-content-secondary hover:text-content-primary'
                     }`}
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
@@ -562,7 +562,7 @@ function AdventureReader({ params }: Props) {
                         className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all ${
                           usedAbilities.includes(ability)
                             ? "bg-gray-800/50 border border-gray-700 text-content-secondary opacity-50 cursor-not-allowed"
-                            : "bg-[#111827] border border-purple-500/30 hover:border-purple-500/60 text-content-secondary hover:text-content-primary"
+                            : "bg-surface-tertiary border border-purple-500/30 hover:border-purple-500/60 text-content-secondary hover:text-content-primary"
                         }`}
                       >
                         <span className="font-medium">{ability}</span>

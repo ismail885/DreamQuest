@@ -220,7 +220,7 @@ export default function DashboardPage() {
                   ? [1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className="bg-[#0d1526] border border-yellow-500/20 rounded-xl p-5 animate-pulse"
+                        className="bg-surface-secondary border border-yellow-500/20 rounded-xl p-5 animate-pulse"
                       >
                         <div className="h-5 bg-gray-700/50 rounded w-1/3 mb-3" />
                         <div className="h-4 bg-gray-700/50 rounded w-2/3" />

@@ -105,7 +105,7 @@ export default function ClassementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-content-primary flex flex-col">
+    <div className="min-h-screen bg-surface-primary text-content-primary flex flex-col">
       <Header />
 
       <main className="flex-1 container mx-auto px-6 py-8 pb-24 md:pb-8">
@@ -181,7 +181,7 @@ export default function ClassementPage() {
                   return (
                     <div
                       key={player.id}
-                      className="flex items-center gap-4 p-4 bg-[#0d1526] border border-gray-700/50 rounded-xl hover:border-cyan-500/50 transition-all"
+                      className="flex items-center gap-4 p-4 bg-surface-secondary border border-gray-700/50 rounded-xl hover:border-cyan-500/50 transition-all"
                     >
                       <div className={`font-bold w-12 ${getMedalColor(rank)}`}>
                         {getMedalIcon(rank)}
@@ -215,7 +215,7 @@ export default function ClassementPage() {
                   <Link
                     key={adventure.id}
                     href={`/adventure/${adventure.id}`}
-                    className="flex items-center gap-4 p-4 bg-[#0d1526] border border-gray-700/50 rounded-xl hover:border-cyan-500/50 transition-all"
+                    className="flex items-center gap-4 p-4 bg-surface-secondary border border-gray-700/50 rounded-xl hover:border-cyan-500/50 transition-all"
                   >
                     <div className={`font-bold w-12 ${getMedalColor(rank)}`}>
                       {getMedalIcon(rank)}

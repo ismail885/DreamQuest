@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 bg-surface-primary text-content-primary">
-      <section className="w-full max-w-md rounded-2xl border border-gray-800/60 bg-[#111827]/70 p-8 backdrop-blur-sm">
+      <section className="w-full max-w-md rounded-2xl border border-gray-800/60 bg-surface-tertiary/70 p-8 backdrop-blur-sm">
         <h1 className="text-2xl font-bold text-cyan-400">Mot de passe oublie</h1>
         <p className="mt-2 text-sm text-content-secondary">
           Entrez votre email pour recevoir un lien de reinitialisation.
@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-lg border border-gray-700 bg-[#1a1f2e] px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-500"
+              className="w-full rounded-lg border border-gray-700 bg-surface-tertiary px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-500"
               placeholder="votre.email@exemple.com"
             />
           </div>

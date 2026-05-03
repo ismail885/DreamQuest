@@ -141,7 +141,7 @@ export default function AdminDashboard() {
           return (
             <div
               key={index}
-              className="bg-[#1a1f2e] border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all"
+              className="bg-surface-tertiary border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
       {/* Two columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Role Distribution */}
-        <div className="bg-[#1a1f2e] border border-gray-800 rounded-xl p-6">
+        <div className="bg-surface-tertiary border border-gray-800 rounded-xl p-6">
           <h2 className="text-xl font-bold text-content-primary mb-6">Distribution des rôles</h2>
           <div className="space-y-4">
             {roleDistribution.map((item, index) => {
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-[#1a1f2e] border border-gray-800 rounded-xl p-6">
+        <div className="bg-surface-tertiary border border-gray-800 rounded-xl p-6">
           <h2 className="text-xl font-bold text-content-primary mb-6">Actions rapides</h2>
           <div className="grid grid-cols-2 gap-4">
             <a
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* System Info */}
-      <div className="bg-[#1a1f2e] border border-gray-800 rounded-xl p-6">
+      <div className="bg-surface-tertiary border border-gray-800 rounded-xl p-6">
         <h2 className="text-xl font-bold text-content-primary mb-4">Informations système</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center gap-4">

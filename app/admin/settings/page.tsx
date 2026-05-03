@@ -87,7 +87,7 @@ export default function AdminSettingsPage() {
         {categories.map((category, index) => {
           const Icon = category.icon;
           return (
-            <div key={index} className="bg-[#1a1f2e] border border-gray-800 rounded-xl">
+            <div key={index} className="bg-surface-tertiary border border-gray-800 rounded-xl">
               <div className="px-6 py-4 border-b border-gray-800 flex items-center gap-3">
                 <Icon className="w-5 h-5 text-cyan-400" />
                 <h2 className="text-lg font-bold text-content-primary">{category.name}</h2>

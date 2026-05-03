@@ -33,6 +33,9 @@ const config: Config = {
           primary: 'var(--content-primary)',
           secondary: 'var(--content-secondary)',
         },
+        placeholder: {
+          DEFAULT: 'var(--content-secondary)',
+        },
       },
       animation: {
         'pulse-slow': 'pulse 4s ease-in-out infinite',

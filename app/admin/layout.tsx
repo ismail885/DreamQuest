@@ -47,7 +47,7 @@ export default function AdminLayout({
 
   if (loading || !isAuthorized) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+      <div className="min-h-screen bg-surface-primary flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
       </div>
     );
@@ -61,9 +61,9 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a]">
+    <div className="min-h-screen bg-surface-primary">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-[#111827] border-r border-gray-800 flex flex-col">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-surface-tertiary border-r border-gray-800 flex flex-col">
         {/* Logo */}
         <div className="p-6 border-b border-gray-800">
           <Link href="/dashboard" className="flex items-center gap-3">

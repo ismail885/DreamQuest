@@ -53,7 +53,7 @@ export default function Home() {
       <section className="py-16 md:py-24 px-6">
         <div className="container mx-auto max-w-7xl">
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            <div className="p-8 bg-[#1a1f2e]/50 border border-gray-800 rounded-xl hover:border-cyan-500/30 transition-all duration-300">
+            <div className="p-8 bg-surface-tertiary/50 border border-gray-800 rounded-xl hover:border-cyan-500/30 transition-all duration-300">
               <div className="space-y-4">
                 <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +69,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="p-8 bg-[#1a1f2e]/50 border border-gray-800 rounded-xl hover:border-cyan-500/30 transition-all duration-300">
+            <div className="p-8 bg-surface-tertiary/50 border border-gray-800 rounded-xl hover:border-cyan-500/30 transition-all duration-300">
               <div className="space-y-4">
                 <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -85,7 +85,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="p-8 bg-[#1a1f2e]/50 border border-gray-800 rounded-xl hover:border-cyan-500/30 transition-all duration-300">
+            <div className="p-8 bg-surface-tertiary/50 border border-gray-800 rounded-xl hover:border-cyan-500/30 transition-all duration-300">
               <div className="space-y-4">
                 <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
