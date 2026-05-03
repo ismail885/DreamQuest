@@ -28,7 +28,6 @@ export default function CreateCharacterPage() {
   }
 
   const handleCharacterCreated = (character: Character) => {
-    console.log('Personnage créé:', character);
     router.push('/adventure');
   };
 

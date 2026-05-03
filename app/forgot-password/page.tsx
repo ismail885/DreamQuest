@@ -16,6 +16,14 @@ export default function ForgotPasswordPage() {
     setMessage(null);
     setError(null);
 
+    // Validation email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Veuillez entrer une adresse email valide");
+      setLoading(false);
+      return;
+    }
+
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/login`,
     });

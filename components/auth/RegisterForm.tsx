@@ -32,6 +32,21 @@ export default function RegisterForm() {
     setError("");
     setSuccess("");
 
+    // Validation username
+    if (formData.username.length < 3) {
+      setError("Le nom d'aventurier doit contenir au moins 3 caracteres");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validation email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Veuillez entrer une adresse email valide");
+      setIsLoading(false);
+      return;
+    }
+
     // Verifier que les mots de passe correspondent
     if (formData.password !== formData.confirmPassword) {
       setError("Les mots de passe ne correspondent pas");
@@ -39,9 +54,9 @@ export default function RegisterForm() {
       return;
     }
 
-    // Verifier la longueur du mot de passe
-    if (formData.password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caracteres");
+    // Verifier la longueur du mot de passe (min 8)
+    if (formData.password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caracteres");
       setIsLoading(false);
       return;
     }
@@ -109,7 +124,7 @@ export default function RegisterForm() {
                   type="text"
                   id="username"
                   name="username"
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-content-primary placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
                   placeholder="Entrez votre nom..."
                   value={formData.username}
                   onChange={handleChange}
@@ -132,7 +147,7 @@ export default function RegisterForm() {
                   type="email"
                   id="email"
                   name="email"
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-content-primary placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
                   placeholder="votre.email@exemple.com"
                   value={formData.email}
                   onChange={handleChange}
@@ -155,8 +170,8 @@ export default function RegisterForm() {
                   type="password"
                   id="password"
                   name="password"
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
-                  placeholder="Minimum 6 caracteres"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-content-primary placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  placeholder="Minimum 8 caracteres"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -178,7 +193,7 @@ export default function RegisterForm() {
                   type="password"
                   id="confirmPassword"
                   name="confirmPassword"
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-content-primary placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
                   placeholder="Confirmez votre mot de passe"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -190,7 +205,7 @@ export default function RegisterForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-content-primary font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
             >
               {isLoading && (
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
