@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
@@ -56,85 +56,11 @@ export default function ProfilPage() {
     if (notif) setNotifications(JSON.parse(notif));
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (user) loadSettings(); }, [user]);
 
-  const toggleNotifications = () => {
-    const newVal = !notifications;
-    setNotifications(newVal);
-    if (user) localStorage.setItem(`dq_settings_${user.id}_notifications`, JSON.stringify(newVal));
-  };
-
-  const { isDark: darkMode, toggleTheme } = useTheme();
-  const [language, setLanguage] = useState("fr");
-  const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [isSavingSettings, setIsSavingSettings] = useState(false);
-  const settingsLoadedRef = useRef(false);
-
-  useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-    loadUserData(user.id).then(() => setLoading(false));
-// eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user?.id, router]);
-
-  // Rechargement des donnees
-  useEffect(() => {
-    const refresh = () => {
-      if (user?.id) loadUserData(user.id);
-    };
-
-    // Rechargement quand on revient sur l'onglet
-    const handleFocus = () => refresh();
-    window.addEventListener("focus", handleFocus);
-
-    // Rechargement quand on revient sur la page
-    const handleVisibility = () => {
-      if (!document.hidden) refresh();
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-      document.removeEventListener("visibilitychange", handleVisibility);
-    };
-  }, [user?.id]);
-
-  // Rechargement quand on change d'onglet
-  useEffect(() => {
-    if (user?.id) loadUserData(user.id);
-  }, [activeTab, user?.id]);
-
-  // Rafraichir les realisations quand on affiche l'onglet
-  useEffect(() => {
-    if (activeTab === "achievements" && user?.id) {
-      loadUserData(user.id);
-    }
-    if (activeTab === "characters" && user?.id) {
-      loadUserData(user.id);
-    }
-    if (activeTab === "stories" && user?.id) {
-      loadUserData(user.id);
-    }
-    if (activeTab === "quests" && user?.id) {
-      loadUserData(user.id);
-    }
-  }, [activeTab]);
-
-  // Rafraichir les stats quand la page devient visible
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (!document.hidden && user?.id) {
-        loadUserData(user.id);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [user?.id]);
-
-  const loadUserData = async (userId: number) => {
+  // Définition de loadUserData AVANT les useEffects qui l'utilisent
+  const loadUserData = useCallback(async (userId: number) => {
     // Extraire l'ID numerique au cas ou
     const numericUserId = typeof userId === 'number' && !isNaN(userId) 
       ? userId 
@@ -271,7 +197,87 @@ export default function ProfilPage() {
     } catch (error) {
       console.error("Erreur lors du chargement des données:", error);
     }
+  }, [user]);
+
+  const toggleNotifications = () => {
+    const newVal = !notifications;
+    setNotifications(newVal);
+    if (user) localStorage.setItem(`dq_settings_${user.id}_notifications`, JSON.stringify(newVal));
   };
+
+  const { isDark: darkMode, toggleTheme } = useTheme();
+  const [language, setLanguage] = useState("fr");
+  const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const settingsLoadedRef = useRef(false);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+    loadUserData(user.id).then(() => setLoading(false));
+// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user?.id, router]);
+
+  // Rechargement des donnees
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const refresh = () => {
+      if (user?.id) loadUserData(user.id);
+    };
+
+    // Rechargement quand on revient sur l'onglet
+    const handleFocus = () => refresh();
+    window.addEventListener("focus", handleFocus);
+
+    // Rechargement quand on revient sur la page
+    const handleVisibility = () => {
+      if (!document.hidden) refresh();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [user?.id]);
+
+  // Rechargement quand on change d'onglet
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (user?.id) loadUserData(user.id);
+  }, [activeTab, user?.id]);
+
+  // Rafraichir les realisations quand on affiche l'onglet
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (activeTab === "achievements" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "characters" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "stories" && user?.id) {
+      loadUserData(user.id);
+    }
+    if (activeTab === "quests" && user?.id) {
+      loadUserData(user.id);
+    }
+  }, [activeTab]);
+
+  // Rafraichir les stats quand la page devient visible
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!document.hidden && user?.id) {
+        loadUserData(user.id);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [user?.id]);
 
   const getUserInitials = () => {
     const username = userProfile?.nom_utilisateur || user?.username || "U";

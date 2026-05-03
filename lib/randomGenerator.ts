@@ -159,6 +159,7 @@ export function getRandomAbility(classe: CharacterClass, ownedAbilities: string[
   return available[Math.floor(Math.random() * available.length)];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getAbilitiesForLevel(classe: CharacterClass, niveau: number, _ownedAbilities: string[] = []): string[] {
   const abilities: string[] = [];
   

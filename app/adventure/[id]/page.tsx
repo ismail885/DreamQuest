@@ -1,6 +1,6 @@
 "use client";
 
-import { use, Suspense, useEffect, useState } from "react";
+import { use, Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Loader from "@/components/shared/Loader";
@@ -163,9 +163,10 @@ function AdventureReader({ params }: Props) {
       const event = getRandomEvent();
       setCurrentEvent(event);
     }
-  }, [currentBranch?.id]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentBranch?.id, currentEvent, isEnd]);
 
-  const loadCharacterProgress = () => {
+  const loadCharacterProgress = useCallback(() => {
     if (!user || !characterIdNum) return null;
     const key = `dq_char_${user.id}_${characterIdNum}`;
     const saved = localStorage.getItem(key);
@@ -173,18 +174,18 @@ function AdventureReader({ params }: Props) {
       try { return JSON.parse(saved); } catch { return null; }
     }
     return null;
-  };
+  }, [user, characterIdNum]);
 
-  const saveCharacterProgress = (niveau: number, stats: { force: number; agility: number; intelligence: number; endurance: number }, experience: number) => {
+  const saveCharacterProgress = useCallback((niveau: number, stats: { force: number; agility: number; intelligence: number; endurance: number }, experience: number) => {
     if (!user || !characterIdNum) return;
     const key = `dq_char_${user.id}_${characterIdNum}`;
     localStorage.setItem(key, JSON.stringify({ niveau, stats, experience, updatedAt: new Date().toISOString() }));
-  };
+  }, [user, characterIdNum]);
 
   useEffect(() => {
-    if (isEnd && user && characterIdNum) {
+    if (isEnd && user && characterIdNum && character) {
       save();
-      const progress = loadCharacterProgress() || { niveau: character?.niveau ?? 1, stats: { force: 5, agility: 5, intelligence: 5, endurance: 5 }, experience: 0 };
+      const progress = loadCharacterProgress() || { niveau: character.niveau ?? 1, stats: { force: 5, agility: 5, intelligence: 5, endurance: 5 }, experience: 0 };
       const xpGained = history.length * 50;
       const newExperience = progress.experience + xpGained;
       const newLevel = Math.min(Math.floor(newExperience / 500) + 1, 10);
@@ -199,14 +200,14 @@ function AdventureReader({ params }: Props) {
         supabase.from('personnage').update({ niveau: newLevel }).eq('id', characterIdNum).then();
       }
       saveCharacterProgress(newLevel, newStats, newExperience);
-      setCharacter({
-        ...character!,
+      setCharacter(prev => prev ? {
+        ...prev,
         niveau: newLevel,
         stats: newStats,
         experience: newExperience,
-      });
+      } : prev);
     }
-  }, [isEnd, user, characterIdNum, save, history.length]);
+  }, [isEnd, user, characterIdNum, character, save, history.length, loadCharacterProgress, saveCharacterProgress]);
 
   const image = ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
 

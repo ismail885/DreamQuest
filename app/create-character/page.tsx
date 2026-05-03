@@ -27,7 +27,8 @@ export default function CreateCharacterPage() {
     );
   }
 
-  const handleCharacterCreated = (character: Character) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleCharacterCreated = (_character: Character) => {
     router.push('/adventure');
   };
 
