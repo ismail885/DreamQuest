@@ -13,7 +13,7 @@ export default function Skeleton({
   width,
   height,
 }: SkeletonProps) {
-  const baseClasses = "animate-pulse bg-gray-700/50";
+  const baseClasses = "animate-pulse bg-surface-tertiary/50";
 
   const variantClasses = {
     text: "rounded",
@@ -37,7 +37,7 @@ export default function Skeleton({
 
 export function SkeletonCard() {
   return (
-    <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 space-y-4">
+    <div className="bg-surface-secondary border border-gray-700/50 rounded-2xl p-6 space-y-4">
       <div className="flex items-center gap-4">
         <Skeleton variant="circular" width={48} height={48} />
         <div className="flex-1 space-y-2">
@@ -105,7 +105,7 @@ export function SkeletonSaveList({ count = 5 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-4 p-4 bg-[#0d1526] border border-gray-700/50 rounded-xl"
+          className="flex items-center gap-4 p-4 bg-surface-secondary border border-gray-700/50 rounded-xl"
         >
           <Skeleton variant="circular" width={40} height={40} />
           <div className="flex-1 space-y-2">
@@ -123,7 +123,7 @@ export function SkeletonProfile() {
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       <div className="lg:w-80 space-y-6">
-        <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 space-y-4">
+        <div className="bg-surface-secondary border border-gray-700/50 rounded-2xl p-6 space-y-4">
           <div className="flex flex-col items-center">
             <Skeleton variant="circular" width={96} height={96} />
             <Skeleton width="50%" height={24} className="mt-4" />
@@ -133,7 +133,7 @@ export function SkeletonProfile() {
         </div>
       </div>
       <div className="flex-1 space-y-6">
-        <div className="bg-[#0d1526] border border-gray-700/50 rounded-2xl p-6 space-y-4">
+        <div className="bg-surface-secondary border border-gray-700/50 rounded-2xl p-6 space-y-4">
           <Skeleton width="30%" height={24} />
           <SkeletonSaveList count={3} />
         </div>
