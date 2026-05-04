@@ -12,6 +12,7 @@ import type { Character, ConsequenceEffect } from "@/types";
 import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
+import Breadcrumb, { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -50,6 +51,8 @@ function AdventureReader({ params }: Props) {
   const [currentEvent, setCurrentEvent] = useState<typeof RANDOM_EVENTS[0] | null>(null);
   const [availableAbilities, setAvailableAbilities] = useState<string[]>([]);
   const [usedAbilities, setUsedAbilities] = useState<string[]>([]);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   // Parse consequence JSON to show impact indicator
   const getConsequenceImpact = (consequencesJson: string | null | undefined): { hasImpact: boolean; isPositive: boolean; impactText: string } => {
@@ -133,6 +136,9 @@ function AdventureReader({ params }: Props) {
     enabled: !!user && !!characterIdNum && !isEnd,
     intervalMs: 30_000,
   });
+
+  // Confirmation de départ - juste la détection
+  const shouldConfirm = !isEnd && history.length > 0;
 
   useEffect(() => {
     if (!personnageId) return;
@@ -237,7 +243,13 @@ function AdventureReader({ params }: Props) {
     <div className="min-h-screen bg-surface-primary text-content-primary flex flex-col">
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800/60">
         <button
-          onClick={() => router.back()}
+          onClick={() => {
+            if (history.length > 0 && !isEnd) {
+              setShowLeaveModal(true);
+            } else {
+              router.back();
+            }
+          }}
           className="flex items-center gap-2 px-4 py-2 bg-surface-tertiary border border-gray-700 hover:border-gray-500 rounded-lg text-content-secondary hover:text-content-primary transition-all text-sm font-medium"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,9 +258,16 @@ function AdventureReader({ params }: Props) {
           Retour
         </button>
 
-        <span className="text-content-secondary text-sm font-medium">
-          Page de Lecture d&apos;histoire
-        </span>
+        <div className="flex items-center gap-2">
+          <Breadcrumb 
+            items={[
+              { label: 'Aventures', href: '/adventure' },
+              { label: adventure?.titre ?? 'Aventure' },
+            ]}
+            currentStep={history.length + 1}
+            totalSteps={MAX_STEPS}
+          />
+        </div>
 
         <div className="flex items-center gap-2">
           {isSaving && (
@@ -433,6 +452,7 @@ function AdventureReader({ params }: Props) {
                   <button
                     key={idx}
                     onClick={() => {
+                      setIsDirty(true);
                       applyConsequence(1, JSON.stringify(choice.consequence));
                       setCurrentEvent(null);
                       if (currentBranch?.choix1_lien) {
@@ -582,6 +602,18 @@ function AdventureReader({ params }: Props) {
           )}
         </div>
       </main>
+
+      <ConfirmLeaveModal
+        isOpen={showLeaveModal}
+        onConfirm={() => {
+          setShowLeaveModal(false);
+          save();
+          router.back();
+        }}
+        onCancel={() => setShowLeaveModal(false)}
+        title="Quitter l'aventure ?"
+        message="Votre progression a été sauvegardée automatiquement."
+      />
     </div>
   );
 }
