@@ -6,6 +6,7 @@ import Image from "next/image";
 import Loader from "@/components/shared/Loader";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useSave } from "@/hooks/useSave";
+import { useInventory } from "@/hooks/useInventory";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
@@ -13,6 +14,7 @@ import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/li
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import Breadcrumb, { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
+import { Package, Sparkles } from "lucide-react";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
