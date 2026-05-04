@@ -117,6 +117,7 @@ export default function ClassCard({ classInfo, isSelected, onSelect }: ClassCard
               src={classInfo.image}
               alt={classInfo.name}
               fill
+              sizes="(max-width: 768px) 160px, (max-width: 1024px) 192px, 192px"
               className="object-contain"
               priority
             />

@@ -27,7 +27,9 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
           src={classInfo?.image ?? '/illustrations_personnage/default.png'}
           alt={character.nom_personnage}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover"
+          priority={false}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
         

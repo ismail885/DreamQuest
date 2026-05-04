@@ -1,5 +1,7 @@
 "use client";
 
+import { classNames } from "@/lib/utils";
+
 interface SkeletonProps {
   className?: string;
   variant?: "text" | "circular" | "rectangular";
@@ -28,9 +30,36 @@ export default function Skeleton({
 
   return (
     <div
-      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      className={classNames(baseClasses, variantClasses[variant], className)}
       style={style}
     />
+  );
+}
+
+// Skeleton unifié pour page de contenu
+export function SkeletonPage({ title = true }: { title?: boolean }) {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {title && (
+        <div className="space-y-2">
+          <Skeleton width="40%" height={32} className="bg-surface-tertiary/30" />
+          <Skeleton width="60%" height={20} className="bg-surface-tertiary/30" />
+        </div>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-surface-secondary/30 border border-gray-800/30 rounded-xl p-4 space-y-3"
+          >
+            <Skeleton height={120} className="rounded-lg bg-surface-tertiary/30" />
+            <Skeleton width="70%" height={20} className="bg-surface-tertiary/30" />
+            <Skeleton width="90%" height={14} className="bg-surface-tertiary/30" />
+            <Skeleton width="40%" height={14} className="bg-surface-tertiary/30" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
