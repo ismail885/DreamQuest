@@ -1,43 +1,40 @@
-import { Zap, Brain, Heart, Sword, LucideIcon } from 'lucide-react';
+import { Zap, Sparkles, Heart, Sword, LucideIcon, Shield, Cross, Target, Leaf, User, Flame } from 'lucide-react';
 
-export type CharacterClass = 'Guerrier' | 'Mage' | 'Assassin' | 'Prêtre' | 'Paladin' | 'Archer' | 'Druide' | 'Nécromancien' | 'Voleur' | 'Barbare';
+export type CharacterClass = 'Paladin' | 'Prêtre' | 'Archer' | 'Druide' | 'Voleur' | 'Barbare';
+
+// Icônes pour chaque classe
+export const CLASS_ICONS: Record<CharacterClass, LucideIcon> = {
+  Paladin: Shield,
+  Prêtre: Cross,
+  Archer: Target,
+  Druide: Leaf,
+  Voleur: User,
+  Barbare: Flame,
+};
 
 export type CharacterAbility = 
-  | 'Rage' 
-  | 'Coup Puissant' 
-  | 'Défense de Fer' 
-  | 'Boule de Feu' 
-  | 'Éclair'
-  | 'Bouclier Magique'
-  | 'Soin' 
-  | 'Invisibilité'
-  | 'Attaque Sournoise'
-  | 'Évasion'
-  | 'Protection Divine'
-  | 'Résurrection'
-  | 'Aura Sacrée'
+  | 'Bouclier Sacré'
+  | 'Faveur Divine'
   | 'Châtiment'
-  | 'Bouclier de Foi'
-  | 'Tir Perçant'
+  | 'Prière Guérisseuse'
+  | 'Bénédiction'
+  | 'Tir Précis'
   | 'Pluie de Flèches'
-  | 'Vision d\'Aigle'
+  | 'Instinct de Chasseur'
   | 'Forme Animale'
-  | 'Épines Venimeuses'
-  | 'Régénération'
-  | 'Drain de Vie'
-  | 'Armée de Morts'
-  | 'Malédiction'
-  | 'Crochetage'
-  | 'Pickpocket'
-  | 'Évasion Rapide'
-  | 'Rage Bestiale'
-  | 'Coup Dévastateur'
-  | 'Berserker';
+  | 'Étreinte de la Nature'
+  | 'Regénération'
+  | 'Coup Silencieux'
+  | 'Filouterie'
+  | 'Fuite Agile'
+  | 'Cri de Guerre'
+  | 'Frappe Brutale'
+  | 'Furie Bestiale';
 
 export interface CharacterStats {
   force: number;
   agility: number;
-  intelligence: number;
+  magie: number;
   endurance: number;
 }
 
@@ -47,6 +44,8 @@ export interface ClassInfo {
   baseStats: CharacterStats;
   abilities: CharacterAbility[];
   image: string;
+  role: string;
+  playstyle: string;
 }
 
 export interface Character {
@@ -69,125 +68,89 @@ export interface CreateCharacterPayload {
 }
 
 export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
-  Guerrier: {
-    name: 'Guerrier',
-    description: 'Maître du combat rapproché, force et endurance exceptionnelles',
-    baseStats: {
-      force: 8,
-      agility: 5,
-      intelligence: 3,
-      endurance: 7
-    },
-    abilities: ['Rage', 'Coup Puissant', 'Défense de Fer'],
-    image: '/illustrations_personnage/guerrier.jpg'
-  },
-  Mage: {
-    name: 'Mage',
-    description: 'Manipulateur de magie élémentaire, intelligence supérieure',
-    baseStats: {
-      force: 3,
-      agility: 4,
-      intelligence: 9,
-      endurance: 4
-    },
-    abilities: ['Boule de Feu', 'Éclair', 'Bouclier Magique'],
-    image: '/illustrations_personnage/mage.jpg'
-  },
-  Assassin: {
-    name: 'Assassin',
-    description: 'Expert en furtivité et attaques rapides',
-    baseStats: {
-      force: 5,
-      agility: 9,
-      intelligence: 4,
-      endurance: 5
-    },
-    abilities: ['Invisibilité', 'Attaque Sournoise', 'Évasion'],
-    image: '/illustrations_personnage/assassin.jpg'
-  },
-  Prêtre: {
-    name: 'Prêtre',
-    description: 'Guérisseur et protecteur, équilibre entre force et magie',
-    baseStats: {
-      force: 4,
-      agility: 4,
-      intelligence: 7,
-      endurance: 6
-    },
-    abilities: ['Soin', 'Protection Divine', 'Résurrection'],
-    image: '/illustrations_personnage/prêtre.jpeg'
-  },
   Paladin: {
     name: 'Paladin',
-    description: 'Chevalier sacré, défenseur de la justice et de la lumière',
+    description: 'Chevalier sacré engagé dans la quête de la justice. Protecteur né, il protège ses alliés avec une foi inébranlable.',
     baseStats: {
       force: 7,
       agility: 4,
-      intelligence: 5,
+      magie: 5,
       endurance: 8
     },
-    abilities: ['Aura Sacrée', 'Châtiment', 'Bouclier de Foi'],
-    image: '/illustrations_personnage/paladin.jpeg'
+    abilities: ['Bouclier Sacré', 'Faveur Divine', 'Châtiment'],
+    image: '/illustrations_personnage/paladin.jpeg',
+    role: 'Protecteur',
+    playstyle: 'Combat rapproché defensif'
+  },
+  Prêtre: {
+    name: 'Prêtre',
+    description: 'Serviteur de la lumière, guide spirituel et guérisseur. Ses prières thérapeut les blessures de l\'âme et du corps.',
+    baseStats: {
+      force: 4,
+      agility: 4,
+      magie: 7,
+      endurance: 6
+    },
+    abilities: ['Prière Guérisseuse', 'Bénédiction', 'Bouclier Sacré'],
+    image: '/illustrations_personnage/prêtre.jpeg',
+    role: 'Soutien',
+    playstyle: 'Soins et buffs'
   },
   Archer: {
     name: 'Archer',
-    description: 'Tireur d\'élite, précision mortelle à distance',
+    description: 'Maître de l\'arc, il frappe ses ennemis de loin avec une précision mortelle. L\'étendue est son meilleur allié.',
     baseStats: {
       force: 4,
       agility: 9,
-      intelligence: 5,
+      magie: 5,
       endurance: 4
     },
-    abilities: ['Tir Perçant', 'Pluie de Flèches', 'Vision d\'Aigle'],
-    image: '/illustrations_personnage/archer.jpeg'
+    abilities: ['Tir Précis', 'Pluie de Flèches', 'Instinct de Chasseur'],
+    image: '/illustrations_personnage/archer.jpeg',
+    role: 'Attaquant Distance',
+    playstyle: 'Attaques à distance'
   },
   Druide: {
     name: 'Druide',
-    description: 'Gardien de la nature, maître des métamorphoses',
+    description: 'Gardien de la nature, il canalise le pouvoir des éléments. Polyvalent, il peut soignier ou attaquer selon la situation.',
     baseStats: {
       force: 5,
       agility: 6,
-      intelligence: 7,
+      magie: 7,
       endurance: 6
     },
-    abilities: ['Forme Animale', 'Épines Venimeuses', 'Régénération'],
-    image: '/illustrations_personnage/druide.jpeg'
-  },
-  Nécromancien: {
-    name: 'Nécromancien',
-    description: 'Maître des ténèbres et des âmes perdues',
-    baseStats: {
-      force: 2,
-      agility: 4,
-      intelligence: 9,
-      endurance: 3
-    },
-    abilities: ['Drain de Vie', 'Armée de Morts', 'Malédiction'],
-    image: '/illustrations_personnage/necromancien.jpg'
+    abilities: ['Forme Animale', 'Étreinte de la Nature', 'Regénération'],
+    image: '/illustrations_personnage/druide.jpeg',
+    role: 'Hybride',
+    playstyle: 'Polyvalent magie et combat'
   },
   Voleur: {
     name: 'Voleur',
-    description: 'Spécialiste du vol et de la discrétion',
+    description: 'Expert en discrétion et manipulation. Il frappe dans l\'ombre et s\'évade avant que l\'ennemi ne réagisse.',
     baseStats: {
       force: 4,
       agility: 10,
-      intelligence: 5,
+      magie: 5,
       endurance: 4
     },
-    abilities: ['Crochetage', 'Pickpocket', 'Évasion Rapide'],
-    image: '/illustrations_personnage/voleur.jpeg'
+    abilities: ['Coup Silencieux', 'Filouterie', 'Fuite Agile'],
+    image: '/illustrations_personnage/voleur.jpeg',
+    role: 'Assassin',
+    playstyle: 'Furtivité et Critique'
   },
   Barbare: {
     name: 'Barbare',
-    description: 'Guerrier sauvage, force brute et rage incontrôlable',
+    description: 'Guerrier barbare, maîtrisant la rage primitive. Sa force brute intimidation ses adversaires et raz tout sur son passage.',
     baseStats: {
       force: 10,
       agility: 6,
-      intelligence: 2,
+      magie: 2,
       endurance: 8
     },
-    abilities: ['Rage Bestiale', 'Coup Dévastateur', 'Berserker'],
-    image: '/illustrations_personnage/barbare.jpeg'
+    abilities: ['Cri de Guerre', 'Frappe Brutale', 'Furie Bestiale'],
+    image: '/illustrations_personnage/barbare.jpeg',
+    role: 'Berserker',
+    playstyle: 'Combat offensif agressif'
   }
 };
 
@@ -195,7 +158,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
 export const STAT_LABELS: Record<keyof CharacterStats, string> = {
   force: 'Force',
   agility: 'Agilité',
-  intelligence: 'Intelligence',
+  magie: 'Magie',
   endurance: 'Endurance'
 };
 
@@ -205,20 +168,16 @@ export type StatKey = keyof CharacterStats;
 export const STAT_ICONS: Record<StatKey, LucideIcon> = {
   force: Sword,
   agility: Zap,
-  intelligence: Brain,
+  magie: Sparkles,
   endurance: Heart
 };
 
 // Compétences passives par classe
 export const CLASS_PASSIVES: Record<CharacterClass, { name: string; description: string }> = {
-  Guerrier: { name: "Force du Combattant", description: "+10% dégâts physiques" },
-  Mage: { name: "Arcane Résistant", description: "+10% résistance magique" },
-  Assassin: { name: "Coup Fatal", description: "+15% chance de critique" },
-  Prêtre: { name: "Foi Guérisseuse", description: "+5% soins reçus" },
   Paladin: { name: "Bouclier Sacré", description: "+5% points de vie max" },
+  Prêtre: { name: "Foi Guérisseuse", description: "+5% soins reçus" },
   Archer: { name: "Œil de Lynx", description: "+10% précision" },
   Druide: { name: "Force de la Nature", description: "+10% régénération" },
-  Nécromancien: { name: "Lien Sombre", description: "+5% vol de vie" },
   Voleur: { name: "Ombre Fugitive", description: "+10% esquive" },
   Barbare: { name: "Furie Sauvage", description: "+10% force brute" },
 };

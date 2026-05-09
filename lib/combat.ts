@@ -57,7 +57,7 @@ export function initCombat(playerPvMax: number, level: number = 1): CombatState 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function playerAttack(stats: { force: number; agility: number; intelligence: number }, _enemy: Enemy): { dmg: number; log: string } {
+export function playerAttack(stats: { force: number; agility: number; magie: number }, _enemy: Enemy): { dmg: number; log: string } {
   const baseDmg = stats.force + Math.floor(stats.agility / 2);
   const crit = Math.random() < stats.agility / 100;
   const dmg = Math.max(1, baseDmg + (crit ? Math.floor(baseDmg * 0.5) : 0));

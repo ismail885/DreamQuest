@@ -169,7 +169,7 @@ export default function ProfilPage() {
           niveau: c.niveau ?? 1,
           points_vie: c.points_vie ?? 100,
           points_vie_max: c.points_vie ?? 100,
-          stats: { force: 0, agility: 0, intelligence: 0, endurance: 0 },
+          stats: { force: 0, agility: 0, magie: 0, endurance: 0 },
           id_utilisateur: c.id_utilisateur,
         }));
         setUserCharacters(formattedCharacters);
@@ -903,8 +903,8 @@ export default function ProfilPage() {
                               Barbare: { name: "Furie Sauvage", desc: "+10% force brute", icon: "🔥" },
                             };
                             const passif = passifs[char.classe as string];
-                            const stats = char.stats || { force: 0, agility: 0, intelligence: 0, endurance: 0 };
-                            const maxStat = Math.max(stats.force, stats.agility, stats.intelligence, stats.endurance);
+                            const stats = char.stats || { force: 0, agility: 0, magie: 0, endurance: 0 };
+                            const maxStat = Math.max(stats.force, stats.agility, stats.magie, stats.endurance);
                             
                             return (
                               <div key={char.id ?? index} className="bg-surface-secondary border border-gray-700/30 rounded-xl p-5">

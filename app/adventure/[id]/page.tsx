@@ -72,7 +72,7 @@ function AdventureReader({ params }: Props) {
         return { hasImpact: true, isPositive: false, impactText: "⚔️ Combat!", isCombat: true };
       }
       
-      if (!effect || (effect.pv === 0 && !effect.force && !effect.agility && !effect.intelligence && !effect.endurance)) {
+      if (!effect || (effect.pv === 0 && !effect.force && !effect.agility && !effect.magie && !effect.endurance)) {
         return { hasImpact: false, isPositive: true, impactText: "", isCombat: false };
       }
       
@@ -82,7 +82,7 @@ function AdventureReader({ params }: Props) {
       if (effect.pv) { impacts.push(`${effect.pv > 0 ? '+' : ''}${effect.pv} PV`); if (effect.pv < 0) isPositive = false; }
       if (effect.force) { impacts.push(`${effect.force > 0 ? '+' : ''}${effect.force} Force`); if (effect.force < 0) isPositive = false; }
       if (effect.agility) { impacts.push(`${effect.agility > 0 ? '+' : ''}${effect.agility} Agilité`); if (effect.agility < 0) isPositive = false; }
-      if (effect.intelligence) { impacts.push(`${effect.intelligence > 0 ? '+' : ''}${effect.intelligence} Intelligence`); if (effect.intelligence < 0) isPositive = false; }
+      if (effect.magie) { impacts.push(`${effect.magie > 0 ? '+' : ''}${effect.magie} Intelligence`); if (effect.magie < 0) isPositive = false; }
       if (effect.endurance) { impacts.push(`${effect.endurance > 0 ? '+' : ''}${effect.endurance} Endurance`); if (effect.endurance < 0) isPositive = false; }
       
       return { hasImpact: impacts.length > 0, isPositive, impactText: impacts.join(" • "), isCombat: false };
@@ -111,7 +111,7 @@ function AdventureReader({ params }: Props) {
       const newStats = {
         force: (character.stats?.force ?? 0) + (effect.force ?? 0),
         agility: (character.stats?.agility ?? 0) + (effect.agility ?? 0),
-        intelligence: (character.stats?.intelligence ?? 0) + (effect.intelligence ?? 0),
+        magie: (character.stats?.magie ?? 0) + (effect.magie ?? 0),
         endurance: (character.stats?.endurance ?? 0) + (effect.endurance ?? 0),
       };
       const newPv = Math.max(0, (character.points_vie ?? 0) + (effect.pv ?? 0));
@@ -132,7 +132,7 @@ function AdventureReader({ params }: Props) {
         pv_change: effect.pv,
         force_change: effect.force,
         agility_change: effect.agility,
-        intelligence_change: effect.intelligence,
+        magie_change: effect.magie,
         endurance_change: effect.endurance,
         text: effect.text,
       });
@@ -151,7 +151,7 @@ function AdventureReader({ params }: Props) {
     const playerStats = {
       force: character.stats?.force || 0,
       agility: character.stats?.agility || 0,
-      intelligence: character.stats?.intelligence || 0,
+      magie: character.stats?.magie || 0,
       endurance: character.stats?.endurance || 0,
     };
     
@@ -182,7 +182,7 @@ function AdventureReader({ params }: Props) {
     const playerStats = {
       force: character.stats?.force || 0,
       agility: character.stats?.agility || 0,
-      intelligence: character.stats?.intelligence || 0,
+      magie: character.stats?.magie || 0,
       endurance: character.stats?.endurance || 0,
     };
     
@@ -207,7 +207,7 @@ function AdventureReader({ params }: Props) {
     const playerStats = {
       force: character.stats?.force || 0,
       agility: character.stats?.agility || 0,
-      intelligence: character.stats?.intelligence || 0,
+      magie: character.stats?.magie || 0,
       endurance: character.stats?.endurance || 0,
     };
     
@@ -302,7 +302,7 @@ function AdventureReader({ params }: Props) {
     return null;
   }, [user, characterIdNum]);
 
-  const saveCharacterProgress = useCallback((niveau: number, stats: { force: number; agility: number; intelligence: number; endurance: number }, experience: number) => {
+  const saveCharacterProgress = useCallback((niveau: number, stats: { force: number; agility: number; magie: number; endurance: number }, experience: number) => {
     if (!user || !characterIdNum) return;
     const key = `dq_char_${user.id}_${characterIdNum}`;
     localStorage.setItem(key, JSON.stringify({ niveau, stats, experience, updatedAt: new Date().toISOString() }));
@@ -311,7 +311,7 @@ function AdventureReader({ params }: Props) {
   useEffect(() => {
     if (isEnd && user && characterIdNum && character) {
       save();
-      const progress = loadCharacterProgress() || { niveau: character.niveau ?? 1, stats: { force: 5, agility: 5, intelligence: 5, endurance: 5 }, experience: 0 };
+      const progress = loadCharacterProgress() || { niveau: character.niveau ?? 1, stats: { force: 5, agility: 5, magie: 5, endurance: 5 }, experience: 0 };
       const xpGained = history.length * 50;
       const newExperience = progress.experience + xpGained;
       const newLevel = Math.min(Math.floor(newExperience / 500) + 1, 10);
@@ -319,7 +319,7 @@ function AdventureReader({ params }: Props) {
       const newStats = {
         force: (progress.stats?.force ?? 5) + (bonus.force ?? 0),
         agility: (progress.stats?.agility ?? 5) + (bonus.agility ?? 0),
-        intelligence: (progress.stats?.intelligence ?? 5) + (bonus.intelligence ?? 0),
+        magie: (progress.stats?.magie ?? 5) + (bonus.magie ?? 0),
         endurance: (progress.stats?.endurance ?? 5) + (bonus.endurance ?? 0),
       };
       if (newLevel > progress.niveau) {
@@ -440,9 +440,9 @@ function AdventureReader({ params }: Props) {
                   {lastConsequence.agility_change > 0 ? '+' : ''}{lastConsequence.agility_change} Agilité
                 </span>
               )}
-              {lastConsequence.intelligence_change !== undefined && lastConsequence.intelligence_change !== 0 && (
-                <span className={lastConsequence.intelligence_change > 0 ? 'text-green-400' : 'text-red-400'}>
-                  {lastConsequence.intelligence_change > 0 ? '+' : ''}{lastConsequence.intelligence_change} Intelligence
+              {lastConsequence.magie_change !== undefined && lastConsequence.magie_change !== 0 && (
+                <span className={lastConsequence.magie_change > 0 ? 'text-green-400' : 'text-red-400'}>
+                  {lastConsequence.magie_change > 0 ? '+' : ''}{lastConsequence.magie_change} Intelligence
                 </span>
               )}
               {lastConsequence.endurance_change !== undefined && lastConsequence.endurance_change !== 0 && (
@@ -486,7 +486,7 @@ function AdventureReader({ params }: Props) {
             </svg>
             <div>
               <p className="text-content-secondary text-xs">Intelligence</p>
-              <p className="text-content-primary font-bold text-lg leading-none">{character.stats?.intelligence ?? 0}</p>
+              <p className="text-content-primary font-bold text-lg leading-none">{character.stats?.magie ?? 0}</p>
             </div>
           </div>
         </div>

@@ -286,7 +286,7 @@ export default function AdminCharactersPage() {
                 </div>
                 <div>
                   <label className="text-content-secondary text-xs">Intelligence</label>
-                  <p className="text-content-primary font-bold">{viewCharacter.stats?.intelligence || 0}</p>
+                  <p className="text-content-primary font-bold">{viewCharacter.stats?.magie || 0}</p>
                 </div>
                 <div>
                   <label className="text-content-secondary text-xs">Endurance</label>

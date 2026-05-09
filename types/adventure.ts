@@ -30,7 +30,7 @@ export interface ConsequenceEffect {
   pv_change?: number
   force_change?: number
   agility_change?: number
-  intelligence_change?: number
+  magie_change?: number
   endurance_change?: number
 }
 

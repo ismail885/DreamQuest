@@ -6,7 +6,7 @@ import type { CombatState } from "@/lib/combat";
 import { playerAttack, enemyAttack, initCombat } from "@/lib/combat";
 
 interface CombatUIProps {
-  playerStats: { force: number; agility: number; intelligence: number; endurance: number };
+  playerStats: { force: number; agility: number; magie: number; endurance: number };
   playerPvMax: number;
   onPlayerHpChange: (hp: number) => void;
   onWin: (xp: number, loot: string) => void;

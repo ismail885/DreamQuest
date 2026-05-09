@@ -16,8 +16,8 @@ export const metadata = {
   title: "DreamQuest - RPG Textuel Interactif",
   description: "Créez votre personnage et partez à l'aventure dans des histoires interactives à embranchements multiples.",
   icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: "/Logo_DreamQuest.png",
+    apple: "/Logo_DreamQuest.png",
   },
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="fr" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/Logo_DreamQuest.png" sizes="any" />
         <meta name="theme-color" content="#00d4ff" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
