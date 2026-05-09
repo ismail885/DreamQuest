@@ -6,15 +6,14 @@ import Image from "next/image";
 import Loader from "@/components/shared/Loader";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useSave } from "@/hooks/useSave";
-import { useInventory } from "@/hooks/useInventory";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
+import { getRandomEnemy, playerAttack, enemyAttack, initCombat, type Enemy, type CombatState } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import Breadcrumb, { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
-import { Package, Sparkles } from "lucide-react";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -55,15 +54,26 @@ function AdventureReader({ params }: Props) {
   const [usedAbilities, setUsedAbilities] = useState<string[]>([]);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  
+  // Combat state
+  const [inCombat, setInCombat] = useState(false);
+  const [combatState, setCombatState] = useState<CombatState | null>(null);
+  const [combatLevel, setCombatLevel] = useState(1);
 
   // Parse consequence JSON to show impact indicator
-  const getConsequenceImpact = (consequencesJson: string | null | undefined): { hasImpact: boolean; isPositive: boolean; impactText: string } => {
-    if (!consequencesJson) return { hasImpact: false, isPositive: true, impactText: "" };
+  const getConsequenceImpact = (consequencesJson: string | null | undefined): { hasImpact: boolean; isPositive: boolean; impactText: string; isCombat: boolean } => {
+    if (!consequencesJson) return { hasImpact: false, isPositive: true, impactText: "", isCombat: false };
     
     try {
       const effect = JSON.parse(consequencesJson);
+      
+      // Détecter le type combat
+      if (effect.type === "combat") {
+        return { hasImpact: true, isPositive: false, impactText: "⚔️ Combat!", isCombat: true };
+      }
+      
       if (!effect || (effect.pv === 0 && !effect.force && !effect.agility && !effect.intelligence && !effect.endurance)) {
-        return { hasImpact: false, isPositive: true, impactText: "" };
+        return { hasImpact: false, isPositive: true, impactText: "", isCombat: false };
       }
       
       const impacts: string[] = [];
@@ -75,18 +85,28 @@ function AdventureReader({ params }: Props) {
       if (effect.intelligence) { impacts.push(`${effect.intelligence > 0 ? '+' : ''}${effect.intelligence} Intelligence`); if (effect.intelligence < 0) isPositive = false; }
       if (effect.endurance) { impacts.push(`${effect.endurance > 0 ? '+' : ''}${effect.endurance} Endurance`); if (effect.endurance < 0) isPositive = false; }
       
-      return { hasImpact: impacts.length > 0, isPositive, impactText: impacts.join(" • ") };
+      return { hasImpact: impacts.length > 0, isPositive, impactText: impacts.join(" • "), isCombat: false };
     } catch {
-      return { hasImpact: false, isPositive: true, impactText: "" };
+      return { hasImpact: false, isPositive: true, impactText: "", isCombat: false };
     }
   };
 
-  const applyConsequence = async (choixNum: 1 | 2, consequencesJson: string | null | undefined) => {
-    if (!character || !consequencesJson) return;
+  const applyConsequence = async (choixNum: 1 | 2, consequencesJson: string | null | undefined): Promise<boolean> => {
+    if (!character || !consequencesJson) return false;
     
     try {
       const effect = JSON.parse(consequencesJson);
-      if (!effect) return;
+      if (!effect) return false;
+
+      // Gérer le combat
+      if (effect.type === "combat") {
+        const enemyLevel = effect.level || character.niveau || 1;
+        setCombatLevel(enemyLevel);
+        const newCombat = initCombat(character.points_vie_max || 100, enemyLevel);
+        setCombatState(newCombat);
+        setInCombat(true);
+        return true; // Indique que le combat doit remplacer la navigation
+      }
 
       const newStats = {
         force: (character.stats?.force ?? 0) + (effect.force ?? 0),
@@ -118,9 +138,107 @@ function AdventureReader({ params }: Props) {
       });
       setShowEffect(true);
       setTimeout(() => setShowEffect(false), 3000);
+      return false;
     } catch {
-      // Si JSON invalide, on ignore
+      return false;
     }
+};
+
+  // Combat handlers
+  const handleCombatAttack = () => {
+    if (!combatState || !character || !combatState.enemy) return;
+    
+    const playerStats = {
+      force: character.stats?.force || 0,
+      agility: character.stats?.agility || 0,
+      intelligence: character.stats?.intelligence || 0,
+      endurance: character.stats?.endurance || 0,
+    };
+    
+    const result = playerAttack(playerStats, combatState.enemy);
+    const newEnemyPv = Math.max(0, combatState.enemy.pv - result.dmg);
+    const newLog = [...combatState.log, result.log];
+    
+    if (newEnemyPv <= 0) {
+      // Victoire - gain d'XP et potentiellement de level
+      const xpGain = combatState.enemy.xpReward || 0;
+      const newPv = character.points_vie || 0;
+      
+      setCharacter(prev => prev ? { ...prev, points_vie: newPv, experience: (prev.experience || 0) + xpGain } : null);
+      setCombatState({ ...combatState, enemy: { ...combatState.enemy!, pv: 0 }, log: newLog, won: true });
+    } else {
+      setCombatState({
+        ...combatState,
+        enemy: { ...combatState.enemy!, pv: newEnemyPv },
+        log: newLog,
+        turn: "enemy",
+      });
+    }
+  };
+
+  const handleCombatDefend = () => {
+    if (!combatState || !character) return;
+    
+    const playerStats = {
+      force: character.stats?.force || 0,
+      agility: character.stats?.agility || 0,
+      intelligence: character.stats?.intelligence || 0,
+      endurance: character.stats?.endurance || 0,
+    };
+    
+    const reduction = Math.floor((playerStats.agility + (character.stats?.endurance || 0)) / 4);
+    const result = enemyAttack(combatState.enemy!);
+    const dmg = Math.max(1, result.dmg - reduction);
+    const newPlayerPv = Math.max(0, combatState.playerPv - dmg);
+    const newLog = [...combatState.log, result.log, `Tu pare! -${reduction} dégats.`];
+    
+    setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
+    setCombatState({
+      ...combatState,
+      playerPv: newPlayerPv,
+      log: newLog,
+      turn: "player",
+    });
+  };
+
+  const handleCombatFlee = () => {
+    if (!combatState || !character) return;
+    
+    const playerStats = {
+      force: character.stats?.force || 0,
+      agility: character.stats?.agility || 0,
+      intelligence: character.stats?.intelligence || 0,
+      endurance: character.stats?.endurance || 0,
+    };
+    
+    const success = Math.random() < (playerStats.agility / 100 + 0.3);
+    if (success) {
+      setCombatState({ ...combatState, fled: true, log: [...combatState.log, "Tu fuis le combat!"] });
+    } else {
+      const result = enemyAttack(combatState.enemy!);
+      const newPlayerPv = Math.max(0, combatState.playerPv - result.dmg);
+      setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
+      setCombatState({
+        ...combatState,
+        playerPv: newPlayerPv,
+        log: [...combatState.log, result.log, "Fuite échouée!"],
+        turn: "player",
+      });
+    }
+  };
+
+  const handleCombatEnd = async () => {
+    if (!character) return;
+    
+    // Sauvegarder les PV après combat
+    if (character.id) {
+      await supabase.from('personnage').update({
+        points_vie: character.points_vie,
+      }).eq('id', character.id);
+    }
+    
+    setInCombat(false);
+    setCombatState(null);
   };
 
   const { adventure, currentBranch, loading, error, isEnd, history, chooseOption, restart } =
@@ -483,7 +601,7 @@ function AdventureReader({ params }: Props) {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => { applyConsequence(1, currentBranch?.choix1_consequences); chooseOption(currentBranch.choix1_lien); }}
+                    onClick={async () => { const isCombat = await applyConsequence(1, currentBranch?.choix1_consequences); if (!isCombat) chooseOption(currentBranch.choix1_lien); }}
                     className={`w-full text-left px-5 py-4 bg-surface-tertiary border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
                       impact.hasImpact 
                         ? impact.isPositive 
@@ -522,7 +640,7 @@ function AdventureReader({ params }: Props) {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => { applyConsequence(2, currentBranch?.choix2_consequences); chooseOption(currentBranch.choix2_lien); }}
+                    onClick={async () => { const isCombat = await applyConsequence(2, currentBranch?.choix2_consequences); if (!isCombat) chooseOption(currentBranch.choix2_lien); }}
                     className={`w-full text-left px-5 py-4 bg-surface-tertiary border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
                       impact.hasImpact 
                         ? impact.isPositive 
@@ -616,6 +734,88 @@ function AdventureReader({ params }: Props) {
         title="Quitter l'aventure ?"
         message="Votre progression a été sauvegardée automatiquement."
       />
+
+      {/* Combat UI Overlay */}
+      {inCombat && combatState && character && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="bg-[#0d1526] border border-red-500/50 rounded-xl max-w-lg w-full overflow-hidden">
+            <div className="bg-red-900/30 border-b border-red-500/30 p-3 text-center">
+              <h2 className="text-red-400 font-bold text-lg">COMBAT</h2>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <div className="flex justify-between items-center">
+                <div className="flex-1">
+                  <div className="text-white font-bold">Toi</div>
+                  <div className="h-4 bg-gray-700 rounded-full overflow-hidden w-32">
+                    <div
+                      className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all"
+                      style={{ width: `${(combatState.playerPv / combatState.playerPvMax) * 100}%` }}
+                    />
+                  </div>
+                  <div className="text-gray-400 text-sm">{combatState.playerPv} / {combatState.playerPvMax} PV</div>
+                </div>
+                <div className="text-3xl">VS</div>
+                <div className="flex-1 text-right">
+                  <div className="text-red-400 font-bold">{combatState.enemy?.name}</div>
+                  <div className="h-4 bg-gray-700 rounded-full overflow-hidden w-32 ml-auto">
+                    <div
+                      className="h-full bg-gradient-to-r from-red-400 to-red-500 transition-all"
+                      style={{ width: `${((combatState.enemy?.pv || 0) / (combatState.enemy?.pvMax || 1)) * 100}%` }}
+                    />
+                  </div>
+                  <div className="text-gray-400 text-sm">{combatState.enemy?.pv} / {combatState.enemy?.pvMax} PV</div>
+                </div>
+              </div>
+
+              <p className="text-gray-300 text-sm">{combatState.enemy?.description}</p>
+
+              {combatState.enemy && !combatState.won && !combatState.fled && (
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={handleCombatAttack}
+                    disabled={combatState.turn !== "player"}
+                    className="py-3 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/30 disabled:opacity-50 font-bold"
+                  >
+                    Attaquer
+                  </button>
+                  <button
+                    onClick={handleCombatDefend}
+                    disabled={combatState.turn !== "player"}
+                    className="py-3 bg-blue-500/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-500/30 disabled:opacity-50"
+                  >
+                    Défense
+                  </button>
+                  <button
+                    onClick={handleCombatFlee}
+                    disabled={combatState.turn !== "player"}
+                    className="py-3 bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 rounded-lg hover:bg-yellow-500/30 disabled:opacity-50"
+                  >
+                    Fuir
+                  </button>
+                </div>
+              )}
+
+              <div className="bg-[#0a0e1a] rounded-lg p-3 h-32 overflow-y-auto">
+                <div className="space-y-1">
+                  {combatState.log.slice(-5).map((line, i) => (
+                    <p key={i} className="text-gray-300 text-sm">{line}</p>
+                  ))}
+                </div>
+              </div>
+
+              {(combatState.won || combatState.fled) && (
+                <button
+                  onClick={handleCombatEnd}
+                  className="w-full py-3 bg-cyan-500 text-white rounded-lg font-bold hover:bg-cyan-600"
+                >
+                  {combatState.won ? `Victoire! +${combatState.enemy?.xpReward || 0} XP` : "Combat terminé"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

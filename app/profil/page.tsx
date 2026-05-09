@@ -20,14 +20,13 @@ import { useTheme } from "@/hooks/useTheme";
 import { useAuthContext } from "@/context/AuthContext";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
 import { getDailyQuests, DailyQuest, getTotalXPReward } from "@/lib/dailyQuests";
-import InventoryDisplay from "@/components/profil/InventoryDisplay";
 import * as LucideIcons from "lucide-react";
 
 export default function ProfilPage() {
   const router = useRouter();
   const { user, loading: authLoading, updateUser, logout } = useAuthContext();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters" | "inventory">("stories");
+  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters">("stories");
   
   const [userProfile, setUserProfile] = useState<ExtendedUserProfile | null>(null);
   const [userSaves, setUserSaves] = useState<UserSave[]>([]);
@@ -559,16 +558,6 @@ export default function ProfilPage() {
                   >
                     Mes Persos
                   </button>
-                  <button
-                    onClick={() => setActiveTab("inventory")}
-                    className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
-                      activeTab === "inventory"
-                        ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
-                        : "text-gray-400 hover:text-content-primary hover:bg-gray-700/20"
-                    }`}
-                  >
-                    Inventaire
-                  </button>
                 </div>
 
                 <div className="p-6">
@@ -838,62 +827,6 @@ export default function ProfilPage() {
                           >
                             Créer un personnage
                           </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeTab === "inventory" && (
-                    <div className="space-y-4">
-                      {/* Sélecteur de personnage */}
-                      {userCharacters.length > 0 && (
-                        <div className="flex items-center gap-4">
-                          <label className="text-sm text-gray-400">Personnage :</label>
-                          <select
-                            value={selectedCharacter?.id || ""}
-                            onChange={(e) => {
-                              const char = userCharacters.find(c => c.id === parseInt(e.target.value));
-                              setSelectedCharacter(char || null);
-                            }}
-                            className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-content-primary focus:border-cyan-500 focus:outline-none"
-                          >
-                            <option value="">Sélectionner un personnage</option>
-                            {userCharacters.map((char) => (
-                              <option key={char.id} value={char.id}>
-                                {char.nom_personnage} (Niv. {char.niveau || 1})
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-
-                      {selectedCharacter && selectedCharacter.id ? (
-                        <InventoryDisplay characterId={selectedCharacter.id} />
-                      ) : userCharacters.length === 0 ? (
-                        <div className="text-center py-12">
-                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-700/50 flex items-center justify-center">
-                            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                          </div>
-                          <h3 className="text-lg font-semibold text-content-primary mb-2">Aucun personnage</h3>
-                          <p className="text-gray-400 mb-4">Créez un personnage pour voir son inventaire.</p>
-                          <button
-                            onClick={() => router.push("/create-character")}
-                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-content-primary font-medium rounded-lg transition-colors"
-                          >
-                            Créer un personnage
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-center py-12">
-                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-700/50 flex items-center justify-center">
-                            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                          </div>
-                          <h3 className="text-lg font-semibold text-content-primary mb-2">Aucun personnage</h3>
-                          <p className="text-gray-400 mb-4">Sélectionnez un personnage pour voir son inventaire.</p>
                         </div>
                       )}
                     </div>
