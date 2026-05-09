@@ -48,7 +48,7 @@ describe('Intégration - Personnages', () => {
       }
 
       expect(mage.classe).toBe('Mage')
-      expect(mage.stats.intelligence).toBe(9) // Plus haute stat
+      expect(mage.stats.magie).toBe(9) // Plus haute stat
       expect(mage.stats.force).toBe(3) // Plus basse stat
     })
 
@@ -60,6 +60,9 @@ describe('Intégration - Personnages', () => {
         'Assassin',
         'Paladin',
         'Prêtre',
+        'Druide',
+        'Nécromancien',
+        'Voleur',
         'Barbare',
       ]
 

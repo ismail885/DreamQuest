@@ -3,6 +3,26 @@
 import { CharacterClass, CharacterStats } from '@/types';
 
 export const ABILITIES_POOL: Record<CharacterClass, string[]> = {
+  Guerrier: [
+    'Rage', 'Coup Puissant', 'Défense de Fer', 'Cri de Guerre',
+    'Coup de Bouclier', 'Force du Taureau', 'Frappe Brutale',
+    'Posture Définitif', 'Charge Héroïque', 'Éventration'
+  ],
+  Mage: [
+    'Boule de Feu', 'Éclair', 'Bouclier Magique', 'Téléportation',
+    'Nova de Feu', 'Glacement', 'École des Arcanes',
+    'Domination Mentale', 'Invocation de Familier', 'Mur de Force'
+  ],
+  Assassin: [
+    'Invisibilité', 'Attaque Sournoise', 'Évasion', 'Poison',
+    'Assassinat', 'Lame Empoisonnée', 'Pas de l\'Ombre',
+    'Tueur Silencieux', 'Coup Critique', 'Fuite Tactique'
+  ],
+  Nécromancien: [
+    'Drain de Vie', 'Armée de Morts', 'Malédiction', 'Terreur',
+    'Sceau des Ombres', 'Résurrection Noir', 'Corruption',
+    'Voile de la Mort', 'Âme Parchée', 'Invocation de Squelette'
+  ],
   Paladin: [
     'Bouclier Sacré', 'Faveur Divine', 'Châtiment', 'Jugement',
     'Marteau de Justice', 'Aube Lumineuse', 'Protection Stellaire',
@@ -11,7 +31,7 @@ export const ABILITIES_POOL: Record<CharacterClass, string[]> = {
   Prêtre: [
     'Prière Guérisseuse', 'Bénédiction', 'Lumière Sainte', 'Guérison de Masse',
     'Bouclier de Foi', 'Exorcisme', 'Prière de Miséricorde',
-    'Rayon de Soleil', 'Resurrection', 'Don de Vie'
+    'Rayon de Soleil', 'Résurrection', 'Don de Vie'
   ],
   Archer: [
     'Tir Précis', 'Pluie de Flèches', 'Instinct de Chasseur', 'Tir en Arc',

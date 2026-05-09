@@ -15,6 +15,10 @@ describe('Unitaires - Personnages', () => {
       expect(CHARACTER_CLASSES).toHaveProperty('Assassin')
       expect(CHARACTER_CLASSES).toHaveProperty('Paladin')
       expect(CHARACTER_CLASSES).toHaveProperty('Prêtre')
+      expect(CHARACTER_CLASSES).toHaveProperty('Druide')
+      expect(CHARACTER_CLASSES).toHaveProperty('Nécromancien')
+      expect(CHARACTER_CLASSES).toHaveProperty('Voleur')
+      expect(CHARACTER_CLASSES).toHaveProperty('Barbare')
     })
 
     it('devrait avoir une description pour chaque classe', () => {
@@ -29,8 +33,10 @@ describe('Unitaires - Personnages', () => {
         expect(cls.baseStats).toBeDefined()
         expect(cls.baseStats.force).toBeGreaterThan(0)
         expect(cls.baseStats.agility).toBeGreaterThan(0)
-        expect(cls.baseStats.intelligence).toBeGreaterThan(0)
+        expect(cls.baseStats.magie).toBeGreaterThan(0)
         expect(cls.baseStats.endurance).toBeGreaterThan(0)
+        expect(cls.role).toBeDefined()
+        expect(cls.playstyle).toBeDefined()
       })
     })
 
@@ -107,7 +113,7 @@ describe('Unitaires - Personnages', () => {
     it('devrait avoir les 4 labels', () => {
       expect(STAT_LABELS.force).toBe('Force')
       expect(STAT_LABELS.agility).toBe('Agilité')
-      expect(STAT_LABELS.intelligence).toBe('Intelligence')
+      expect(STAT_LABELS.magie).toBe('Magie')
       expect(STAT_LABELS.endurance).toBe('Endurance')
     })
   })
@@ -120,7 +126,7 @@ describe('Unitaires - Personnages', () => {
         niveau: 1,
         points_vie: 170,
         points_vie_max: 170,
-        stats: { force: 8, agility: 5, intelligence: 3, endurance: 7 },
+        stats: { force: 8, agility: 5, magie: 3, endurance: 7 },
         id_utilisateur: 1,
         experience: 0,
       }
