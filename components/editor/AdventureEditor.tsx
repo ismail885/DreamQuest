@@ -25,147 +25,221 @@ interface GenreInfo {
   accent: string;
 }
 
-// Génération de contenu plus sophistiquée
+// Générateur de contenu avancé avec plusieurs embranchements
 const generateAdventureContent = (genre: string, title: string): BranchNode[] => {
-  const structures: Record<string, {
+  // Contenu différent selon le genre
+  const genreContent: Record<string, {
     opening: string;
-    events: Array<{ text: string; choices: string[] }>;
+    events: Array<{ text: string; choices: string[]; type?: string }>;
     endings: string[];
+    locations: string[];
   }> = {
     fantasy: {
-      opening: `Vous vous réveillez dans un monde où la magie et le danger coexistent. Une quête vous attend, et le destin du royaume repose entre vos mains.`,
+      locations: ["Forêt des Murmures", "Château abandonné", "Caverne du dragon", "Village mystérieux", "Temple antique"],
+      opening: "Vous vous réveillez au milieu d'un monde où la magie et le danger vont de pair. Une quête majeure vous attend, et le destin du royaume repose peut-être entre vos mains. Selon la légende, seul un héros capable de satisfaire trois épreuves pourrait prétendre au titre de Champion du Royaume.",
       events: [
         {
-          text: "Vous arrivez à la croisée des chemins. Un panneau indique trois destinations : la Forêt des Murmures à l'est, les Ruines Ancestrales au nord, et le Village des Artisans au sud.",
-          choices: ["Se diriger vers la forêt", "Explorer les ruines", "Aller au village"]
+          text: "Vous arrivez à la croisée des chemins. Trois panneaux indiquent des destinations différentes : au nord, la Forêt des Murmures où l'on dit que les esprits parlent ; à l'est, les ruines du Château Noir où un dragon endormi garde un trésor ; au sud, le Village des Artisans connu pour ses créatures magiques.",
+          choices: ["Partir vers la Forêt des Murmures", "Explorer le Château Noir", "Aller au Village des Artisans"],
+          type: "exploration"
         },
         {
-          text: "Un vieil homme barbu vous aborde. Il semble posséder une connaissance antique.",
-          choices: ["Lui parler", "L'ignorer", "Lui demander des informations"]
+          text: "Dans la forêt, vous rencontrez un elfe gardien. Il vous bloque le passage et vous pose une énigme : 'Je suis le commencement de l'éternité, la fin du temps et de l'espace. Qui suis-je ?'",
+          choices: ["Répondre 'Le silence'", "Demander de l'aide", "Attaquer l'elfe"],
+          type: "enigme"
         },
         {
-          text: "Vous trouvez un artefact mystérieux pulsant d'une énergie étrange.",
-          choices: ["Le prendre", "L'examiner de loin", "Le laisser"]
+          text: "Le dragon du Château Noir est finalement éveillé ! Ses yeux ardents vous fixent. Il semble disposé à négocier plutôt qu'à combattre. Une Scales écailleuse reflétant l'or massif brille sur son front.",
+          choices: ["Combattre le dragon", "Négocier avec le dragon", "Chercher une arme dans les ruines"],
+          type: "combat"
         },
         {
-          text: "Un groupe de bandits bloque votre chemin. Leur chef vous défie.",
-          choices: ["Combattre", "Négocier", "Essayer de fuir"]
+          text: "Le village vous offre un refuge, mais le chef vous explique qu'une malédiction frappe les cultures. Unemonstre des profondeurssort chaque nuit pour dévorer les récoltes.",
+          choices: ["Chasser le monstre", "Aider à renforcer les défenses", "Chercher la source de la malédiction"],
+          type: "quete"
+        },
+        {
+          text: "Dans le temple antique, vous trouvez un autel avec trois objets sacrés : une épée brillante, un bouclier ancien et un livre de magie. Une voix résonne : 'Choisis celui qui te définit, héros.'",
+          choices: ["Prendre l'épée", "Prendre le bouclier", "Prendre le livre"],
+          type: "choix"
+        },
+        {
+          text: "Un événement catastrophique secoue le monde : le soleil disparaît progressivement. Les créatures magiques становятся агрессивными. Vous devez trouver la cause avant que les ténèbres définitives n'arrivent.",
+          choices: ["Chercher dans les montagnes", "Explorer les profondeurs", "Consulter le conseil des sages"],
+          type: "aventure"
         }
       ],
       endings: [
-"Vous avez complète votre quête et devenez une légende du royaume.",
-    "Le chemin fut long mais vous avez trouvé votre place dans ce monde.",
-    "Malgré les difficultés, vous avez réussi."
+        "Vous avez réussi toutes les épreuves et êtes devenu le Champion du royaume. Votre nom sera gravé dans les chronicles pour toujours.",
+        "Le chemin fut long et semé d'embûches, mais vous avez trouvé votre place dans ce monde en tant que gardien de la paix.",
+        "Malgré les difficultés incroyables, vous avez persévéré et réussi à sauver le royaume de la destruction.",
+        "Vous avez découvert que le véritable héros n'est pas celui qui vainc les monstres, mais celui qui protège les innocents."
       ]
     },
     horror: {
-      opening: "La brume épaisse enveloppe les rues désertes. Quelque chose de mauvais rôde dans l'ombre. Votre curiosité pourrait bien être votre dernière erreur.",
+      locations: ["Manoir hanté", "Cimetière maudit", "Hôpital abandonné", "Forêt ténébreuse", "Sous-sol secret"],
+      opening: "La brume enveloppe les rues de cette petite ville forgotten. Quelque chose de mauvais rôde dans l'ombre. Votre curiosité vous a entraîné ici, mais saurez-vous survivre à ce qui vous attend ? On dit que ce lieu est maudit depuis que le culte clandestin a pratiqué ses rituels interdits il y a cinquante ans.",
       events: [
         {
-          text: "Vous trouvez une porte entrouverte qui n'était pas là hier. Une voix vous appelle depuis les ténèbres.",
-          choices: ["Entrer", "Appeler à l'aide", "Courir"]
+          text: "Vous trouvez une porte qui n'était pas là hier. Elle est légèrement entrouverte, et une voix étouffée provn de l'intérieur : 'Aidez-moi... s'il vous plaît...'",
+          choices: ["Entrer cautiously", "Appeler la police", "Partir immédiatement"],
+          type: "mystere"
         },
         {
-          text: "Un journal ancien révèle des secrets choquants sur la ville.",
-          choices: ["Le lire", "Le brûler", "Le garder"]
+          text: "Dans le cimetière, vous trouvez une tombe fraîche avec une inscription bizarre : 'Celui qui réveillera le dormeur ne trouvera jamais la paix'. La terre semble avoir été remuée récemment.",
+          choices: ["Creuser", "Lirez le livre ritual", "Retourner au village"],
+          type: "enquete"
         },
         {
-          text: "Des pas se font entendre derrière vous. Quelqu'un - ou quelque chose - vous suit.",
-          choices: ["Se retourner", "Se cacher", "Accélérer"]
+          text: "L'hôpital abandonné vous réserve une surprise terrifiante. Dans une salle du sous-sol, vous thérapeut des équipements médicaux encore branchés, et des murmures proviennent de la salle d'opération. Un scalpel scintille sur la table.",
+          choices: ["Investiguer la salle", "Fuir vers la sortie", "Appeler à l'aide"],
+          type: "horreur"
         },
         {
-          text: "Vous thérapeut une pièce pleine de symboles étranges. Au centre, un miroir reflète... autre chose que votre réflexion.",
-          choices: ["Regarder dans le miroir", "Sortir immédiatement", "Examinez les symboles"]
+          text: "Dans la forêt, vous rencontrez une jeune femme en robe blanche. Elle vous regarde avec des yeux vides et murmure : 'Vous ne devriez pas être ici. Ils arrivent...' Avant de disparaître dans le brouillard.",
+          choices: ["La suivre", "Courir dans la direction opposée", "Se cacher et attendre"],
+          type: "rencontre"
+        },
+        {
+          text: "Un journal ancien que vous avez trouvé révèle des secrets choquants sur la ville : les dirigeants ont caché un terrible secret pendant des décennies. Ce qu'ils ont fait dans le sous-sol du manoir ne devrait jamais être révélé.",
+          choices: ["Confronter les dirigeants", "Continuer l'enquête", "Brûler le journal"],
+          type: "revelation"
+        },
+        {
+          text: "La chose que vous chassez vous a trouvé. Elle est dans la pièce avec vous, à peine visible dans l'obscurité. Vous pouvez sentir son souffle froid sur votre nuque. Une seule chance reste.",
+          choices: ["Allumer la lumière", "Utiliser l'objet sacré", "Courir vers la fenêtre"],
+          type: "climax"
         }
       ],
       endings: [
-        "Vous avez survécu à la nuit. Mais savez-vous vraiment ce qui vous a échappé ?",
-        "La vérité était trop horrible. Certaines choses ne devraient jamais être découvertes.",
-        "Vous êtes devenu ce que vous chassiez."
+        "Vous avez survécu à cette nuit terrifiante. Mais savez-vous vraiment ce qui vous a échappé ? Certaines choses sont mieux laissées dans l'ombre.",
+        "La vérité était trop horrible. Vous avez découvert que certaines choses ne devraient jamais être mises à jour.",
+        "Vous êtes devenu ce que vous chassiez. Le cycle n'est pas terminé.",
+        "Vous avez réussi à fuir, mais les souvenirs de cette nuit vous hanteront pour toujours."
       ]
     },
     scifi: {
-      opening: "Année 2347. L'humanité a colonisé les étoiles, mais certains mystères restent irrésolus. Votre dernière mission pourrait tout changer.",
+      locations: ["Station spatiale", "Planète inconnue", "Vaisseau marchand", "Colonie lunaire", "Dimension parallèle"],
+      opening: "Année 2347. L'humanité a conquis les étoiles, mais certains mystères restent irrésolus. Votre dernière mission pourrait bien改变 l'histoire de l'humanité. Un signal étrange en provenance d'un secteur inexploré a été détecté, et vous êtes le seul à pouvoir répondre à cet appel.",
       events: [
         {
-          text: "Le signal provenait d'une planète non cartographiée. Votre scanner détecte une structure artificielle.",
-          choices: ["Atterrir", "Envoyer un drone", "Analyser à distance"]
+          text: "Le signal provenait d'une planète non cartographiée. Votre scanner détecte une structure artificielle parfaitement préservée, comme si elle attendait depuis des siècles. Aucun signe de vie, mais une énergie inconnue émane de l'intérieur.",
+          choices: ["Atterrir et explorer", "Envoyer un drone d'analyse", "Analyser à distance maximale"],
+          type: "decouverte"
         },
         {
-          text: "L'IA du vaisseau vous alerte : 'Inconnu détecté. Probabilité de menace : 87%'.",
-          choices: ["Armer les systèmes", "Tenter la communication", "Fuir"]
+          text: "L'intelligence artificielle du vaisseau vous alerte : 'anomalie détectée. Probabilité de menace : supérieur à 87%. Recommendévasion immédiate.' Les capteurs commencent à détecter des mouvements autour du vessel.",
+          choices: ["Armer les systèmes defensifs", "Tenter la communication pacifique", "Fuir vers l'hyperespace"],
+          type: "confrontation"
         },
         {
-          text: "Vous trouvez un laboratoire abandonné avec des expériences inachevées.",
-          choices: ["Activer les machines", "Collecter des données", "Tout détruire"]
+          text: "Vous trouvez un laboratoire abandonné avec des expériences inachevées. Les écrans affichent des données sur des recherches génétiques interdits. Un liquide étrange pulse dans les containmentsts.",
+          choices: ["Activer les systèmes de sécurité", "Collecter les données de recherche", "Détruire le laboratoire"],
+          type: "science"
         },
         {
-          text: "Un alien vous fait signe. Son expression semble... pacifique ?",
-          choices: ["Répondre au geste", "Rester sur vos gardes", "Demander de l'aide"]
+          text: "Un alien vous fait signe depuis la porte d'un compartment. Son expression faciale semble pacifique, mais ses mains restent masquées derrière son dos. Il semble vous reconnaître.",
+          choices: ["Répondre au geste amical", "Rester sur vos gardes et observer", "Demander des informations"],
+          type: "premiercontact"
+        },
+        {
+          text: "La vérité sur votre mission se révèle enfin. Votre gouvernement avait des connaissances sur cette civilisation disparue et a envoyé des expéditions précédentes. Vous n'êtes pas le premier à avoir répondu à ce signal.",
+          choices: ["Continuer la mission originale", "Alerter la résistance", "Prendre le contrôle du situatid"],
+          type: "revelation"
+        },
+        {
+          text: "Une dimension parallèle s'ouvre devant vous. À travers la brèche, vous apercevez une version alternative de vous-même qui vous fait signe de traverser. Le choix va changer votre destin à jamais.",
+          choices: ["Traverser la brèche", "Rester dans votre dimension", "Refermer la brèche"],
+          type: "multiverse"
         }
       ],
       endings: [
-        "Vous avez changé le cours de l'histoire humaine.",
-        "La vérité sur l'univers n'était pas prête à être révélée.",
-        "Votre sacrifice sera mémorisé par les générations futures."
+        "Vous avez changé le cours de l'histoire humaine en découvrant cette civilization avancée. L'humanité sera incontournablement transformée.",
+        "La vérité sur l'univers n'était pas prête à être révélée. Certaines connaissances sont trop dangereuses.",
+        "Votre sacrifice sera mémorisé par les générations futures comme l'un des plus grands héros de l'humanité.",
+        "Vous avez réussi à établic un pont entre les civilizations, ouvrant la voie à une nouvelle ère de coopération galactique."
       ]
     },
     romance: {
-      opening: "Dans une ville où les destins se croisent, deux âmes sont sur le point de se trouver. L'amour ne suit jamais un chemin prévisible.",
+      locations: ["Café littéraire", "Jardin public", "Musée artistique", "Plage isolé", "Ville éternelle"],
+      opening: "Dans une ville où les destins se croisent chaque jour, deux âmes sont sur le point de se trouver. L'amour ne suit jamais un chemin prévisible. Ce pourrait être une simple rencontre au café, ou le début d'une histoire qui durera toute une vie.",
       events: [
         {
-          text: "Un marché animé. Quelque chose attire votre regard - une personne inattendue.",
-          choices: ["L'aborder", "L'observer", "Passer votre chemin"]
+          text: "Un marché animé à Paris. Quelque chose attire votre regard - une personne qui semble chercher quelque chose de perdu. Elle lève les yeux et nos regards se croisent. Le temps s'arrête un instant.",
+          choices: ["L'aborder directement", "L'observer discretement", "Passer votre chemin"],
+          type: "rencontre"
         },
         {
-          text: "La pluie commence à tomber. Un abri se présente, mais vous n'êtes pas seul.",
-          choices: ["Demander à se joindre", "Attendre à l'extérieur", "Partir sous la pluie"]
+          text: "La pluie commence à tomber soudainement. Un abri se présente sous un porche ancien, mais vous n'êtes pas seul. Une personne se trouve déjà là, regarder la pluie tomber.",
+          choices: ["Demander à se joindre sous l'abri", "Attendre à l'extérieur sous la pluie", "Partir malgré la pluie"],
+          type: "moment"
         },
         {
-          text: "Un événement important approche. Vous pourriez invités cette personne.",
-          choices: ["Inviter formellement", "Proposer quelque chose de différent", "Ne pas insister"]
+          text: "Un événement important approche - une exposition d'art ou un concert majeur. Vous pourriez invité cette personne spéciale à vous accompagner.",
+          choices: ["Inviter officiellement", "Proposer quelque chose de différent", "Ne pas insister et respecter son espace"],
+          type: "opportunite"
         },
         {
-          text: "Un malentendu menace de tout gâcher. Comment allez-vous réagir ?",
-          choices: ["Expliquer calmement", "Laisser du temps", "Insister pour s'expliquer"]
+          text: "Un malentendu menace de tout gâcher. Des paroles mal interprétées ont créé une fracture entre vous. La communication est la seule voie vers la réconciliation.",
+          choices: ["Expliquer calmement et clairement", "Laisser du temps pour la réflexion", "Insister pour s'expliquer immédiatement"],
+          type: "crise"
+        },
+        {
+          text: "Cette personne vous confie un secret profond - une partie de leur vie qu'ils n'ont jamais révélée à personne. Cette confiance vous touche profondément.",
+          choices: ["Partager un secret en retour", "Ecouter sans jugement", "Promettre de garder le secret"],
+          type: "confiance"
+        },
+        {
+          text: "Le moment décisif est arrivé. Vous devez faire un choix qui déterminera l'avenir de votre relation. Le cœur balance entre la peur et l'espoir.",
+          choices: ["Declarer vos sentiments", "Prendre du recul", "Attendre le bon moment"],
+          type: "decisi"
         }
       ],
       endings: [
-"Votre histoire commence à peine.",
-    " Certains amour durent éternellement.",
-    "Ensemble, vous avez trouvé ce que vous cherchiez."
+        "Votre histoire commence à peine. L'avenir vous tend les bras avec tout ce qu'il contient d'inconnu et de prometteur.",
+        "Certains amours durent éternellement. Le votre sera inscrit dans les étoiles.",
+        "Ensemble, vous avez trouvé ce que vous cherchiez - un amour véritable qui dépasse toutes les attentes.",
+        "Vous avez appris que l'amour n'est pas un sentiment, mais une décision quotidienne de choisir l'autre."
       ]
     }
   };
 
-  const structure = structures[genre] || structures.fantasy;
+  const content = genreContent[genre] || genreContent.fantasy;
+  const location = content.locations[Math.floor(Math.random() * content.locations.length)];
   
-  // Créer les nœuds de l'aventure
+  // Créer les nœuds de l'aventure avec une structure plus riche
   const nodes: BranchNode[] = [];
   
-  // Nœud initial (racine)
+  // Personnaliser l'ouverture avec le lieu et le titre
+  const adventureTitle = (title || "").trim() || "Aventure";
+  const personalizedOpening = content.opening
+    .replace("ce lieu", location.toLowerCase())
+    .replace("une quête majeure", `la quête de ${adventureTitle}`)
+    .replace("cette civilization", `la civilization de ${adventureTitle}`);
+  
   nodes.push({
     id: "root",
-    text: structure.opening,
+    text: personalizedOpening,
     choices: [
-      { text: structure.events[0].choices[0], link: "node_1", consequences: "" },
-      { text: structure.events[0].choices[1], link: "node_2", consequences: "" },
-      { text: structure.events[0].choices[2], link: "node_3", consequences: "" }
+      { text: content.events[0].choices[0], link: "node_1", consequences: "" },
+      { text: content.events[0].choices[1], link: "node_2", consequences: "" },
+      { text: content.events[0].choices[2], link: "node_3", consequences: "" }
     ]
   });
 
-  // Créer les nœuds événementiels
-  for (let i = 1; i < structure.events.length; i++) {
-    const event = structure.events[i];
-    const choiceCount = 2 + Math.floor(Math.random() * 2); // 2-3 choix
+  // Créer les nœuds événementiels avec des embranchements multiples
+  for (let i = 1; i < content.events.length; i++) {
+    const event = content.events[i];
+    const choiceCount = 2 + Math.floor(Math.random() * 2); // 2-3 choix par nœud
     
     const choices: Choice[] = [];
     for (let j = 0; j < Math.min(choiceCount, event.choices.length); j++) {
-      const nextNodeId = i < structure.events.length - 1 ? `node_${i + 1}_${j}` : `ending_${i}`;
+      // Créer un embranchement différent pour chaque choix
+      const nextNodeId = i < content.events.length - 1 ? `node_${i}_${j}` : `ending_${i}_${j}`;
       choices.push({
         text: event.choices[j],
         link: nextNodeId,
-        consequences: ""
+        consequences: event.type === "combat" ? JSON.stringify({ type: "combat", level: 1 }) : ""
       });
     }
 
@@ -177,8 +251,8 @@ const generateAdventureContent = (genre: string, title: string): BranchNode[] =>
     });
   }
 
-  // Ajouter les fins
-  structure.endings.forEach((ending, idx) => {
+  // Ajouter les fins multiples
+  content.endings.forEach((ending, idx) => {
     nodes.push({
       id: `ending_${idx}`,
       text: ending,
@@ -220,7 +294,6 @@ export default function AdventureEditor() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
-  const [showTreeView, setShowTreeView] = useState(false);
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || nodes[0];
 
@@ -389,7 +462,6 @@ export default function AdventureEditor() {
       for (const node of nodes) {
         const isRoot = node.id === "root";
         const choicesText = node.choices.map(c => c.text);
-        const choicesLinks = node.choices.map(c => c.link);
         const choicesConsequences = node.choices.map(c => c.consequences);
 
         const { data: branch, error: branchError } = await supabase
@@ -616,9 +688,9 @@ export default function AdventureEditor() {
               <button
                 onClick={generateWithAI}
                 disabled={generating}
-                className="px-6 py-3 bg-purple-500/20 border border-purple-500/50 text-purple-400 rounded-xl hover:bg-purple-500/30 font-medium disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-500 hover:to-blue-500 font-medium disabled:opacity-50 shadow-lg shadow-cyan-500/20"
               >
-                {generating ? "Génération..." : "✨ Générer avec IA"}
+                {generating ? "Génération..." : "Générer avec IA"}
               </button>
               <button
                 onClick={saveDraft}
