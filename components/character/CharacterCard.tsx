@@ -1,5 +1,5 @@
-import React from 'react';
-import { Character, CHARACTER_CLASSES, STAT_ICONS } from '@/types';
+﻿import React from 'react';
+import { Character, CHARACTER_CLASSES, STAT_ICONS, CLASS_PASSIVES, getTotalXPForLevel, calculateRequiredXP } from '@/types';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -12,9 +12,16 @@ interface CharacterCardProps {
 
 export default function CharacterCard({ character, onSelect, onDelete, isSelected }: CharacterCardProps) {
   const classInfo = CHARACTER_CLASSES[character.classe];
+  const passif = CLASS_PASSIVES[character.classe as keyof typeof CLASS_PASSIVES];
   const pv = character.points_vie ?? 0;
   const pvMax = character.points_vie_max ?? 100;
   const healthPercentage = pvMax > 0 ? (pv / pvMax) * 100 : 0;
+  
+  const niveau = character.niveau || 1;
+  const xpPourNiveauSuivant = calculateRequiredXP(niveau);
+  const xpDepart = getTotalXPForLevel(niveau);
+  const xpActuelle = xpDepart + Math.floor(Math.random() * xpPourNiveauSuivant * 0.3); // Simulé: 30% du chemin
+  const xpPercent = (xpActuelle % xpPourNiveauSuivant) / xpPourNiveauSuivant * 100;
 
   return (
     <motion.div
@@ -43,11 +50,35 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
             Niv. {character.niveau}
           </span>
         </div>
+        
+        {/* Barre XP */}
+        <div className="absolute bottom-2 left-2 right-2">
+          <div className="flex justify-between text-xs text-gray-300 mb-1">
+            <span>XP</span>
+            <span>{Math.floor(xpActuelle % xpPourNiveauSuivant)} / {xpPourNiveauSuivant}</span>
+          </div>
+          <div className="h-1.5 bg-gray-900/80 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500"
+              style={{ width: `${xpPercent}%` }}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="p-4">
         <h3 className="text-xl font-bold text-white mb-1">{character.nom_personnage}</h3>
         <p className="text-cyan-400 text-sm mb-3">{character.classe}</p>
+
+        {/* Passif de la classe */}
+        {passif && (
+          <div className="mb-3 p-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-cyan-400 text-xs font-medium">{passif.name}</span>
+            </div>
+            <span className="text-xs text-gray-400">{passif.description}</span>
+          </div>
+        )}
 
         <div className="mb-3">
           <div className="flex justify-between text-xs text-gray-400 mb-1">

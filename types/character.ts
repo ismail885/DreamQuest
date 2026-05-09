@@ -209,3 +209,31 @@ export const STAT_ICONS: Record<StatKey, LucideIcon> = {
   endurance: Heart
 };
 
+// Compétences passives par classe
+export const CLASS_PASSIVES: Record<CharacterClass, { name: string; description: string }> = {
+  Guerrier: { name: "Force du Combattant", description: "+10% dégâts physiques" },
+  Mage: { name: "Arcane Résistant", description: "+10% résistance magique" },
+  Assassin: { name: "Coup Fatal", description: "+15% chance de critique" },
+  Prêtre: { name: "Foi Guérisseuse", description: "+5% soins reçus" },
+  Paladin: { name: "Bouclier Sacré", description: "+5% points de vie max" },
+  Archer: { name: "Œil de Lynx", description: "+10% précision" },
+  Druide: { name: "Force de la Nature", description: "+10% régénération" },
+  Nécromancien: { name: "Lien Sombre", description: "+5% vol de vie" },
+  Voleur: { name: "Ombre Fugitive", description: "+10% esquive" },
+  Barbare: { name: "Furie Sauvage", description: "+10% force brute" },
+};
+
+// Calcul de l'XP nécessaire pour un niveau
+export const calculateRequiredXP = (level: number): number => {
+  return Math.floor(100 * Math.pow(1.5, level - 1));
+};
+
+//XP totale pour un niveau donné
+export const getTotalXPForLevel = (level: number): number => {
+  let total = 0;
+  for (let i = 1; i < level; i++) {
+    total += calculateRequiredXP(i);
+  }
+  return total;
+};
+

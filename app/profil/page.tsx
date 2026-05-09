@@ -26,7 +26,7 @@ export default function ProfilPage() {
   const router = useRouter();
   const { user, loading: authLoading, updateUser, logout } = useAuthContext();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters">("stories");
+  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters" | "evolution">("stories");
   
   const [userProfile, setUserProfile] = useState<ExtendedUserProfile | null>(null);
   const [userSaves, setUserSaves] = useState<UserSave[]>([]);
@@ -558,6 +558,16 @@ export default function ProfilPage() {
                   >
                     Mes Persos
                   </button>
+                  <button
+                    onClick={() => setActiveTab("evolution")}
+                    className={`flex-1 py-4 px-6 text-sm font-medium transition-all ${
+                      activeTab === "evolution"
+                        ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
+                        : "text-gray-400 hover:text-content-primary hover:bg-gray-700/20"
+                    }`}
+                  >
+                    Évolution
+                  </button>
                 </div>
 
                 <div className="p-6">
@@ -781,7 +791,27 @@ export default function ProfilPage() {
                       </div>
                       {userCharacters.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {userCharacters.map((char, index) => (
+                          {userCharacters.map((char, index) => {
+                            const niveau = char.niveau || 1;
+                            const xpPourNiveauSuivant = Math.floor(100 * Math.pow(1.5, niveau - 1));
+                            const xpDepart = Array.from({ length: niveau - 1 }, (_, i) => Math.floor(100 * Math.pow(1.5, i))).reduce((a, b) => a + b, 0);
+                            const xpActuelle = xpDepart + Math.floor(Math.random() * xpPourNiveauSuivant * 0.3);
+                            const xpPercent = (xpActuelle % xpPourNiveauSuivant) / xpPourNiveauSuivant * 100;
+                            const passifs = {
+                              Guerrier: { name: "Force du Combattant", desc: "+10% dégâts physiques" },
+                              Mage: { name: "Arcane Résistant", desc: "+10% résistance magique" },
+                              Assassin: { name: "Coup Fatal", desc: "+15% critique" },
+                              Prêtre: { name: "Foi Guérisseuse", desc: "+5% soins reçus" },
+                              Paladin: { name: "Bouclier Sacré", desc: "+5% PV max" },
+                              Archer: { name: "Œil de Lynx", desc: "+10% précision" },
+                              Druide: { name: "Force de la Nature", desc: "+10% régénération" },
+                              Nécromancien: { name: "Lien Sombre", desc: "+5% vol de vie" },
+                              Voleur: { name: "Ombre Fugitive", desc: "+10% esquive" },
+                              Barbare: { name: "Furie Sauvage", desc: "+10% force brute" },
+                            };
+                            const passif = passifs[char.classe as keyof typeof passifs];
+                            
+                            return (
                             <div
                               key={char.id ?? index}
                               className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 hover:border-cyan-400 rounded-lg overflow-hidden transition-all duration-300 group"
@@ -790,13 +820,30 @@ export default function ProfilPage() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
                                 <div className="absolute top-2 right-2">
                                   <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold text-sm">
-                                    Niv. {char.niveau || 1}
+                                    Niv. {niveau}
                                   </span>
+                                </div>
+                                {/* Barre XP */}
+                                <div className="absolute bottom-2 left-2 right-2">
+                                  <div className="flex justify-between text-xs text-gray-400 mb-0.5">
+                                    <span>XP</span>
+                                    <span>{Math.floor(xpActuelle % xpPourNiveauSuivant)}/{xpPourNiveauSuivant}</span>
+                                  </div>
+                                  <div className="h-1 bg-gray-900/80 rounded-full overflow-hidden">
+                                    <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${xpPercent}%` }} />
+                                  </div>
                                 </div>
                               </div>
                               <div className="p-4">
                                 <h3 className="text-lg font-bold text-content-primary mb-1">{char.nom_personnage}</h3>
-                                <p className="text-cyan-400 text-sm mb-3">{char.classe}</p>
+                                <p className="text-cyan-400 text-sm mb-2">{char.classe}</p>
+                                {/* Passif */}
+                                {passif && (
+                                  <div className="mb-3 p-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                                    <span className="text-cyan-400 text-xs font-medium">{passif.name}</span>
+                                    <span className="text-xs text-gray-400 block">{passif.desc}</span>
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                                   <span>{char.points_vie || 100} PV</span>
                                 </div>
@@ -810,7 +857,8 @@ export default function ProfilPage() {
                                 </button>
                               </div>
                             </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       ) : (
                         <div className="text-center py-12">
@@ -824,6 +872,107 @@ export default function ProfilPage() {
                           <button
                             onClick={() => router.push("/create-character")}
                             className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-content-primary font-medium rounded-lg transition-colors"
+                          >
+                            Créer un personnage
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === "evolution" && (
+                    <div className="space-y-6">
+                      {userCharacters.length > 0 ? (
+                        <div className="space-y-6">
+                          {userCharacters.map((char, index) => {
+                            const niveau = char.niveau || 1;
+                            const xpPourNiveauSuivant = Math.floor(100 * Math.pow(1.5, niveau - 1));
+                            const xpDepart = Array.from({ length: niveau - 1 }, (_, i) => Math.floor(100 * Math.pow(1.5, i))).reduce((a, b) => a + b, 0);
+                            const xpActuelle = xpDepart + Math.floor(Math.random() * xpPourNiveauSuivant * 0.3);
+                            const xpPercent = (xpActuelle % xpPourNiveauSuivant) / xpPourNiveauSuivant * 100;
+                            const passifs: Record<string, { name: string; desc: string; icon: string }> = {
+                              Guerrier: { name: "Force du Combattant", desc: "+10% dégâts physiques", icon: "⚔️" },
+                              Mage: { name: "Arcane Résistant", desc: "+10% résistance magique", icon: "🔮" },
+                              Assassin: { name: "Coup Fatal", desc: "+15% critique", icon: "🗡️" },
+                              Prêtre: { name: "Foi Guérisseuse", desc: "+5% soins reçus", icon: "✨" },
+                              Paladin: { name: "Bouclier Sacré", desc: "+5% PV max", icon: "🛡️" },
+                              Archer: { name: "Œil de Lynx", desc: "+10% précision", icon: "🏹" },
+                              Druide: { name: "Force de la Nature", desc: "+10% régénération", icon: "🌿" },
+                              Nécromancien: { name: "Lien Sombre", desc: "+5% vol de vie", icon: "💀" },
+                              Voleur: { name: "Ombre Fugitive", desc: "+10% esquive", icon: "👤" },
+                              Barbare: { name: "Furie Sauvage", desc: "+10% force brute", icon: "🔥" },
+                            };
+                            const passif = passifs[char.classe as string];
+                            const stats = char.stats || { force: 0, agility: 0, intelligence: 0, endurance: 0 };
+                            const maxStat = Math.max(stats.force, stats.agility, stats.intelligence, stats.endurance);
+                            
+                            return (
+                              <div key={char.id ?? index} className="bg-surface-secondary border border-gray-700/30 rounded-xl p-5">
+                                <div className="flex items-center gap-4 mb-4">
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-2xl font-bold text-white">
+                                    {char.nom_personnage.charAt(0).toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-content-primary">{char.nom_personnage}</h3>
+                                    <p className="text-cyan-400 text-sm">Niveau {niveau} - {char.classe}</p>
+                                  </div>
+                                </div>
+                                
+                                {/* Barre XP */}
+                                <div className="mb-4">
+                                  <div className="flex justify-between text-sm mb-1">
+                                    <span className="text-gray-400">Experience</span>
+                                    <span className="text-cyan-400">{Math.floor(xpActuelle % xpPourNiveauSuivant)} / {xpPourNiveauSuivant} XP</span>
+                                  </div>
+                                  <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+                                    <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500" style={{ width: `${xpPercent}%` }} />
+                                  </div>
+                                </div>
+                                
+                                {/* Stats */}
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                  {Object.entries(stats).map(([stat, value]) => {
+                                    const percent = maxStat > 0 ? (value / maxStat) * 100 : 0;
+                                    return (
+                                      <div key={stat} className="bg-gray-800/50 rounded-lg p-3">
+                                        <div className="flex justify-between text-sm mb-1">
+                                          <span className="text-gray-400 capitalize">{stat}</span>
+                                          <span className="text-white font-bold">{value}</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                          <div className="h-full bg-cyan-500" style={{ width: `${percent}%` }} />
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                
+                                {/* Passif */}
+                                {passif && (
+                                  <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <span className="text-lg">{passif.icon}</span>
+                                      <span className="text-cyan-400 font-medium">{passif.name}</span>
+                                    </div>
+                                    <span className="text-gray-400 text-sm">{passif.desc}</span>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-700/50 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-content-primary mb-2">Aucun personnage</h3>
+                          <p className="text-gray-400 mb-4">Creez votre premier personnage pour voir son évolution.</p>
+                          <button
+                            onClick={() => router.push("/create-character")}
+                            className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
                           >
                             Créer un personnage
                           </button>
