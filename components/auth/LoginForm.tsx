@@ -1,13 +1,15 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/dashboard";
   const { login, loginWithGoogle, loginWithApple } = useAuthContext();
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -56,7 +58,7 @@ export default function LoginForm() {
 
       if (result.success) {
         setTimeout(() => {
-          router.replace("/dashboard");
+          router.replace(redirect);
         }, 100);
       } else {
         setError(result.error || "Erreur lors de la connexion");
