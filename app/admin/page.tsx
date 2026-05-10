@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Users, BookOpen, UserRound, TrendingUp, Activity, Calendar } from "lucide-react";
+import { Users, BookOpen, UserRound, TrendingUp, Activity, Calendar, Wifi, WifiOff, RefreshCw } from "lucide-react";
 
 interface Stats {
   totalUsers: number;
@@ -14,6 +14,7 @@ interface Stats {
   createurCount: number;
   recentUsers: number;
   recentAdventures: number;
+  activeUsersToday: number;
 }
 
 export default function AdminDashboard() {
@@ -27,14 +28,20 @@ export default function AdminDashboard() {
     createurCount: 0,
     recentUsers: 0,
     recentAdventures: 0,
+    activeUsersToday: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchStats = useCallback(async () => {
+  const fetchStats = useCallback(async (isAutoRefresh = false) => {
+    if (isAutoRefresh) setIsRefreshing(true);
     try {
       // Run all queries in parallel for speed
       const [usersRes, adventuresRes, charactersRes, votesRes] = await Promise.all([
-        supabase.from("utilisateur").select("role,date_creation", { count: "exact", head: true }),
+        supabase.from("utilisateur").select("role,date_creation", { count: "exact", head: false }),
         supabase.from("aventure").select("*", { count: "exact", head: true }),
         supabase.from("personnage").select("*", { count: "exact", head: true }),
         supabase.from("vote").select("*", { count: "exact", head: true }),
@@ -44,9 +51,14 @@ export default function AdminDashboard() {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       const sevenDaysAgoStr = sevenDaysAgo.toISOString();
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayStr = today.toISOString();
+
       // Process users data
       const usersCount = usersRes.count || 0;
       const recentUsersCount = usersRes.data?.filter(u => u.date_creation >= sevenDaysAgoStr).length || 0;
+      const activeTodayCount = usersRes.data?.filter(u => u.date_creation >= todayStr).length || 0;
       
       const roleCounts = { admin: 0, joueur: 0, createur: 0 };
       usersRes.data?.forEach(u => {
@@ -64,18 +76,41 @@ export default function AdminDashboard() {
         joueurCount: roleCounts.joueur,
         createurCount: roleCounts.createur,
         recentUsers: recentUsersCount,
-        recentAdventures: 0, // Simplified
+        recentAdventures: 0,
+        activeUsersToday: activeTodayCount,
       });
+      setLastUpdate(new Date());
     } catch (error) {
       console.error("Error fetching stats:", error);
     } finally {
       setLoading(false);
+      if (isAutoRefresh) setIsRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+  // Auto-refresh every 30 seconds if live mode is on
+  useEffect(() => {
+    if (isLive) {
+      intervalRef.current = setInterval(() => {
+        fetchStats(true);
+      }, 30000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isLive, fetchStats]);
+
+  const toggleLive = () => {
+    setIsLive(!isLive);
+  };
+
+  const handleManualRefresh = () => {
+    fetchStats(true);
+  };
 
   const statCards = [
     {
@@ -110,6 +145,14 @@ export default function AdminDashboard() {
       bgColor: "bg-amber-500/10",
       subtitle: "Total",
     },
+    {
+      title: "Aujourd'hui",
+      value: stats.activeUsersToday,
+      icon: Activity,
+      color: "text-green-400",
+      bgColor: "bg-green-500/10",
+      subtitle: "Nouveaux aujourd'hui",
+    },
   ];
 
   const roleDistribution = [
@@ -128,14 +171,41 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-content-primary">Dashboard Administrateur</h1>
-        <p className="text-content-secondary mt-2">Vue d&apos;ensemble de votre application</p>
+      {/* Header with Live Controls */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-content-primary">Dashboard Administrateur</h1>
+          <p className="text-content-secondary mt-2">Vue d&apos;ensemble de votre application</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-2 bg-surface-tertiary border border-gray-800 rounded-lg">
+            {isLive ? (
+              <Wifi className="w-4 h-4 text-green-400" />
+            ) : (
+              <WifiOff className="w-4 h-4 text-gray-500" />
+            )}
+            <button
+              onClick={toggleLive}
+              className={`text-sm font-medium ${isLive ? "text-green-400" : "text-gray-500"}`}
+            >
+              {isLive ? "En direct" : "Hors ligne"}
+            </button>
+          </div>
+          <button
+            onClick={handleManualRefresh}
+            disabled={isRefreshing}
+            className="p-2 bg-surface-tertiary border border-gray-800 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-5 h-5 text-content-secondary ${isRefreshing ? "animate-spin" : ""}`} />
+          </button>
+        </div>
       </div>
+      <p className="text-content-secondary text-sm -mt-4">
+        Dernière mise à jour: {lastUpdate.toLocaleTimeString("fr-FR")}
+      </p>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { User, UserRole } from "@/types";
-import { Search, Edit2, Trash2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Search, Edit2, Trash2, ChevronLeft, ChevronRight, X, CheckSquare, Square } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -13,6 +13,9 @@ export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  
+  // Selection state
+  const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,6 +57,54 @@ export default function AdminUsersPage() {
   }, [fetchUsers]);
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
+  const toggleSelectAll = () => {
+    if (selectedUsers.size === users.length) {
+      setSelectedUsers(new Set());
+    } else {
+      setSelectedUsers(new Set(users.map(u => u.id!).filter(Boolean)));
+    }
+  };
+
+  const toggleSelectUser = (userId: number) => {
+    const newSelected = new Set(selectedUsers);
+    if (newSelected.has(userId)) {
+      newSelected.delete(userId);
+    } else {
+      newSelected.add(userId);
+    }
+    setSelectedUsers(newSelected);
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Supprimer ${selectedUsers.size} utilisateurs ? Cette action est irréversible.`)) return;
+    try {
+      for (const userId of selectedUsers) {
+        await supabase.from("vote").delete().eq("id_utilisateur", userId);
+        await supabase.from("sauvegarde").delete().eq("id_utilisateur", userId);
+        await supabase.from("personnage").delete().eq("id_utilisateur", userId);
+        await supabase.from("utilisateur").delete().eq("id_utilisateur", userId);
+      }
+      setSelectedUsers(new Set());
+      fetchUsers();
+    } catch (error) {
+      console.error("Error deleting users:", error);
+      alert("Erreur lors de la suppression");
+    }
+  };
+
+  const handleBulkRoleChange = async (newRole: UserRole) => {
+    try {
+      for (const userId of selectedUsers) {
+        await supabase.from("utilisateur").update({ role: newRole }).eq("id_utilisateur", userId);
+      }
+      setSelectedUsers(new Set());
+      fetchUsers();
+    } catch (error) {
+      console.error("Error updating roles:", error);
+      alert("Erreur lors de la mise à jour");
+    }
+  };
 
   const openModal = (user?: User) => {
     if (user) {
@@ -163,12 +214,57 @@ export default function AdminUsersPage() {
         />
       </div>
 
+      {/* Bulk Actions Bar */}
+      {selectedUsers.size > 0 && (
+        <div className="flex items-center gap-4 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg mb-4">
+          <span className="text-content-primary font-medium">{selectedUsers.size} sélectionné{selectedUsers.size > 1 ? "s" : ""}</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleBulkRoleChange("joueur")}
+              className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 text-sm"
+            >
+              Passer en Joueur
+            </button>
+            <button
+              onClick={() => handleBulkRoleChange("createur")}
+              className="px-3 py-1.5 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 text-sm"
+            >
+              Passer en Créateur
+            </button>
+            <button
+              onClick={() => handleBulkRoleChange("admin")}
+              className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-sm"
+            >
+              Passer en Admin
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-sm"
+            >
+              Supprimer
+            </button>
+          </div>
+          <button onClick={() => setSelectedUsers(new Set())} className="ml-auto text-content-secondary hover:text-content-primary">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-surface-tertiary border border-gray-800 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-900/50">
               <tr>
+                <th className="px-4 py-4 text-left text-content-secondary font-medium text-sm w-12">
+                  <button onClick={toggleSelectAll} className="text-content-secondary hover:text-content-primary">
+                    {selectedUsers.size === users.length && users.length > 0 ? (
+                      <CheckSquare className="w-5 h-5" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                  </button>
+                </th>
                 <th className="px-6 py-4 text-left text-content-secondary font-medium text-sm">Utilisateur</th>
                 <th className="px-6 py-4 text-left text-content-secondary font-medium text-sm">Email</th>
                 <th className="px-6 py-4 text-left text-content-secondary font-medium text-sm">Rôle</th>
@@ -179,19 +275,28 @@ export default function AdminUsersPage() {
             <tbody className="divide-y divide-gray-800">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-content-secondary">
+                  <td colSpan={6} className="px-6 py-12 text-center text-content-secondary">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500 mx-auto"></div>
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-content-secondary">
+                  <td colSpan={6} className="px-6 py-12 text-center text-content-secondary">
                     Aucun utilisateur trouvé
                   </td>
                 </tr>
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-800/30 transition-colors">
+                    <td className="px-4 py-4">
+                      <button onClick={() => user.id && toggleSelectUser(user.id)} className="text-content-secondary hover:text-content-primary">
+                        {selectedUsers.has(user.id!) ? (
+                          <CheckSquare className="w-5 h-5 text-cyan-400" />
+                        ) : (
+                          <Square className="w-5 h-5" />
+                        )}
+                      </button>
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-content-primary font-bold">

@@ -1,7 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect, Suspense } from "react";
-import Link from "next/link";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
@@ -40,9 +39,12 @@ function AdventurePageContent() {
   const [totalCount, setTotalCount] = useState(0);
   const [sortOption, setSortOption] = useState<SortOption>('popularite');
   const [showCharacterModal, setShowCharacterModal] = useState(false);
+  const fetchingRef = useRef(false);
 
   useEffect(() => {
+    if (fetchingRef.current) return;
     const fetchAdventures = async () => {
+      fetchingRef.current = true;
       setLoading(true);
       
       const from = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -74,9 +76,11 @@ function AdventurePageContent() {
         setTotalCount(count ?? 0);
       }
       setLoading(false);
+      fetchingRef.current = false;
     };
 
     fetchAdventures();
+    return () => { fetchingRef.current = false; };
   }, [currentPage, sortOption]);
 
   // Reset to page 1 when sort option changes

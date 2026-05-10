@@ -11,12 +11,14 @@ import {
   UserRound, 
   Settings, 
   LogOut,
-  ChevronLeft
+  ChevronLeft,
+  Activity
 } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Journal", href: "/admin/logs", icon: Activity },
   { name: "Utilisateurs", href: "/admin/users", icon: Users },
   { name: "Aventures", href: "/admin/adventures", icon: BookOpen },
   { name: "Personnages", href: "/admin/characters", icon: UserRound },

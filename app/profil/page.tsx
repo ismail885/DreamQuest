@@ -210,15 +210,18 @@ export default function ProfilPage() {
   const [settingsMessage, setSettingsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const settingsLoadedRef = useRef(false);
+  const loadDataRef = useRef(false);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (authLoading || loadDataRef.current) return;
     if (!user) {
       router.push("/auth/login");
       return;
     }
+    loadDataRef.current = true;
     loadUserData(user.id).then(() => setLoading(false));
-  }, [authLoading, user?.id, router, loadUserData]);
+    return () => { loadDataRef.current = false; };
+  }, [authLoading, user?.id, router]);
 
   // Rechargement des donnees
   useEffect(() => {
@@ -1052,9 +1055,6 @@ export default function ProfilPage() {
                   className="w-full px-4 py-2 bg-surface-secondary border border-content-secondary/30 rounded-lg text-content-primary focus:outline-none focus:border-primary transition-colors"
                 >
                   <option value="fr">Français</option>
-                  <option value="en">English</option>
-                  <option value="es">Español</option>
-                  <option value="de">Deutsch</option>
                 </select>
               </div>
 
