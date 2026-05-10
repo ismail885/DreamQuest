@@ -11,7 +11,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
 import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
-import { getRandomEnemy, playerAttack, enemyAttack, initCombat, useAbility, getAbilitiesForClass, regenerateMana, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type Enemy, type CombatState, type CombatAbility, type StatusEffect, type PlayerStatus } from "@/lib/combat";
+import { playerAttack, enemyAttack, initCombat, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility, type PlayerStatus } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import Breadcrumb, { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
@@ -54,12 +54,10 @@ function AdventureReader({ params }: Props) {
   const [availableAbilities, setAvailableAbilities] = useState<string[]>([]);
   const [usedAbilities, setUsedAbilities] = useState<string[]>([]);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   
   // Combat state
   const [inCombat, setInCombat] = useState(false);
   const [combatState, setCombatState] = useState<CombatState | null>(null);
-  const [combatLevel, setCombatLevel] = useState(1);
 
   // Parse consequence JSON to show impact indicator
   const getConsequenceImpact = (consequencesJson: string | null | undefined): { hasImpact: boolean; isPositive: boolean; impactText: string; isCombat: boolean } => {
@@ -127,7 +125,6 @@ function AdventureReader({ params }: Props) {
       if (effect?.type === "combat") {
         const enemyLevel = effect.level || character.niveau || 1;
         const manaMax = 50 + (character.niveau || 1) * 5; // Mana basé sur le niveau
-        setCombatLevel(enemyLevel);
         const newCombat = initCombat(character.points_vie_max || 100, manaMax, enemyLevel);
         setCombatState(newCombat);
         setInCombat(true);
@@ -195,7 +192,7 @@ function AdventureReader({ params }: Props) {
       endurance: character.stats?.endurance || 0,
     };
     
-    const result = playerAttack(playerStats, combatState.enemy);
+    const result = playerAttack(playerStats, combatState.enemy, combatState.status);
     const newEnemyPv = Math.max(0, combatState.enemy.pv - result.dmg);
     const newLog = [...combatState.log, result.log];
     
@@ -227,7 +224,8 @@ function AdventureReader({ params }: Props) {
     };
     
     const reduction = Math.floor((playerStats.agility + (character.stats?.endurance || 0)) / 4);
-    const result = enemyAttack(combatState.enemy!);
+    const hasThorns = combatState.status.buff_defense > 0;
+    const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns);
     const dmg = Math.max(1, result.dmg - reduction);
     const newPlayerPv = Math.max(0, combatState.playerPv - dmg);
     const newLog = [...combatState.log, result.log, `Tu pare! -${reduction} dégats.`];
@@ -255,7 +253,8 @@ function AdventureReader({ params }: Props) {
     if (success) {
       setCombatState({ ...combatState, fled: true, log: [...combatState.log, "Tu fuis le combat!"] });
     } else {
-      const result = enemyAttack(combatState.enemy!);
+      const hasThorns = combatState.status.buff_defense > 0;
+      const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns);
       const newPlayerPv = Math.max(0, combatState.playerPv - result.dmg);
       setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
       setCombatState({
@@ -285,7 +284,7 @@ function AdventureReader({ params }: Props) {
       endurance: character.stats?.endurance || 0,
     };
 
-    const result = useAbility(
+    const result = executeAbility(
       ability.id,
       character.classe || "guerrier",
       playerStats,
@@ -305,9 +304,9 @@ function AdventureReader({ params }: Props) {
 
     // Appliquer les résultats
     let newEnemyPv = combatState.enemy.pv;
-    let newPlayerPv = Math.min(combatState.playerPvMax, combatState.playerPv + (result.heal || 0));
-    let newLog = [...combatState.log, result.log];
-    let newStatus = result.newStatus || combatState.status;
+    const newPlayerPv = Math.min(combatState.playerPvMax, combatState.playerPv + (result.heal || 0));
+    const newLog = [...combatState.log, result.log];
+    const newStatus = result.newStatus || combatState.status;
     let newEnemyStatus = combatState.enemyStatus;
 
     // Appliquer les dégats à l'ennemi
@@ -365,6 +364,7 @@ function AdventureReader({ params }: Props) {
   };
 
   // Gestion du tour de l'ennemi
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!combatState || !character || !combatState.enemy) return;
     if (combatState.turn !== "enemy" || combatState.won || combatState.fled) return;
@@ -385,9 +385,10 @@ function AdventureReader({ params }: Props) {
       }
 
       // Appliquer les dégats du poison
+      if (!combatState.enemy) return;
       let currentEnemyPv = combatState.enemy.pv;
       let currentPlayerPv = combatState.playerPv;
-      let logMessages: string[] = [];
+      const logMessages: string[] = [];
       
       if (combatState.enemyStatus.includes("poison")) {
         const poisonResult = applyPoisonDamage(combatState.enemy);
@@ -449,9 +450,6 @@ function AdventureReader({ params }: Props) {
     enabled: !!user && !!characterIdNum && !isEnd,
     intervalMs: 30_000,
   });
-
-  // Confirmation de départ - juste la détection
-  const shouldConfirm = !isEnd && history.length > 0;
 
   useEffect(() => {
     if (!personnageId) return;
@@ -777,7 +775,6 @@ function AdventureReader({ params }: Props) {
                   <button
                     key={idx}
                     onClick={() => {
-                      setIsDirty(true);
                       applyConsequence(1, JSON.stringify(choice.consequence));
                       setCurrentEvent(null);
                       if (currentBranch?.choix1_lien) {

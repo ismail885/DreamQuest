@@ -32,7 +32,6 @@ export default function ProfilPage() {
   const [userSaves, setUserSaves] = useState<UserSave[]>([]);
   const [userCreations, setUserCreations] = useState<UserCreation[]>([]);
   const [userCharacters, setUserCharacters] = useState<Character[]>([]);
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [userAchievements, setUserAchievements] = useState<UserAchievements | null>(null);
   const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
   const [stats, setStats] = useState<UserStats>({

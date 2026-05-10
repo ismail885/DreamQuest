@@ -2,8 +2,10 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { CombatState } from "@/lib/combat";
+import type { CombatState, PlayerStatus } from "@/lib/combat";
 import { playerAttack, enemyAttack, initCombat } from "@/lib/combat";
+
+const DEFAULT_STATUS: PlayerStatus = { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0 };
 
 interface CombatUIProps {
   playerStats: { force: number; agility: number; magie: number; endurance: number };
@@ -22,11 +24,11 @@ export default function CombatUI({
   onFlee,
   onClose,
 }: CombatUIProps) {
-  const [combat, setCombat] = useState<CombatState>(() => initCombat(playerPvMax, 1));
+  const [combat, setCombat] = useState<CombatState>(() => initCombat(playerPvMax, 50, 1));
   const [defending, setDefending] = useState(false);
 
   const playerAttackAction = useCallback(() => {
-    const result = playerAttack(playerStats, combat.enemy!);
+    const result = playerAttack(playerStats, combat.enemy!, combat.status);
     const newEnemyPv = Math.max(0, combat.enemy!.pv - result.dmg);
     const newLog = [...combat.log, result.log];
 
@@ -52,7 +54,8 @@ export default function CombatUI({
     const reduction = defending ? 0 : Math.floor((playerStats.agility + playerStats.endurance) / 4);
     setDefending(true);
     setTimeout(() => {
-      const result = enemyAttack(combat.enemy!);
+      const hasThorns = combat.status.buff_defense > 0;
+      const result = enemyAttack(combat.enemy!, combat.status, hasThorns);
       const dmg = Math.max(1, result.dmg - reduction);
       const newPlayerPv = Math.max(0, combat.playerPv - dmg);
       const newLog = [...combat.log, result.log, `Tu pare! Degats reduits de ${reduction}.`];
@@ -74,7 +77,8 @@ export default function CombatUI({
       setCombat((c) => ({ ...c, fled: true }));
       onFlee();
     } else {
-      const result = enemyAttack(combat.enemy!);
+      const hasThorns = combat.status.buff_defense > 0;
+      const result = enemyAttack(combat.enemy!, combat.status, hasThorns);
       const newPlayerPv = Math.max(0, combat.playerPv - result.dmg);
       setCombat((c) => ({
         ...c,
