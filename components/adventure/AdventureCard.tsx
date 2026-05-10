@@ -29,11 +29,13 @@ export default function AdventureCard({
 
   useEffect(() => {
     const checkVote = async () => {
-      if (!user) return;
+      if (!user || !user.id) return;
+      const userId = Number(user.id);
+      if (isNaN(userId)) return;
       const { data } = await supabase
         .from("vote")
         .select("id_vote")
-        .eq("id_utilisateur", user.id)
+        .eq("id_utilisateur", userId)
         .eq("id_aventure", id)
         .maybeSingle();
       setInitialVoted(!!data);
@@ -43,7 +45,7 @@ export default function AdventureCard({
 
   const { hasVoted, popularite: currentPopularite, isLoading, toggleVote } = useVote({
     adventureId: id,
-    userId: user?.id ?? null,
+    userId: user?.id ? Number(user.id) : null,
     initialHasVoted: initialVoted,
     initialPopularite: popularite,
   });
