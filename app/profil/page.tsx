@@ -218,11 +218,9 @@ export default function ProfilPage() {
       return;
     }
     loadUserData(user.id).then(() => setLoading(false));
-// eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user?.id, router]);
+  }, [authLoading, user?.id, router, loadUserData]);
 
   // Rechargement des donnees
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const refresh = () => {
       if (user?.id) loadUserData(user.id);
@@ -242,16 +240,14 @@ export default function ProfilPage() {
       window.removeEventListener("focus", handleFocus);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [user?.id]);
+  }, [user?.id, loadUserData]);
 
   // Rechargement quand on change d'onglet
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (user?.id) loadUserData(user.id);
-  }, [activeTab, user?.id]);
+  }, [activeTab, user?.id, loadUserData]);
 
   // Rafraichir les realisations quand on affiche l'onglet
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (activeTab === "achievements" && user?.id) {
       loadUserData(user.id);
@@ -265,10 +261,9 @@ export default function ProfilPage() {
     if (activeTab === "quests" && user?.id) {
       loadUserData(user.id);
     }
-  }, [activeTab]);
+  }, [activeTab, user?.id, loadUserData]);
 
   // Rafraichir les stats quand la page devient visible
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const handleVisibility = () => {
       if (!document.hidden && user?.id) {
@@ -359,7 +354,7 @@ export default function ProfilPage() {
     };
 
     loadSettings();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   const handleSaveProfile = async () => {

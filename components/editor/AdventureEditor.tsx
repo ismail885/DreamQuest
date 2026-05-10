@@ -393,7 +393,7 @@ export default function AdventureEditor() {
           let consequence = c.consequences || '';
           if (c.statChange) {
             const statChangeStr = Object.entries(c.statChange)
-              .filter(([_, v]) => v !== 0)
+              .filter(([, v]) => v !== 0)
               .map(([k, v]) => `${k}:${v}`)
               .join(',');
             if (statChangeStr) {

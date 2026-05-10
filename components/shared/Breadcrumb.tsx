@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ChevronRight, Home, AlertTriangle } from "lucide-react";
 
 interface BreadcrumbItem {
@@ -62,7 +61,6 @@ export default function Breadcrumb({ items, currentStep, totalSteps }: Breadcrum
 
 // Hook pour gérer la confirmation de départ
 export function useLeaveConfirmation(enabled: boolean) {
-  const router = useRouter();
   const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {

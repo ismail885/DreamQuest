@@ -2,10 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { CombatState, PlayerStatus } from "@/lib/combat";
+import type { CombatState } from "@/lib/combat";
 import { playerAttack, enemyAttack, initCombat } from "@/lib/combat";
-
-const DEFAULT_STATUS: PlayerStatus = { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0 };
 
 interface CombatUIProps {
   playerStats: { force: number; agility: number; magie: number; endurance: number };

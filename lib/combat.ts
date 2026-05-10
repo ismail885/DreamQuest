@@ -41,7 +41,7 @@ export const ABILITIES: Record<string, CombatAbility[]> = {
   ],
   nécromancien: [
     { id: "drain_vie", name: "Drain de Vie", description: "Vole des PV à l'ennemi", manaCost: 15, type: "attack", cooldown: 0 },
-    { id: "invocation_squelette", name: "Invocation", description: "Invoque un squelette帮忙", manaCost: 30, type: "special", cooldown: 4 },
+    { id: "invocation_squelette", name: "Invocation", description: "Invoque un squelette qui attaque l'ennemi", manaCost: 30, type: "special", cooldown: 4 },
     { id: "malédiction", name: "Malédiction", description: "Réduit les stats de l'ennemi", manaCost: 25, type: "special", cooldown: 3 },
   ],
   archer: [

@@ -40,8 +40,7 @@ export async function getAdventureWithAuthor(adventureId: number): Promise<Adven
       embranchement_initial_id: adventure.embranchement_initial_id,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }
-  } catch (error) {
-    console.error('Erreur getAdventureWithAuthor:', error)
+  } catch {
     return null
   }
 }
@@ -70,8 +69,7 @@ export async function getAllAdventuresWithAuthors(): Promise<AdventureWithAuthor
       embranchement_initial_id: adventure.embranchement_initial_id,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
-  } catch (error) {
-    console.error('Erreur getAllAdventuresWithAuthors:', error)
+  } catch {
     return []
   }
 }
@@ -102,8 +100,7 @@ export async function getUserSavesWithDetails(userId: number): Promise<SaveWithD
       aventure_titre: save.aventure?.titre,
       personnage_nom: save.personnage?.nom_personnage
     }))
-  } catch (error) {
-    console.error('Erreur getUserSavesWithDetails:', error)
+  } catch {
     return []
   }
 }
@@ -121,7 +118,6 @@ export async function voteForAdventure(userId: number, adventureId: number): Pro
       .single()
 
     if (existingVote) {
-      console.log('Utilisateur a deja vote pour cette aventure')
       return false
     }
 
@@ -145,8 +141,7 @@ export async function voteForAdventure(userId: number, adventureId: number): Pro
     }
 
     return true
-  } catch (error) {
-    console.error('Erreur voteForAdventure:', error)
+  } catch {
     return false
   }
 }
@@ -176,8 +171,7 @@ export async function getTopAdventures(limit: number = 10): Promise<AdventureWit
       embranchement_initial_id: adventure.embranchement_initial_id,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
-  } catch (error) {
-    console.error('Erreur getTopAdventures:', error)
+  } catch {
     return []
   }
 }
@@ -193,10 +187,9 @@ export async function getBranchById(branchId: number) {
       .eq('id', branchId)
       .single();
 
-    if (error) throw error
+if (error) throw error
     return data
-  } catch (error) {
-    console.error('Erreur getBranchById:', error)
+  } catch {
     return null
   }
 }
@@ -245,8 +238,7 @@ export async function saveProgress(
     }
 
     return true
-  } catch (error) {
-    console.error('Erreur saveProgress:', error)
+  } catch {
     return false
   }
 }

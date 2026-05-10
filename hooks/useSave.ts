@@ -18,8 +18,6 @@ interface SaveState {
   saveId: number | null;
 }
 
-const isDev = process.env.NODE_ENV === 'development';
-
 export function useSave({
   userId,
   adventureId,
@@ -43,7 +41,6 @@ export function useSave({
     const { userId, adventureId, characterId, branchId, progression } = paramsRef.current;
 
     if (!userId || !adventureId || !characterId) {
-      if (isDev) console.log('[Save] Paramètres manquants:', { userId: !!userId, adventureId: !!adventureId, characterId: !!characterId });
       return false;
     }
 
@@ -70,11 +67,8 @@ export function useSave({
         .single();
 
       if (error) {
-        if (isDev) console.error('[Save] Erreur Supabase:', error);
         throw error;
       }
-
-      if (isDev) console.log('[Save] SUCCÈS:', data);
 
       setState({
         isSaving: false,
@@ -85,7 +79,6 @@ export function useSave({
       return true;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
-      if (isDev) console.error('[Save] Erreur:', message);
       setState(prev => ({ ...prev, isSaving: false, error: message }));
       return false;
     }
@@ -94,7 +87,6 @@ export function useSave({
   // Auto-save toutes les intervalMs ms
   useEffect(() => {
     if (!enabled || !userId || !adventureId || !characterId) return;
-    if (isDev) console.log('[Save] Auto-save activée, interval:', intervalMs);
 
     const interval = setInterval(() => {
       save();

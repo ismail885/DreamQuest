@@ -4,16 +4,24 @@ const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/adventu
 const adminRoutes = ['/admin'];
 const authRoutes = ['/auth/login', '/auth/register', '/auth/callback'];
 
-// Pages statiques à cache
-const staticPaths = ['/adventure', '/classement'];
+// Pages statiques à cache (très dynamiques = court, statiques = long)
+const cachedStaticPaths = ['/adventure', '/classement', '/auth/login', '/auth/register'];
+const cachedShortPaths = ['/create-adventure', '/dashboard', '/create-character'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Ajouter headers cache pour pages publiques
-  if (staticPaths.some(path => pathname.startsWith(path))) {
+  // Ajouter headers cache pour pages publiques statiques (longue durée)
+  if (cachedStaticPaths.includes(pathname) || cachedStaticPaths.some(path => pathname.startsWith(path))) {
     const response = NextResponse.next();
     response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
+    return response;
+  }
+
+  // Pages avec cache court (dynamic mais pas personnalisé)
+  if (cachedShortPaths.includes(pathname)) {
+    const response = NextResponse.next();
+    response.headers.set('Cache-Control', 'public, max-age=30, s-maxage=60, stale-while-revalidate=120');
     return response;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, Suspense, useEffect, useState, useCallback } from "react";
+import { use, Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Loader from "@/components/shared/Loader";
@@ -11,7 +11,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
 import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
-import { playerAttack, enemyAttack, initCombat, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility, type PlayerStatus } from "@/lib/combat";
+import { playerAttack, enemyAttack, initCombat, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import Breadcrumb, { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
@@ -364,7 +364,6 @@ function AdventureReader({ params }: Props) {
   };
 
   // Gestion du tour de l'ennemi
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!combatState || !character || !combatState.enemy) return;
     if (combatState.turn !== "enemy" || combatState.won || combatState.fled) return;
@@ -484,15 +483,17 @@ function AdventureReader({ params }: Props) {
   }, [character?.classe]);
 
   // Déclencher un événement aléatoire (15% de chance)
+  const lastBranchIdRef = useRef<number | null>(null);
   useEffect(() => {
     if (!currentBranch || currentEvent || isEnd) return;
+    if (lastBranchIdRef.current === currentBranch.id) return;
     
+    lastBranchIdRef.current = currentBranch.id;
     const shouldTrigger = Math.random() < 0.15;
     if (shouldTrigger) {
       const event = getRandomEvent();
       setCurrentEvent(event);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBranch?.id, currentEvent, isEnd]);
 
   const loadCharacterProgress = useCallback(() => {
