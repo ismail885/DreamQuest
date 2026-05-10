@@ -39,6 +39,7 @@ function AdventurePageContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [sortOption, setSortOption] = useState<SortOption>('popularite');
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
 
   useEffect(() => {
     const fetchAdventures = async () => {
@@ -168,37 +169,7 @@ function AdventurePageContent() {
             </div>
           </div>
 
-          {!personnageId ? (
-            <div className="text-center py-16">
-              <div className="bg-surface-tertiary border border-gray-800 rounded-2xl p-8 max-w-md mx-auto">
-                <svg className="w-16 h-16 text-cyan-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <h3 className="text-xl font-bold text-content-primary mb-2">Sélectionnez un personnage</h3>
-                <p className="text-content-secondary mb-6">Vous devez choisir un personnage avant de commencer une aventure.</p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Link
-                    href="/profil?tab=characters"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-surface-secondary border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    Mes personnages
-                  </Link>
-                  <Link
-                    href="/create-character"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Créer un personnage
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ) : loading ? (
+          {loading ? (
             <SkeletonAdventureList count={6} />
           ) : error ? (
             <div className="text-center py-20">
@@ -215,6 +186,7 @@ function AdventurePageContent() {
                     description={adventure.description}
                     popularite={adventure.popularite}
                     personnageId={personnageId ?? undefined}
+                    onNavigateWithoutCharacter={() => setShowCharacterModal(true)}
                   />
                 ))}
               </div>
@@ -288,6 +260,57 @@ function AdventurePageContent() {
             </div>
           )}
         </div>
+
+      {showCharacterModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowCharacterModal(false)}
+          />
+          <div className="relative bg-[#0f1322] border border-gray-700 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <button
+              onClick={() => setShowCharacterModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              
+              <h3 className="text-xl font-bold text-white mb-2">Sélectionnez un personnage</h3>
+              <p className="text-gray-400 mb-6">Vous devez choisir un personnage avant de commencer une aventure.</p>
+              
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    setShowCharacterModal(false);
+                    window.location.href = '/profil?tab=characters';
+                  }}
+                  className="w-full px-6 py-3 bg-surface-secondary border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors"
+                >
+                  Mes personnages
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCharacterModal(false);
+                    window.location.href = '/create-character';
+                  }}
+                  className="w-full px-6 py-3 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
+                >
+                  Créer un personnage
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       </main>
 
       <BottomNav />

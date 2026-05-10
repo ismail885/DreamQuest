@@ -13,6 +13,7 @@ interface AdventureCardProps {
   description: string | null;
   popularite: number;
   personnageId?: string;
+  onNavigateWithoutCharacter?: () => void;
 }
 
 export default function AdventureCard({
@@ -21,6 +22,7 @@ export default function AdventureCard({
   description,
   popularite,
   personnageId,
+  onNavigateWithoutCharacter,
 }: AdventureCardProps) {
   const { user } = useAuthContext();
   const [initialVoted, setInitialVoted] = useState(false);
@@ -50,6 +52,13 @@ export default function AdventureCard({
     ? `/adventure/${id}?personnage=${personnageId}`
     : `/adventure/${id}`;
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!personnageId && onNavigateWithoutCharacter) {
+      e.preventDefault();
+      onNavigateWithoutCharacter();
+    }
+  };
+
   const handleVoteClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -66,7 +75,8 @@ export default function AdventureCard({
       transition={{ duration: 0.2 }}
     >
       <Link
-        href={href}
+        href={personnageId ? href : '#'}
+        onClick={!personnageId ? handleCardClick : undefined}
         className="group relative bg-[#0f1322] rounded-xl overflow-hidden border border-gray-800/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 block"
       >
         {/* Gradient header */}
