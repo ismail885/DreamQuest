@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, Suspense } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
@@ -141,11 +142,12 @@ function AdventurePageContent() {
               </svg>
             </div>
 
-            {/* Tri */}
-            <div className="flex items-center gap-2">
-              <span className="text-content-secondary text-xs uppercase tracking-wider">Trier par</span>
-              <div className="flex gap-2">
-                {SORT_OPTIONS.map((option) => (
+            {/* Tri & Count */}
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-content-secondary text-xs uppercase tracking-wider">Trier par</span>
+                <div className="flex gap-2">
+                  {SORT_OPTIONS.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => handleSortChange(option.value)}
@@ -159,6 +161,10 @@ function AdventurePageContent() {
                   </button>
                 ))}
               </div>
+              </div>
+              <div className="text-content-secondary text-sm">
+                <span className="font-semibold text-cyan-400">{filteredAdventures.length}</span> aventure{filteredAdventures.length !== 1 ? 's' : ''} trouvée{filteredAdventures.length !== 1 ? 's' : ''}
+              </div>
             </div>
           </div>
 
@@ -171,7 +177,7 @@ function AdventurePageContent() {
                 <h3 className="text-xl font-bold text-content-primary mb-2">Sélectionnez un personnage</h3>
                 <p className="text-content-secondary mb-6">Vous devez choisir un personnage avant de commencer une aventure.</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <a
+                  <Link
                     href="/profil?tab=characters"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-surface-secondary border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors"
                   >
@@ -179,8 +185,8 @@ function AdventurePageContent() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     Mes personnages
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/create-character"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
                   >
@@ -188,7 +194,7 @@ function AdventurePageContent() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                     Créer un personnage
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

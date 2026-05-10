@@ -432,6 +432,7 @@ function AdventureReader({ params }: Props) {
     }, 1000);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [combatState?.turn]);
 
   const { adventure, currentBranch, loading, error, isEnd, history, chooseOption, restart } =
@@ -494,6 +495,7 @@ function AdventureReader({ params }: Props) {
       const event = getRandomEvent();
       setCurrentEvent(event);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBranch?.id, currentEvent, isEnd]);
 
   const loadCharacterProgress = useCallback(() => {
