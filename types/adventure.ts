@@ -24,7 +24,7 @@ export interface ConsequenceEffect {
   pv?: number
   force?: number
   agility?: number
-  intelligence?: number
+  magie?: number
   endurance?: number
   text?: string
   pv_change?: number
@@ -32,6 +32,13 @@ export interface ConsequenceEffect {
   agility_change?: number
   magie_change?: number
   endurance_change?: number
+}
+
+export interface StatChange {
+  force?: number;
+  agility?: number;
+  magie?: number;
+  endurance?: number;
 }
 
 export interface AdventureWithAuthor extends Adventure {

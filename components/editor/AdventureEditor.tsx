@@ -9,6 +9,12 @@ interface Choice {
   text: string;
   link: string;
   consequences: string;
+  statChange?: {
+    force?: number;
+    agility?: number;
+    magie?: number;
+    endurance?: number;
+  };
 }
 
 interface BranchNode {
@@ -381,7 +387,21 @@ export default function AdventureEditor() {
       for (const node of nodes) {
         const isRoot = node.id === "root";
         const choicesText = node.choices.map(c => c.text);
-        const choicesConsequences = node.choices.map(c => c.consequences);
+        
+        // Inclure le statChange dans les conséquences
+        const choicesConsequences = node.choices.map(c => {
+          let consequence = c.consequences || '';
+          if (c.statChange) {
+            const statChangeStr = Object.entries(c.statChange)
+              .filter(([_, v]) => v !== 0)
+              .map(([k, v]) => `${k}:${v}`)
+              .join(',');
+            if (statChangeStr) {
+              consequence = consequence ? `${consequence} | Stats: ${statChangeStr}` : `Stats: ${statChangeStr}`;
+            }
+          }
+          return consequence;
+        });
 
         const { data: branch, error: branchError } = await supabase
           .from("embranchement")
@@ -608,6 +628,47 @@ export default function AdventureEditor() {
                           >
                             + Nouveau
                           </button>
+                        </div>
+                        
+                        {/* Effets sur les stats */}
+                        <div className="mt-2 flex gap-2 items-center text-xs">
+                          <span className="text-gray-500">Effets:</span>
+                          {['force', 'agility', 'magie', 'endurance'].map(stat => (
+                            <select
+                              key={stat}
+                              value={choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0}
+                              onChange={(e) => {
+                                const updatedNodes = nodes.map(node => {
+                                  if (node.id === selectedNodeId) {
+                                    const newChoices = [...node.choices];
+                                    const currentStatChange = newChoices[idx].statChange || {};
+                                    newChoices[idx] = {
+                                      ...newChoices[idx],
+                                      statChange: {
+                                        ...currentStatChange,
+                                        [stat]: parseInt(e.target.value)
+                                      }
+                                    };
+                                    return { ...node, choices: newChoices };
+                                  }
+                                  return node;
+                                });
+                                setNodes(updatedNodes);
+                              }}
+                              className={`bg-[#0a0e1a] border rounded px-2 py-1 text-white focus:border-cyan-500 focus:outline-none ${
+                                (choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0) > 0 ? 'border-green-500' :
+                                (choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0) < 0 ? 'border-red-500' : 'border-gray-700'
+                              }`}
+                            >
+                              <option value={0}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: 0</option>
+                              <option value={-3}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: -3</option>
+                              <option value={-2}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: -2</option>
+                              <option value={-1}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: -1</option>
+                              <option value={1}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: +1</option>
+                              <option value={2}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: +2</option>
+                              <option value={3}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: +3</option>
+                            </select>
+                          ))}
                         </div>
                       </div>
                       {selectedNode.choices.length > 1 && (

@@ -94,12 +94,36 @@ function AdventureReader({ params }: Props) {
   const applyConsequence = async (choixNum: 1 | 2, consequencesJson: string | null | undefined): Promise<boolean> => {
     if (!character || !consequencesJson) return false;
     
+    let effect: { type?: string; level?: number; pv?: number; force?: number; agility?: number; magie?: number; endurance?: number; text?: string } | null = null;
+    const statChanges: Record<string, number> = {};
+    
+    // Essayer le format JSON d'abord
     try {
-      const effect = JSON.parse(consequencesJson);
-      if (!effect) return false;
-
+      effect = JSON.parse(consequencesJson);
+    } catch {
+      // Format texte "Stats: force:2,agility:-1"
+      if (consequencesJson.includes("Stats:")) {
+        const statsMatch = consequencesJson.match(/Stats:\s*([\w:,\s+-]+)/);
+        if (statsMatch) {
+          const statPairs = statsMatch[1].split(',');
+          for (const pair of statPairs) {
+            const [stat, value] = pair.split(':').map(s => s.trim());
+            if (stat && value) {
+              const numValue = parseInt(value);
+              if (!isNaN(numValue)) {
+                statChanges[stat] = numValue;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    if (!effect && Object.keys(statChanges).length === 0) return false;
+    
+    try {
       // Gérer le combat
-      if (effect.type === "combat") {
+      if (effect?.type === "combat") {
         const enemyLevel = effect.level || character.niveau || 1;
         setCombatLevel(enemyLevel);
         const newCombat = initCombat(character.points_vie_max || 100, enemyLevel);
@@ -108,13 +132,21 @@ function AdventureReader({ params }: Props) {
         return true; // Indique que le combat doit remplacer la navigation
       }
 
+      // Appliquer les changements de stats (depuis JSON ou format texte)
+      const statDelta = effect ? {
+        force: effect.force ?? 0,
+        agility: effect.agility ?? 0,
+        magie: effect.magie ?? 0,
+        endurance: effect.endurance ?? 0,
+      } : statChanges;
+
       const newStats = {
-        force: (character.stats?.force ?? 0) + (effect.force ?? 0),
-        agility: (character.stats?.agility ?? 0) + (effect.agility ?? 0),
-        magie: (character.stats?.magie ?? 0) + (effect.magie ?? 0),
-        endurance: (character.stats?.endurance ?? 0) + (effect.endurance ?? 0),
+        force: (character.stats?.force ?? 0) + (statDelta.force ?? 0),
+        agility: (character.stats?.agility ?? 0) + (statDelta.agility ?? 0),
+        magie: (character.stats?.magie ?? 0) + (statDelta.magie ?? 0),
+        endurance: (character.stats?.endurance ?? 0) + (statDelta.endurance ?? 0),
       };
-      const newPv = Math.max(0, (character.points_vie ?? 0) + (effect.pv ?? 0));
+      const newPv = Math.max(0, (character.points_vie ?? 0) + (effect?.pv ?? 0));
 
       if (character.id) {
         await supabase.from('personnage').update({
@@ -128,13 +160,19 @@ function AdventureReader({ params }: Props) {
         stats: newStats,
       });
 
+      // Sauvegarder les stats dans localStorage
+      const progress = loadCharacterProgress();
+      const currentExp = progress?.experience ?? character.experience ?? 0;
+      const currentLevel = progress?.niveau ?? character.niveau ?? 1;
+      saveCharacterProgress(currentLevel, newStats, currentExp);
+
       setLastConsequence({
-        pv_change: effect.pv,
-        force_change: effect.force,
-        agility_change: effect.agility,
-        magie_change: effect.magie,
-        endurance_change: effect.endurance,
-        text: effect.text,
+        pv_change: effect?.pv ?? 0,
+        force_change: statDelta.force,
+        agility_change: statDelta.agility,
+        magie_change: statDelta.magie,
+        endurance_change: statDelta.endurance,
+        text: effect?.text,
       });
       setShowEffect(true);
       setTimeout(() => setShowEffect(false), 3000);
@@ -442,7 +480,7 @@ function AdventureReader({ params }: Props) {
               )}
               {lastConsequence.magie_change !== undefined && lastConsequence.magie_change !== 0 && (
                 <span className={lastConsequence.magie_change > 0 ? 'text-green-400' : 'text-red-400'}>
-                  {lastConsequence.magie_change > 0 ? '+' : ''}{lastConsequence.magie_change} Intelligence
+                  {lastConsequence.magie_change > 0 ? '+' : ''}{lastConsequence.magie_change} Magie
                 </span>
               )}
               {lastConsequence.endurance_change !== undefined && lastConsequence.endurance_change !== 0 && (
