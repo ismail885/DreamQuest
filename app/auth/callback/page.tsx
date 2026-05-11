@@ -36,15 +36,6 @@ async function ensureUtilisateurAfterOAuth(user: User): Promise<void> {
   }
 
   if (existingByAuthId) {
-    localStorage.setItem(
-      "dreamquest_user",
-      JSON.stringify({
-        id: existingByAuthId.id,
-        username: existingByAuthId.nom_utilisateur,
-        email: existingByAuthId.email,
-        role: existingByAuthId.role,
-      })
-    );
     return;
   }
 
@@ -63,16 +54,6 @@ async function ensureUtilisateurAfterOAuth(user: User): Promise<void> {
   }
 
   if (updatedByEmail && updatedByEmail.length > 0) {
-    const updated = updatedByEmail[0];
-    localStorage.setItem(
-      "dreamquest_user",
-      JSON.stringify({
-        id: updated.id,
-        username: updated.nom_utilisateur,
-        email: updated.email,
-        role: updated.role,
-      })
-    );
     return;
   }
 
@@ -93,15 +74,7 @@ async function ensureUtilisateurAfterOAuth(user: User): Promise<void> {
   }
 
   if (inserted) {
-    localStorage.setItem(
-      "dreamquest_user",
-      JSON.stringify({
-        id: inserted.id,
-        username: inserted.nom_utilisateur,
-        email: inserted.email,
-        role: inserted.role,
-      })
-    );
+    // User créé avec succès — AuthContext.onAuthStateChange va détecter la session
   }
 }
 

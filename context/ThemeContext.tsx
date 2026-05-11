@@ -2,6 +2,18 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
+const THEME_COOKIE = "dreamquest_theme";
+
+function getThemeFromCookie(): boolean {
+  if (typeof document === "undefined") return true; // SSR default = dark
+  const match = document.cookie.match(new RegExp(`(?:^|; )${THEME_COOKIE}=([^;]+)`));
+  return match ? match[1] === "dark" : true;
+}
+
+function setThemeCookie(dark: boolean) {
+  document.cookie = `${THEME_COOKIE}=${dark ? "dark" : "light"}; Path=/; SameSite=Strict; Max-Age=${365 * 24 * 60 * 60}`;
+}
+
 interface ThemeContextType {
   isDark: boolean;
   toggleTheme: () => void;
@@ -14,25 +26,7 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    const dark = saved !== null ? saved === "dark" : true;
-    setIsDark(dark);
-    document.documentElement.classList.toggle("dark", dark);
-    applyThemeVars(dark);
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === "theme" && e.newValue) {
-        const newDark = e.newValue === "dark";
-        setIsDark(newDark);
-        document.documentElement.classList.toggle("dark", newDark);
-        applyThemeVars(newDark);
-      }
-    };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+  const [mounted, setMounted] = useState(false);
 
   const applyThemeVars = (dark: boolean) => {
     const root = document.documentElement;
@@ -51,12 +45,46 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const handleThemeChange = (dark: boolean) => {
+    setIsDark(dark);
+    setThemeCookie(dark);
+    document.documentElement.classList.toggle("dark", dark);
+    applyThemeVars(dark);
+    // Write to localStorage for cross-tab sync only (the `storage` event fires for localStorage)
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  };
+
+  useEffect(() => {
+    const dark = getThemeFromCookie();
+    handleThemeChange(dark);
+
+    // Double rAF to ensure we're past first paint before enabling transitions
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove("disable-transition");
+      });
+    });
+
+    setMounted(true);
+
+    // Cross-tab sync via storage event (fires when another tab writes to localStorage)
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "theme" && e.newValue) {
+        const newDark = e.newValue === "dark";
+        setIsDark(newDark);
+        setThemeCookie(newDark);
+        document.documentElement.classList.toggle("dark", newDark);
+        applyThemeVars(newDark);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const toggleTheme = () => {
     const next = !isDark;
-    setIsDark(next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", next);
-    applyThemeVars(next);
+    handleThemeChange(next);
   };
 
   return (

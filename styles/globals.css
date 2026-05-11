@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================
+   THÈME — Animations fluides
+   ============================================= */
+
+/* Désactiver les transitions pendant le chargement initial (FOIT) */
+html.disable-transition,
+html.disable-transition *,
+html.disable-transition *::before,
+html.disable-transition *::after {
+  transition: none !important;
+}
+
+/* Transitions fluides pour le changement de thème */
+html:not(.disable-transition) body,
+html:not(.disable-transition) body *,
+html:not(.disable-transition) body *::before,
+html:not(.disable-transition) body *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.disable-transition) body,
+  html:not(.disable-transition) body *,
+  html:not(.disable-transition) body *::before,
+  html:not(.disable-transition) body *::after {
+    transition: none;
+  }
+}
+
 @layer base {
   :root {
     --font-cinzel: 'Cinzel', serif;
