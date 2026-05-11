@@ -24,6 +24,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
   const userIdRef = useRef(userId);
   userIdRef.current = userId;
 
+  // Charger l'aventure depuis la BDD
   useEffect(() => {
     if (!adventureId) return;
 
@@ -33,7 +34,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
         // Fetch adventure
         const { data: adventure, error: advError } = await supabase
           .from('aventure')
-          .select('id,titre,description,auteur_id,date_creation,popularite,embranchement_initial_id')
+          .select('id,titre,description,auteur_id,date_creation,popularite')
           .eq('id', adventureId)
           .single();
 
@@ -42,34 +43,72 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
           return;
         }
 
-        // Fetch initial branch
-        if (adventure.embranchement_initial_id) {
-          const { data: branch, error: branchError } = await supabase
+        // Trouver le nœud de départ (le plus ancien = plus petit id)
+        const { data: firstBranch } = await supabase
+          .from('embranchement')
+          .select('id')
+          .eq('id_aventure', adventureId)
+          .order('id', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (!firstBranch) {
+          setState((s) => ({ ...s, adventure, loading: false, error: "Cette aventure n'a pas encore de contenu." }));
+          return;
+        }
+
+        // Vérifier s'il y a une sauvegarde existante en BDD
+        let branchIdToLoad = firstBranch.id;
+        
+        if (userIdRef.current) {
+          const { data: save } = await supabase
+            .from('sauvegarde')
+            .select('id_embranchement_actuel')
+            .eq('id_utilisateur', userIdRef.current)
+            .eq('id_aventure', adventureId)
+            .single();
+          
+          if (save?.id_embranchement_actuel) {
+            branchIdToLoad = save.id_embranchement_actuel;
+          }
+        }
+
+        // Charger le nœud actuel
+        const { data: branch, error: branchError } = await supabase
+          .from('embranchement')
+          .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
+          .eq('id', branchIdToLoad)
+          .single();
+
+        if (branchError || !branch) {
+          // Fallback au premier nœud si le nœud sauvegardé n'existe plus
+          const { data: fallbackBranch } = await supabase
             .from('embranchement')
             .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
-            .eq('id', adventure.embranchement_initial_id)
+            .eq('id', firstBranch.id)
             .single();
-
-          if (branchError || !branch) {
+          
+          if (fallbackBranch) {
+            const isEnd = !fallbackBranch.choix1_lien && !fallbackBranch.choix2_lien;
+            setState({ adventure, currentBranch: fallbackBranch, loading: false, error: null, isEnd, history: [fallbackBranch] });
+          } else {
             setState((s) => ({ ...s, adventure, loading: false, error: "Impossible de charger l'histoire." }));
-            return;
           }
-
-          const isEnd = !branch.choix1_lien && !branch.choix2_lien;
-          setState({ adventure, currentBranch: branch, loading: false, error: null, isEnd, history: [branch] });
-        } else {
-          setState((s) => ({ ...s, adventure, loading: false, error: "Cette aventure n'a pas encore de contenu." }));
+          return;
         }
+
+        const isEnd = !branch.choix1_lien && !branch.choix2_lien;
+        setState({ adventure, currentBranch: branch, loading: false, error: null, isEnd, history: [branch] });
       } catch {
         setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
       }
     };
 
     loadAdventure();
-  }, [adventureId]);
+  }, [adventureId, userId]);
 
   const chooseOption = useCallback(async (branchId: number | null) => {
-    if (!branchId) return;
+    if (!branchId || !userIdRef.current) return;
 
     setState((s) => ({ ...s, loading: true }));
     try {
@@ -85,6 +124,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
       }
 
       const isEnd = !branch.choix1_lien && !branch.choix2_lien;
+      
       setState((s) => ({
         ...s,
         currentBranch: branch,
@@ -92,49 +132,77 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
         isEnd,
         history: [...s.history, branch],
       }));
+
+      // Sauvegarder dans la BDD (id_embranchement_actuel)
+      const adventureId = state.adventure?.id;
+      if (adventureId && userIdRef.current) {
+        // Chercher le personnage_id pour cette aventure
+        const { data: saves } = await supabase
+          .from('sauvegarde')
+          .select('id_personnage')
+          .eq('id_utilisateur', userIdRef.current)
+          .eq('id_aventure', adventureId)
+          .limit(1);
+        
+        const personnageId = saves?.[0]?.id_personnage;
+        
+        if (personnageId) {
+          await supabase
+            .from('sauvegarde')
+            .upsert({
+              id_utilisateur: userIdRef.current,
+              id_aventure: adventureId,
+              id_personnage: personnageId,
+              id_embranchement_actuel: branchId,
+              progression: isEnd ? 100 : Math.min((state.history.length + 1) * 12.5, 100),
+              date_sauvegarde: new Date().toISOString(),
+            }, {
+              onConflict: 'id_utilisateur,id_aventure,id_personnage',
+            });
+        }
+      }
     } catch {
       setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
     }
-  }, []);
+  }, [state.adventure?.id, state.history.length]);
 
   const restart = useCallback(async () => {
-    if (!state.adventure?.embranchement_initial_id) return;
+    if (!state.adventure || !userIdRef.current) return;
     setState((s) => ({ ...s, loading: true }));
 
-    // Supprimer l'ancienne sauvegarde si elle existe
-    if (state.adventure && userIdRef.current) {
-      try {
-        await supabase
-          .from('sauvegarde')
-          .delete()
-          .eq('id_aventure', state.adventure.id)
-          .eq('id_utilisateur', userIdRef.current);
-      } catch {
-        // Ignore l'erreur de suppression
-      }
+    // Supprimer la sauvegarde BDD
+    try {
+      await supabase
+        .from('sauvegarde')
+        .delete()
+        .eq('id_aventure', state.adventure.id)
+        .eq('id_utilisateur', userIdRef.current);
+    } catch {
+      // Ignore
     }
 
-    supabase
+    // Charger le premier nœud
+    const { data: firstBranch } = await supabase
       .from('embranchement')
       .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
-      .eq('id', state.adventure!.embranchement_initial_id!)
-      .single()
-      .then(({ data: branch, error }) => {
-        if (error || !branch) {
-          setState((s) => ({ ...s, loading: false, error: "Impossible de recommencer." }));
-          return;
-        }
-        const isEnd = !branch.choix1_lien && !branch.choix2_lien;
-        setState((s) => ({
-          ...s,
-          currentBranch: branch,
-          loading: false,
-          isEnd,
-          history: [branch],
-        }));
-      });
+      .eq('id_aventure', state.adventure.id)
+      .order('id', { ascending: true })
+      .limit(1)
+      .single();
+
+    if (firstBranch) {
+      const isEnd = !firstBranch.choix1_lien && !firstBranch.choix2_lien;
+      setState((s) => ({
+        ...s,
+        currentBranch: firstBranch,
+        loading: false,
+        isEnd,
+        history: [firstBranch],
+      }));
+    } else {
+      setState((s) => ({ ...s, loading: false, error: "Impossible de recommencer." }));
+    }
   }, [state.adventure]);
 
   return { ...state, chooseOption, restart };
 }
-

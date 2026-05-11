@@ -5,7 +5,6 @@ export interface Adventure {
   auteur_id: number | null
   date_creation: string
   popularite: number
-  embranchement_initial_id: number | null
 }
 
 export interface Branch {

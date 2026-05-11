@@ -56,3 +56,43 @@ export function createAuthCookie(token: string): string {
 export function clearAuthCookie(): string {
   return 'auth_token=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0';
 }
+
+// ============================================
+// FONCTIONS DE COOKIES HTTPONLY (SÉCURISÉS)
+// ============================================
+
+const MAX_AGE = 7 * 24 * 60 * 60; // 7 jours en secondes
+
+/**
+ * Crée les cookies HttpOnly pour l'authentification.
+ * Utilise le JWT signé pour éviter les manipulations côté client.
+ */
+export function createAuthCookies(token: string, role: string): { userCookie: string; roleCookie: string } {
+  return {
+    userCookie: `auth_token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${MAX_AGE}`,
+    roleCookie: `auth_role=${role}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${MAX_AGE}`,
+  };
+}
+
+/**
+ * Clear les cookies d'authentification.
+ */
+export function clearAuthCookies(): { user: string; role: string } {
+  return {
+    user: `auth_token=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`,
+    role: `auth_role=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`,
+  };
+}
+
+/**
+ * Parse le cookie header pour extraire une valeur.
+ */
+export function parseCookies(cookieHeader: string | null): Record<string, string> {
+  if (!cookieHeader) return {};
+  
+  return cookieHeader.split(';').reduce((acc, cookie) => {
+    const [key, ...valueParts] = cookie.trim().split('=');
+    acc[key] = valueParts.join('='); // Handle values with = inside (base64 tokens)
+    return acc;
+  }, {} as Record<string, string>);
+}

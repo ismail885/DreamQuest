@@ -37,7 +37,6 @@ export async function getAdventureWithAuthor(adventureId: number): Promise<Adven
       auteur_id: adventure.auteur_id,
       date_creation: adventure.date_creation,
       popularite: adventure.popularite,
-      embranchement_initial_id: adventure.embranchement_initial_id,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }
   } catch {
@@ -66,7 +65,6 @@ export async function getAllAdventuresWithAuthors(): Promise<AdventureWithAuthor
       auteur_id: adventure.auteur_id,
       date_creation: adventure.date_creation,
       popularite: adventure.popularite,
-      embranchement_initial_id: adventure.embranchement_initial_id,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
   } catch {
@@ -168,7 +166,6 @@ export async function getTopAdventures(limit: number = 10): Promise<AdventureWit
       auteur_id: adventure.auteur_id,
       date_creation: adventure.date_creation,
       popularite: adventure.popularite,
-      embranchement_initial_id: adventure.embranchement_initial_id,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
   } catch {

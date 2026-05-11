@@ -47,6 +47,31 @@ export function AuthProvider({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const setAuthCookies = async (userData: User) => {
+    try {
+      await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: String(userData.id),
+          email: userData.email,
+          username: userData.username,
+          role: userData.role,
+        }),
+      });
+    } catch (err) {
+      console.error("Erreur setAuthCookies:", err);
+    }
+  };
+
+  const clearAuthCookies = async () => {
+    try {
+      await fetch('/api/auth/session', { method: 'DELETE' });
+    } catch (err) {
+      console.error("Erreur clearAuthCookies:", err);
+    }
+  };
+
   const checkAuth = async () => {
     try {
       const {
@@ -67,14 +92,13 @@ export function AuthProvider({
             role: userData.role,
           };
           localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
-          document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
+          await setAuthCookies(loggedUser);
           setUser(loggedUser);
         } else {
           if (dbError) console.warn("checkAuth DB error:", dbError.message);
           const stored = localStorage.getItem(USER_STORAGE_KEY);
           if (stored) {
             const parsed = JSON.parse(stored);
-            // Nettoyer l'ID au cas ou il serait mal formate
             if (parsed.id && String(parsed.id).includes(":")) {
               parsed.id = parseInt(String(parsed.id).split(":")[0], 10);
               localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(parsed));
@@ -86,13 +110,11 @@ export function AuthProvider({
         }
       } else {
         localStorage.removeItem(USER_STORAGE_KEY);
-        document.cookie = "auth_user=; path=/; max-age=0; SameSite=Strict";
-        document.cookie = "auth_role=; path=/; max-age=0; SameSite=Strict";
+        await clearAuthCookies();
         setUser(null);
       }
     } catch (error) {
       console.error("Erreur verification auth:", error);
-      // En cas d'erreur réseau, garder l'utilisateur du localStorage
       const stored = localStorage.getItem(USER_STORAGE_KEY);
       if (stored) setUser(JSON.parse(stored));
       else setUser(null);
@@ -102,10 +124,8 @@ export function AuthProvider({
   };
 
   useEffect(() => {
-    // 1. Lire la session immédiatement pour éviter le flash loading=false/user=null
     checkAuth();
 
-    // 2. Écouter les changements de session suivants (login, logout, refresh)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -124,13 +144,12 @@ export function AuthProvider({
             role: userData.role,
           };
           localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
-          document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
+          await setAuthCookies(loggedUser);
           setUser(loggedUser);
         }
       } else if (event === "SIGNED_OUT") {
         localStorage.removeItem(USER_STORAGE_KEY);
-        document.cookie = "auth_user=; path=/; max-age=0; SameSite=Strict";
-        document.cookie = "auth_role=; path=/; max-age=0; SameSite=Strict";
+        await clearAuthCookies();
         setUser(null);
       }
     });
@@ -140,7 +159,6 @@ export function AuthProvider({
 
   const login = async (emailOrUsername: string, password: string) => {
     try {
-      // Résoudre l'email si l'utilisateur a entré un pseudo
       let email = emailOrUsername;
       if (!emailOrUsername.includes("@")) {
         const { data: found } = await supabase
@@ -184,8 +202,7 @@ export function AuthProvider({
       };
 
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
-      document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
-      document.cookie = `auth_role=${loggedUser.role}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+      await setAuthCookies(loggedUser);
       setUser(loggedUser);
 
       return { success: true };
@@ -221,7 +238,6 @@ export function AuthProvider({
         return { success: false, error: "Ce pseudo est déjà utilisé" };
       }
 
-      // Créer le compte dans Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -235,7 +251,6 @@ export function AuthProvider({
         };
       }
 
-      // Insérer dans la table utilisateur avec auth_id
       const { error } = await supabase
         .from("utilisateur")
         .insert({
@@ -254,8 +269,12 @@ export function AuthProvider({
         };
       }
 
-      document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
-      document.cookie = `auth_role=joueur; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+      await setAuthCookies({
+        id: 0,
+        email,
+        username,
+        role: "joueur",
+      });
 
       return { success: true, message: "Compte créé avec succès" };
     } catch (error) {
@@ -317,8 +336,7 @@ export function AuthProvider({
     try {
       await supabase.auth.signOut();
       localStorage.removeItem(USER_STORAGE_KEY);
-      document.cookie = "auth_user=; path=/; max-age=0; SameSite=Strict";
-      document.cookie = "auth_role=; path=/; max-age=0; SameSite=Strict";
+      await clearAuthCookies();
       setUser(null);
     } catch (error) {
       console.error("Erreur logout:", error);

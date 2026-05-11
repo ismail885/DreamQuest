@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getTokenFromCookies, verifyToken } from '@/lib/jwt';
 
 const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/adventure', '/admin'];
 const adminRoutes = ['/admin'];
@@ -25,10 +26,31 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  const authUser = request.cookies.get('auth_user')?.value;
-  const isAuthenticated = !!authUser;
+  // ============================================
+  // VÉRIFICATION JWT SÉCURISÉE (remplace le cookie booléen)
+  // ============================================
+  // Lire le cookie auth_token depuis les cookies de la requête
+  const authToken = request.cookies.get('auth_token')?.value ?? null;
   
-  const role = request.cookies.get('auth_role')?.value || null;
+  // Vérifier et décoder le JWT
+  let payload = null;
+  if (authToken) {
+    // Réécrire la logique de getTokenFromCookies inline pour éviter les problèmes
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    if (secret.length > 0) {
+      try {
+        const { jwtVerify } = await import('jose');
+        const { payload: decoded } = await jwtVerify(authToken, secret);
+        payload = decoded as { userId: string; email: string; username: string; role: string };
+      } catch {
+        // Token invalide ou expiré — le user n'est pas authentifié
+        payload = null;
+      }
+    }
+  }
+  
+  const isAuthenticated = !!payload;
+  const role = payload?.role ?? null;
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));

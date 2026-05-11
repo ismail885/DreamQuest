@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signToken, UserJWTPayload, createAuthCookie, clearAuthCookie } from '@/lib/jwt';
+import { signToken, createAuthCookies, clearAuthCookies, UserJWTPayload } from '@/lib/jwt';
 
 type SessionPayload = {
   userId: string;
@@ -8,7 +8,6 @@ type SessionPayload = {
   role: string;
 };
 
-// POST: Create a signed JWT and expose it as an HttpOnly cookie
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as SessionPayload;
@@ -21,15 +20,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // signToken expects payload without iat/exp
     const token = await signToken({ userId, email, username, role } as Omit<UserJWTPayload, 'iat' | 'exp'>);
-    const cookie = createAuthCookie(token);
+    const { userCookie, roleCookie } = createAuthCookies(token, role);
 
     return new NextResponse(JSON.stringify({ ok: true }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Set-Cookie': cookie,
+        'Set-Cookie': `${userCookie}, ${roleCookie}`,
       },
     });
   } catch {
@@ -40,14 +38,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE: Clear the httpOnly auth cookie
 export async function DELETE() {
-  const cookie = clearAuthCookie();
+  const { user, role } = clearAuthCookies();
   return new NextResponse(JSON.stringify({ ok: true }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',
-      'Set-Cookie': cookie,
+      'Set-Cookie': `${user}, ${role}`,
     },
   });
 }
