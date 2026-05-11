@@ -37,7 +37,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const USER_STORAGE_KEY = "dreamquest_user";
+// L'état utilisateur est géré via le JWT HttpOnly côté serveur et le state React côté client
+// Pas de localStorage — les données sensibles ne doivent pas être accessibles via JS (XSS)
 
 export function AuthProvider({
   children,
@@ -78,58 +79,6 @@ export function AuthProvider({
         data: { session },
       } = await supabase.auth.getSession();
       if (session?.user) {
-        const { data: userData, error: dbError } = await supabase
-          .from("utilisateur")
-          .select("id, nom_utilisateur, email, role")
-          .eq("auth_id", session.user.id)
-          .maybeSingle();
-
-        if (userData) {
-          const loggedUser: User = {
-            id: userData.id,
-            username: userData.nom_utilisateur,
-            email: userData.email,
-            role: userData.role,
-          };
-          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
-          await setAuthCookies(loggedUser);
-          setUser(loggedUser);
-        } else {
-          if (dbError) console.warn("checkAuth DB error:", dbError.message);
-          const stored = localStorage.getItem(USER_STORAGE_KEY);
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (parsed.id && String(parsed.id).includes(":")) {
-              parsed.id = parseInt(String(parsed.id).split(":")[0], 10);
-              localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(parsed));
-            }
-            setUser(parsed);
-          } else {
-            setUser(null);
-          }
-        }
-      } else {
-        localStorage.removeItem(USER_STORAGE_KEY);
-        await clearAuthCookies();
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Erreur verification auth:", error);
-      const stored = localStorage.getItem(USER_STORAGE_KEY);
-      if (stored) setUser(JSON.parse(stored));
-      else setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    checkAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
         const { data: userData } = await supabase
           .from("utilisateur")
           .select("id, nom_utilisateur, email, role")
@@ -143,14 +92,56 @@ export function AuthProvider({
             email: userData.email,
             role: userData.role,
           };
-          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
           await setAuthCookies(loggedUser);
           setUser(loggedUser);
+        } else {
+          setUser(null);
         }
-      } else if (event === "SIGNED_OUT") {
-        localStorage.removeItem(USER_STORAGE_KEY);
+      } else {
         await clearAuthCookies();
         setUser(null);
+      }
+    } catch (error) {
+      console.error("Erreur verification auth:", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
+        if (session?.user) {
+          const { data: userData } = await supabase
+            .from("utilisateur")
+            .select("id, nom_utilisateur, email, role")
+            .eq("auth_id", session.user.id)
+            .maybeSingle();
+
+          if (userData) {
+            const loggedUser: User = {
+              id: userData.id,
+              username: userData.nom_utilisateur,
+              email: userData.email,
+              role: userData.role,
+            };
+            await setAuthCookies(loggedUser);
+            setUser(loggedUser);
+          } else {
+            setUser(null);
+          }
+        } else {
+          await clearAuthCookies();
+          setUser(null);
+        }
+        setLoading(false);
+      } else if (event === "SIGNED_OUT") {
+        await clearAuthCookies();
+        setUser(null);
+        setLoading(false);
       }
     });
 
@@ -201,7 +192,6 @@ export function AuthProvider({
         role: userData.role,
       };
 
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
       await setAuthCookies(loggedUser);
       setUser(loggedUser);
 
@@ -286,9 +276,7 @@ export function AuthProvider({
   const updateUser = (updates: Partial<User>) => {
     setUser((prev) => {
       if (!prev) return prev;
-      const updated = { ...prev, ...updates };
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updated));
-      return updated;
+      return { ...prev, ...updates };
     });
   };
 
@@ -335,7 +323,6 @@ export function AuthProvider({
   const logout = async () => {
     try {
       await supabase.auth.signOut();
-      localStorage.removeItem(USER_STORAGE_KEY);
       await clearAuthCookies();
       setUser(null);
     } catch (error) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTokenFromCookies, verifyToken } from '@/lib/jwt';
+import { verifyToken } from '@/lib/jwt';
 
 const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/adventure', '/admin'];
 const adminRoutes = ['/admin'];
@@ -27,15 +27,12 @@ export async function middleware(request: NextRequest) {
   }
 
   // ============================================
-  // VÉRIFICATION JWT SÉCURISÉE (remplace le cookie booléen)
+  // VÉRIFICATION JWT — signature vérifiée côté serveur
   // ============================================
-  // Lire le cookie auth_token depuis les cookies de la requête
   const authToken = request.cookies.get('auth_token')?.value ?? null;
-  
-  // Vérifier et décoder le JWT
+
   let payload = null;
   if (authToken) {
-    // Réécrire la logique de getTokenFromCookies inline pour éviter les problèmes
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     if (secret.length > 0) {
       try {
@@ -43,7 +40,6 @@ export async function middleware(request: NextRequest) {
         const { payload: decoded } = await jwtVerify(authToken, secret);
         payload = decoded as { userId: string; email: string; username: string; role: string };
       } catch {
-        // Token invalide ou expiré — le user n'est pas authentifié
         payload = null;
       }
     }

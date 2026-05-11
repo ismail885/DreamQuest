@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
     }
 
     const token = await signToken({ userId, email, username, role } as Omit<UserJWTPayload, 'iat' | 'exp'>);
-    const { userCookie, roleCookie } = createAuthCookies(token, role);
+    const cookie = createAuthCookies(token);
 
     return new NextResponse(JSON.stringify({ ok: true }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Set-Cookie': `${userCookie}, ${roleCookie}`,
+        'Set-Cookie': cookie,
       },
     });
   } catch {
@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE() {
-  const { user, role } = clearAuthCookies();
+  const cookie = clearAuthCookies();
   return new NextResponse(JSON.stringify({ ok: true }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',
-      'Set-Cookie': `${user}, ${role}`,
+      'Set-Cookie': cookie,
     },
   });
 }

@@ -67,21 +67,15 @@ const MAX_AGE = 7 * 24 * 60 * 60; // 7 jours en secondes
  * Crée les cookies HttpOnly pour l'authentification.
  * Utilise le JWT signé pour éviter les manipulations côté client.
  */
-export function createAuthCookies(token: string, role: string): { userCookie: string; roleCookie: string } {
-  return {
-    userCookie: `auth_token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${MAX_AGE}`,
-    roleCookie: `auth_role=${role}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${MAX_AGE}`,
-  };
+export function createAuthCookies(token: string): string {
+  return `auth_token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${MAX_AGE}`;
 }
 
 /**
  * Clear les cookies d'authentification.
  */
-export function clearAuthCookies(): { user: string; role: string } {
-  return {
-    user: `auth_token=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`,
-    role: `auth_role=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`,
-  };
+export function clearAuthCookies(): string {
+  return `auth_token=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
 }
 
 /**
