@@ -1,3 +1,5 @@
+import { supabase } from "@/lib/supabaseClient";
+
 export interface DailyQuest {
   id: string;
   title: string;
@@ -27,50 +29,86 @@ function getDateKey(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
-export function getDailyQuests(userId: number): DailyQuestData {
-  const key = `dq_quests_${userId}`;
-  const saved = localStorage.getItem(key);
-  
-  if (saved) {
-    try {
-      const data: DailyQuestData = JSON.parse(saved);
-      if (data.lastReset === getDateKey()) {
-        return data;
-      }
-    } catch { }
-  }
-  
-  const randomQuests = QUEST_POOL.sort(() => Math.random() - 0.5).slice(0, 3);
-  const newQuests: DailyQuest[] = randomQuests.map(q => ({
-    ...q,
-    progress: 0,
-    completed: false,
-  }));
-  
-  const newData: DailyQuestData = {
-    quests: newQuests,
-    lastReset: getDateKey(),
+function mapDbQuestToDailyQuest(dbRow: { quest_id: string; progression: number; complet: boolean; date_jour: string }): DailyQuest | null {
+  const poolQuest = QUEST_POOL.find(q => q.id === dbRow.quest_id);
+  if (!poolQuest) return null;
+  return {
+    ...poolQuest,
+    progress: dbRow.progression,
+    completed: dbRow.complet,
   };
-  
-  localStorage.setItem(key, JSON.stringify(newData));
-  return newData;
 }
 
-export function updateQuestProgress(userId: number, questId: string, amount: number = 1): DailyQuestData {
-  const data = getDailyQuests(userId);
-  const key = `dq_quests_${userId}`;
+export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
+  const today = getDateKey();
+
+  // Charger les quetes du jour depuis la BDD
+  const { data: dbQuests } = await supabase
+    .from("quete_quotidienne")
+    .select("*")
+    .eq("id_utilisateur", userId)
+    .eq("date_jour", today);
+
+  if (dbQuests && dbQuests.length > 0) {
+    const quests: DailyQuest[] = dbQuests
+      .map(row => mapDbQuestToDailyQuest(row))
+      .filter((q): q is DailyQuest => q !== null);
+
+    return { quests, lastReset: today };
+  }
+
+  // Pas de quetes aujourd'hui → en generer 3 aleatoires
+  const randomQuests = [...QUEST_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
   
-  const updated = data.quests.map(q => {
-    if (q.id === questId && !q.completed) {
-      const newProgress = Math.min(q.progress + amount, q.target);
-      return { ...q, progress: newProgress, completed: newProgress >= q.target };
-    }
-    return q;
-  });
-  
-  const newData = { ...data, quests: updated };
-  localStorage.setItem(key, JSON.stringify(newData));
-  return newData;
+  // Insérer en BDD
+  const newRows = randomQuests.map(q => ({
+    id_utilisateur: userId,
+    quest_id: q.id,
+    progression: 0,
+    complet: false,
+    date_jour: today,
+  }));
+
+  const { data: inserted } = await supabase
+    .from("quete_quotidienne")
+    .insert(newRows)
+    .select();
+
+  const quests: DailyQuest[] = (inserted || [])
+    .map(row => mapDbQuestToDailyQuest(row))
+    .filter((q): q is DailyQuest => q !== null);
+
+  return { quests, lastReset: today };
+}
+
+export async function updateQuestProgress(userId: number, questId: string, amount: number = 1): Promise<DailyQuestData> {
+  const today = getDateKey();
+
+  // Charger la quete actuelle
+  const { data: existing } = await supabase
+    .from("quete_quotidienne")
+    .select("*")
+    .eq("id_utilisateur", userId)
+    .eq("quest_id", questId)
+    .eq("date_jour", today)
+    .maybeSingle();
+
+  if (!existing || existing.complet) {
+    // Si deja complete ou inexistante, retourner l'etat actuel
+    return getDailyQuests(userId);
+  }
+
+  const poolQuest = QUEST_POOL.find(q => q.id === questId);
+  const target = poolQuest?.target ?? 1;
+  const newProgress = Math.min(existing.progression + amount, target);
+  const newComple = newProgress >= target;
+
+  await supabase
+    .from("quete_quotidienne")
+    .update({ progression: newProgress, complet: newComple })
+    .eq("id", existing.id);
+
+  return getDailyQuests(userId);
 }
 
 export function getTotalXPReward(data: DailyQuestData): number {

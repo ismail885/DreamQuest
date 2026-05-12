@@ -159,11 +159,11 @@ function AdventureReader({ params }: Props) {
         stats: newStats,
       });
 
-      // Sauvegarder les stats dans localStorage
-      const progress = loadCharacterProgress();
+      // Sauvegarder les stats en BDD
+      const progress = await loadCharacterProgress();
       const currentExp = progress?.experience ?? character.experience ?? 0;
       const currentLevel = progress?.niveau ?? character.niveau ?? 1;
-      saveCharacterProgress(currentLevel, newStats, currentExp);
+      await saveCharacterProgress(currentLevel, newStats, currentExp);
 
       setLastConsequence({
         pv_change: effect?.pv ?? 0,
@@ -498,46 +498,67 @@ function AdventureReader({ params }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBranch?.id, currentEvent, isEnd]);
 
-  const loadCharacterProgress = useCallback(() => {
+  const loadCharacterProgress = useCallback(async () => {
     if (!user || !characterIdNum) return null;
-    const key = `dq_char_${user.id}_${characterIdNum}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try { return JSON.parse(saved); } catch { return null; }
+    const { data } = await supabase
+      .from("personnage")
+      .select("niveau, force_personnage, agility_personnage, magie_personnage, endurance_personnage, experience")
+      .eq("id", characterIdNum)
+      .maybeSingle();
+
+    if (data) {
+      return {
+        niveau: data.niveau ?? 1,
+        stats: {
+          force: data.force_personnage ?? 5,
+          agility: data.agility_personnage ?? 5,
+          magie: data.magie_personnage ?? 5,
+          endurance: data.endurance_personnage ?? 5,
+        },
+        experience: data.experience ?? 0,
+      };
     }
     return null;
   }, [user, characterIdNum]);
 
-  const saveCharacterProgress = useCallback((niveau: number, stats: { force: number; agility: number; magie: number; endurance: number }, experience: number) => {
+  const saveCharacterProgress = useCallback(async (niveau: number, stats: { force: number; agility: number; magie: number; endurance: number }, experience: number) => {
     if (!user || !characterIdNum) return;
-    const key = `dq_char_${user.id}_${characterIdNum}`;
-    localStorage.setItem(key, JSON.stringify({ niveau, stats, experience, updatedAt: new Date().toISOString() }));
+    await supabase
+      .from("personnage")
+      .update({
+        niveau,
+        force_personnage: stats.force,
+        agility_personnage: stats.agility,
+        magie_personnage: stats.magie,
+        endurance_personnage: stats.endurance,
+        experience,
+      })
+      .eq("id", characterIdNum);
   }, [user, characterIdNum]);
 
   useEffect(() => {
     if (isEnd && user && characterIdNum && character) {
-      save();
-      const progress = loadCharacterProgress() || { niveau: character.niveau ?? 1, stats: { force: 5, agility: 5, magie: 5, endurance: 5 }, experience: 0 };
-      const xpGained = history.length * 50;
-      const newExperience = progress.experience + xpGained;
-      const newLevel = Math.min(Math.floor(newExperience / 500) + 1, 10);
-      const bonus = LEVEL_BONUS[newLevel] || {};
-      const newStats = {
-        force: (progress.stats?.force ?? 5) + (bonus.force ?? 0),
-        agility: (progress.stats?.agility ?? 5) + (bonus.agility ?? 0),
-        magie: (progress.stats?.magie ?? 5) + (bonus.magie ?? 0),
-        endurance: (progress.stats?.endurance ?? 5) + (bonus.endurance ?? 0),
-      };
-      if (newLevel > progress.niveau) {
-        supabase.from('personnage').update({ niveau: newLevel }).eq('id', characterIdNum).then();
-      }
-      saveCharacterProgress(newLevel, newStats, newExperience);
-      setCharacter(prev => prev ? {
-        ...prev,
-        niveau: newLevel,
-        stats: newStats,
-        experience: newExperience,
-      } : prev);
+      (async () => {
+        save();
+        const progress = await loadCharacterProgress() || { niveau: character.niveau ?? 1, stats: { force: 5, agility: 5, magie: 5, endurance: 5 }, experience: 0 };
+        const xpGained = history.length * 50;
+        const newExperience = progress.experience + xpGained;
+        const newLevel = Math.min(Math.floor(newExperience / 500) + 1, 10);
+        const bonus = LEVEL_BONUS[newLevel] || {};
+        const newStats = {
+          force: (progress.stats?.force ?? 5) + (bonus.force ?? 0),
+          agility: (progress.stats?.agility ?? 5) + (bonus.agility ?? 0),
+          magie: (progress.stats?.magie ?? 5) + (bonus.magie ?? 0),
+          endurance: (progress.stats?.endurance ?? 5) + (bonus.endurance ?? 0),
+        };
+        await saveCharacterProgress(newLevel, newStats, newExperience);
+        setCharacter(prev => prev ? {
+          ...prev,
+          niveau: newLevel,
+          stats: newStats,
+          experience: newExperience,
+        } : prev);
+      })();
     }
   }, [isEnd, user, characterIdNum, character, save, history.length, loadCharacterProgress, saveCharacterProgress]);
 

@@ -1,3 +1,5 @@
+import { supabase } from "@/lib/supabaseClient";
+
 export interface SpecialEvent {
   id: string;
   name: string;
@@ -73,12 +75,22 @@ export function getTimeRemaining(event: SpecialEvent): { days: number; hours: nu
   return { days, hours, minutes };
 }
 
-export function hasParticipated(userId: number, eventId: string): boolean {
-  const key = `dq_event_${userId}_${eventId}`;
-  return localStorage.getItem(key) === "true";
+export async function hasParticipated(userId: number, eventId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from("participation_evenement")
+    .select("participe")
+    .eq("id_utilisateur", userId)
+    .eq("evenement_id", eventId)
+    .maybeSingle();
+
+  return data?.participe ?? false;
 }
 
-export function markParticipated(userId: number, eventId: string): void {
-  const key = `dq_event_${userId}_${eventId}`;
-  localStorage.setItem(key, "true");
+export async function markParticipated(userId: number, eventId: string): Promise<void> {
+  await supabase
+    .from("participation_evenement")
+    .upsert(
+      { id_utilisateur: userId, evenement_id: eventId, participe: true },
+      { onConflict: "id_utilisateur, evenement_id" }
+    );
 }

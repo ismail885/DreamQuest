@@ -50,10 +50,18 @@ export default function ProfilPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
 
-  const loadSettings = () => {
+  const loadSettings = async () => {
     if (!user) return;
-    const notif = localStorage.getItem(`dq_settings_${user.id}_notifications`);
-    if (notif) setNotifications(JSON.parse(notif));
+    const { data } = await supabase
+      .from("parametre_utilisateur")
+      .select("notifications, langue")
+      .eq("id_utilisateur", user.id)
+      .maybeSingle();
+
+    if (data) {
+      setNotifications(data.notifications ?? true);
+      if (data.langue) setLanguage(data.langue);
+    }
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,7 +75,7 @@ export default function ProfilPage() {
       : parseInt(String(userId).replace(/[^0-9]/g, ''), 10) || userId;
     
     try {
-      const questData = getDailyQuests(numericUserId);
+      const questData = await getDailyQuests(numericUserId);
       setDailyQuests(questData.quests);
 
       const { data: profileData } = await supabase
@@ -202,7 +210,12 @@ export default function ProfilPage() {
   const toggleNotifications = () => {
     const newVal = !notifications;
     setNotifications(newVal);
-    if (user) localStorage.setItem(`dq_settings_${user.id}_notifications`, JSON.stringify(newVal));
+    if (user) {
+      supabase.from("parametre_utilisateur").upsert(
+        { id_utilisateur: user.id, notifications: newVal },
+        { onConflict: "id_utilisateur" }
+      ).then();
+    }
   };
 
   const { isDark: darkMode, toggleTheme } = useTheme();
@@ -321,11 +334,11 @@ export default function ProfilPage() {
     setSettingsMessage(null);
 
     try {
-      // Sauvegarder en localStorage uniquement
       if (user) {
-        localStorage.setItem(`dq_settings_${user.id}_notifications`, JSON.stringify(notifications));
-        localStorage.setItem(`dq_settings_${user.id}_lang`, language);
-        // darkMode deja persiste par ThemeContext
+        await supabase.from("parametre_utilisateur").upsert(
+          { id_utilisateur: user.id, notifications, langue: language },
+          { onConflict: "id_utilisateur" }
+        );
       }
       setSettingsMessage({ type: "success", text: "Parametres sauvegardes !" });
       
@@ -345,12 +358,17 @@ export default function ProfilPage() {
       settingsLoadedRef.current = true;
 
       try {
-        // Charger depuis localStorage uniquement
         if (user) {
-          const savedNotif = localStorage.getItem(`dq_settings_${user.id}_notifications`);
-          const savedLang = localStorage.getItem(`dq_settings_${user.id}_lang`);
-          if (savedNotif) setNotifications(JSON.parse(savedNotif));
-          if (savedLang) setLanguage(savedLang);
+          const { data } = await supabase
+            .from("parametre_utilisateur")
+            .select("notifications, langue")
+            .eq("id_utilisateur", user.id)
+            .maybeSingle();
+
+          if (data) {
+            setNotifications(data.notifications ?? true);
+            if (data.langue) setLanguage(data.langue);
+          }
         }
       } catch {
         // Erreur, on utilise les valeurs par defaut
