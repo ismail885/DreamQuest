@@ -2,15 +2,15 @@ export function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(' ')
 }
 
-import { supabase, Aventure, Sauvegarde } from './supabaseClient'
-import type { AdventureWithAuthor } from '@/types/adventure'
-import type { SaveWithDetails } from '@/types/save'
+import { supabase } from './supabaseClient'
+import type { AdventureWithAuthor, Adventure } from '@/types/adventure'
+import type { SaveWithDetails, Save } from '@/types/save'
 
-interface AventureWithUtilisateur extends Aventure {
+interface AventureWithUtilisateur extends Adventure {
   utilisateur: { nom_utilisateur: string } | null
 }
 
-interface SauvegardeWithRelations extends Sauvegarde {
+interface SauvegardeWithRelations extends Save {
   aventure: { titre: string } | null
   personnage: { nom_personnage: string } | null
 }

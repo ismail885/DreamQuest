@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import type { Aventure, Embranchement } from '@/lib/supabaseClient';
+import type { Adventure as Aventure, Branch as Embranchement } from '@/types/adventure';
 
 interface UseAdventureState {
   adventure: Aventure | null;
