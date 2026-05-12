@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { CombatState } from "@/lib/combat";
-import { playerAttack, enemyAttack, initCombat } from "@/lib/combat";
+import { playerAttack, enemyAttack, createCombatState } from "@/lib/combat";
 
 interface CombatUIProps {
   playerStats: { force: number; agility: number; magie: number; endurance: number };
@@ -22,7 +22,7 @@ export default function CombatUI({
   onFlee,
   onClose,
 }: CombatUIProps) {
-  const [combat, setCombat] = useState<CombatState>(() => initCombat(playerPvMax, 50, 1));
+  const [combat, setCombat] = useState<CombatState>(() => createCombatState(playerPvMax, 50, 1));
   const [defending, setDefending] = useState(false);
 
   const playerAttackAction = useCallback(() => {

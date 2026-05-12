@@ -110,32 +110,14 @@ const ENEMIES: Enemy[] = [
 ];
 
 export function getRandomEnemy(level: number = 1): Enemy {
-  const filtered = ENEMIES.filter(e => e.xpReward <= level * 40 + 30);
-  const pool = filtered.length > 0 ? filtered : ENEMIES;
+  const seuil = Math.max(30, level * 40 + 30);
+  const filtered = ENEMIES.filter(e => e.xpReward <= seuil);
+  const pool = filtered.length > 0 ? filtered : ENEMIES.slice(0, 1);
   return { ...pool[Math.floor(Math.random() * pool.length)] };
 }
 
 export function getEnemyById(id: string): Enemy | undefined {
   return ENEMIES.find(e => e.id === id);
-}
-
-export function initCombat(playerPvMax: number, playerManaMax: number = 50, level: number = 1): CombatState {
-  const enemy = getRandomEnemy(level);
-  return {
-    inCombat: false,
-    enemy,
-    playerPv: playerPvMax,
-    playerPvMax: playerPvMax,
-    playerMana: playerManaMax,
-    playerManaMax: playerManaMax,
-    turn: "player",
-    log: [`Un ${enemy.name} apparait!`],
-    won: false,
-    fled: false,
-    status: { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0 },
-    enemyStatus: [],
-    cooldowns: {},
-  };
 }
 
 export function playerAttack(stats: { force: number; agility: number; magie: number }, enemy: Enemy, status: PlayerStatus): { dmg: number; log: string; isCrit: boolean } {
@@ -208,7 +190,6 @@ export function useAbility(
       break;
       
     case "glace":
-      newEnemyStatus.push("buff_agility");
       enemy.agility = Math.max(1, enemy.agility - 5);
       log = "Champ de Glace! L'ennemi est ralenti!";
       break;
@@ -408,7 +389,7 @@ export function regenerateMana(currentMana: number, maxMana: number): number {
   return Math.min(maxMana, currentMana + 10);
 }
 
-export function useCombatState(initialPlayerPv: number, initialMana: number = 50, level: number = 1): CombatState {
+export function createCombatState(initialPlayerPv: number, initialMana: number = 50, level: number = 1): CombatState {
   const enemy = getRandomEnemy(level);
   return {
     inCombat: true,

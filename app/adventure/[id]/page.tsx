@@ -11,7 +11,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
 import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
-import { playerAttack, enemyAttack, initCombat, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility } from "@/lib/combat";
+import { playerAttack, enemyAttack, createCombatState, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import Breadcrumb, { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
@@ -125,7 +125,7 @@ function AdventureReader({ params }: Props) {
       if (effect?.type === "combat") {
         const enemyLevel = effect.level || character.niveau || 1;
         const manaMax = 50 + (character.niveau || 1) * 5; // Mana basé sur le niveau
-        const newCombat = initCombat(character.points_vie_max || 100, manaMax, enemyLevel);
+        const newCombat = createCombatState(character.points_vie_max || 100, manaMax, enemyLevel);
         setCombatState(newCombat);
         setInCombat(true);
         return true; // Indique que le combat doit remplacer la navigation

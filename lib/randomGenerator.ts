@@ -1,6 +1,6 @@
 // API DE GENERATION ALEATOIRE POUR DREAMQUEST
 
-import { CharacterClass, CharacterStats } from '@/types';
+import { CharacterClass, CharacterStats, CHARACTER_CLASSES, ClassInfo } from '@/types';
 
 export const ABILITIES_POOL: Record<CharacterClass, string[]> = {
   Guerrier: [
@@ -119,20 +119,8 @@ export const RANDOM_EVENTS = [
 
 // Fonction principale de generation aleatoire
 export function generateRandomStats(classe: CharacterClass): CharacterStats {
-  const classInfo = {
-    Guerrier: { force: 8, agility: 5, magie: 3, endurance: 7 },
-    Mage: { force: 3, agility: 4, magie: 9, endurance: 4 },
-    Assassin: { force: 5, agility: 9, magie: 4, endurance: 5 },
-    Prêtre: { force: 4, agility: 4, magie: 7, endurance: 6 },
-    Paladin: { force: 7, agility: 4, magie: 5, endurance: 8 },
-    Archer: { force: 4, agility: 9, magie: 5, endurance: 4 },
-    Druide: { force: 5, agility: 6, magie: 7, endurance: 6 },
-    Nécromancien: { force: 2, agility: 4, magie: 9, endurance: 3 },
-    Voleur: { force: 4, agility: 10, magie: 5, endurance: 4 },
-    Barbare: { force: 10, agility: 6, magie: 2, endurance: 8 }
-  };
-
-  const base = classInfo[classe];
+  const classInfo = CHARACTER_CLASSES[classe] as ClassInfo | undefined;
+  const base = classInfo?.baseStats ?? { force: 5, agility: 5, magie: 5, endurance: 5 };
   const variation = {
     force: Math.floor(Math.random() * 3) - 1,
     agility: Math.floor(Math.random() * 3) - 1,
