@@ -70,11 +70,15 @@ export function useSave({
         throw error;
       }
 
+      if (!data?.id) {
+        throw new Error('La sauvegarde a echoue — aucun ID retourne');
+      }
+
       setState({
         isSaving: false,
         lastSaved: new Date(),
         error: null,
-        saveId: data?.id ?? null,
+        saveId: data.id,
       });
       return true;
     } catch (err) {
@@ -82,6 +86,13 @@ export function useSave({
       setState(prev => ({ ...prev, isSaving: false, error: message }));
       return false;
     }
+  }, []);
+
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
   }, []);
 
   // Auto-save toutes les intervalMs ms

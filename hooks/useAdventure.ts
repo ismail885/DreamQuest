@@ -109,6 +109,7 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
 
   const chooseOption = useCallback(async (branchId: number | null) => {
     if (!branchId || !userIdRef.current) return;
+    if (state.loading) return;
 
     setState((s) => ({ ...s, loading: true }));
     try {
@@ -132,39 +133,10 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
         isEnd,
         history: [...s.history, branch],
       }));
-
-      // Sauvegarder dans la BDD (id_embranchement_actuel)
-      const adventureId = state.adventure?.id;
-      if (adventureId && userIdRef.current) {
-        // Chercher le personnage_id pour cette aventure
-        const { data: saves } = await supabase
-          .from('sauvegarde')
-          .select('id_personnage')
-          .eq('id_utilisateur', userIdRef.current)
-          .eq('id_aventure', adventureId)
-          .limit(1);
-        
-        const personnageId = saves?.[0]?.id_personnage;
-        
-        if (personnageId) {
-          await supabase
-            .from('sauvegarde')
-            .upsert({
-              id_utilisateur: userIdRef.current,
-              id_aventure: adventureId,
-              id_personnage: personnageId,
-              id_embranchement_actuel: branchId,
-              progression: isEnd ? 100 : Math.min((state.history.length + 1) * 12.5, 100),
-              date_sauvegarde: new Date().toISOString(),
-            }, {
-              onConflict: 'id_utilisateur,id_aventure,id_personnage',
-            });
-        }
-      }
     } catch {
       setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
     }
-  }, [state.adventure?.id, state.history.length]);
+  }, [state.adventure?.id, state.loading]);
 
   const restart = useCallback(async () => {
     if (!state.adventure || !userIdRef.current) return;

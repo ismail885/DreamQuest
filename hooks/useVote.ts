@@ -27,9 +27,20 @@ export function useVote({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const refetchPopularite = useCallback(async () => {
+    const { data } = await supabase
+      .from('aventure')
+      .select('popularite')
+      .eq('id', adventureId)
+      .single();
+    if (data) {
+      setPopularite(data.popularite);
+    }
+  }, [adventureId]);
+
   const toggleVote = useCallback(async () => {
     if (!userId) {
-      setError("Vous devez être connecté pour voter");
+      setError("Vous devez etre connecte pour voter");
       return;
     }
 
@@ -40,6 +51,7 @@ export function useVote({
 
     try {
       if (hasVoted) {
+        // Annuler le vote
         const { error: deleteError } = await supabase
           .from('vote')
           .delete()
@@ -48,39 +60,40 @@ export function useVote({
 
         if (deleteError) throw deleteError;
 
-        const { error: updateError } = await supabase
-          .from('aventure')
-          .update({ popularite: popularite - 1 })
-          .eq('id', adventureId);
-
-        if (updateError) throw updateError;
+        const { error: rpcError } = await supabase
+          .rpc('decrementer_popularite', { aventure_id: adventureId });
+        
+        if (rpcError && !rpcError.message?.includes('does not exist')) {
+          throw rpcError;
+        }
 
         setHasVoted(false);
-        setPopularite(prev => prev - 1);
       } else {
+        // Voter
         const { error: insertError } = await supabase
           .from('vote')
           .insert({ id_utilisateur: userId, id_aventure: adventureId });
 
         if (insertError) throw insertError;
 
-        const { error: updateError } = await supabase
-          .from('aventure')
-          .update({ popularite: popularite + 1 })
-          .eq('id', adventureId);
-
-        if (updateError) throw updateError;
+        const { error: rpcError } = await supabase
+          .rpc('incrementer_popularite', { aventure_id: adventureId });
+        
+        if (rpcError && !rpcError.message?.includes('does not exist')) {
+          throw rpcError;
+        }
 
         setHasVoted(true);
-        setPopularite(prev => prev + 1);
       }
+
+      await refetchPopularite();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erreur lors du vote";
       setError(message);
     } finally {
       setIsLoading(false);
     }
-  }, [userId, hasVoted, popularite, adventureId, isLoading]);
+  }, [userId, hasVoted, adventureId, isLoading, refetchPopularite]);
 
   return { hasVoted, popularite, isLoading, error, toggleVote };
 }
