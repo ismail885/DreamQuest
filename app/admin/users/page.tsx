@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { User, UserRole } from "@/types";
-import { Search, Edit2, Trash2, ChevronLeft, ChevronRight, X, CheckSquare, Square } from "lucide-react";
+import { Search, Edit2, Trash2, ChevronLeft, ChevronRight, X, CheckSquare, Square, Eye, BookOpen, UserRound } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -14,6 +14,11 @@ export default function AdminUsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   
+  const [detailUser, setDetailUser] = useState<User | null>(null);
+  const [userCharacters, setUserCharacters] = useState<{ id: number; nom_personnage: string; classe: string; niveau: number }[]>([]);
+  const [userSavesCount, setUserSavesCount] = useState(0);
+  const [detailLoading, setDetailLoading] = useState(false);
+
   // Selection state
   const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
   
@@ -320,6 +325,24 @@ export default function AdminUsersPage() {
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
+                          onClick={() => {
+                            setDetailUser(user);
+                            setDetailLoading(true);
+                            Promise.all([
+                              supabase.from("personnage").select("id, nom_personnage, classe, niveau").eq("id_utilisateur", user.id),
+                              supabase.from("sauvegarde").select("id", { count: "exact", head: true }).eq("id_utilisateur", user.id),
+                            ]).then(([chars, saves]) => {
+                              setUserCharacters(chars.data || []);
+                              setUserSavesCount(saves.count || 0);
+                              setDetailLoading(false);
+                            });
+                          }}
+                          className="p-2 text-content-secondary hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                          title="Voir details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => setDeleteConfirm(user.id)}
                           className="p-2 text-content-secondary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Supprimer"
@@ -376,6 +399,68 @@ export default function AdminUsersPage() {
           </div>
         )}
       </div>
+
+      {detailUser && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-surface-tertiary border border-gray-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-surface-tertiary">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-cyan-500 flex items-center justify-center text-content-primary font-bold text-lg">
+                  {detailUser.nom_utilisateur.substring(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-content-primary">{detailUser.nom_utilisateur}</h2>
+                  <p className="text-content-secondary text-sm">{detailUser.email}</p>
+                </div>
+              </div>
+              <button onClick={() => setDetailUser(null)} className="text-content-secondary hover:text-content-primary">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <p className="text-content-secondary text-xs uppercase tracking-wider mb-1">Role</p>
+                  <p className="text-content-primary font-medium">{detailUser.role}</p>
+                </div>
+                <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <p className="text-content-secondary text-xs uppercase tracking-wider mb-1">Inscription</p>
+                  <p className="text-content-primary font-medium">{new Date(detailUser.date_creation).toLocaleDateString("fr-FR")}</p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-content-primary mb-3 flex items-center gap-2">
+                  <UserRound className="w-5 h-5 text-cyan-400" />
+                  Personnages ({userCharacters.length})
+                </h3>
+                {detailLoading ? (
+                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-cyan-500 mx-auto"></div>
+                ) : userCharacters.length === 0 ? (
+                  <p className="text-content-secondary text-sm">Aucun personnage</p>
+                ) : (
+                  <div className="space-y-2">
+                    {userCharacters.map((c) => (
+                      <div key={c.id} className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg">
+                        <div>
+                          <span className="text-content-primary font-medium">{c.nom_personnage}</span>
+                          <span className="text-content-secondary text-sm ml-2">({c.classe})</span>
+                        </div>
+                        <span className="text-cyan-400 text-sm">Niveau {c.niveau}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-gray-900/50 rounded-lg">
+                <BookOpen className="w-5 h-5 text-purple-400" />
+                <span className="text-content-secondary">{userSavesCount} sauvegarde{userSavesCount !== 1 ? "s" : ""}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {isModalOpen && (
