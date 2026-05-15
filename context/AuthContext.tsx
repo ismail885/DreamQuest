@@ -5,9 +5,14 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabaseClient";
+
+// ============================================
+// Types
+// ============================================
 
 interface User {
   id: number;
@@ -19,15 +24,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (
-    emailOrUsername: string,
-    password: string,
-  ) => Promise<{ success: boolean; error?: string }>;
-  register: (
-    username: string,
-    email: string,
-    password: string,
-  ) => Promise<{ success: boolean; message?: string; error?: string }>;
+  login: (emailOrUsername: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (username: string, email: string, password: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   loginWithApple: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
@@ -37,116 +35,133 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// L'état utilisateur est géré via le JWT HttpOnly côté serveur et le state React côté client
-// Pas de localStorage — les données sensibles ne doivent pas être accessibles via JS (XSS)
+// ============================================
+// Helpers cookies
+// ============================================
 
-export function AuthProvider({
-  children,
-}: {
-  children: ReactNode;
-}): React.JSX.Element {
+const setAuthSession = async (userData: User): Promise<void> => {
+  try {
+    await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: String(userData.id),
+        email: userData.email,
+        username: userData.username,
+        role: userData.role,
+      }),
+    });
+  } catch (err) {
+    console.error("[Auth] Erreur setAuthSession:", err);
+  }
+};
+
+const clearAuthSession = async (): Promise<void> => {
+  try {
+    await fetch('/api/auth/session', { method: 'DELETE' });
+  } catch (err) {
+    console.error("[Auth] Erreur clearAuthSession:", err);
+  }
+};
+
+// ============================================
+// Helper: récupérer les infos utilisateur depuis Supabase
+// ============================================
+
+const fetchUserFromAuthId = async (authId: string): Promise<User | null> => {
+  try {
+    const { data: userData } = await supabase
+      .from("utilisateur")
+      .select("id, nom_utilisateur, email, role")
+      .eq("auth_id", authId)
+      .maybeSingle();
+
+    if (!userData) return null;
+
+    return {
+      id: userData.id,
+      username: userData.nom_utilisateur,
+      email: userData.email,
+      role: userData.role,
+    };
+  } catch (err) {
+    console.error("[Auth] Erreur fetchUserFromAuthId:", err);
+    return null;
+  }
+};
+
+// ============================================
+// Provider
+// ============================================
+
+export function AuthProvider({ children }: { children: ReactNode }): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const setAuthCookies = async (userData: User) => {
-    try {
-      await fetch('/api/auth/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: String(userData.id),
-          email: userData.email,
-          username: userData.username,
-          role: userData.role,
-        }),
-      });
-    } catch (err) {
-      console.error("Erreur setAuthCookies:", err);
-    }
-  };
-
-  const clearAuthCookies = async () => {
-    try {
-      await fetch('/api/auth/session', { method: 'DELETE' });
-    } catch (err) {
-      console.error("Erreur clearAuthCookies:", err);
-    }
-  };
-
-  const checkAuth = async () => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: userData } = await supabase
-          .from("utilisateur")
-          .select("id, nom_utilisateur, email, role")
-          .eq("auth_id", session.user.id)
-          .maybeSingle();
-
-        if (userData) {
-          const loggedUser: User = {
-            id: userData.id,
-            username: userData.nom_utilisateur,
-            email: userData.email,
-            role: userData.role,
-          };
-          await setAuthCookies(loggedUser);
-          setUser(loggedUser);
-        } else {
-          setUser(null);
-        }
+  // Synchronisation utilisateur depuis Supabase Auth
+  const syncUser = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      const loggedUser = await fetchUserFromAuthId(session.user.id);
+      if (loggedUser) {
+        await setAuthSession(loggedUser);
+        setUser(loggedUser);
       } else {
-        await clearAuthCookies();
         setUser(null);
       }
-    } catch (error) {
-      console.error("Erreur verification auth:", error);
+    } else {
+      await clearAuthSession();
       setUser(null);
-    } finally {
-      setLoading(false);
     }
-  };
+    setLoading(false);
+  }, []);
 
+  // Vérification initiale
+  const checkAuth = useCallback(async () => {
+    await syncUser();
+  }, [syncUser]);
+
+  // Écoute des changements d'état Supabase Auth
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
-        if (session?.user) {
-          const { data: userData } = await supabase
-            .from("utilisateur")
-            .select("id, nom_utilisateur, email, role")
-            .eq("auth_id", session.user.id)
-            .maybeSingle();
-
-          if (userData) {
-            const loggedUser: User = {
-              id: userData.id,
-              username: userData.nom_utilisateur,
-              email: userData.email,
-              role: userData.role,
-            };
-            await setAuthCookies(loggedUser);
-            setUser(loggedUser);
-          } else {
-            setUser(null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      switch (event) {
+        case "INITIAL_SESSION":
+        case "SIGNED_IN":
+        case "TOKEN_REFRESHED":
+          if (session?.user) {
+            const loggedUser = await fetchUserFromAuthId(session.user.id);
+            if (loggedUser) {
+              await setAuthSession(loggedUser);
+              setUser(loggedUser);
+            }
           }
-        } else {
-          await clearAuthCookies();
+          setLoading(false);
+          break;
+
+        case "SIGNED_OUT":
+          await clearAuthSession();
           setUser(null);
-        }
-        setLoading(false);
-      } else if (event === "SIGNED_OUT") {
-        await clearAuthCookies();
-        setUser(null);
-        setLoading(false);
+          setLoading(false);
+          break;
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // Refresh silencieux quand la page reprend le focus
+    const onFocus = () => {
+      if (!user) return; // Évite de rafraîchir si déjà déconnecté
+      supabase.auth.refreshSession().catch(() => {});
+    };
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [user]);
+
+  // ==========================================
+  // Login
+  // ==========================================
 
   const login = async (emailOrUsername: string, password: string) => {
     try {
@@ -157,142 +172,96 @@ export function AuthProvider({
           .select("email")
           .eq("nom_utilisateur", emailOrUsername)
           .maybeSingle();
-        if (!found)
-          return {
-            success: false,
-            error: "Identifiant ou mot de passe incorrect",
-          };
+        if (!found) {
+          return { success: false, error: "Identifiant ou mot de passe incorrect" };
+        }
         email = found.email;
       }
 
-      const { data: authData, error: authError } =
-        await supabase.auth.signInWithPassword({ email, password });
-
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
       if (authError || !authData.user) {
-        return {
-          success: false,
-          error: "Identifiant ou mot de passe incorrect",
-        };
+        return { success: false, error: "Identifiant ou mot de passe incorrect" };
       }
 
-      const { data: userData, error } = await supabase
-        .from("utilisateur")
-        .select("id, nom_utilisateur, email, role")
-        .eq("auth_id", authData.user.id)
-        .maybeSingle();
-
-      if (error || !userData) {
+      const loggedUser = await fetchUserFromAuthId(authData.user.id);
+      if (!loggedUser) {
         return { success: false, error: "Utilisateur introuvable" };
       }
 
-      const loggedUser: User = {
-        id: userData.id,
-        username: userData.nom_utilisateur,
-        email: userData.email,
-        role: userData.role,
-      };
-
-      await setAuthCookies(loggedUser);
+      await setAuthSession(loggedUser);
       setUser(loggedUser);
-
       return { success: true };
     } catch (error) {
-      console.error("Erreur login:", error);
+      console.error("[Auth] Erreur login:", error);
       return { success: false, error: "Erreur de connexion" };
     }
   };
 
-  const register = async (
-    username: string,
-    email: string,
-    password: string,
-  ) => {
+  // ==========================================
+  // Register
+  // ==========================================
+
+  const register = async (username: string, email: string, password: string) => {
     try {
-      const { data: existingUser } = await supabase
+      // Vérifier unicité email
+      const { data: existingEmail } = await supabase
         .from("utilisateur")
         .select("id")
         .eq("email", email)
         .maybeSingle();
-
-      if (existingUser) {
+      if (existingEmail) {
         return { success: false, error: "Cet email est déjà utilisé" };
       }
 
+      // Vérifier unicité pseudo
       const { data: existingUsername } = await supabase
         .from("utilisateur")
         .select("id")
         .eq("nom_utilisateur", username)
         .maybeSingle();
-
       if (existingUsername) {
         return { success: false, error: "Ce pseudo est déjà utilisé" };
       }
 
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
+      // Création du compte Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
       if (authError || !authData.user) {
-        console.error("Erreur Supabase Auth register:", authError?.message);
-        return {
-          success: false,
-          error: authError?.message || "Erreur lors de la création du compte",
-        };
+        return { success: false, error: authError?.message || "Erreur lors de la création du compte" };
       }
 
-      const { error } = await supabase
-        .from("utilisateur")
-        .insert({
-          nom_utilisateur: username,
-          email,
-          mot_de_passe: "",
-          role: "joueur",
-          auth_id: authData.user.id,
-        });
-
-      if (error) {
-        console.error("Erreur Supabase register:", error.message);
-        return {
-          success: false,
-          error: "Erreur lors de la création du compte : " + error.message,
-        };
-      }
-
-      await setAuthCookies({
-        id: 0,
+      // Insertion dans la table utilisateur
+      const { error: insertError } = await supabase.from("utilisateur").insert({
+        nom_utilisateur: username,
         email,
-        username,
+        mot_de_passe: "",
         role: "joueur",
+        auth_id: authData.user.id,
       });
+
+      if (insertError) {
+        return { success: false, error: "Erreur lors de la création du compte : " + insertError.message };
+      }
 
       return { success: true, message: "Compte créé avec succès" };
     } catch (error) {
-      console.error("Erreur register:", error);
+      console.error("[Auth] Erreur register:", error);
       return { success: false, error: "Erreur d'inscription" };
     }
   };
 
-  const updateUser = (updates: Partial<User>) => {
-    setUser((prev) => {
-      if (!prev) return prev;
-      return { ...prev, ...updates };
-    });
-  };
+  // ==========================================
+  // OAuth
+  // ==========================================
 
   const loginWithGoogle = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
       });
-
       if (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: "Erreur de connexion avec Google" };
       }
-
       return { success: true };
     } catch {
       return { success: false, error: "Erreur de connexion avec Google" };
@@ -300,35 +269,34 @@ export function AuthProvider({
   };
 
   const loginWithApple = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "apple",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        console.error("Erreur Apple OAuth:", error);
-        return { success: false, error: error.message };
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error("Erreur login Apple:", error);
-      return { success: false, error: "Erreur de connexion avec Apple" };
-    }
+    return { success: false, error: "Apple Sign-In non disponible sur navigateur" };
   };
+
+  // ==========================================
+  // Logout
+  // ==========================================
 
   const logout = async () => {
     try {
       await supabase.auth.signOut();
-      await clearAuthCookies();
+      await clearAuthSession();
       setUser(null);
     } catch (error) {
-      console.error("Erreur logout:", error);
+      console.error("[Auth] Erreur logout:", error);
     }
   };
+
+  // ==========================================
+  // updateUser
+  // ==========================================
+
+  const updateUser = (updates: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...updates } : prev));
+  };
+
+  // ==========================================
+  // Render
+  // ==========================================
 
   return (
     <AuthContext.Provider
@@ -349,10 +317,14 @@ export function AuthProvider({
   );
 }
 
+// ==========================================
+// Hook personnalisé (à utiliser de préférence)
+// ==========================================
+
 export function useAuthContext() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuthContext doit etre utilise dans un AuthProvider");
+    throw new Error("useAuthContext doit être utilisé dans un AuthProvider");
   }
   return context;
 }

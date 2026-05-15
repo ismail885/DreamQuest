@@ -1,10 +1,20 @@
 import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+// ============================================
+// Configuration JWT
+// ============================================
 
+const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env.local file.');
 }
+
+const MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 jours
+const ALGORITHM = 'HS256';
+
+// ============================================
+// Types
+// ============================================
 
 export interface UserJWTPayload extends JWTPayload {
   userId: string;
@@ -13,80 +23,90 @@ export interface UserJWTPayload extends JWTPayload {
   role: string;
 }
 
-export async function signToken(payload: Omit<UserJWTPayload, 'iat' | 'exp'>): Promise<string> {
+export type TokenPayload = Omit<UserJWTPayload, 'iat' | 'exp'>;
+
+// ============================================
+// Fonctions JWT
+// ============================================
+
+/**
+ * Signe un token JWT avec les données utilisateur.
+ * Expire après 7 jours.
+ */
+export async function signToken(payload: TokenPayload): Promise<string> {
   const secret = new TextEncoder().encode(JWT_SECRET);
   
   const token = await new SignJWT({ ...payload })
-    .setProtectedHeader({ alg: 'HS256' })
+    .setProtectedHeader({ alg: ALGORITHM })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    .setExpirationTime(`${MAX_AGE_SECONDS}s`)
     .sign(secret);
   
   return token;
 }
 
+/**
+ * Vérifie et décode un token JWT.
+ * Retourne null si le token est invalide ou expiré.
+ */
 export async function verifyToken(token: string): Promise<UserJWTPayload | null> {
   try {
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
     return payload as UserJWTPayload;
-  } catch (error) {
-    console.error('Erreur de vérification du token:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.warn('[JWT] Verification failed:', error.message);
+    }
     return null;
   }
 }
 
-export function getTokenFromCookies(cookieHeader: string | null): string | null {
-  if (!cookieHeader) return null;
-  
-  const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-    const [key, value] = cookie.trim().split('=');
-    acc[key] = value;
-    return acc;
-  }, {} as Record<string, string>);
-  
-  return cookies['auth_token'] || null;
-}
+// ============================================
+// Gestion des cookies HttpOnly
+// ============================================
 
+const COOKIE_OPTIONS = 'Path=/; HttpOnly; Secure; SameSite=Strict';
+
+/**
+ * Crée le cookie d'auth HttpOnly avec le token JWT.
+ */
 export function createAuthCookie(token: string): string {
-  const maxAge = 7 * 24 * 60 * 60;
-  return `auth_token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}`;
+  return `auth_token=${token}; ${COOKIE_OPTIONS}; Max-Age=${MAX_AGE_SECONDS}`;
 }
 
+/**
+ * Supprime le cookie d'auth (Max-Age=0).
+ */
 export function clearAuthCookie(): string {
-  return 'auth_token=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0';
-}
-
-// ============================================
-// FONCTIONS DE COOKIES HTTPONLY (SÉCURISÉS)
-// ============================================
-
-const MAX_AGE = 7 * 24 * 60 * 60; // 7 jours en secondes
-
-/**
- * Crée les cookies HttpOnly pour l'authentification.
- * Utilise le JWT signé pour éviter les manipulations côté client.
- */
-export function createAuthCookies(token: string): string {
-  return `auth_token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${MAX_AGE}`;
+  return `auth_token=; ${COOKIE_OPTIONS}; Max-Age=0`;
 }
 
 /**
- * Clear les cookies d'authentification.
- */
-export function clearAuthCookies(): string {
-  return `auth_token=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
-}
-
-/**
- * Parse le cookie header pour extraire une valeur.
+ * Parse un cookie header en objet clé/valeur.
+ * Gère les valeurs contenant '=' (ex: base64 tokens).
  */
 export function parseCookies(cookieHeader: string | null): Record<string, string> {
   if (!cookieHeader) return {};
   
-  return cookieHeader.split(';').reduce((acc, cookie) => {
+  return cookieHeader.split(';').reduce<Record<string, string>>((acc, cookie) => {
     const [key, ...valueParts] = cookie.trim().split('=');
-    acc[key] = valueParts.join('='); // Handle values with = inside (base64 tokens)
+    if (key) {
+      acc[key] = valueParts.join('=');
+    }
     return acc;
-  }, {} as Record<string, string>);
+  }, {});
 }
+
+/**
+ * Extrait le token JWT du cookie header.
+ */
+export function getTokenFromCookies(cookieHeader: string | null): string | null {
+  return parseCookies(cookieHeader)['auth_token'] || null;
+}
+
+// Backup des anciennes signatures pour compatibilité
+/** @deprecated Utiliser createAuthCookie */
+export const createAuthCookies = createAuthCookie;
+/** @deprecated Utiliser clearAuthCookie */
+export const clearAuthCookies = clearAuthCookie;

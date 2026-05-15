@@ -39,16 +39,20 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 bg-surface-primary text-content-primary">
-      <section className="w-full max-w-md rounded-2xl border border-gray-800/60 bg-surface-tertiary/70 p-8 backdrop-blur-sm">
-        <h1 className="text-2xl font-bold text-cyan-400">Mot de passe oublie</h1>
-        <p className="mt-2 text-sm text-content-secondary">
-          Entrez votre email pour recevoir un lien de reinitialisation.
+    <main className="min-h-screen flex items-center justify-center px-4 bg-[#0a0e1a] text-white">
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl"></div>
+      </div>
+      <section className="w-full max-w-md relative z-10 rounded-2xl border border-gray-800/60 bg-[#0f1623]/80 p-8 backdrop-blur-sm">
+        <h1 className="text-2xl font-bold text-cyan-400">Mot de passe oublié</h1>
+        <p className="mt-2 text-sm text-gray-400">
+          Entrez votre email pour recevoir un lien de réinitialisation.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="email" className="mb-2 block text-sm text-content-secondary">
+            <label htmlFor="email" className="mb-2 block text-sm text-gray-400">
               Email
             </label>
             <input
@@ -57,7 +61,7 @@ export default function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-lg border border-gray-700 bg-surface-tertiary px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-500"
+              className="w-full rounded-lg border border-gray-700 bg-[#1a1f2e] px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-500"
               placeholder="votre.email@exemple.com"
             />
           </div>
@@ -74,9 +78,9 @@ export default function ForgotPasswordPage() {
           </button>
         </form>
 
-        <div className="mt-5 text-center text-sm text-content-secondary">
+        <div className="mt-5 text-center text-sm text-gray-400">
           <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300">
-            Retour a la connexion
+            Retour à la connexion
           </Link>
         </div>
       </section>
