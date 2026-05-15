@@ -230,11 +230,9 @@ export default function DashboardPage() {
                     ? suggestions.map((adventure) => (
                         <div
                           key={adventure.id}
-                          onClick={() =>
-                            router.push(
-                              `/adventure/${adventure.id}?personnage=${user.id}`,
-                            )
-                          }
+                              onClick={() =>
+                                router.push(`/adventure/${adventure.id}`)
+                              }
                           className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
                         >
                           <div className="flex items-center gap-2 mb-3">

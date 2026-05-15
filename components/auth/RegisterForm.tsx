@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -17,7 +18,6 @@ export default function RegisterForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -30,7 +30,6 @@ export default function RegisterForm() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    setSuccess("");
 
     // Validation username
     if (formData.username.length < 3) {
@@ -65,8 +64,8 @@ export default function RegisterForm() {
       const result = await register(formData.username, formData.email, formData.password);
 
       if (result.success) {
-        setSuccess(result.message || "Inscription reussie !");
-        router.push("/auth/login");
+        toast.success("Inscription reussie ! Connectez-vous.");
+        setTimeout(() => router.push("/auth/login"), 1500);
       } else {
         setError(result.error || "Erreur lors de l'inscription");
         setIsLoading(false);
@@ -99,12 +98,6 @@ export default function RegisterForm() {
           {error && (
             <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 text-sm">
               {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm">
-              {success}
             </div>
           )}
 

@@ -19,6 +19,8 @@ interface RankingAdventure {
 interface RankingPlayer {
   id: number;
   nom_utilisateur: string;
+  personnage_nom: string;
+  classe: string;
   niveau: number;
   experience: number;
 }
@@ -29,13 +31,10 @@ export default function ClassementPage() {
   const [adventures, setAdventures] = useState<RankingAdventure[]>([]);
   const [players, setPlayers] = useState<RankingPlayer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timeFilter] = useState<"all" | "week" | "month">("all");
-
   useEffect(() => {
     const fetchRanking = async () => {
       setLoading(true);
       
-      // Fetch adventures
       const query = supabase
         .from("aventure")
         .select(`
@@ -53,13 +52,14 @@ export default function ClassementPage() {
       if (error) {
         console.error("Erreur:", error);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const formatted = (data ?? []).map((a: any) => ({
-          id: a.id,
-          titre: a.titre,
-          description: a.description,
-          popularite: a.popularite,
-          auteur_nom: a.auteur?.[0]?.nom_utilisateur || a.auteur?.nom_utilisateur || "Auteur inconnu",
+        const formatted = (data ?? []).map((a: Record<string, unknown>) => ({
+          id: a.id as number,
+          titre: a.titre as string,
+          description: a.description as string | null,
+          popularite: a.popularite as number,
+          auteur_nom: ((a.auteur as Record<string, unknown>)?.[0] as Record<string, string> | undefined)?.nom_utilisateur 
+            || (a.auteur as Record<string, string> | undefined)?.nom_utilisateur 
+            || "Auteur inconnu",
         }));
         setAdventures(formatted);
       }
@@ -68,14 +68,32 @@ export default function ClassementPage() {
 
     const fetchPlayers = async () => {
       const { data, error } = await supabase
-        .from("utilisateur")
-        .select("id, nom_utilisateur, niveau, experience")
+        .from("personnage")
+        .select(`
+          id,
+          nom_personnage,
+          classe,
+          niveau,
+          experience,
+          utilisateur!inner(id, nom_utilisateur)
+        `)
         .order("niveau", { ascending: false })
         .order("experience", { ascending: false })
         .limit(50);
 
       if (!error && data) {
-        setPlayers(data);
+        const formatted = (data ?? []).map((p: Record<string, unknown>) => {
+          const userData = (p.utilisateur as Record<string, unknown>);
+          return {
+            id: p.id as number,
+            nom_utilisateur: (userData?.nom_utilisateur as string) || "Inconnu",
+            personnage_nom: p.nom_personnage as string,
+            classe: p.classe as string,
+            niveau: p.niveau as number,
+            experience: p.experience as number,
+          };
+        });
+        setPlayers(formatted);
       }
     };
 
@@ -84,7 +102,7 @@ export default function ClassementPage() {
     } else {
       fetchPlayers();
     }
-  }, [timeFilter, activeTab]);
+  }, [activeTab]);
 
   const getMedalColor = (rank: number) => {
     switch (rank) {
@@ -176,7 +194,7 @@ export default function ClassementPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {players.map((player, index) => {
+                  {players.map((player, index) => {
                   const rank = index + 1;
                   return (
                     <div
@@ -192,7 +210,7 @@ export default function ClassementPage() {
                           {player.nom_utilisateur}
                         </h3>
                         <p className="text-content-secondary text-sm">
-                          Niveau {player.niveau ?? 1}
+                          {player.personnage_nom} ({player.classe}) — Niveau {player.niveau ?? 1}
                         </p>
                       </div>
                       

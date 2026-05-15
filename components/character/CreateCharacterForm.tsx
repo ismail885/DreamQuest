@@ -82,12 +82,15 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
           classe: selectedClass,
           niveau: 1,
           points_vie: pointsVieInitiaux,
+          force_personnage: classInfo.baseStats.force,
+          agility_personnage: classInfo.baseStats.agility,
+          magie_personnage: classInfo.baseStats.magie,
+          endurance_personnage: classInfo.baseStats.endurance,
+          experience: 0,
           id_utilisateur: userId,
         })
         .select()
         .single();
-
-      console.log('DEBUG insert personnage → userId:', userId, '| error:', insertError, '| data:', data);
 
       if (insertError) {
         throw new Error('Erreur lors de la création du personnage');

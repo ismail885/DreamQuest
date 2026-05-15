@@ -83,7 +83,7 @@ export default function AdminUsersPage() {
         await supabase.from("vote").delete().eq("id_utilisateur", userId);
         await supabase.from("sauvegarde").delete().eq("id_utilisateur", userId);
         await supabase.from("personnage").delete().eq("id_utilisateur", userId);
-        await supabase.from("utilisateur").delete().eq("id_utilisateur", userId);
+        await supabase.from("utilisateur").delete().eq("id", userId);
       }
       setSelectedUsers(new Set());
       fetchUsers();
@@ -96,7 +96,7 @@ export default function AdminUsersPage() {
   const handleBulkRoleChange = async (newRole: UserRole) => {
     try {
       for (const userId of selectedUsers) {
-        await supabase.from("utilisateur").update({ role: newRole }).eq("id_utilisateur", userId);
+        await supabase.from("utilisateur").update({ role: newRole }).eq("id", userId);
       }
       setSelectedUsers(new Set());
       fetchUsers();
@@ -138,7 +138,7 @@ export default function AdminUsersPage() {
             email: formData.email,
             role: formData.role,
           })
-          .eq("id_utilisateur", editingUser.id);
+          .eq("id", editingUser.id);
 
         if (error) throw error;
       } else {
@@ -164,7 +164,7 @@ export default function AdminUsersPage() {
       const { error } = await supabase
         .from("utilisateur")
         .delete()
-        .eq("id_utilisateur", userId);
+        .eq("id", userId);
 
       if (error) throw error;
       setDeleteConfirm(null);

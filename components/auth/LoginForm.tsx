@@ -9,7 +9,8 @@ import { useAuthContext } from "@/context/AuthContext";
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard";
+  const redirectParam = searchParams.get("redirect");
+  const redirect = redirectParam?.startsWith("/") ? redirectParam : "/dashboard";
   const { login, loginWithGoogle, loginWithApple } = useAuthContext();
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");

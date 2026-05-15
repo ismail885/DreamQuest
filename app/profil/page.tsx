@@ -224,6 +224,8 @@ export default function ProfilPage() {
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const settingsLoadedRef = useRef(false);
   const loadDataRef = useRef(false);
+  const loadUserDataRef = useRef(loadUserData);
+  loadUserDataRef.current = loadUserData;
 
   useEffect(() => {
     if (authLoading || loadDataRef.current) return;
@@ -232,9 +234,9 @@ export default function ProfilPage() {
       return;
     }
     loadDataRef.current = true;
-    loadUserData(user.id).then(() => setLoading(false));
+    loadUserDataRef.current(user.id).then(() => setLoading(false));
     return () => { loadDataRef.current = false; };
-  }, [authLoading, user?.id, router]);
+  }, [authLoading, user, router]);
 
   // Rechargement des donnees
   useEffect(() => {

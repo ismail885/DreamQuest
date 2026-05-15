@@ -40,11 +40,12 @@ export default function AdminDashboard() {
     if (isAutoRefresh) setIsRefreshing(true);
     try {
       // Run all queries in parallel for speed
-      const [usersRes, adventuresRes, charactersRes, votesRes] = await Promise.all([
+      const [usersRes, adventuresRes, charactersRes, votesRes, recentAdvRes] = await Promise.all([
         supabase.from("utilisateur").select("role,date_creation", { count: "exact", head: false }),
         supabase.from("aventure").select("*", { count: "exact", head: true }),
         supabase.from("personnage").select("*", { count: "exact", head: true }),
         supabase.from("vote").select("*", { count: "exact", head: true }),
+        supabase.from("aventure").select("date_creation", { count: "exact", head: false }),
       ]);
 
       const sevenDaysAgo = new Date();
@@ -55,10 +56,10 @@ export default function AdminDashboard() {
       today.setHours(0, 0, 0, 0);
       const todayStr = today.toISOString();
 
-      // Process users data
       const usersCount = usersRes.count || 0;
       const recentUsersCount = usersRes.data?.filter(u => u.date_creation >= sevenDaysAgoStr).length || 0;
       const activeTodayCount = usersRes.data?.filter(u => u.date_creation >= todayStr).length || 0;
+      const recentAdventuresCount = recentAdvRes.data?.filter(a => a.date_creation >= sevenDaysAgoStr).length || 0;
       
       const roleCounts = { admin: 0, joueur: 0, createur: 0 };
       usersRes.data?.forEach(u => {
@@ -76,7 +77,7 @@ export default function AdminDashboard() {
         joueurCount: roleCounts.joueur,
         createurCount: roleCounts.createur,
         recentUsers: recentUsersCount,
-        recentAdventures: 0,
+        recentAdventures: recentAdventuresCount,
         activeUsersToday: activeTodayCount,
       });
       setLastUpdate(new Date());
