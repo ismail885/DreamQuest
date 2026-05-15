@@ -9,15 +9,17 @@ import AdventureCard from "@/components/adventure/AdventureCard";
 import { SkeletonAdventureList } from "@/components/shared/Skeleton";
 import { supabase } from "@/lib/supabaseClient";
 import type { AdventureListItem } from "@/types/adventure";
+import { Search } from "lucide-react";
 
 const ITEMS_PER_PAGE = 12;
 
-type SortOption = 'popularite' | 'date' | 'alpha';
+type FilterOption = 'tous' | 'fantasy' | 'scifi' | 'horreur' | 'romance';
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'popularite', label: 'Popularite' },
-  { value: 'date', label: 'Recent' },
-  { value: 'alpha', label: 'A-Z' },
+const FILTER_OPTIONS: { value: FilterOption; label: string }[] = [
+  { value: 'tous', label: 'Tous' },
+  { value: 'fantasy', label: 'Fantasy' },
+  { value: 'scifi', label: 'Sci-Fi' },
+  { value: 'horreur', label: 'Horreur' },
 ];
 
 export default function AdventurePage() {
@@ -37,7 +39,7 @@ function AdventurePageContent() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [sortOption, setSortOption] = useState<SortOption>('popularite');
+  const [activeFilter, setActiveFilter] = useState<FilterOption>('tous');
   const [showCharacterModal, setShowCharacterModal] = useState(false);
   const fetchingRef = useRef(false);
 
@@ -50,22 +52,10 @@ function AdventurePageContent() {
       const from = (currentPage - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
       
-      let query = supabase
+      const query = supabase
         .from("aventure")
-        .select("id, titre, description, popularite", { count: "exact" });
-
-      // Apply sorting
-      switch (sortOption) {
-        case 'popularite':
-          query = query.order("popularite", { ascending: false });
-          break;
-        case 'date':
-          query = query.order("date_creation", { ascending: false });
-          break;
-        case 'alpha':
-          query = query.order("titre", { ascending: true });
-          break;
-      }
+        .select("id, titre, description, popularite", { count: "exact" })
+        .order("popularite", { ascending: false });
 
       const { data, error, count } = await query.range(from, to);
 
@@ -81,13 +71,7 @@ function AdventurePageContent() {
 
     fetchAdventures();
     return () => { fetchingRef.current = false; };
-  }, [currentPage, sortOption]);
-
-  // Reset to page 1 when sort option changes
-  const handleSortChange = (option: SortOption) => {
-    setSortOption(option);
-    setCurrentPage(1);
-  };
+  }, [currentPage]);
 
   const filteredAdventures = adventures.filter((adventure) =>
     adventure.titre.toLowerCase().includes(searchQuery.toLowerCase())
@@ -105,10 +89,10 @@ function AdventurePageContent() {
 
         <div className="container mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
           <div className="text-center space-y-3 md:space-y-4 mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-content-primary">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#3b9ede]">
               Explorez les Aventures
             </h1>
-            <p className="text-content-secondary text-sm md:text-lg max-w-xl mx-auto">
+            <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto">
               Choisissez votre prochaine aventure parmi nos histoires épiques
             </p>
           </div>
@@ -128,46 +112,35 @@ function AdventurePageContent() {
             </div>
           )}
 
-          <div className="max-w-4xl mx-auto space-y-4 md:space-y-6 mb-8 md:mb-12">
+          <div className="max-w-4xl mx-auto space-y-4 mb-8 md:mb-12">
             <div className="relative">
               <input
                 type="text"
-                placeholder="Rechercher une histoire"
+                placeholder="Rechercher une histoire..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="w-full px-4 md:px-6 py-3 md:py-4 bg-surface-secondary border border-gray-800 rounded-xl text-content-primary placeholder:text-content-secondary focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm md:text-base"
+                className="w-full px-4 md:px-6 py-3 md:py-3.5 bg-[#1a1f2e] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm md:text-base"
               />
-              <svg
-                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-content-secondary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <Search className="absolute right-4 md:right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             </div>
 
-            {/* Tri & Count */}
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-content-secondary text-xs uppercase tracking-wider">Trier par</span>
-                <div className="flex gap-2">
-                  {SORT_OPTIONS.map((option) => (
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex gap-2">
+                {FILTER_OPTIONS.map((option) => (
                   <button
                     key={option.value}
-                    onClick={() => handleSortChange(option.value)}
+                    onClick={() => setActiveFilter(option.value)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      sortOption === option.value
-                        ? 'bg-cyan-500/20 border border-cyan-500/60 text-cyan-400 shadow-lg shadow-cyan-500/20'
-                        : 'bg-surface-secondary border border-gray-700/50 text-content-secondary hover:text-content-primary hover:border-gray-600'
+                      activeFilter === option.value
+                        ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
+                        : 'bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500'
                     }`}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
-              </div>
-              <div className="text-content-secondary text-sm">
+              <div className="text-gray-500 text-sm">
                 <span className="font-semibold text-cyan-400">{filteredAdventures.length}</span> aventure{filteredAdventures.length !== 1 ? 's' : ''} trouvée{filteredAdventures.length !== 1 ? 's' : ''}
               </div>
             </div>
@@ -181,7 +154,7 @@ function AdventurePageContent() {
             </div>
           ) : filteredAdventures.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
                 {filteredAdventures.map((adventure) => (
                   <AdventureCard
                     key={adventure.id}

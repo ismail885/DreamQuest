@@ -14,7 +14,8 @@ import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/li
 import { playerAttack, enemyAttack, createCombatState, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
-import Breadcrumb, { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
+import { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
+import { Heart, Swords, Brain, RotateCcw, ArrowLeft } from "lucide-react";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -441,7 +442,7 @@ function AdventureReader({ params }: Props) {
   const characterIdNum = personnageId ? parseInt(personnageId, 10) : null;
   const progression = Math.min(Math.round((history.length / MAX_STEPS) * 100), 100);
 
-  const { isSaving, lastSaved, save } = useSave({
+  const { isSaving, save } = useSave({
     userId: user?.id ?? null,
     adventureId: adventureId,
     characterId: characterIdNum,
@@ -588,7 +589,7 @@ function AdventureReader({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-surface-primary text-content-primary flex flex-col">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800/60">
+      <div className="flex items-center justify-between px-6 py-4">
         <button
           onClick={() => {
             if (history.length > 0 && !isEnd) {
@@ -597,26 +598,13 @@ function AdventureReader({ params }: Props) {
               router.back();
             }
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-surface-tertiary border border-gray-700 hover:border-gray-500 rounded-lg text-content-secondary hover:text-content-primary transition-all text-sm font-medium"
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm group"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Retour
         </button>
 
-        <div className="flex items-center gap-2">
-          <Breadcrumb 
-            items={[
-              { label: 'Aventures', href: '/adventure' },
-              { label: adventure?.titre ?? 'Aventure' },
-            ]}
-            currentStep={history.length + 1}
-            totalSteps={MAX_STEPS}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {isSaving && (
             <span className="flex items-center gap-1.5 text-xs text-cyan-400">
               <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -626,25 +614,14 @@ function AdventureReader({ params }: Props) {
               Sauvegarde...
             </span>
           )}
-          {!isSaving && lastSaved && (
-            <span className="text-xs text-content-secondary">
-              Sauvegardé
-            </span>
-          )}
+          <button
+            onClick={restart}
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm group"
+          >
+            <RotateCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+            Recommencer
+          </button>
         </div>
-
-        <button
-          onClick={async () => {
-            await save();
-            router.back();
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600/20 border border-green-500/50 hover:bg-green-600/30 rounded-lg text-green-400 hover:text-green-300 transition-all text-sm font-medium"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-          </svg>
-          Sauvegarder & Quitter
-        </button>
       </div>
 
       {showEffect && lastConsequence && (
@@ -687,46 +664,40 @@ function AdventureReader({ params }: Props) {
 
       {character && (
         <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-800/40">
-          <div className="flex items-center gap-3 flex-1 bg-surface-tertiary border border-gray-800 rounded-xl px-4 py-3">
-            <svg className="w-6 h-6 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-            </svg>
+          <div className="flex items-center gap-3 flex-1 bg-[#131e35] border border-gray-800/60 rounded-xl px-4 py-3">
+            <Heart className="w-6 h-6 text-red-400 flex-shrink-0" />
             <div>
-              <p className="text-content-secondary text-xs">Santé</p>
-              <p className="text-content-primary font-bold text-lg leading-none">{character.points_vie}</p>
+              <p className="text-gray-400 text-xs">Sante</p>
+              <p className="text-white font-bold text-lg leading-none">{character.points_vie}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-1 bg-surface-tertiary border border-gray-800 rounded-xl px-4 py-3">
-            <svg className="w-6 h-6 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          <div className="flex items-center gap-3 flex-1 bg-[#131e35] border border-gray-800/60 rounded-xl px-4 py-3">
+            <Swords className="w-6 h-6 text-orange-400 flex-shrink-0" />
             <div>
-              <p className="text-content-secondary text-xs">Force</p>
-              <p className="text-content-primary font-bold text-lg leading-none">{character.stats?.force ?? 0}</p>
+              <p className="text-gray-400 text-xs">Force</p>
+              <p className="text-white font-bold text-lg leading-none">{character.stats?.force ?? 0}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-1 bg-surface-tertiary border border-gray-800 rounded-xl px-4 py-3">
-            <svg className="w-6 h-6 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
+          <div className="flex items-center gap-3 flex-1 bg-[#131e35] border border-gray-800/60 rounded-xl px-4 py-3">
+            <Brain className="w-6 h-6 text-purple-400 flex-shrink-0" />
             <div>
-              <p className="text-content-secondary text-xs">Intelligence</p>
-              <p className="text-content-primary font-bold text-lg leading-none">{character.stats?.magie ?? 0}</p>
+              <p className="text-gray-400 text-xs">Intelligence</p>
+              <p className="text-white font-bold text-lg leading-none">{character.stats?.magie ?? 0}</p>
             </div>
           </div>
         </div>
       )}
 
       <main className="flex-1 flex flex-col items-center px-4 py-6">
-        <div className="w-full max-w-2xl space-y-5">
+        <div className="w-full max-w-3xl space-y-5">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-content-secondary text-sm">
-                {isEnd ? 'Aventure terminée' : `Étape ${history.length + 1} sur ${MAX_STEPS}`}
+              <span className="text-gray-400 text-sm">
+                Progression de l&apos;histoire
               </span>
-              <span className="text-content-secondary text-sm">{progression}%</span>
+              <span className="text-gray-400 text-sm">{progression}%</span>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
               <div
@@ -736,7 +707,7 @@ function AdventureReader({ params }: Props) {
             </div>
           </div>
 
-          <div className="relative w-full h-52 rounded-xl overflow-hidden">
+          <div className="relative w-full h-96 rounded-xl overflow-hidden">
             <Image
               src={image}
               alt={adventure?.titre ?? "Aventure"}
@@ -753,9 +724,9 @@ function AdventureReader({ params }: Props) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-surface-tertiary border border-gray-800 rounded-xl p-6"
+              className="bg-[#0a0e1a] border border-gray-800/60 rounded-xl p-6"
             >
-              <p className="text-content-secondary leading-relaxed text-base">
+              <p className="text-gray-300 leading-relaxed text-base">
                 {currentBranch.texte}
               </p>
             </motion.div>
@@ -825,21 +796,21 @@ function AdventureReader({ params }: Props) {
                 const impact = getConsequenceImpact(currentBranch.choix1_consequences);
                 return (
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={async () => { const isCombat = await applyConsequence(1, currentBranch?.choix1_consequences); if (!isCombat) chooseOption(currentBranch.choix1_lien); }}
-                    className={`w-full text-left px-5 py-4 bg-surface-tertiary border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
+                    className={`w-full text-left px-5 py-4 bg-transparent border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-center gap-3 min-h-[56px] ${
                       impact.hasImpact 
                         ? impact.isPositive 
-                          ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
-                          : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-surface-tertiary border-gray-700 text-content-secondary hover:text-content-primary'
+                          ? 'hover:border-green-500/60 hover:bg-green-500/5 border-gray-700 text-gray-300 hover:text-green-300' 
+                          : 'hover:border-red-500/60 hover:bg-red-500/5 border-gray-700 text-gray-300 hover:text-red-300'
+                        : 'hover:border-cyan-500/60 hover:bg-white/5 border-gray-700 text-gray-300 hover:text-white'
                     }`}
                   >
-                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
+                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
                       impact.hasImpact 
                         ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        : 'bg-gray-700 text-content-secondary'
+                        : 'bg-gray-700 text-gray-400'
                     }`}>
                       {impact.hasImpact ? (
                         impact.isPositive ? (
@@ -849,14 +820,12 @@ function AdventureReader({ params }: Props) {
                         )
                       ) : <span className="text-xs font-bold">1</span>}
                     </div>
-                    <div className="flex-1">
-                      <span className="block">{currentBranch.choix1}</span>
-                      {impact.hasImpact && (
-                        <span className={`text-xs mt-1 block ${impact.isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                          {impact.impactText}
-                        </span>
-                      )}
-                    </div>
+                    <span className="flex-1">{currentBranch.choix1}</span>
+                    {impact.hasImpact && (
+                      <span className={`text-xs font-medium ${impact.isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                        {impact.impactText}
+                      </span>
+                    )}
                   </motion.button>
                 );
               })()}
@@ -864,21 +833,21 @@ function AdventureReader({ params }: Props) {
                 const impact = getConsequenceImpact(currentBranch.choix2_consequences);
                 return (
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={async () => { const isCombat = await applyConsequence(2, currentBranch?.choix2_consequences); if (!isCombat) chooseOption(currentBranch.choix2_lien); }}
-                    className={`w-full text-left px-5 py-4 bg-surface-tertiary border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-start gap-3 ${
+                    className={`w-full text-left px-5 py-4 bg-transparent border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-center gap-3 min-h-[56px] ${
                       impact.hasImpact 
                         ? impact.isPositive 
-                          ? 'hover:border-green-500/60 hover:bg-green-500/10 border-gray-700 hover:text-green-300' 
-                          : 'hover:border-red-500/60 hover:bg-red-500/10 border-gray-700 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-surface-tertiary border-gray-700 text-content-secondary hover:text-content-primary'
+                          ? 'hover:border-green-500/60 hover:bg-green-500/5 border-gray-700 text-gray-300 hover:text-green-300' 
+                          : 'hover:border-red-500/60 hover:bg-red-500/5 border-gray-700 text-gray-300 hover:text-red-300'
+                        : 'hover:border-cyan-500/60 hover:bg-white/5 border-gray-700 text-gray-300 hover:text-white'
                     }`}
                   >
-                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${
+                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
                       impact.hasImpact 
                         ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        : 'bg-gray-700 text-content-secondary'
+                        : 'bg-gray-700 text-gray-400'
                     }`}>
                       {impact.hasImpact ? (
                         impact.isPositive ? (
@@ -888,14 +857,12 @@ function AdventureReader({ params }: Props) {
                         )
                       ) : <span className="text-xs font-bold">2</span>}
                     </div>
-                    <div className="flex-1">
-                      <span className="block">{currentBranch.choix2}</span>
-                      {impact.hasImpact && (
-                        <span className={`text-xs mt-1 block ${impact.isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                          {impact.impactText}
-                        </span>
-                      )}
-                    </div>
+                    <span className="flex-1">{currentBranch.choix2}</span>
+                    {impact.hasImpact && (
+                      <span className={`text-xs font-medium ${impact.isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                        {impact.impactText}
+                      </span>
+                    )}
                   </motion.button>
                 );
               })()}

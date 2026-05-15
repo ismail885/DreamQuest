@@ -1,17 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import type { Adventure as Aventure, Branch as Embranchement } from '@/types/adventure';
+import type { Adventure, Branch } from '@/types/adventure';
 
 interface UseAdventureState {
-  adventure: Aventure | null;
-  currentBranch: Embranchement | null;
+  adventure: Adventure | null;
+  currentBranch: Branch | null;
   loading: boolean;
   error: string | null;
   isEnd: boolean;
-  history: Embranchement[];
+  history: Branch[];
 }
 
-export function useAdventure(adventureId: number, userId: number | null = null) {
+export function useAdventure(
+  adventureId: number,
+  userId: number | null = null,
+  onChoice?: (branchId: number, currentHistory: Branch[]) => void,
+) {
   const [state, setState] = useState<UseAdventureState>({
     adventure: null,
     currentBranch: null,
@@ -23,6 +27,8 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
 
   const userIdRef = useRef(userId);
   userIdRef.current = userId;
+  const onChoiceRef = useRef(onChoice);
+  onChoiceRef.current = onChoice;
 
   // Charger l'aventure depuis la BDD
   useEffect(() => {
@@ -125,7 +131,9 @@ export function useAdventure(adventureId: number, userId: number | null = null) 
       }
 
       const isEnd = !branch.choix1_lien && !branch.choix2_lien;
-      
+
+      onChoiceRef.current?.(branchId, state.history);
+
       setState((s) => ({
         ...s,
         currentBranch: branch,

@@ -69,7 +69,7 @@ const generateAdventureContent = (genre: string, title: string): BranchNode[] =>
     secrets: ["un journal maudit", "un rituel interdit", "une vérité enfouie"],
     victims: ["une voix enfantine", "un whisper solitaire"],
     openings: [
-      `La peur règnent à ${titleUpper}, là où les ombres révèlent leur vraie forme.`,
+      `La peur règne à ${titleUpper}, là où les ombres révèlent leur vraie forme.`,
       `Personne n'ose prononcer le nom de ${titleLower}. On dit qu'il réveille les morts.`
     ],
     events: [
@@ -93,7 +93,7 @@ const generateAdventureContent = (genre: string, title: string): BranchNode[] =>
     allies: ["un androïde errant", "une espèce pacifiste", "une IA bienveillante"],
     openings: [
       `L'an 2347. Votre mission : investiguer le mystère de ${titleUpper}.`,
-      `Le signal de ${titleLower} a été détecté. Personne n'a jamais thérapeut cette région.`
+      `Le signal de ${titleLower} a été détecté. Personne n'a jamais exploré cette région.`
     ],
     events: [
       "Niv1_Votre scanner détecte une structure artificielle.",
@@ -184,7 +184,7 @@ const generateAdventureContent = (genre: string, title: string): BranchNode[] =>
       ["Prendre des risques", "Jouer la sécurité", "Créer une diversion"],
       ["Faire confiance à votre instinct", "Utiliser vos compétences", "Improviser"],
       ["Combattre", "Négocier", "Fuir stratégiquement"],
-      ["Explorer les profondeur", "Rester ensemble", "Diviser pour mieux régner"],
+      ["Explorer les profondeurs", "Rester ensemble", "Diviser pour mieux régner"],
       ["Sacrifice personnel", "Sacrifice stratégique", "Tricher pour survivre"],
       ["Accepter l'aide d'un的神秘", "Refuser toute assistance", "Demander conseil aux anciens"]
     ];

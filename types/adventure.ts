@@ -5,6 +5,7 @@ export interface Adventure {
   auteur_id: number | null
   date_creation: string
   popularite: number
+  embranchement_initial_id?: number | null
 }
 
 export interface Branch {
@@ -42,6 +43,7 @@ export interface StatChange {
 
 export interface AdventureWithAuthor extends Adventure {
   auteur_nom?: string
+  embranchement_initial_id?: number | null
 }
 
 export interface UserCreation {
