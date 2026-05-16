@@ -6,6 +6,7 @@ import { Trophy, Medal, BookOpen, Users, ChevronDown } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
+import Loader from "@/components/shared/Loader";
 import { useAuthContext } from "@/context/AuthContext";
 
 interface RankingAdventure {
@@ -51,7 +52,7 @@ export default function ClassementPage() {
   const handleTouchEnd = () => {
     if (pullDistance >= 55) {
       setPullState("refreshing");
-      setPullDistance(40);
+      setPullDistance(128);
       setRefreshKey((k) => k + 1);
     } else {
       setPullState("idle");
@@ -176,7 +177,7 @@ export default function ClassementPage() {
             style={{ height: pullDistance }}
           >
             {pullState === "refreshing" ? (
-              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+              <Loader size="sm" message="" />
             ) : (
               <div className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}>
                 <ChevronDown className="w-6 h-6 text-cyan-400" />

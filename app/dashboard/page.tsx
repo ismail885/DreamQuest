@@ -48,7 +48,7 @@ export default function DashboardPage() {
   const endPull = () => {
     if (pullDistance >= 55) {
       setPullState("refreshing");
-      setPullDistance(40);
+      setPullDistance(128);
       setRefreshKey((k) => k + 1);
     } else {
       setPullState("idle");
@@ -141,7 +141,7 @@ export default function DashboardPage() {
             style={{ height: pullDistance }}
           >
             {pullState === "refreshing" ? (
-              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+              <Loader size="sm" message="" />
             ) : (
               <div className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}>
                 <ChevronDown className="w-6 h-6 text-cyan-400" />

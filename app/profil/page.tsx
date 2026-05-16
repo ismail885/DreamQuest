@@ -60,7 +60,7 @@ export default function ProfilPage() {
   const handleTouchEnd = () => {
     if (pullDistance >= 55 && user?.id) {
       setPullState("refreshing");
-      setPullDistance(40);
+      setPullDistance(128);
       loadUserData(user.id).finally(() => {
         setPullDistance(0);
         setPullState("idle");
@@ -496,7 +496,7 @@ export default function ProfilPage() {
             style={{ height: pullDistance }}
           >
             {pullState === "refreshing" ? (
-              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+              <Loader size="sm" message="" />
             ) : (
               <div className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}>
                 <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
