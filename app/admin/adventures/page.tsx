@@ -17,6 +17,7 @@ export default function AdminAdventuresPage() {
   // Modal state
   const [viewAdventure, setViewAdventure] = useState<Adventure | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const fetchAdventures = useCallback(async () => {
     setLoading(true);
@@ -66,7 +67,8 @@ export default function AdminAdventuresPage() {
       fetchAdventures();
     } catch (error) {
       console.error("Error deleting adventure:", error);
-      alert("Erreur lors de la suppression");
+      setActionError("Erreur lors de la suppression de l'aventure.");
+      setDeleteConfirm(null);
     }
   }
 
@@ -100,6 +102,16 @@ export default function AdminAdventuresPage() {
           className="w-full pl-12 pr-4 py-3 bg-[#0f1623] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
         />
       </div>
+
+      {/* Error toast */}
+      {actionError && (
+        <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <span className="text-red-400 text-sm flex-1">{actionError}</span>
+          <button onClick={() => setActionError(null)} className="text-red-400 hover:text-red-300">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-[#0f1623] border border-gray-800 rounded-xl overflow-hidden">

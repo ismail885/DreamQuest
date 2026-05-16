@@ -31,6 +31,7 @@ export default function AdminUsersPage() {
     role: "joueur" as UserRole,
   });
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -94,7 +95,7 @@ export default function AdminUsersPage() {
       fetchUsers();
     } catch (error) {
       console.error("Error deleting users:", error);
-      alert("Erreur lors de la suppression");
+      setActionError("Erreur lors de la suppression des utilisateurs.");
     }
   };
 
@@ -107,7 +108,7 @@ export default function AdminUsersPage() {
       fetchUsers();
     } catch (error) {
       console.error("Error updating roles:", error);
-      alert("Erreur lors de la mise à jour");
+      setActionError("Erreur lors du changement de rôle.");
     }
   };
 
@@ -148,14 +149,14 @@ export default function AdminUsersPage() {
         if (error) throw error;
       } else {
         // For new users, we'd need to handle password - simplified for admin
-        alert("La création d&apos;utilisateur via admin nécessite un mot de passe temporaire. Utilisez le formulaire d'inscription.");
+        setActionError("La création d'utilisateur via admin nécessite le formulaire d'inscription.");
         return;
       }
       closeModal();
       fetchUsers();
     } catch (error) {
       console.error("Error saving user:", error);
-      alert("Erreur lors de la sauvegarde");
+      setActionError("Erreur lors de la sauvegarde de l'utilisateur.");
     }
   }
 
@@ -176,7 +177,8 @@ export default function AdminUsersPage() {
       fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
-      alert("Erreur lors de la suppression");
+      setActionError("Erreur lors de la suppression de l'utilisateur.");
+      setDeleteConfirm(null);
     }
   }
 
@@ -218,6 +220,16 @@ export default function AdminUsersPage() {
           className="w-full pl-12 pr-4 py-3 bg-[#0f1623] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
         />
       </div>
+
+      {/* Error toast */}
+      {actionError && (
+        <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <span className="text-red-400 text-sm flex-1">{actionError}</span>
+          <button onClick={() => setActionError(null)} className="text-red-400 hover:text-red-300">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Bulk Actions Bar */}
       {selectedUsers.size > 0 && (

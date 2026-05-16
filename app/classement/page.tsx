@@ -31,7 +31,9 @@ export default function ClassementPage() {
   const [adventures, setAdventures] = useState<RankingAdventure[]>([]);
   const [players, setPlayers] = useState<RankingPlayer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   useEffect(() => {
+    setFetchError(null);
     const fetchRanking = async () => {
       setLoading(true);
       
@@ -51,6 +53,7 @@ export default function ClassementPage() {
 
       if (error) {
         console.error("Erreur:", error);
+        setFetchError("Impossible de charger le classement.");
       } else {
         const formatted = (data ?? []).map((a: Record<string, unknown>) => ({
           id: a.id as number,
@@ -67,6 +70,7 @@ export default function ClassementPage() {
     };
 
     const fetchPlayers = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from("personnage")
         .select(`
@@ -81,7 +85,10 @@ export default function ClassementPage() {
         .order("experience", { ascending: false })
         .limit(50);
 
-      if (!error && data) {
+      if (error) {
+        console.error("Erreur:", error);
+        setFetchError("Impossible de charger le classement des joueurs.");
+      } else if (data) {
         const formatted = (data ?? []).map((p: Record<string, unknown>) => {
           const userData = (p.utilisateur as Record<string, unknown>);
           return {
@@ -95,6 +102,7 @@ export default function ClassementPage() {
         });
         setPlayers(formatted);
       }
+      setLoading(false);
     };
 
     if (activeTab === "adventures") {
@@ -166,7 +174,17 @@ export default function ClassementPage() {
             </button>
           </div>
 
-          {loading ? (
+          {fetchError ? (
+            <div className="text-center py-20">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-white mb-2">Erreur de chargement</h2>
+              <p className="text-gray-400">{fetchError}</p>
+            </div>
+          ) : loading ? (
             <div className="text-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto"></div>
               <p className="text-gray-400 mt-4">Chargement du classement...</p>

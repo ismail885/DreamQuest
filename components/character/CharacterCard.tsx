@@ -18,10 +18,11 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
   const healthPercentage = pvMax > 0 ? (pv / pvMax) * 100 : 0;
   
   const niveau = character.niveau || 1;
-  const xpPourNiveauSuivant = calculateRequiredXP(niveau);
-  const xpDepart = getTotalXPForLevel(niveau);
-  const xpActuelle = xpDepart + Math.floor(Math.random() * xpPourNiveauSuivant * 0.3); // Simulé: 30% du chemin
-  const xpPercent = (xpActuelle % xpPourNiveauSuivant) / xpPourNiveauSuivant * 100;
+  const totalXp = character.experience ?? 0;
+  const xpAtLevelStart = niveau > 1 ? getTotalXPForLevel(niveau) : 0;
+  const xpInCurrentLevel = Math.max(0, totalXp - xpAtLevelStart);
+  const xpForNextLevel = calculateRequiredXP(niveau);
+  const xpPercent = xpForNextLevel > 0 ? Math.min(100, (xpInCurrentLevel / xpForNextLevel) * 100) : 0;
 
   return (
     <motion.div
@@ -55,7 +56,7 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
         <div className="absolute bottom-2 left-2 right-2">
           <div className="flex justify-between text-xs text-gray-300 mb-1">
             <span>XP</span>
-            <span>{Math.floor(xpActuelle % xpPourNiveauSuivant)} / {xpPourNiveauSuivant}</span>
+            <span>{Math.floor(xpInCurrentLevel)} / {xpForNextLevel}</span>
           </div>
           <div className="h-1.5 bg-gray-900/80 rounded-full overflow-hidden">
             <div

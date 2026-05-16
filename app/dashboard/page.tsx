@@ -26,6 +26,7 @@ export default function DashboardPage() {
     totalXp: 0,
   });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<{ id: number; titre: string; description: string | null }[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
 
@@ -72,6 +73,7 @@ export default function DashboardPage() {
         if (!cancelled) setSuggestions(advData ?? []);
       } catch (err) {
         console.error("[Dashboard] Erreur chargement:", err);
+        setStatsError("Impossible de charger vos statistiques. Réessayez plus tard.");
       } finally {
         if (!cancelled) {
           setStatsLoading(false);
@@ -132,6 +134,12 @@ export default function DashboardPage() {
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">
               Vos Statistiques
             </h2>
+
+            {statsError && (
+              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+                {statsError}
+              </div>
+            )}
 
             {statsLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">

@@ -21,6 +21,7 @@ export default function AdminCharactersPage() {
   // Modal state
   const [viewCharacter, setViewCharacter] = useState<CharacterWithUser | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const fetchCharacters = useCallback(async () => {
     setLoading(true);
@@ -83,7 +84,8 @@ export default function AdminCharactersPage() {
       fetchCharacters();
     } catch (error) {
       console.error("Error deleting character:", error);
-      alert("Erreur lors de la suppression");
+      setActionError("Erreur lors de la suppression du personnage.");
+      setDeleteConfirm(null);
     }
   }
 
@@ -127,6 +129,16 @@ export default function AdminCharactersPage() {
           className="w-full pl-12 pr-4 py-3 bg-[#0f1623] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
         />
       </div>
+
+      {/* Error toast */}
+      {actionError && (
+        <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <span className="text-red-400 text-sm flex-1">{actionError}</span>
+          <button onClick={() => setActionError(null)} className="text-red-400 hover:text-red-300">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-[#0f1623] border border-gray-800 rounded-xl overflow-hidden">

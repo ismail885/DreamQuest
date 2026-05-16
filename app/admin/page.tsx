@@ -31,6 +31,7 @@ export default function AdminDashboard() {
     activeUsersToday: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isLive, setIsLive] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -38,6 +39,7 @@ export default function AdminDashboard() {
 
   const fetchStats = useCallback(async (isAutoRefresh = false) => {
     if (isAutoRefresh) setIsRefreshing(true);
+    setError(null);
     try {
       // Run all queries in parallel for speed
       const [usersRes, adventuresRes, charactersRes, votesRes, recentAdvRes] = await Promise.all([
@@ -83,6 +85,7 @@ export default function AdminDashboard() {
       setLastUpdate(new Date());
     } catch (error) {
       console.error("Error fetching stats:", error);
+      setError("Impossible de charger les statistiques. Vérifiez votre connexion à la base de données.");
     } finally {
       setLoading(false);
       if (isAutoRefresh) setIsRefreshing(false);
@@ -166,6 +169,28 @@ export default function AdminDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Erreur de connexion</h2>
+          <p className="text-gray-400">{error}</p>
+          <button
+            onClick={handleManualRefresh}
+            className="mt-6 px-6 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
+          >
+            Réessayer
+          </button>
+        </div>
       </div>
     );
   }

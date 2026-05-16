@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
-import { ExtendedUserProfile, UserStats, UserSave, UserCreation, Character, CharacterClass } from "@/types";
+import { ExtendedUserProfile, UserStats, UserSave, UserCreation, Character, CharacterClass, getTotalXPForLevel, calculateRequiredXP } from "@/types";
 
 interface RawCharacter {
   id: number;
@@ -26,6 +26,7 @@ export default function ProfilPage() {
   const router = useRouter();
   const { user, loading: authLoading, updateUser, logout } = useAuthContext();
   const [loading, setLoading] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters" | "evolution">("stories");
   
   const [userProfile, setUserProfile] = useState<ExtendedUserProfile | null>(null);
@@ -204,6 +205,7 @@ export default function ProfilPage() {
 
     } catch (error) {
       console.error("Erreur lors du chargement des données:", error);
+      setDataError("Impossible de charger vos données. Réessayez plus tard.");
     }
   }, [user]);
 
@@ -454,6 +456,13 @@ export default function ProfilPage() {
 
       <main className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
         <div className="max-w-6xl mx-auto">
+
+          {dataError && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+              {dataError}
+            </div>
+          )}
+
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             
             <div className="lg:w-80 flex-shrink-0">
@@ -811,10 +820,11 @@ export default function ProfilPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {userCharacters.map((char, index) => {
                             const niveau = char.niveau || 1;
-                            const xpPourNiveauSuivant = Math.floor(100 * Math.pow(1.5, niveau - 1));
-                            const xpDepart = Array.from({ length: niveau - 1 }, (_, i) => Math.floor(100 * Math.pow(1.5, i))).reduce((a, b) => a + b, 0);
-                            const xpActuelle = xpDepart + Math.floor(Math.random() * xpPourNiveauSuivant * 0.3);
-                            const xpPercent = (xpActuelle % xpPourNiveauSuivant) / xpPourNiveauSuivant * 100;
+                            const totalXp = char.experience ?? 0;
+                            const xpAtLevelStart = niveau > 1 ? getTotalXPForLevel(niveau) : 0;
+                            const xpInCurrentLevel = Math.max(0, totalXp - xpAtLevelStart);
+                            const xpForNextLevel = calculateRequiredXP(niveau);
+                            const xpPercent = xpForNextLevel > 0 ? Math.min(100, (xpInCurrentLevel / xpForNextLevel) * 100) : 0;
                             const passifs = {
                               Guerrier: { name: "Force du Combattant", desc: "+10% dégâts physiques" },
                               Mage: { name: "Arcane Résistant", desc: "+10% résistance magique" },
@@ -845,7 +855,7 @@ export default function ProfilPage() {
                                 <div className="absolute bottom-2 left-2 right-2">
                                   <div className="flex justify-between text-xs text-gray-400 mb-0.5">
                                     <span>XP</span>
-                                    <span>{Math.floor(xpActuelle % xpPourNiveauSuivant)}/{xpPourNiveauSuivant}</span>
+                                    <span>{Math.floor(xpInCurrentLevel)}/{xpForNextLevel}</span>
                                   </div>
                                   <div className="h-1 bg-gray-900/80 rounded-full overflow-hidden">
                                     <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${xpPercent}%` }} />
@@ -904,10 +914,11 @@ export default function ProfilPage() {
                         <div className="space-y-6">
                           {userCharacters.map((char, index) => {
                             const niveau = char.niveau || 1;
-                            const xpPourNiveauSuivant = Math.floor(100 * Math.pow(1.5, niveau - 1));
-                            const xpDepart = Array.from({ length: niveau - 1 }, (_, i) => Math.floor(100 * Math.pow(1.5, i))).reduce((a, b) => a + b, 0);
-                            const xpActuelle = xpDepart + Math.floor(Math.random() * xpPourNiveauSuivant * 0.3);
-                            const xpPercent = (xpActuelle % xpPourNiveauSuivant) / xpPourNiveauSuivant * 100;
+                            const totalXp = char.experience ?? 0;
+                            const xpAtLevelStart = niveau > 1 ? getTotalXPForLevel(niveau) : 0;
+                            const xpInCurrentLevel = Math.max(0, totalXp - xpAtLevelStart);
+                            const xpForNextLevel = calculateRequiredXP(niveau);
+                            const xpPercent = xpForNextLevel > 0 ? Math.min(100, (xpInCurrentLevel / xpForNextLevel) * 100) : 0;
                             const passifs: Record<string, { name: string; desc: string; icon: string }> = {
                               Guerrier: { name: "Force du Combattant", desc: "+10% dégâts physiques", icon: "⚔️" },
                               Mage: { name: "Arcane Résistant", desc: "+10% résistance magique", icon: "🔮" },
@@ -940,7 +951,7 @@ export default function ProfilPage() {
                                 <div className="mb-4">
                                   <div className="flex justify-between text-sm mb-1">
                                     <span className="text-gray-400">Experience</span>
-                                    <span className="text-cyan-400">{Math.floor(xpActuelle % xpPourNiveauSuivant)} / {xpPourNiveauSuivant} XP</span>
+                                    <span className="text-cyan-400">{Math.floor(xpInCurrentLevel)} / {xpForNextLevel} XP</span>
                                   </div>
                                   <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
                                     <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500" style={{ width: `${xpPercent}%` }} />
