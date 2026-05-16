@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { Sparkles, Plus, ChevronDown } from "lucide-react";
@@ -9,7 +10,17 @@ import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
-import CharacterList from "@/components/character/CharacterList";
+
+const CharacterList = dynamic(() => import("@/components/character/CharacterList"), {
+  ssr: false,
+  loading: () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="bg-[#131e35] border border-gray-800/50 rounded-xl animate-pulse h-48" />
+      ))}
+    </div>
+  ),
+});
 
 interface UserStats {
   charactersCount: number;

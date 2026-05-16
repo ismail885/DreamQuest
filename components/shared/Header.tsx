@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthContext } from "@/context/AuthContext";
@@ -60,7 +60,7 @@ function ActionButtons({ user, isMobile = false, onNavigate }: { user: { usernam
   );
 }
 
-export default function Header() {
+const Header = React.memo(function Header() {
   const { user } = useAuthContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -193,4 +193,6 @@ export default function Header() {
       )}
     </>
   );
-}
+});
+
+export default Header;

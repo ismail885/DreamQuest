@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Image from 'next/image';
 import { ClassInfo, CLASS_ICONS, STAT_LABELS, STAT_COLORS, ABILITIES_DATA, CLASS_DIFFICULTIES, DIFFICULTY_LABELS, AbilityInfo } from '@/types';
 import { motion } from 'framer-motion';
@@ -11,7 +12,7 @@ interface ClassCardProps {
   onSelect: () => void;
 }
 
-export default function ClassCard({ classInfo, isSelected, onSelect }: ClassCardProps) {
+const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelect }: ClassCardProps) {
   const ClassIcon = CLASS_ICONS[classInfo.name];
   const difficultyInfo = CLASS_DIFFICULTIES[classInfo.name];
   const difficultyMeta = DIFFICULTY_LABELS[difficultyInfo?.level ?? 'DEBUTANT'];
@@ -179,4 +180,6 @@ export default function ClassCard({ classInfo, isSelected, onSelect }: ClassCard
       </div>
     </motion.div>
   );
-}
+});
+
+export default ClassCard;

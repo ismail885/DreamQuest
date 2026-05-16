@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
@@ -13,7 +14,7 @@ const navItems = [
   { href: "/profil", label: "Profil", icon: User },
 ];
 
-export default function BottomNav() {
+const BottomNav = React.memo(function BottomNav() {
   const pathname = usePathname();
   const { user } = useAuthContext();
   const userRole = user?.role as string;
@@ -57,4 +58,6 @@ export default function BottomNav() {
       </div>
     </nav>
   );
-}
+});
+
+export default BottomNav;

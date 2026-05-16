@@ -83,7 +83,7 @@ export default function LoginForm() {
           {/* Logo + Titre */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={56} height={56} className="object-contain" />
+              <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={56} height={56} className="object-contain" priority />
             </div>
             <h1 className="text-2xl font-bold text-[#3b9ede]">DreamQuest</h1>
             <p className="text-gray-400 text-sm mt-1">Connectez-vous à votre aventure</p>

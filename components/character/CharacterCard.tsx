@@ -10,7 +10,7 @@ interface CharacterCardProps {
   isSelected?: boolean;
 }
 
-export default function CharacterCard({ character, onSelect, onDelete, isSelected }: CharacterCardProps) {
+const CharacterCard = React.memo(function CharacterCard({ character, onSelect, onDelete, isSelected }: CharacterCardProps) {
   const classInfo = CHARACTER_CLASSES[character.classe];
   const passif = CLASS_PASSIVES[character.classe as keyof typeof CLASS_PASSIVES];
   const pv = character.points_vie ?? 0;
@@ -37,7 +37,6 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover"
-          priority={false}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
         
@@ -135,4 +134,6 @@ export default function CharacterCard({ character, onSelect, onDelete, isSelecte
       </div>
     </motion.div>
   );
-}
+});
+
+export default CharacterCard;

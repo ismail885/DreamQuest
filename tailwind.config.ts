@@ -10,8 +10,6 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        cinzel: ['var(--font-cinzel)', 'serif'],
-        inter: ['var(--font-inter)', 'sans-serif'],
         plusJakarta: ['var(--font-plus-jakarta)', 'sans-serif'],
       },
       colors: {
@@ -23,18 +21,6 @@ const config: Config = {
         secondary: {
           DEFAULT: '#9333ea',
           dark: '#7c3aed',
-        },
-        surface: {
-          primary: 'var(--surface-primary)',
-          secondary: 'var(--surface-secondary)',
-          tertiary: 'var(--surface-tertiary)',
-        },
-        content: {
-          primary: 'var(--content-primary)',
-          secondary: 'var(--content-secondary)',
-        },
-        placeholder: {
-          DEFAULT: 'var(--content-secondary)',
         },
       },
       animation: {

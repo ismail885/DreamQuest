@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import { useVote } from "@/hooks/useVote";
 import { supabase } from "@/lib/supabaseClient";
@@ -18,7 +18,7 @@ interface AdventureCardProps {
   onNavigateWithoutCharacter?: () => void;
 }
 
-export default function AdventureCard({
+const AdventureCard = React.memo(function AdventureCard({
   id,
   titre,
   description,
@@ -117,4 +117,6 @@ export default function AdventureCard({
       </Link>
     </motion.div>
   );
-}
+});
+
+export default AdventureCard;
