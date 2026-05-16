@@ -112,7 +112,7 @@ function AdventurePageContent() {
             </div>
           )}
 
-          <div className="max-w-4xl mx-auto space-y-4 mb-8 md:mb-12">
+          <div className="max-w-4xl mx-auto space-y-4 mb-8 md:mb-12 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/90 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-4 -mt-4 md:-mt-6">
             <div className="relative">
               <input
                 type="text"
@@ -124,8 +124,8 @@ function AdventurePageContent() {
               <Search className="absolute right-4 md:right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             </div>
 
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mb-1">
                 {FILTER_OPTIONS.map((option) => (
                   <button
                     key={option.value}
@@ -239,12 +239,12 @@ function AdventurePageContent() {
         </div>
 
       {showCharacterModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
           <div 
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowCharacterModal(false)}
           />
-          <div className="relative bg-[#0f1322] border border-gray-700 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+          <div className="relative bg-[#0f1322] border border-gray-700 rounded-t-2xl md:rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto md:max-h-none">
             <button
               onClick={() => setShowCharacterModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Trophy, Medal, BookOpen, Users } from "lucide-react";
+import { Trophy, Medal, BookOpen, Users, ChevronDown } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
@@ -32,6 +32,34 @@ export default function ClassementPage() {
   const [players, setPlayers] = useState<RankingPlayer[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY <= 0) touchStartY.current = e.touches[0].clientY;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartY.current || pullState !== "idle") return;
+    const diff = e.touches[0].clientY - touchStartY.current;
+    if (diff > 0 && window.scrollY <= 0) {
+      setPullState("pulling");
+      setPullDistance(Math.min(diff * 0.35, 100));
+    }
+  };
+  const handleTouchEnd = () => {
+    if (pullDistance >= 55) {
+      setPullState("refreshing");
+      setPullDistance(40);
+      setRefreshKey((k) => k + 1);
+    } else {
+      setPullState("idle");
+      setPullDistance(0);
+    }
+    touchStartY.current = 0;
+  };
+
   useEffect(() => {
     setFetchError(null);
     const fetchRanking = async () => {
@@ -103,6 +131,8 @@ export default function ClassementPage() {
         setPlayers(formatted);
       }
       setLoading(false);
+      setPullDistance(0);
+      setPullState("idle");
     };
 
     if (activeTab === "adventures") {
@@ -110,7 +140,7 @@ export default function ClassementPage() {
     } else {
       fetchPlayers();
     }
-  }, [activeTab]);
+  }, [activeTab, refreshKey]);
 
   const getMedalColor = (rank: number) => {
     switch (rank) {
@@ -134,7 +164,27 @@ export default function ClassementPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      <main className="flex-1 relative pb-24 md:pb-0">
+      <main
+        className="flex-1 relative pb-24 md:pb-0"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {pullState !== "idle" && (
+          <div
+            className="absolute top-0 left-0 right-0 z-30 flex items-center justify-center overflow-hidden transition-all duration-200"
+            style={{ height: pullDistance }}
+          >
+            {pullState === "refreshing" ? (
+              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <div className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}>
+                <ChevronDown className="w-6 h-6 text-cyan-400" />
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-cyan-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-yellow-500/20 rounded-full blur-3xl opacity-15"></div>
         <div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl opacity-15"></div>
@@ -153,7 +203,7 @@ export default function ClassementPage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex justify-center gap-2 mb-8">
+          <div className="flex justify-center gap-2 mb-8 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
             <button
               onClick={() => setActiveTab("adventures")}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${

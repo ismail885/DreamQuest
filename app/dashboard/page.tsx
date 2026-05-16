@@ -1,10 +1,10 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { Sparkles, Plus } from "lucide-react";
+import { Sparkles, Plus, ChevronDown } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
@@ -29,6 +29,33 @@ export default function DashboardPage() {
   const [statsError, setStatsError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<{ id: number; titre: string; description: string | null }[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY <= 0) touchStartY.current = e.touches[0].clientY;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartY.current || pullState !== "idle") return;
+    const diff = e.touches[0].clientY - touchStartY.current;
+    if (diff > 0 && window.scrollY <= 0) {
+      setPullState("pulling");
+      setPullDistance(Math.min(diff * 0.35, 100));
+    }
+  };
+  const endPull = () => {
+    if (pullDistance >= 55) {
+      setPullState("refreshing");
+      setPullDistance(40);
+      setRefreshKey((k) => k + 1);
+    } else {
+      setPullState("idle");
+      setPullDistance(0);
+    }
+    touchStartY.current = 0;
+  };
 
   useEffect(() => {
     if (!loading && !user) {
@@ -41,6 +68,9 @@ export default function DashboardPage() {
     let cancelled = false;
 
     const fetchData = async () => {
+      setStatsLoading(true);
+      setLoadingSuggestions(true);
+      setStatsError(null);
       try {
         const [charResult, saveResult] = await Promise.all([
           supabase.from("personnage").select("experience").eq("id_utilisateur", user.id),
@@ -78,13 +108,15 @@ export default function DashboardPage() {
         if (!cancelled) {
           setStatsLoading(false);
           setLoadingSuggestions(false);
+          setPullDistance(0);
+          setPullState("idle");
         }
       }
     };
 
     fetchData();
     return () => { cancelled = true; };
-  }, [user]);
+  }, [user, refreshKey]);
 
   // Auth pas encore pret -> loader bloquant (normal)
   if (loading) {
@@ -97,7 +129,27 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      <main className="flex-1 relative pb-24 md:pb-0">
+      <main
+        className="flex-1 relative pb-24 md:pb-0"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={endPull}
+      >
+        {pullState !== "idle" && (
+          <div
+            className="absolute top-0 left-0 right-0 z-30 flex items-center justify-center overflow-hidden transition-all duration-200"
+            style={{ height: pullDistance }}
+          >
+            {pullState === "refreshing" ? (
+              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <div className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}>
+                <ChevronDown className="w-6 h-6 text-cyan-400" />
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-0 left-1/3 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl opacity-15"></div>
@@ -119,7 +171,7 @@ export default function DashboardPage() {
 
           {/* Section personnages */}
           <div className="mb-8 md:mb-12">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
               <h2 className="text-xl md:text-2xl font-bold text-white">
                 Mes Personnages
               </h2>
@@ -136,7 +188,7 @@ export default function DashboardPage() {
 
           {/* Statistiques */}
           <div className="mb-8 md:mb-12">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
               Vos Statistiques
             </h2>
 
@@ -194,7 +246,7 @@ export default function DashboardPage() {
           {/* Suggestions */}
           {!loadingSuggestions && suggestions.length > 0 && (
             <div className="mb-8 md:mb-12">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
                 <Sparkles className="w-5 h-5 text-yellow-400" />
                 Pour Vous
               </h2>

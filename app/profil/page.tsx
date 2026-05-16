@@ -42,6 +42,36 @@ export default function ProfilPage() {
     trophies: 0,
   });
 
+  const [pullDistance, setPullDistance] = useState(0);
+  const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY <= 0) touchStartY.current = e.touches[0].clientY;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartY.current || pullState !== "idle") return;
+    const diff = e.touches[0].clientY - touchStartY.current;
+    if (diff > 0 && window.scrollY <= 0) {
+      setPullState("pulling");
+      setPullDistance(Math.min(diff * 0.35, 100));
+    }
+  };
+  const handleTouchEnd = () => {
+    if (pullDistance >= 55 && user?.id) {
+      setPullState("refreshing");
+      setPullDistance(40);
+      loadUserData(user.id).finally(() => {
+        setPullDistance(0);
+        setPullState("idle");
+      });
+    } else {
+      setPullDistance(0);
+      setPullState("idle");
+    }
+    touchStartY.current = 0;
+  };
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editUsername, setEditUsername] = useState("");
   const [editEmail, setEditEmail] = useState("");
@@ -454,7 +484,28 @@ export default function ProfilPage() {
     <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <Header />
 
-      <main className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
+      <main
+        className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {pullState !== "idle" && (
+          <div
+            className="absolute top-0 left-0 right-0 z-30 flex items-center justify-center overflow-hidden transition-all duration-200"
+            style={{ height: pullDistance }}
+          >
+            {pullState === "refreshing" ? (
+              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <div className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}>
+                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+            )}
+          </div>
+        )}
         <div className="max-w-6xl mx-auto">
 
           {dataError && (
@@ -1017,13 +1068,13 @@ export default function ProfilPage() {
       </main>
 
       {isSettingsModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
           <div 
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={closeSettingsModal}
           />
           
-          <div className="relative bg-[#0f1623] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-[#0f1623] border border-gray-700/50 rounded-t-2xl md:rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 max-h-[85vh] overflow-y-auto md:max-h-none">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1135,13 +1186,13 @@ export default function ProfilPage() {
       )}
 
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
           <div 
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={closeEditModal}
           />
           
-          <div className="relative bg-[#0f1623] border border-gray-700/50 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-[#0f1623] border border-gray-700/50 rounded-t-2xl md:rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl shadow-cyan-500/10 max-h-[85vh] overflow-y-auto md:max-h-none">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
