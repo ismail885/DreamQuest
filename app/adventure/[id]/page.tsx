@@ -567,7 +567,7 @@ function AdventureReader({ params }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-primary flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
         <Loader />
       </div>
     );
@@ -575,11 +575,11 @@ function AdventureReader({ params }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-surface-primary flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-[#0a0e1a] flex flex-col items-center justify-center gap-4">
         <p className="text-red-400 text-lg">{error}</p>
         <button
           onClick={() => router.push("/adventure")}
-          className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-content-primary rounded-lg font-medium transition-colors"
+          className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-medium transition-colors"
         >
           Retour aux aventures
         </button>
@@ -588,7 +588,7 @@ function AdventureReader({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-surface-primary text-content-primary flex flex-col">
+    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
       <div className="flex items-center justify-between px-6 py-4">
         <button
           onClick={() => {
@@ -656,7 +656,7 @@ function AdventureReader({ params }: Props) {
               )}
             </div>
             {lastConsequence.text && (
-              <p className="text-content-secondary text-xs mt-2 text-center">{lastConsequence.text}</p>
+              <p className="text-gray-400 text-xs mt-2 text-center">{lastConsequence.text}</p>
             )}
           </div>
         </div>
@@ -739,8 +739,8 @@ function AdventureReader({ params }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-content-primary font-bold text-xl">Aventure terminée !</p>
-              <p className="text-content-secondary text-sm">
+              <p className="text-white font-bold text-xl">Aventure terminée !</p>
+              <p className="text-gray-400 text-sm">
                 Complétée en {history.length} étape{history.length > 1 ? "s" : ""}
               </p>
               {character && character.niveau > 1 && (
@@ -750,7 +750,7 @@ function AdventureReader({ params }: Props) {
               )}
               <button
                 onClick={restart}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-content-primary rounded-lg font-semibold transition-colors"
+                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-semibold transition-colors"
               >
                 Recommencer
               </button>
@@ -761,10 +761,10 @@ function AdventureReader({ params }: Props) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-surface-tertiary/80 border border-amber-500/30 rounded-xl p-5 mb-4"
+              className="bg-[#0f1623]/80 border border-amber-500/30 rounded-xl p-5 mb-4"
             >
               <p className="text-amber-400 text-xs font-semibold mb-2">ÉVÉNEMENT ALÉATOIRE</p>
-              <p className="text-content-secondary leading-relaxed text-sm">{currentEvent.text}</p>
+              <p className="text-gray-400 leading-relaxed text-sm">{currentEvent.text}</p>
               <div className="flex flex-col gap-2 mt-4">
                 {currentEvent.choices.map((choice, idx) => (
                   <button
@@ -776,7 +776,7 @@ function AdventureReader({ params }: Props) {
                         chooseOption(currentBranch.choix1_lien);
                       }
                     }}
-                    className="w-full text-left px-4 py-3 bg-surface-tertiary border border-gray-700 hover:border-amber-500/50 rounded-lg text-content-secondary hover:text-content-primary text-sm transition-all"
+                    className="w-full text-left px-4 py-3 bg-[#0f1623] border border-gray-700 hover:border-amber-500/50 rounded-lg text-gray-400 hover:text-white text-sm transition-all"
                   >
                     {choice.text}
                   </button>
@@ -896,13 +896,13 @@ function AdventureReader({ params }: Props) {
                         }}
                         className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all ${
                           usedAbilities.includes(ability)
-                            ? "bg-gray-800/50 border border-gray-700 text-content-secondary opacity-50 cursor-not-allowed"
-                            : "bg-surface-tertiary border border-purple-500/30 hover:border-purple-500/60 text-content-secondary hover:text-content-primary"
+                            ? "bg-gray-800/50 border border-gray-700 text-gray-400 opacity-50 cursor-not-allowed"
+                            : "bg-[#0f1623] border border-purple-500/30 hover:border-purple-500/60 text-gray-400 hover:text-white"
                         }`}
                       >
                         <span className="font-medium">{ability}</span>
                         {!usedAbilities.includes(ability) && (
-                          <span className="text-content-secondary ml-2">
+                          <span className="text-gray-400 ml-2">
                             (1 rest) • +10 PV
                           </span>
                         )}

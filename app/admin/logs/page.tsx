@@ -224,11 +224,11 @@ export default function AdminLogsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-content-primary">Journal d&apos;activité</h1>
-          <p className="text-content-secondary mt-2">Suivi des actions en temps réel</p>
+          <h1 className="text-3xl font-bold text-white">Journal d&apos;activité</h1>
+          <p className="text-gray-400 mt-2">Suivi des actions en temps réel</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-2 bg-surface-tertiary border border-gray-800 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-2 bg-[#0f1623] border border-gray-800 rounded-lg">
             {isLive ? (
               <Wifi className="w-4 h-4 text-green-400" />
             ) : (
@@ -244,36 +244,36 @@ export default function AdminLogsPage() {
           <button
             onClick={() => fetchLogs(true)}
             disabled={isRefreshing}
-            className="p-2 bg-surface-tertiary border border-gray-800 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="p-2 bg-[#0f1623] border border-gray-800 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`w-5 h-5 text-content-secondary ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-5 h-5 text-gray-400 ${isRefreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
-      <p className="text-content-secondary text-sm -mt-4">
+      <p className="text-gray-400 text-sm -mt-4">
         Dernière mise à jour: {lastUpdate.toLocaleTimeString("fr-FR")}
       </p>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-surface-tertiary border border-gray-800 rounded-lg p-4">
-          <p className="text-content-secondary text-sm">Total</p>
-          <p className="text-2xl font-bold text-content-primary">{stats.total}</p>
+        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
+          <p className="text-gray-400 text-sm">Total</p>
+          <p className="text-2xl font-bold text-white">{stats.total}</p>
         </div>
-        <div className="bg-surface-tertiary border border-gray-800 rounded-lg p-4">
-          <p className="text-content-secondary text-sm">Inscriptions</p>
+        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
+          <p className="text-gray-400 text-sm">Inscriptions</p>
           <p className="text-2xl font-bold text-cyan-400">{stats.inscriptions}</p>
         </div>
-        <div className="bg-surface-tertiary border border-gray-800 rounded-lg p-4">
-          <p className="text-content-secondary text-sm">Aventures</p>
+        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
+          <p className="text-gray-400 text-sm">Aventures</p>
           <p className="text-2xl font-bold text-purple-400">{stats.aventures}</p>
         </div>
-        <div className="bg-surface-tertiary border border-gray-800 rounded-lg p-4">
-          <p className="text-content-secondary text-sm">Votes</p>
+        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
+          <p className="text-gray-400 text-sm">Votes</p>
           <p className="text-2xl font-bold text-amber-400">{stats.votes}</p>
         </div>
-        <div className="bg-surface-tertiary border border-gray-800 rounded-lg p-4">
-          <p className="text-content-secondary text-sm">Personnages</p>
+        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
+          <p className="text-gray-400 text-sm">Personnages</p>
           <p className="text-2xl font-bold text-emerald-400">{stats.personnages}</p>
         </div>
       </div>
@@ -284,8 +284,8 @@ export default function AdminLogsPage() {
           onClick={() => setFilter("all")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "all"
-              ? "bg-cyan-500 text-content-primary"
-              : "bg-surface-tertiary border border-gray-800 text-content-secondary hover:text-content-primary"
+              ? "bg-cyan-500 text-white"
+              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
           }`}
         >
           Tous
@@ -294,8 +294,8 @@ export default function AdminLogsPage() {
           onClick={() => setFilter("inscription")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "inscription"
-              ? "bg-cyan-500 text-content-primary"
-              : "bg-surface-tertiary border border-gray-800 text-content-secondary hover:text-content-primary"
+              ? "bg-cyan-500 text-white"
+              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
           }`}
         >
           Inscriptions
@@ -304,8 +304,8 @@ export default function AdminLogsPage() {
           onClick={() => setFilter("aventure_creee")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "aventure_creee"
-              ? "bg-purple-500 text-content-primary"
-              : "bg-surface-tertiary border border-gray-800 text-content-secondary hover:text-content-primary"
+              ? "bg-purple-500 text-white"
+              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
           }`}
         >
           Aventures
@@ -314,8 +314,8 @@ export default function AdminLogsPage() {
           onClick={() => setFilter("vote")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "vote"
-              ? "bg-amber-500 text-content-primary"
-              : "bg-surface-tertiary border border-gray-800 text-content-secondary hover:text-content-primary"
+              ? "bg-amber-500 text-white"
+              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
           }`}
         >
           Votes
@@ -324,8 +324,8 @@ export default function AdminLogsPage() {
           onClick={() => setFilter("personnage_cree")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "personnage_cree"
-              ? "bg-emerald-500 text-content-primary"
-              : "bg-surface-tertiary border border-gray-800 text-content-secondary hover:text-content-primary"
+              ? "bg-emerald-500 text-white"
+              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
           }`}
         >
           Personnages
@@ -333,13 +333,13 @@ export default function AdminLogsPage() {
       </div>
 
       {/* Logs List */}
-      <div className="bg-surface-tertiary border border-gray-800 rounded-xl overflow-hidden">
+      <div className="bg-[#0f1623] border border-gray-800 rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500 mx-auto"></div>
           </div>
         ) : filteredLogs.length === 0 ? (
-          <div className="p-12 text-center text-content-secondary">
+          <div className="p-12 text-center text-gray-400">
             Aucune activité récente
           </div>
         ) : (
@@ -355,10 +355,10 @@ export default function AdminLogsPage() {
                       {getTypeIcon(log.type)}
                     </div>
                     <div>
-                      <p className="text-content-primary font-medium">{log.description}</p>
+                      <p className="text-white font-medium">{log.description}</p>
                       <div className="flex items-center gap-2 mt-1">
                         {log.userName && (
-                          <span className="text-content-secondary text-sm">{log.userName}</span>
+                          <span className="text-gray-400 text-sm">{log.userName}</span>
                         )}
                         {log.adventureTitle && (
                           <span className="text-purple-400 text-sm">- {log.adventureTitle}</span>
@@ -370,7 +370,7 @@ export default function AdminLogsPage() {
                     <span className={`px-2 py-1 rounded-full text-xs border ${getTypeColor(log.type)}`}>
                       {getTypeLabel(log.type)}
                     </span>
-                    <span className="text-content-secondary text-sm whitespace-nowrap">
+                    <span className="text-gray-400 text-sm whitespace-nowrap">
                       {formatTimeAgo(log.timestamp)}
                     </span>
                   </div>

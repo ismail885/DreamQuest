@@ -11,8 +11,8 @@ function EditorContent() {
   
   if (!user) {
     return (
-      <div className="min-h-screen bg-surface-primary flex items-center justify-center">
-        <p className="text-content-secondary">Connexion requise</p>
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+        <p className="text-gray-400">Connexion requise</p>
       </div>
     );
   }
@@ -21,7 +21,7 @@ function EditorContent() {
   
   if (!canCreate) {
     return (
-      <div className="min-h-screen bg-surface-primary flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
         <p className="text-red-400">Accès restreint aux créateurs</p>
       </div>
     );

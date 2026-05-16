@@ -104,24 +104,24 @@ export function ConfirmLeaveModal({
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onCancel}
       />
-      <div className="relative bg-surface-secondary border border-gray-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-[#0f1623] border border-gray-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl animate-in fade-in zoom-in duration-200">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
             <AlertTriangle className="w-5 h-5 text-yellow-400" />
           </div>
-          <h3 className="text-xl font-bold text-content-primary">{title}</h3>
+          <h3 className="text-xl font-bold text-white">{title}</h3>
         </div>
-        <p className="text-content-secondary mb-6">{message}</p>
+        <p className="text-gray-400 mb-6">{message}</p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 py-3 px-4 bg-surface-tertiary border border-gray-600 rounded-lg text-content-primary font-medium hover:bg-surface-tertiary/80 transition-colors"
+            className="flex-1 py-3 px-4 bg-[#1a2332] border border-gray-600 rounded-lg text-white font-medium hover:bg-[#1a2332]/80 transition-colors"
           >
             Annuler
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-content-primary font-medium transition-colors"
+            className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-medium transition-colors"
           >
             Quitter
           </button>

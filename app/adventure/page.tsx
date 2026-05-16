@@ -173,7 +173,7 @@ function AdventurePageContent() {
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-surface-tertiary border border-gray-700 rounded-lg text-content-secondary hover:bg-surface-tertiary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-[#1a2332] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#1a2332]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -199,8 +199,8 @@ function AdventurePageContent() {
                           onClick={() => setCurrentPage(pageNum)}
                           className={`w-10 h-10 rounded-lg font-medium transition-colors ${
                             currentPage === pageNum
-                              ? "bg-cyan-500 text-content-primary"
-                              : "bg-surface-tertiary border border-gray-700 text-content-secondary hover:bg-surface-tertiary/80"
+                              ? "bg-cyan-500 text-white"
+                              : "bg-[#1a2332] border border-gray-700 text-gray-400 hover:bg-[#1a2332]/80"
                           }`}
                         >
                           {pageNum}
@@ -212,7 +212,7 @@ function AdventurePageContent() {
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-surface-tertiary border border-gray-700 rounded-lg text-content-secondary hover:bg-surface-tertiary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-[#1a2332] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#1a2332]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -221,7 +221,7 @@ function AdventurePageContent() {
                 </div>
               )}
               
-              <p className="text-center text-content-secondary text-sm mt-4">
+              <p className="text-center text-gray-400 text-sm mt-4">
                 {totalCount} aventures • Page {currentPage}/{totalPages}
               </p>
             </>
@@ -232,8 +232,8 @@ function AdventurePageContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-content-secondary text-lg">Aucune aventure trouvée</p>
-              <p className="text-content-secondary text-sm mt-2">Essayez de modifier vos critères de recherche</p>
+              <p className="text-gray-400 text-lg">Aucune aventure trouvée</p>
+              <p className="text-gray-400 text-sm mt-2">Essayez de modifier vos critères de recherche</p>
             </div>
           )}
         </div>
@@ -270,7 +270,7 @@ function AdventurePageContent() {
                     setShowCharacterModal(false);
                     window.location.href = '/profil?tab=characters';
                   }}
-                  className="w-full px-6 py-3 bg-surface-secondary border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors"
+                  className="w-full px-6 py-3 bg-[#0f1623] border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors"
                 >
                   Mes personnages
                 </button>

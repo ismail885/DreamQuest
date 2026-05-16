@@ -121,7 +121,7 @@ export default function AuthCallback() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-primary">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a]">
         <div className="text-center p-8">
           <h1 className="text-2xl font-bold text-red-400 mb-4">Erreur</h1>
           <p className="text-gray-400 mb-4">{error}</p>
@@ -134,7 +134,7 @@ export default function AuthCallback() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-primary">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a]">
       <div className="text-center">
         <Loader size="lg" message="Connexion en cours..." />
         <p className="mt-4 text-gray-400">Redirection vers votre tableau de bord...</p>
