@@ -186,9 +186,6 @@ export default function ClassementPage() {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-cyan-500/5 to-transparent pointer-events-none"></div>
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-yellow-500/20 rounded-full blur-3xl opacity-15"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl opacity-15"></div>
         <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 md:mb-10">

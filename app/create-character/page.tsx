@@ -33,16 +33,11 @@ export default function CreateCharacterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] pb-24 md:pb-0 relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-transparent pointer-events-none"></div>
-      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl opacity-15"></div>
-      <div className="relative z-10">
-        <CreateCharacterForm
-          userId={user.id}
-          onCharacterCreated={handleCharacterCreated}
-        />
-      </div>
+    <div className="min-h-screen bg-[#0a0e1a] pb-24 md:pb-0">
+      <CreateCharacterForm
+        userId={user.id}
+        onCharacterCreated={handleCharacterCreated}
+      />
       <BottomNav />
     </div>
   );

@@ -41,6 +41,7 @@ export default function DashboardPage() {
   const [suggestions, setSuggestions] = useState<{ id: number; titre: string; description: string | null }[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const pullDistanceRef = useRef(0);
   const [pullDistance, setPullDistance] = useState(0);
   const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
   const touchStartY = useRef(0);
@@ -52,12 +53,14 @@ export default function DashboardPage() {
     if (!touchStartY.current || pullState !== "idle") return;
     const diff = e.touches[0].clientY - touchStartY.current;
     if (diff > 0 && window.scrollY <= 0) {
+      const d = Math.min(diff * 0.35, 100);
+      pullDistanceRef.current = d;
       setPullState("pulling");
-      setPullDistance(Math.min(diff * 0.35, 100));
+      setPullDistance(d);
     }
   };
   const endPull = () => {
-    if (pullDistance >= 55) {
+    if (pullDistanceRef.current >= 55) {
       setPullState("refreshing");
       setPullDistance(128);
       setRefreshKey((k) => k + 1);
@@ -65,6 +68,7 @@ export default function DashboardPage() {
       setPullState("idle");
       setPullDistance(0);
     }
+    pullDistanceRef.current = 0;
     touchStartY.current = 0;
   };
 
@@ -161,17 +165,13 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-transparent pointer-events-none"></div>
-        <div className="absolute top-0 left-1/3 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl opacity-15"></div>
-
         <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* En-tete */}
           <div className="mb-8 md:mb-10">
             <h1 className="text-2xl md:text-4xl font-bold mb-2">
               Bienvenue,{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+              <span className="text-cyan-400">
                 {user?.username || "Aventurier"}
               </span>
             </h1>
