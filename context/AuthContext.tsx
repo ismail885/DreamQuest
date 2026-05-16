@@ -121,11 +121,33 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
     await syncUser();
   }, [syncUser]);
 
-  // Écoute des changements d'état Supabase Auth
   useEffect(() => {
+    let mounted = true;
+
+    // Vérification initiale (indispensable — l'event INITIAL_SESSION ne se déclenche pas toujours)
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mounted) return;
+      if (session?.user) {
+        const loggedUser = await fetchUserFromAuthId(session.user.id);
+        if (!mounted) return;
+        if (loggedUser) {
+          await setAuthSession(loggedUser);
+          setUser(loggedUser);
+        } else {
+          setUser(null);
+        }
+      } else {
+        await clearAuthSession();
+        setUser(null);
+      }
+      if (mounted) setLoading(false);
+    };
+    init();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "INITIAL_SESSION") return; 
       switch (event) {
-        case "INITIAL_SESSION":
         case "SIGNED_IN":
         case "TOKEN_REFRESHED":
           if (session?.user) {
@@ -146,18 +168,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       }
     });
 
-    // Refresh silencieux quand la page reprend le focus
-    const onFocus = () => {
-      if (!user) return; // Évite de rafraîchir si déjà déconnecté
-      supabase.auth.refreshSession().catch(() => {});
-    };
-    window.addEventListener('focus', onFocus);
-
     return () => {
+      mounted = false;
       subscription.unsubscribe();
-      window.removeEventListener('focus', onFocus);
     };
-  }, [user]);
+  }, []);
 
   // ==========================================
   // Login

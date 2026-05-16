@@ -182,7 +182,7 @@ export default function DashboardPage() {
 
           {/* Section personnages */}
           <div className="mb-8 md:mb-12">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
               <h2 className="text-xl md:text-2xl font-bold text-white">
                 Mes Personnages
               </h2>
