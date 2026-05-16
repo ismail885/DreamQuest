@@ -50,7 +50,11 @@ export default function PublicProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white p-4">
+    <div className="min-h-screen bg-[#0a0e1a] text-white relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-purple-500/5 to-transparent pointer-events-none"></div>
+      <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl opacity-20"></div>
+      <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl opacity-15"></div>
+      <div className="relative z-10 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="bg-[#0f1623] border border-gray-700/50 rounded-xl p-6 mb-6">
           <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
@@ -97,6 +101,7 @@ export default function PublicProfilePage() {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

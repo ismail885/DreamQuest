@@ -27,43 +27,16 @@ const navigation = [
   { name: "Paramètres", href: "/admin/settings", icon: Settings },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, logout, loading } = useAuthContext();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    if (!loading && user) {
-      if (user.role !== 'admin') {
-        router.push('/dashboard');
-      } else {
-        setIsAuthorized(true);
-      }
-    } else if (!loading && !user) {
-      router.push('/auth/login');
-    }
-  }, [user, loading, router]);
-
-  if (loading || !isAuthorized) {
-    return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
-      </div>
-    );
-  }
+  const { user, logout } = useAuthContext();
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
 
-  const Sidebar = () => (
+  return (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-4 md:p-6 border-b border-gray-800">
@@ -87,7 +60,7 @@ export default function AdminLayout({
             <Link
               key={item.name}
               href={item.href}
-              onClick={() => setSidebarOpen(false)}
+              onClick={onNavigate}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                 active
                   ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
@@ -115,13 +88,14 @@ export default function AdminLayout({
         <div className="space-y-2 px-4">
           <Link
             href="/dashboard"
+            onClick={onNavigate}
             className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Retour au site</span>
           </Link>
           <button
-            onClick={logout}
+            onClick={() => { logout(); onNavigate?.(); }}
             className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
           >
             <LogOut className="w-4 h-4" />
@@ -131,6 +105,37 @@ export default function AdminLayout({
       </div>
     </div>
   );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const { user, loading } = useAuthContext();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role !== 'admin') {
+        router.push('/dashboard');
+      } else {
+        setIsAuthorized(true);
+      }
+    } else if (!loading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading || !isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0e1a]">
@@ -165,7 +170,7 @@ export default function AdminLayout({
           />
           {/* Drawer */}
           <div className="absolute left-0 top-0 h-full w-64 bg-[#0f1623] border-r border-gray-800 shadow-2xl">
-            <Sidebar />
+            <Sidebar onNavigate={() => setSidebarOpen(false)} />
           </div>
         </div>
       )}

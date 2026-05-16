@@ -6,52 +6,49 @@ import Image from "next/image";
 import { useAuthContext } from "@/context/AuthContext";
 import { Menu, X } from "lucide-react";
 
-export default function Header() {
-  const { user } = useAuthContext();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+function NavLinks({ user, onNavigate }: { user: { username?: string; email?: string; role?: string } | null; onNavigate?: () => void }) {
+  return (
+    <>
+      <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors" onClick={onNavigate}>
+        Accueil
+      </Link>
+      <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
+        Aventures
+      </Link>
+      {(user?.role === 'createur' || user?.role === 'admin') && (
+        <Link href="/create-adventure" className="text-purple-400 hover:text-purple-300 transition-colors font-medium" onClick={onNavigate}>
+          Créateur
+        </Link>
+      )}
+      {user?.role === 'admin' && (
+        <Link href="/admin" className="text-red-400 hover:text-red-300 transition-colors font-medium font-bold" onClick={onNavigate}>
+          ADMIN
+        </Link>
+      )}
+      <Link href="/classement" className="text-gray-400 hover:text-white transition-colors" onClick={onNavigate}>
+        Classement
+      </Link>
+      <Link href="/profil" className="text-gray-400 hover:text-white transition-colors" onClick={onNavigate}>
+        Profil
+      </Link>
+    </>
+  );
+}
 
+function ActionButtons({ user, isMobile = false, onNavigate }: { user: { username?: string; email?: string } | null; isMobile?: boolean; onNavigate?: () => void }) {
   const getUserInitials = () => {
     const username = user?.username || user?.email || "U";
     return username.substring(0, 2).toUpperCase();
   };
 
-  const closeMobileMenu = () => setMobileMenuOpen(false);
-
-  const NavLinks = () => (
+  return (
     <>
-      <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
-        Accueil
-      </Link>
-      <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
-        Aventures
-      </Link>
-      {(user?.role === 'createur' || user?.role === 'admin') && (
-        <Link href="/create-adventure" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
-          Créateur
-        </Link>
-      )}
-      {user?.role === 'admin' && (
-        <Link href="/admin" className="text-red-400 hover:text-red-300 transition-colors font-medium font-bold">
-          ADMIN
-        </Link>
-      )}
-      <Link href="/classement" className="text-gray-400 hover:text-white transition-colors">
-        Classement
-      </Link>
-      <Link href="/profil" className="text-gray-400 hover:text-white transition-colors">
-        Profil
-      </Link>
-    </>
-  );
-
-  const ActionButtons = ({ isMobile = false }: { isMobile?: boolean }) => (
-    <>
-      <Link href="/create-character" onClick={closeMobileMenu}>
+      <Link href="/create-character" onClick={onNavigate}>
         <button className={`${isMobile ? 'w-full justify-center' : ''} px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors`}>
           Nouveau Personnage
         </button>
       </Link>
-      <Link href="/profil" onClick={closeMobileMenu}>
+      <Link href="/profil" onClick={onNavigate}>
         <button 
           className={`${isMobile ? 'w-full justify-center' : ''} w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold hover:bg-cyan-600 transition-colors`}
           title="Mon profil"
@@ -61,6 +58,13 @@ export default function Header() {
       </Link>
     </>
   );
+}
+
+export default function Header() {
+  const { user } = useAuthContext();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   if (user) {
     return (
@@ -74,11 +78,11 @@ export default function Header() {
               </Link>
 
               <div className="hidden md:flex items-center gap-8">
-                <NavLinks />
+                <NavLinks user={user} />
               </div>
 
               <div className="hidden md:flex items-center gap-4">
-                <ActionButtons />
+                <ActionButtons user={user} />
               </div>
 
               <button 
@@ -95,10 +99,10 @@ export default function Header() {
           <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-[#0a0e1a]">
             <div className="flex flex-col p-4 space-y-4">
               <div className="flex flex-col gap-4">
-                <NavLinks />
+                <NavLinks user={user} onNavigate={closeMobileMenu} />
               </div>
               <div className="flex flex-col gap-3 pt-4 border-t border-gray-800">
-                <ActionButtons isMobile />
+                <ActionButtons user={user} isMobile onNavigate={closeMobileMenu} />
               </div>
             </div>
           </div>
