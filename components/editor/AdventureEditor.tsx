@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
+import { generateAdventure } from "@/lib/generator/engine";
 
 interface Choice {
  text: string;
@@ -31,193 +32,6 @@ interface GenreInfo {
  accent: string;
 }
 
-// Générateur de contenu avancé avec titre personnalisé - VERSION COMPLÈTE
-const generateAdventureContent = (genre: string, title: string): BranchNode[] => {
- const adventureTitle = (title || "").trim() || "Aventure";
- const titleUpper = adventureTitle.toUpperCase();
- const titleLower = adventureTitle.toLowerCase();
-
- // Bibliothèque complète d'événements par genre (sans utiliser library dans la définition)
- const getFantasyData = () => ({
- locations: ["Forêt des Murmures", "Château Noir", "Caverne du Dragon", "Village de Brume", "Temple Oublié", "Montagnes Écarlates", "Royaume du Nord", "Terre des Géants"],
- villains: ["le Sorcier Obscur", "le Dragon Ancêtre", "le Roi Démon", "l'Usurpateur", "le Créateur de Ténèbres"],
- artifacts: ["L'Épée du Destin", "Le Bouclier Éternel", "Le Livre des Ombres", "La Couronne de Lumière"],
- allies: ["un Vieux Sage", "un Ancien Magicien", "un Chevalier déchu", "une Fée bienveillante"],
- monsters: ["un Troll", "une Hydre", "un Chimère", "des Orcs"],
- openings: [
- `Dans le royaume de ${titleUpper}, une menace antique menace de tout détruire.`,
- `Le destin a choisi : vous êtes le seul espoir contre ${titleLower}.`
- ],
- events: [
- "Niv1_En traversant une région inconnue, vous rencontrez un allié inattendu.",
- "Niv1_Un groupe de créatures hostiles bloque votre chemin.",
- "Niv1_Vous trouvez des ruines anciennes contenant un indice précieux.",
- "Niv2_La vérité sur vos origines se révèle enfin.",
- "Niv2_Un ancien ennemi devient allié face à une menace plus grande.",
- "Niv3_L'affrontement final commence.",
- "Niv3_Le moment du choix final arrive."
- ],
- endings: [
- `Victoire! Vous avez sauvé le royaume et votre nom sera gravé dans la légende de ${titleUpper}.`,
- `Le prix de la victoire est élevé. Vous avez gagné, mais quelque chose en vous a changé.`
- ]
- });
-
- const getHorrorData = () => ({
- locations: ["Manoir Maudit", "Cimetière Écarlate", "Hôpital Désaffecté", "Forêt du Crépuscule"],
- villains: ["le Spectre Vengeur", "la Créature des Ténèbres", "le Tueur Fantôme"],
- secrets: ["un journal maudit", "un rituel interdit", "une vérité enfouie"],
- victims: ["une voix enfantine", "un whisper solitaire"],
- openings: [
- `La peur règne à ${titleUpper}, là où les ombres révèlent leur vraie forme.`,
- `Personne n'ose prononcer le nom de ${titleLower}. On dit qu'il réveille les morts.`
- ],
- events: [
- "Niv1_Une porte s'ouvre librement, comme si elle vous attendait.",
- "Niv1_Vous trouvez un indice mystérieux.",
- "Niv2_La vérité sur l'ennemi est horrible.",
- "Niv2_Le temps commence à se comporter étrangement.",
- "Niv3_La confrontation finale est inévitable.",
- "Niv3_Vous devenez ce que vous chassiez."
- ],
- endings: [
- `Vous avez survécu, mais les cauchemars de ${titleLower} ne vous quitteront jamais.`,
- `La vérité était trop horrible.`
- ]
- });
-
- const getScifiData = () => ({
- locations: ["Station Orbitale", "Planète Inconnue", "Vaisseau Fantôme", "Colonie Lunaire"],
- villains: ["l'IA Rebelle", "les Extraterrestres", "la Corporation"],
- techs: ["une technologie perdue", "un artefact alien", "un ordinateur quantique"],
- allies: ["un androïde errant", "une espèce pacifiste", "une IA bienveillante"],
- openings: [
- `L'an 2347. Votre mission : investiguer le mystère de ${titleUpper}.`,
- `Le signal de ${titleLower} a été détecté. Personne n'a jamais exploré cette région.`
- ],
- events: [
- "Niv1_Votre scanner détecte une structure artificielle.",
- "Niv1_Vous rencontrez un allié inattendu.",
- "Niv2_La vérité sur l'ennemi vous choque.",
- "Niv2_Une décision difficile doit être prise.",
- "Niv3_L'affrontement final est inévitable.",
- "Niv3_La décision finale approche."
- ],
- endings: [
- `Votre découverte a changé le cours de l'histoire humaine à jamais.`,
- `Votre sacrifice sera mémorisé par les générations futures.`
- ]
- });
-
- const getRomanceData = () => ({
- locations: ["Café Littéraire", "Jardin des Rêves", "Musée des Étoiles", "Plage au Crépuscule"],
- obstacles: ["un mensonge", "une différence sociale", "un secret", "une promesse"],
- moments: ["un regard échangé", "une main effleurée", "un silence complice"],
- partners: ["une âme sensible", "un esprit indépendant", "un cœur généreux"],
- openings: [
- `Dans les rues de ${titleUpper}, les destins se croisent pour l'éternité.`,
- `L'amour ne suit pas de règles, surtout à ${titleLower}.`
- ],
- events: [
- "Niv1_Votre regard croise celui d'une personne spéciale.",
- "Niv1_Une pluie soudaine vous force à chercher un abri ensemble.",
- "Niv2_La vérité sur un obstacle est révélée.",
- "Niv2_Une nouvelle personne entre en scène.",
- "Niv3_Le moment de la vérité arrive.",
- "Niv3_L'engagement approche."
- ],
- endings: [
- `Vous avez trouvé l'amour véritable à ${titleUpper}.`,
- `Certains amours durent éternellement.`
- ]
-});
-
- // Nombre aléatoire de nœuds (entre 8 et 15)
- const nodeCount = 8 + Math.floor(Math.random() * 8); // 8 à 15 nœuds
- 
- // Sélectionner les données selon le genre
- const getGenreData = () => {
- switch (genre) {
- case 'horror': return getHorrorData();
- case 'scifi': return getScifiData();
- case 'romance': return getRomanceData();
- default: return getFantasyData();
- }
- };
- 
- const genreData = getGenreData();
- const location = genreData.locations[Math.floor(Math.random() * genreData.locations.length)];
- 
- const nodes: BranchNode[] = [];
- 
- // Personnaliser l'ouverture avec plus de contexte
- const openingTemplates = genreData.openings;
- const opening = openingTemplates[Math.floor(Math.random() * openingTemplates.length)];
- const personalizedOpening = `${opening} Votre voyage commence ici, et chaque choix déterminera votre destin dans cette aventure nommée "${adventureTitle}".`;
-
- // Premier nœud avec 3 choix initiaux différents
- const firstChoices = [
- `Explorer les mystères de ${location}`,
- "Chercher des alliés et des informations",
- "Se préparer et s'équiper pour le chemin"
- ];
- 
- nodes.push({
- id: "root",
- text: personalizedOpening,
- choices: firstChoices.map((text, idx) => ({
- text,
- link: `node_0_${idx}`,
- consequences: ""
- }))
- });
-
- // Générer les événements avec variété
- for (let i = 0; i < nodeCount - 2; i++) {
- const eventTemplates = genreData.events;
- const eventText = eventTemplates[i % eventTemplates.length];
- 
- // 3 choix différents à chaque nœud
- const choiceOptions = [
- ["Agir avec détermination", "Analyser la situation", "Chercher une issue pacifique"],
- ["Aller de l'avant", "Reculer et observer", "Demander de l'aide"],
- ["Prendre des risques", "Jouer la sécurité", "Créer une diversion"],
- ["Faire confiance à votre instinct", "Utiliser vos compétences", "Improviser"],
- ["Combattre", "Négocier", "Fuir stratégiquement"],
- ["Explorer les profondeurs", "Rester ensemble", "Diviser pour mieux régner"],
- ["Sacrifice personnel", "Sacrifice stratégique", "Tricher pour survivre"],
- ["Accepter l'aide d'un allié", "Refuser toute assistance", "Demander conseil aux anciens"]
- ];
- 
- const choices = choiceOptions[i % choiceOptions.length].map((choiceText, idx) => ({
- text: choiceText,
- link: i < nodeCount - 3 ? `node_${i + 1}_${idx}` : `ending_${idx}`,
- consequences: ""
- }));
-
- nodes.push({
- id: `node_${i}`,
- text: eventText,
- choices,
- isEnd: false
- });
- }
-
- // Ajouter les fins (2-4 fins différentes)
- const endingCount = 2 + Math.floor(Math.random() * 3);
- const shuffledEndings = [...genreData.endings].sort(() => Math.random() - 0.5);
- 
- for (let i = 0; i < endingCount; i++) {
- nodes.push({
- id: `ending_${i}`,
- text: shuffledEndings[i % shuffledEndings.length],
- choices: [],
- isEnd: true
- });
- }
-
- return nodes;
-};
 
 const GENRES: GenreInfo[] = [
  { key: "fantasy", title: "Fantasy", subtitle: "Royaumes, magie et quêtes héroïques", accent: "from-cyan-500 to-blue-500" },
@@ -283,8 +97,18 @@ export default function AdventureEditor() {
 
  try {
  await new Promise(resolve => setTimeout(resolve, 1500));
- const generatedNodes = generateAdventureContent(genre, title);
- setNodes(generatedNodes);
+ const generatedNodes = generateAdventure({ title, genre });
+ const adaptedNodes: BranchNode[] = generatedNodes.map(node => ({
+ id: node.id,
+ text: node.text,
+ choices: node.choices.map(c => ({
+ text: c.text || "",
+ link: c.link || "",
+ consequences: c.consequences || "",
+ })),
+ isEnd: node.isEnd,
+ }));
+ setNodes(adaptedNodes);
  setSelectedNodeId("root");
  setNotice("Aventure générée !");
  setTimeout(() => setNotice(null), 2000);
@@ -757,3 +581,4 @@ export default function AdventureEditor() {
  </div>
  );
 }
+
