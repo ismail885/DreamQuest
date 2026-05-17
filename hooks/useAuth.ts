@@ -5,6 +5,6 @@ import { useAuthContext } from '@/context/AuthContext';
  * Retourne { user, loading } compatibles avec l'ensemble du projet.
  */
 export function useAuth() {
-  const { user, loading } = useAuthContext();
-  return { user, loading };
+ const { user, loading } = useAuthContext();
+ return { user, loading };
 }
