@@ -66,7 +66,8 @@ export async function verifyToken(token: string): Promise<UserJWTPayload | null>
 // Gestion des cookies HttpOnly
 // ============================================
 
-const COOKIE_OPTIONS = 'Path=/; HttpOnly; Secure; SameSite=Strict';
+/** Strict�t� du cookie : Secure uniquement en production (HTTPS) */
+const COOKIE_OPTIONS = `Path=/; HttpOnly${process.env.NODE_ENV === 'production' ? '; Secure' : ''}; SameSite=Strict`;
 
 /**
  * Crée le cookie d'auth HttpOnly avec le token JWT.
@@ -110,3 +111,4 @@ export function getTokenFromCookies(cookieHeader: string | null): string | null 
 export const createAuthCookies = createAuthCookie;
 /** @deprecated Utiliser clearAuthCookie */
 export const clearAuthCookies = clearAuthCookie;
+
