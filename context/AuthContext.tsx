@@ -126,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
 
  // Vérification initiale (indispensable — l'event INITIAL_SESSION ne se déclenche pas toujours)
  const init = async () => {
+ try {
  const { data: { session } } = await supabase.auth.getSession();
  if (!mounted) return;
  if (session?.user) {
@@ -141,7 +142,12 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  await clearAuthSession();
  setUser(null);
  }
+ } catch (err) {
+ console.error("[Auth] Erreur init:", err);
+ if (mounted) setUser(null);
+ } finally {
  if (mounted) setLoading(false);
+ }
  };
  init();
 
@@ -343,3 +349,4 @@ export function useAuthContext() {
  }
  return context;
 }
+

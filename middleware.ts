@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
 
-const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/adventure', '/admin'];
+const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/create-adventure', '/adventure', '/admin'];
 const adminRoutes = ['/admin'];
 const authRoutes = ['/auth/login', '/auth/register', '/auth/callback'];
 
@@ -84,9 +84,11 @@ export const config = {
     '/dashboard/:path*',
     '/profil/:path*',
     '/create-character/:path*',
+    '/create-adventure',
     '/adventure/:path*',
     '/admin/:path*',
     '/auth/login',
     '/auth/register',
   ],
 };
+
