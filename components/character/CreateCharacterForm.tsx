@@ -114,7 +114,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
         .select()
         .single();
 
-      if (insertError) throw new Error('Erreur lors de la creation du personnage');
+      if (insertError) throw new Error('Erreur lors de la création du personnage');
 
       const character: Character = {
         ...data,
@@ -128,7 +128,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
       toast.success(
         <div className="flex items-center gap-2">
           <Check className="w-5 h-5 text-green-400" />
-          <span>Personnage &laquo; {characterName.trim()} &raquo; cree avec succes !</span>
+          <span>Personnage &laquo; {characterName.trim()} &raquo; créé avec succès !</span>
         </div>,
         { duration: 3000 }
       );
@@ -144,12 +144,12 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
     .filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-[#0d1117] flex flex-col">
+    <div className="min-h-screen bg-[#0d1117] dark:bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="px-8 pt-8 pb-4 max-w-5xl mx-auto w-full">
         <button
           onClick={() => window.history.back()}
-          className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-sm group"
+          className="inline-flex items-center gap-1.5 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900 transition-colors text-sm group"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Retour
@@ -161,14 +161,14 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
 
       {/* Carte principale */}
       <div className="flex-1 px-4 pb-8 max-w-4xl mx-auto w-full">
-        <div className="bg-[#131e35] rounded-2xl p-6 md:p-10 border border-gray-800/50">
+        <div className="bg-[#131e35] dark:bg-white rounded-2xl p-6 md:p-10 border border-gray-800/50 dark:border-gray-200/50">
           
           {/* Split layout */}
           <div className="flex flex-col md:flex-row gap-6 mb-8">
             {/* Colonne gauche */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                <h2 className="text-3xl md:text-4xl font-bold text-white dark:text-gray-900">
                   {classInfo.name}
                 </h2>
                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${diffCfg.bg} ${diffCfg.color} ${diffCfg.border}`}>
@@ -181,7 +181,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                 {classInfo.role}
               </span>
 
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              <p className="text-gray-400 dark:text-gray-500 text-sm leading-relaxed mb-6">
                 {classInfo.description}
               </p>
 
@@ -191,7 +191,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                   <div key={stat.key} className="flex items-center gap-3">
                     <stat.icon className="w-4 h-4 text-cyan-400 flex-shrink-0" />
                     <span className="text-gray-300 text-sm w-24">{stat.label}</span>
-                    <div className="flex-1 bg-[#1a2332] rounded-full h-2 overflow-hidden">
+                    <div className="flex-1 bg-[#1a2332] dark:bg-gray-200 rounded-full h-2 overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full transition-all duration-500"
                         style={{ width: `${(stat.value / 10) * 100}%` }}
@@ -214,25 +214,25 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                         className={`inline-block px-3 py-1.5 text-xs font-medium rounded-full border transition-colors cursor-default ${
                           idx === 0
                             ? 'bg-cyan-900/30 text-cyan-300 border-cyan-500/50'
-                            : 'bg-transparent text-gray-400 border-gray-700 hover:border-gray-500'
+                            : 'bg-transparent text-gray-400 dark:text-gray-500 border-gray-700 dark:border-gray-300 hover:border-gray-500'
                         }`}
                       >
                         {ability.name}
                       </span>
                       {/* Tooltip */}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-lg bg-gray-900 border border-gray-700 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-lg bg-gray-900 dark:bg-gray-100 border border-gray-700 dark:border-gray-300 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
                         <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium mb-2 border ${badge.color} ${badge.border}`}>
                           {badge.label}
                         </span>
-                        <p className="text-xs text-gray-300 leading-relaxed">
+                        <p className="text-xs text-gray-300 dark:text-gray-700 leading-relaxed">
                           {ability.description}
                         </p>
                         {ability.cooldown && ability.cooldown > 0 && (
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mt-1">
                             Recharge : {ability.cooldown} tours
                           </p>
                         )}
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 border-r border-b border-gray-700 rotate-45 -mt-1" />
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 dark:bg-gray-100 border-r border-b border-gray-700 dark:border-r-gray-300 dark:border-b-gray-300 rotate-45 -mt-1" />
                       </div>
                     </div>
                   );
@@ -263,7 +263,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                 >
                   <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
-                <span className="text-xs text-gray-500 font-medium">
+                <span className="text-xs text-gray-500 dark:text-gray-600 font-medium">
                   {currentStep + 1} / {classes.length}
                 </span>
                 <button
@@ -279,12 +279,12 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
           </div>
 
           {/* Separateur */}
-          <div className="border-t border-gray-800/50 my-6" />
+          <div className="border-t border-gray-800/50 dark:border-gray-200/50 my-6" />
 
           {/* Formulaire */}
           <form onSubmit={handleSubmit}>
             <div className="mb-5">
-              <label htmlFor="characterName" className="block text-gray-300 text-sm mb-2 font-medium">
+              <label htmlFor="characterName" className="block text-gray-300 dark:text-gray-700 text-sm mb-2 font-medium">
                 Nom du Personnage
               </label>
               <div className="relative">
@@ -295,12 +295,12 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                   onChange={(e) => validateName(e.target.value)}
                   placeholder="Entrez le nom de votre personnage..."
                   maxLength={20}
-                  className={`w-full px-4 py-3 bg-[#0d1117] border rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-1 transition-all text-sm ${
-                    nameError
+className={`w-full px-4 py-3 bg-[#0d1117] dark:bg-gray-100 border rounded-lg text-white dark:text-gray-900 placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 transition-all text-sm ${
+                      nameError
                       ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
                       : characterName.length >= 3
                       ? 'border-green-500/50 focus:border-green-500 focus:ring-green-500/30'
-                      : 'border-gray-700 focus:border-cyan-500/50 focus:ring-cyan-500/30'
+                      : 'border-gray-700 dark:border-gray-300 focus:border-cyan-500/50 focus:ring-cyan-500/30'
                   }`}
                 />
                 {characterName.length > 0 && (
@@ -320,7 +320,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                 </p>
               )}
               {!nameError && characterName.length > 0 && characterName.length < 3 && (
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-600">
                   Minimum 3 caracteres ({characterName.length}/3)
                 </p>
               )}
@@ -335,10 +335,10 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
 
             {characterName.trim().length >= 3 && (
               <div className="mb-5 p-3 bg-cyan-900/10 border border-cyan-500/20 rounded-lg">
-                <p className="text-sm text-gray-400 text-center">
+                <p className="text-sm text-gray-400 dark:text-gray-500 text-center">
                   <span className="text-cyan-400 font-bold">{characterName.trim()}</span>
                   {' '}&mdash;{' '}
-                  <span className="text-white">{classType}</span>
+                  <span className="text-white dark:text-gray-900">{classType}</span>
                 </p>
               </div>
             )}
@@ -357,7 +357,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                   Creation en cours...
                 </span>
               ) : (
-                'Creer votre Personnage'
+                'Créer votre Personnage'
               )}
             </button>
           </form>
@@ -374,7 +374,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
                   ? 'bg-cyan-400 w-6 shadow-lg shadow-cyan-400/30'
                   : index < currentStep
                   ? 'bg-cyan-800/50 w-2 hover:w-3'
-                  : 'bg-gray-700 w-2 hover:bg-gray-500 hover:w-3'
+                  : 'bg-gray-700 dark:bg-gray-300 w-2 hover:bg-gray-500 hover:w-3'
               }`}
               aria-label={`Aller a la classe ${index + 1}`}
             />

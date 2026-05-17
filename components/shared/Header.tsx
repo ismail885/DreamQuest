@@ -9,10 +9,10 @@ import { Menu, X } from "lucide-react";
 function NavLinks({ user, onNavigate }: { user: { username?: string; email?: string; role?: string } | null; onNavigate?: () => void }) {
   return (
     <>
-      <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors" onClick={onNavigate}>
+      <Link href="/dashboard" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors" onClick={onNavigate}>
         Accueil
       </Link>
-      <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
+      <Link href="/adventure" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
         Aventures
       </Link>
       {(user?.role === 'createur' || user?.role === 'admin') && (
@@ -25,10 +25,10 @@ function NavLinks({ user, onNavigate }: { user: { username?: string; email?: str
           ADMIN
         </Link>
       )}
-      <Link href="/classement" className="text-gray-400 hover:text-white transition-colors" onClick={onNavigate}>
+      <Link href="/classement" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors" onClick={onNavigate}>
         Classement
       </Link>
-      <Link href="/profil" className="text-gray-400 hover:text-white transition-colors" onClick={onNavigate}>
+      <Link href="/profil" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors" onClick={onNavigate}>
         Profil
       </Link>
     </>
@@ -69,7 +69,7 @@ const Header = React.memo(function Header() {
   if (user) {
     return (
       <>
-        <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#0a0e1a]/80 sticky top-0 z-50">
+        <nav className="border-b border-gray-800/50 dark:border-gray-200/50 backdrop-blur-sm bg-[#0a0e1a]/80 dark:bg-gray-50/80 sticky top-0 z-50">
           <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
             <div className="flex items-center justify-between">
               <Link href="/dashboard" className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
@@ -86,7 +86,7 @@ const Header = React.memo(function Header() {
               </div>
 
               <button 
-                className="md:hidden p-2 text-gray-400 hover:text-white"
+                className="md:hidden p-2 text-gray-400 dark:text-gray-500 hover:text-white"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -96,12 +96,12 @@ const Header = React.memo(function Header() {
         </nav>
 
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-[#0a0e1a]">
+          <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-[#0a0e1a] dark:bg-gray-50">
             <div className="flex flex-col p-4 space-y-4">
               <div className="flex flex-col gap-4">
                 <NavLinks user={user} onNavigate={closeMobileMenu} />
               </div>
-              <div className="flex flex-col gap-3 pt-4 border-t border-gray-800">
+              <div className="flex flex-col gap-3 pt-4 border-t border-gray-800 dark:border-gray-200">
                 <ActionButtons user={user} isMobile onNavigate={closeMobileMenu} />
               </div>
             </div>
@@ -113,7 +113,7 @@ const Header = React.memo(function Header() {
 
   return (
     <>
-      <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#0a0e1a]/80 sticky top-0 z-50">
+      <nav className="border-b border-gray-800/50 dark:border-gray-200/50 backdrop-blur-sm bg-[#0a0e1a]/80 dark:bg-gray-50/80 sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
@@ -122,23 +122,23 @@ const Header = React.memo(function Header() {
             </Link>
 
             <div className="hidden md:flex items-center gap-8">
-              <Link href="/" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="/" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">
                 Accueil
               </Link>
-              <Link href="/adventure" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="/adventure" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">
                 Aventures
               </Link>
-              <Link href="/create-character" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="/create-character" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">
                 Créer
               </Link>
-              <Link href="/classement" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="/classement" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">
                 Classement
               </Link>
             </div>
 
             <div className="hidden md:flex items-center gap-4">
               <Link href="/auth/login">
-                <button className="px-5 py-2.5 text-white hover:text-cyan-400 font-medium transition-colors">
+                <button className="px-5 py-2.5 text-white dark:text-gray-900 hover:text-cyan-400 font-medium transition-colors">
                   Connexion
                 </button>
               </Link>
@@ -150,7 +150,7 @@ const Header = React.memo(function Header() {
             </div>
 
             <button 
-              className="md:hidden p-2 text-gray-400 hover:text-white"
+              className="md:hidden p-2 text-gray-400 dark:text-gray-500 hover:text-white"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -160,23 +160,23 @@ const Header = React.memo(function Header() {
       </nav>
 
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-[#0a0e1a]">
+        <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-[#0a0e1a] dark:bg-gray-50">
           <div className="flex flex-col p-4 space-y-4">
             <div className="flex flex-col gap-4">
-              <Link href="/" className="text-gray-400 hover:text-white transition-colors" onClick={closeMobileMenu}>
+              <Link href="/" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors" onClick={closeMobileMenu}>
                 Accueil
               </Link>
-              <Link href="/adventure" className="text-gray-400 hover:text-white transition-colors" onClick={closeMobileMenu}>
+              <Link href="/adventure" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors" onClick={closeMobileMenu}>
                 Aventures
               </Link>
-              <Link href="/create-character" className="text-gray-400 hover:text-white transition-colors" onClick={closeMobileMenu}>
+              <Link href="/create-character" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors" onClick={closeMobileMenu}>
                 Créer
               </Link>
-              <Link href="/classement" className="text-gray-400 hover:text-white transition-colors" onClick={closeMobileMenu}>
+              <Link href="/classement" className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors" onClick={closeMobileMenu}>
                 Classement
               </Link>
             </div>
-            <div className="flex flex-col gap-3 pt-4 border-t border-gray-800">
+            <div className="flex flex-col gap-3 pt-4 border-t border-gray-800 dark:border-gray-200">
               <Link href="/auth/login" onClick={closeMobileMenu}>
                 <button className="w-full px-5 py-2.5 text-white hover:text-cyan-400 font-medium transition-colors">
                   Connexion

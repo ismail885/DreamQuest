@@ -59,7 +59,7 @@ export default function RegisterForm() {
       const result = await register(formData.username, formData.email, formData.password);
 
       if (result.success) {
-        toast.success("Inscription reussie ! Connectez-vous.");
+        toast.success("Inscription réussie ! Connectez-vous.");
         setTimeout(() => router.push("/auth/login"), 1500);
       } else {
         setError(result.error || "Erreur lors de l'inscription");
@@ -72,7 +72,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative bg-[#0a0e1a]">
+    <div className="min-h-screen flex items-center justify-center p-4 relative bg-[#0a0e1a] dark:bg-gray-50">
       {/* Lueur ambiante bleu-violet */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl"></div>
@@ -81,7 +81,7 @@ export default function RegisterForm() {
 
       <div className="w-full max-w-sm relative z-10">
         {/* Carte modale */}
-        <div className="bg-[#131e35] rounded-2xl border border-gray-800/50 p-8 shadow-2xl">
+        <div className="bg-[#131e35] dark:bg-white rounded-2xl border border-gray-800/50 dark:border-gray-200/50 p-8 shadow-2xl">
           
           {/* Logo + Titre */}
           <div className="text-center mb-8">
@@ -89,7 +89,7 @@ export default function RegisterForm() {
               <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={56} height={56} className="object-contain" priority />
             </div>
             <h1 className="text-2xl font-bold text-[#3b9ede]">DreamQuest</h1>
-            <p className="text-gray-400 text-sm mt-1">Creer votre compte jeune aventurier</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Créer votre compte jeune aventurier</p>
           </div>
 
           {/* Erreur */}
@@ -102,7 +102,7 @@ export default function RegisterForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Nom d'aventurier */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-400 dark:text-gray-500 mb-1.5">
 Nom d&apos;aventurier
               </label>
               <div className="relative">
@@ -115,7 +115,7 @@ Nom d&apos;aventurier
                   type="text"
                   id="username"
                   name="username"
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] dark:bg-gray-200 border border-gray-700 dark:border-gray-300 focus:border-cyan-500 rounded-lg text-white dark:text-gray-900 placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
                   placeholder="Entrez votre nom..."
                   value={formData.username}
                   onChange={handleChange}
@@ -126,7 +126,7 @@ Nom d&apos;aventurier
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-400 dark:text-gray-500 mb-1.5">
                 Email
               </label>
               <div className="relative">
@@ -139,7 +139,7 @@ Nom d&apos;aventurier
                   type="email"
                   id="email"
                   name="email"
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] dark:bg-gray-200 border border-gray-700 dark:border-gray-300 focus:border-cyan-500 rounded-lg text-white dark:text-gray-900 placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
                   placeholder="votre.email@exemple.com"
                   value={formData.email}
                   onChange={handleChange}
@@ -150,7 +150,7 @@ Nom d&apos;aventurier
 
             {/* Mot de passe */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-400 dark:text-gray-500 mb-1.5">
                 Mot de passe
               </label>
               <div className="relative">
@@ -172,7 +172,7 @@ Nom d&apos;aventurier
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-600 hover:text-gray-300 dark:hover:text-gray-800 transition-colors"
                   tabIndex={-1}
                   aria-label={showPassword ? "Masquer" : "Afficher"}
                 >
@@ -192,7 +192,7 @@ Nom d&apos;aventurier
 
             {/* Confirmer mot de passe */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-400 dark:text-gray-500 mb-1.5">
                 Confirmer le mot de passe
               </label>
               <div className="relative">
@@ -214,7 +214,7 @@ Nom d&apos;aventurier
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-600 hover:text-gray-300 dark:hover:text-gray-800 transition-colors"
                   tabIndex={-1}
                   aria-label={showConfirm ? "Masquer" : "Afficher"}
                 >
@@ -248,7 +248,7 @@ Nom d&apos;aventurier
             </button>
 
             {/* Lien connexion */}
-            <p className="text-center text-sm text-gray-400 mt-4">
+            <p className="text-center text-sm text-gray-400 dark:text-gray-500 mt-4">
               Deja un compte ?{" "}
               <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
                 Se connecter
@@ -258,7 +258,7 @@ Nom d&apos;aventurier
         </div>
 
         {/* Footer légal */}
-        <p className="mt-6 text-xs text-gray-600 text-center leading-relaxed max-w-xs mx-auto">
+        <p className="mt-6 text-xs text-gray-600 dark:text-gray-500 text-center leading-relaxed max-w-xs mx-auto">
           En continuant, vous acceptez nos conditions d&apos;utilisation et notre politique de confidentialité
         </p>
       </div>

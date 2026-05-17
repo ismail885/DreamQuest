@@ -12,7 +12,7 @@ export default function CreateCharacterPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 dark:from-gray-50 dark:via-gray-100 dark:to-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
       </div>
     );
@@ -21,7 +21,7 @@ export default function CreateCharacterPage() {
   if (!user) {
     router.replace('/auth/login');
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 dark:from-gray-50 dark:via-gray-100 dark:to-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
       </div>
     );
@@ -33,7 +33,7 @@ export default function CreateCharacterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] pb-24 md:pb-0">
+    <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50 pb-24 md:pb-0">
       <CreateCharacterForm
         userId={user.id}
         onCharacterCreated={handleCharacterCreated}

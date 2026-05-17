@@ -567,7 +567,7 @@ function AdventureReader({ params }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50 flex items-center justify-center">
         <Loader />
       </div>
     );
@@ -575,7 +575,7 @@ function AdventureReader({ params }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50 flex flex-col items-center justify-center gap-4">
         <p className="text-red-400 text-lg">{error}</p>
         <button
           onClick={() => router.push("/adventure")}
@@ -588,7 +588,7 @@ function AdventureReader({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
+    <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50 text-white dark:text-gray-900 flex flex-col">
       <div className="flex items-center justify-between px-6 py-4">
         <button
           onClick={() => {
@@ -598,7 +598,7 @@ function AdventureReader({ params }: Props) {
               router.back();
             }
           }}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm group"
+          className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-white transition-colors text-sm group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Retour
@@ -616,7 +616,7 @@ function AdventureReader({ params }: Props) {
           )}
           <button
             onClick={restart}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm group"
+            className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-white transition-colors text-sm group"
           >
             <RotateCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
             Recommencer
@@ -656,35 +656,35 @@ function AdventureReader({ params }: Props) {
               )}
             </div>
             {lastConsequence.text && (
-              <p className="text-gray-400 text-xs mt-2 text-center">{lastConsequence.text}</p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs mt-2 text-center">{lastConsequence.text}</p>
             )}
           </div>
         </div>
       )}
 
       {character && (
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-800/40">
-          <div className="flex items-center gap-3 flex-1 bg-[#131e35] border border-gray-800/60 rounded-xl px-4 py-3">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-800/40 dark:border-gray-200/40">
+          <div className="flex items-center gap-3 flex-1 bg-[#131e35] dark:bg-gray-100 border border-gray-800/60 dark:border-gray-200/60 rounded-xl px-4 py-3">
             <Heart className="w-6 h-6 text-red-400 flex-shrink-0" />
             <div>
-              <p className="text-gray-400 text-xs">Sante</p>
-              <p className="text-white font-bold text-lg leading-none">{character.points_vie}</p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs">Sante</p>
+              <p className="text-white dark:text-gray-900 font-bold text-lg leading-none">{character.points_vie}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-1 bg-[#131e35] border border-gray-800/60 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 flex-1 bg-[#131e35] dark:bg-gray-100 border border-gray-800/60 dark:border-gray-200/60 rounded-xl px-4 py-3">
             <Swords className="w-6 h-6 text-orange-400 flex-shrink-0" />
             <div>
-              <p className="text-gray-400 text-xs">Force</p>
-              <p className="text-white font-bold text-lg leading-none">{character.stats?.force ?? 0}</p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs">Force</p>
+              <p className="text-white dark:text-gray-900 font-bold text-lg leading-none">{character.stats?.force ?? 0}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-1 bg-[#131e35] border border-gray-800/60 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 flex-1 bg-[#131e35] dark:bg-gray-100 border border-gray-800/60 dark:border-gray-200/60 rounded-xl px-4 py-3">
             <Brain className="w-6 h-6 text-purple-400 flex-shrink-0" />
             <div>
-              <p className="text-gray-400 text-xs">Intelligence</p>
-              <p className="text-white font-bold text-lg leading-none">{character.stats?.magie ?? 0}</p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs">Intelligence</p>
+              <p className="text-white dark:text-gray-900 font-bold text-lg leading-none">{character.stats?.magie ?? 0}</p>
             </div>
           </div>
         </div>
@@ -694,10 +694,10 @@ function AdventureReader({ params }: Props) {
         <div className="w-full max-w-3xl space-y-5">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-400 dark:text-gray-500 text-sm">
                 Progression de l&apos;histoire
               </span>
-              <span className="text-gray-400 text-sm">{progression}%</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">{progression}%</span>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
               <div
@@ -724,9 +724,9 @@ function AdventureReader({ params }: Props) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-[#0a0e1a] border border-gray-800/60 rounded-xl p-6"
+              className="bg-[#0a0e1a] dark:bg-gray-50 border border-gray-800/60 dark:border-gray-200/60 rounded-xl p-6"
             >
-              <p className="text-gray-300 leading-relaxed text-base">
+              <p className="text-gray-300 dark:text-gray-700 leading-relaxed text-base">
                 {currentBranch.texte}
               </p>
             </motion.div>
@@ -739,8 +739,8 @@ function AdventureReader({ params }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-white font-bold text-xl">Aventure terminée !</p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-white dark:text-gray-900 font-bold text-xl">Aventure terminée !</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm">
                 Complétée en {history.length} étape{history.length > 1 ? "s" : ""}
               </p>
               {character && character.niveau > 1 && (
@@ -761,10 +761,10 @@ function AdventureReader({ params }: Props) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#0f1623]/80 border border-amber-500/30 rounded-xl p-5 mb-4"
+              className="bg-[#0f1623]/80 dark:bg-white/80 border border-amber-500/30 rounded-xl p-5 mb-4"
             >
               <p className="text-amber-400 text-xs font-semibold mb-2">ÉVÉNEMENT ALÉATOIRE</p>
-              <p className="text-gray-400 leading-relaxed text-sm">{currentEvent.text}</p>
+              <p className="text-gray-400 dark:text-gray-500 leading-relaxed text-sm">{currentEvent.text}</p>
               <div className="flex flex-col gap-2 mt-4">
                 {currentEvent.choices.map((choice, idx) => (
                   <button
@@ -776,7 +776,7 @@ function AdventureReader({ params }: Props) {
                         chooseOption(currentBranch.choix1_lien);
                       }
                     }}
-                    className="w-full text-left px-4 py-3 bg-[#0f1623] border border-gray-700 hover:border-amber-500/50 rounded-lg text-gray-400 hover:text-white text-sm transition-all"
+                    className="w-full text-left px-4 py-3 bg-[#0f1623] dark:bg-white border border-gray-700 dark:border-gray-300 hover:border-amber-500/50 rounded-lg text-gray-400 dark:text-gray-500 hover:text-white text-sm transition-all"
                   >
                     {choice.text}
                   </button>
@@ -802,15 +802,15 @@ function AdventureReader({ params }: Props) {
                     className={`w-full text-left px-5 py-4 bg-transparent border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-center gap-3 min-h-[56px] ${
                       impact.hasImpact 
                         ? impact.isPositive 
-                          ? 'hover:border-green-500/60 hover:bg-green-500/5 border-gray-700 text-gray-300 hover:text-green-300' 
-                          : 'hover:border-red-500/60 hover:bg-red-500/5 border-gray-700 text-gray-300 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-white/5 border-gray-700 text-gray-300 hover:text-white'
+                          ? 'hover:border-green-500/60 hover:bg-green-500/5 border-gray-700 dark:border-gray-300 text-gray-300 dark:text-gray-700 hover:text-green-300' 
+                          : 'hover:border-red-500/60 hover:bg-red-500/5 border-gray-700 dark:border-gray-300 text-gray-300 dark:text-gray-700 hover:text-red-300'
+                        : 'hover:border-cyan-500/60 hover:bg-white/5 border-gray-700 dark:border-gray-300 text-gray-300 dark:text-gray-700 hover:text-white'
                     }`}
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
                       impact.hasImpact 
                         ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        : 'bg-gray-700 text-gray-400'
+                        : 'bg-gray-700 text-gray-400 dark:text-gray-500'
                     }`}>
                       {impact.hasImpact ? (
                         impact.isPositive ? (
@@ -839,15 +839,15 @@ function AdventureReader({ params }: Props) {
                     className={`w-full text-left px-5 py-4 bg-transparent border rounded-xl transition-all duration-200 text-sm leading-relaxed flex items-center gap-3 min-h-[56px] ${
                       impact.hasImpact 
                         ? impact.isPositive 
-                          ? 'hover:border-green-500/60 hover:bg-green-500/5 border-gray-700 text-gray-300 hover:text-green-300' 
-                          : 'hover:border-red-500/60 hover:bg-red-500/5 border-gray-700 text-gray-300 hover:text-red-300'
-                        : 'hover:border-cyan-500/60 hover:bg-white/5 border-gray-700 text-gray-300 hover:text-white'
+                          ? 'hover:border-green-500/60 hover:bg-green-500/5 border-gray-700 dark:border-gray-300 text-gray-300 dark:text-gray-700 hover:text-green-300' 
+                          : 'hover:border-red-500/60 hover:bg-red-500/5 border-gray-700 dark:border-gray-300 text-gray-300 dark:text-gray-700 hover:text-red-300'
+                        : 'hover:border-cyan-500/60 hover:bg-white/5 border-gray-700 dark:border-gray-300 text-gray-300 dark:text-gray-700 hover:text-white'
                     }`}
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
                       impact.hasImpact 
                         ? impact.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        : 'bg-gray-700 text-gray-400'
+                        : 'bg-gray-700 text-gray-400 dark:text-gray-500'
                     }`}>
                       {impact.hasImpact ? (
                         impact.isPositive ? (
@@ -869,7 +869,7 @@ function AdventureReader({ params }: Props) {
 
               {/* Compétences de classe */}
               {availableAbilities.length > 0 && character?.classe && !currentEvent && (
-                <div className="mt-4 pt-4 border-t border-gray-800">
+                <div className="mt-4 pt-4 border-t border-gray-800 dark:border-gray-200">
                   <p className="text-purple-400 text-xs font-semibold mb-3">
                     ✨ COMPÉTENCE {character.classe.toUpperCase()}
                   </p>
@@ -896,13 +896,13 @@ function AdventureReader({ params }: Props) {
                         }}
                         className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all ${
                           usedAbilities.includes(ability)
-                            ? "bg-gray-800/50 border border-gray-700 text-gray-400 opacity-50 cursor-not-allowed"
-                            : "bg-[#0f1623] border border-purple-500/30 hover:border-purple-500/60 text-gray-400 hover:text-white"
+                            ? "bg-gray-800/50 border border-gray-700 dark:border-gray-300 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
+                            : "bg-[#0f1623] dark:bg-white border border-purple-500/30 hover:border-purple-500/60 text-gray-400 dark:text-gray-500 hover:text-white"
                         }`}
                       >
                         <span className="font-medium">{ability}</span>
                         {!usedAbilities.includes(ability) && (
-                          <span className="text-gray-400 ml-2">
+                          <span className="text-gray-400 dark:text-gray-500 ml-2">
                             (1 rest) • +10 PV
                           </span>
                         )}
@@ -931,7 +931,7 @@ function AdventureReader({ params }: Props) {
       {/* Combat UI Overlay */}
       {inCombat && combatState && character && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <div className="bg-[#0d1526] border border-red-500/50 rounded-xl max-w-lg w-full overflow-hidden">
+          <div className="bg-[#0d1526] dark:bg-white border border-red-500/50 rounded-xl max-w-lg w-full overflow-hidden">
             <div className="bg-red-900/30 border-b border-red-500/30 p-3 text-center">
               <h2 className="text-red-400 font-bold text-lg">COMBAT</h2>
             </div>
@@ -939,14 +939,14 @@ function AdventureReader({ params }: Props) {
             <div className="p-4 space-y-4">
               <div className="flex justify-between items-center">
                 <div className="flex-1">
-                  <div className="text-white font-bold">Toi</div>
+                  <div className="text-white dark:text-gray-900 font-bold">Toi</div>
                   <div className="h-4 bg-gray-700 rounded-full overflow-hidden w-32">
                     <div
                       className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all"
                       style={{ width: `${(combatState.playerPv / combatState.playerPvMax) * 100}%` }}
                     />
                   </div>
-                  <div className="text-gray-400 text-sm">{combatState.playerPv} / {combatState.playerPvMax} PV</div>
+                  <div className="text-gray-400 dark:text-gray-500 text-sm">{combatState.playerPv} / {combatState.playerPvMax} PV</div>
                   {/* Mana bar */}
                   <div className="mt-2">
                     <div className="h-3 bg-gray-700 rounded-full overflow-hidden w-32">
@@ -967,7 +967,7 @@ function AdventureReader({ params }: Props) {
                       style={{ width: `${((combatState.enemy?.pv || 0) / (combatState.enemy?.pvMax || 1)) * 100}%` }}
                     />
                   </div>
-                  <div className="text-gray-400 text-sm">{combatState.enemy?.pv} / {combatState.enemy?.pvMax} PV</div>
+                  <div className="text-gray-400 dark:text-gray-500 text-sm">{combatState.enemy?.pv} / {combatState.enemy?.pvMax} PV</div>
                 </div>
               </div>
 
@@ -986,7 +986,7 @@ function AdventureReader({ params }: Props) {
                 </div>
               )}
 
-              <p className="text-gray-300 text-sm">{combatState.enemy?.description}</p>
+              <p className="text-gray-300 dark:text-gray-700 text-sm">{combatState.enemy?.description}</p>
 
               {combatState.enemy && !combatState.won && !combatState.fled && (
                 <div className="grid grid-cols-3 gap-2">
@@ -1026,7 +1026,7 @@ function AdventureReader({ params }: Props) {
                         disabled={combatState.turn !== "player" || combatState.playerMana < ability.manaCost}
                         className={`py-2 px-3 rounded-lg text-left transition-all ${
                           combatState.playerMana < ability.manaCost
-                            ? "bg-gray-800/50 border border-gray-700 text-gray-500 cursor-not-allowed"
+                            ? "bg-gray-800/50 border border-gray-700 dark:border-gray-300 text-gray-500 dark:text-gray-600 cursor-not-allowed"
                             : ability.type === "attack"
                             ? "bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20"
                             : ability.type === "defense"
@@ -1038,17 +1038,17 @@ function AdventureReader({ params }: Props) {
                           <span className="font-medium">{ability.name}</span>
                           <span className="text-xs">{ability.manaCost} Mana</span>
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">{ability.description}</div>
+                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">{ability.description}</div>
                       </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              <div className="bg-[#0a0e1a] rounded-lg p-3 h-32 overflow-y-auto">
+              <div className="bg-[#0a0e1a] rounded-lg p-3 h-32 overflow-y-auto dark:bg-gray-50">
                 <div className="space-y-1">
                   {combatState.log.slice(-5).map((line, i) => (
-                    <p key={i} className="text-gray-300 text-sm">{line}</p>
+                    <p key={i} className="text-gray-300 dark:text-gray-700 text-sm">{line}</p>
                   ))}
                 </div>
               </div>

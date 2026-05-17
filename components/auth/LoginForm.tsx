@@ -69,7 +69,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative bg-[#0a0e1a]">
+    <div className="min-h-screen flex items-center justify-center p-4 relative bg-[#0a0e1a] dark:bg-gray-50">
       {/* Lueur ambiante bleu-violet */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl"></div>
@@ -78,7 +78,7 @@ export default function LoginForm() {
 
       <div className="w-full max-w-sm relative z-10">
         {/* Carte modale */}
-        <div className="bg-[#131e35] rounded-2xl border border-gray-800/50 p-8 shadow-2xl">
+        <div className="bg-[#131e35] dark:bg-white rounded-2xl border border-gray-800/50 dark:border-gray-200/50 p-8 shadow-2xl">
           
           {/* Logo + Titre */}
           <div className="text-center mb-8">
@@ -86,7 +86,7 @@ export default function LoginForm() {
               <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={56} height={56} className="object-contain" priority />
             </div>
             <h1 className="text-2xl font-bold text-[#3b9ede]">DreamQuest</h1>
-            <p className="text-gray-400 text-sm mt-1">Connectez-vous à votre aventure</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Connectez-vous à votre aventure</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -96,7 +96,7 @@ export default function LoginForm() {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-transparent border border-gray-700 hover:border-gray-500 rounded-lg text-gray-300 hover:text-white transition-all text-sm font-medium disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-transparent border border-gray-700 dark:border-gray-300 hover:border-gray-500 rounded-lg text-gray-300 dark:text-gray-600 hover:text-white dark:hover:text-gray-900 transition-all text-sm font-medium disabled:opacity-50"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -111,7 +111,7 @@ export default function LoginForm() {
                 type="button"
                 onClick={handleAppleLogin}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-transparent border border-gray-700 hover:border-gray-500 rounded-lg text-gray-300 hover:text-white transition-all text-sm font-medium disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-transparent border border-gray-700 dark:border-gray-300 hover:border-gray-500 rounded-lg text-gray-300 dark:text-gray-600 hover:text-white dark:hover:text-gray-900 transition-all text-sm font-medium disabled:opacity-50"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
@@ -123,16 +123,16 @@ export default function LoginForm() {
             {/* Séparateur */}
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
+                <div className="w-full border-t border-gray-700 dark:border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="px-3 bg-[#131e35] text-gray-500">ou</span>
+                <span className="px-3 bg-[#131e35] dark:bg-white text-gray-500 dark:text-gray-600">ou</span>
               </div>
             </div>
 
             {/* Champ Email */}
             <div>
-              <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-400 dark:text-gray-500 mb-1.5">
                 Email
               </label>
               <div className="relative">
@@ -144,7 +144,7 @@ export default function LoginForm() {
                 <input
                   type="text"
                   id="emailOrUsername"
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-700 focus:border-cyan-500 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] dark:bg-gray-200 border border-gray-700 dark:border-gray-300 focus:border-cyan-500 rounded-lg text-white dark:text-gray-900 placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all text-sm"
                   placeholder="votre.email@exemple.com"
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
@@ -155,7 +155,7 @@ export default function LoginForm() {
 
             {/* Champ Mot de passe */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-400 dark:text-gray-500 mb-1.5">
                 Mot de passe
               </label>
               <div className="relative">
@@ -176,7 +176,7 @@ export default function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-600 hover:text-gray-300 dark:hover:text-gray-800 transition-colors"
                   tabIndex={-1}
                   aria-label={showPassword ? "Masquer" : "Afficher"}
                 >
@@ -224,7 +224,7 @@ export default function LoginForm() {
             </button>
 
             {/* Lien inscription */}
-            <p className="text-center text-sm text-gray-400">
+            <p className="text-center text-sm text-gray-400 dark:text-gray-500">
               Pas encore de compte ?{" "}
               <Link href="/auth/register" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
                 S&apos;inscrire
@@ -234,7 +234,7 @@ export default function LoginForm() {
         </div>
 
         {/* Footer légal */}
-        <p className="mt-6 text-xs text-gray-600 text-center leading-relaxed max-w-xs mx-auto">
+        <p className="mt-6 text-xs text-gray-600 dark:text-gray-500 text-center leading-relaxed max-w-xs mx-auto">
           En continuant, vous acceptez nos conditions d&apos;utilisation et notre politique de confidentialité
         </p>
       </div>

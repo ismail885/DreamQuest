@@ -5,7 +5,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-800/50 bg-[#0a0e1a]">
+    <footer className="border-t border-gray-800/50 dark:border-gray-200/50 bg-[#0a0e1a] dark:bg-gray-50">
       <div className="container mx-auto px-4 md:px-6 py-10 md:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
@@ -17,7 +17,7 @@ export default function Footer() {
               <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={36} height={36} className="object-contain" />
               <span className="text-lg font-bold text-cyan-400">DreamQuest</span>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+            <p className="text-gray-400 dark:text-gray-500 text-sm leading-relaxed max-w-sm">
               Vivez des aventures interactives uniques. Créez votre personnage,
               façonnez votre destin et partagez vos histoires avec la
               communauté.
@@ -43,40 +43,40 @@ export default function Footer() {
 
           {/* Aventures */}
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Aventures</h3>
+            <h3 className="text-sm font-semibold text-white dark:text-gray-900 uppercase tracking-wider mb-4">Aventures</h3>
             <ul className="space-y-2.5">
-              <li><Link href="/dashboard" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Découvrir</Link></li>
-              <li><Link href="/create-character" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Créer un personnage</Link></li>
-              <li><Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Mes aventures</Link></li>
-              <li><Link href="/classement" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Classement</Link></li>
+              <li><Link href="/dashboard" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Découvrir</Link></li>
+              <li><Link href="/create-character" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Créer un personnage</Link></li>
+              <li><Link href="/adventure" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Mes aventures</Link></li>
+              <li><Link href="/classement" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Classement</Link></li>
             </ul>
           </div>
 
           {/* Communauté */}
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Communauté</h3>
+            <h3 className="text-sm font-semibold text-white dark:text-gray-900 uppercase tracking-wider mb-4">Communauté</h3>
             <ul className="space-y-2.5">
-              <li><Link href="/forum" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Forum</Link></li>
-              <li><Link href="/guides" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Guides</Link></li>
-              <li><Link href="/faq" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">FAQ</Link></li>
-              <li><Link href="/contact" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Contact</Link></li>
+              <li><Link href="/forum" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Forum</Link></li>
+              <li><Link href="/guides" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Guides</Link></li>
+              <li><Link href="/faq" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">FAQ</Link></li>
+              <li><Link href="/contact" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Contact</Link></li>
             </ul>
           </div>
 
           {/* Légal */}
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Légal</h3>
+            <h3 className="text-sm font-semibold text-white dark:text-gray-900 uppercase tracking-wider mb-4">Légal</h3>
             <ul className="space-y-2.5">
-              <li><Link href="/privacy" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Confidentialité</Link></li>
-              <li><Link href="/terms" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Conditions d&apos;utilisation</Link></li>
-              <li><Link href="/cookies" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Cookies</Link></li>
-              <li><Link href="/licenses" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Licences</Link></li>
+              <li><Link href="/privacy" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Confidentialité</Link></li>
+              <li><Link href="/terms" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Conditions d&apos;utilisation</Link></li>
+              <li><Link href="/cookies" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Cookies</Link></li>
+              <li><Link href="/licenses" className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors text-sm">Licences</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800/50 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-xs">
+        <div className="border-t border-gray-800/50 dark:border-gray-200/50 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 dark:text-gray-600 text-xs">
             &copy; {currentYear} DreamQuest. Tous droits réservés.
           </p>
           <p className="text-gray-600 text-xs">Made by Ismail Abou-zaid</p>

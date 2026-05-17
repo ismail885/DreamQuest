@@ -224,19 +224,19 @@ export default function AdminLogsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Journal d&apos;activité</h1>
-          <p className="text-gray-400 mt-2">Suivi des actions en temps réel</p>
+          <h1 className="text-3xl font-bold text-white dark:text-gray-900">Journal d&apos;activité</h1>
+          <p className="text-gray-400 dark:text-gray-500 mt-2">Suivi des actions en temps réel</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-2 bg-[#0f1623] border border-gray-800 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-2 bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg">
             {isLive ? (
               <Wifi className="w-4 h-4 text-green-400" />
             ) : (
-              <WifiOff className="w-4 h-4 text-gray-500" />
+              <WifiOff className="w-4 h-4 text-gray-500 dark:text-gray-600" />
             )}
             <button
               onClick={() => setIsLive(!isLive)}
-              className={`text-sm font-medium ${isLive ? "text-green-400" : "text-gray-500"}`}
+              className={`text-sm font-medium ${isLive ? "text-green-400" : "text-gray-500 dark:text-gray-600"}`}
             >
               {isLive ? "En direct" : "Hors ligne"}
             </button>
@@ -244,36 +244,36 @@ export default function AdminLogsPage() {
           <button
             onClick={() => fetchLogs(true)}
             disabled={isRefreshing}
-            className="p-2 bg-[#0f1623] border border-gray-800 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="p-2 bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`w-5 h-5 text-gray-400 ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-5 h-5 text-gray-400 dark:text-gray-500 ${isRefreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
-      <p className="text-gray-400 text-sm -mt-4">
+      <p className="text-gray-400 dark:text-gray-500 text-sm -mt-4">
         Dernière mise à jour: {lastUpdate.toLocaleTimeString("fr-FR")}
       </p>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Total</p>
-          <p className="text-2xl font-bold text-white">{stats.total}</p>
+        <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg p-4">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">Total</p>
+          <p className="text-2xl font-bold text-white dark:text-gray-900">{stats.total}</p>
         </div>
-        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Inscriptions</p>
+        <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg p-4">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">Inscriptions</p>
           <p className="text-2xl font-bold text-cyan-400">{stats.inscriptions}</p>
         </div>
-        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Aventures</p>
+        <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg p-4">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">Aventures</p>
           <p className="text-2xl font-bold text-purple-400">{stats.aventures}</p>
         </div>
-        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Votes</p>
+        <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg p-4">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">Votes</p>
           <p className="text-2xl font-bold text-amber-400">{stats.votes}</p>
         </div>
-        <div className="bg-[#0f1623] border border-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Personnages</p>
+        <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg p-4">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">Personnages</p>
           <p className="text-2xl font-bold text-emerald-400">{stats.personnages}</p>
         </div>
       </div>
@@ -285,7 +285,7 @@ export default function AdminLogsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "all"
               ? "bg-cyan-500 text-white"
-              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
+              : "bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900"
           }`}
         >
           Tous
@@ -295,7 +295,7 @@ export default function AdminLogsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "inscription"
               ? "bg-cyan-500 text-white"
-              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
+              : "bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900"
           }`}
         >
           Inscriptions
@@ -305,7 +305,7 @@ export default function AdminLogsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "aventure_creee"
               ? "bg-purple-500 text-white"
-              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
+              : "bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900"
           }`}
         >
           Aventures
@@ -315,7 +315,7 @@ export default function AdminLogsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "vote"
               ? "bg-amber-500 text-white"
-              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
+              : "bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900"
           }`}
         >
           Votes
@@ -325,7 +325,7 @@ export default function AdminLogsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === "personnage_cree"
               ? "bg-emerald-500 text-white"
-              : "bg-[#0f1623] border border-gray-800 text-gray-400 hover:text-white"
+              : "bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900"
           }`}
         >
           Personnages
@@ -333,21 +333,21 @@ export default function AdminLogsPage() {
       </div>
 
       {/* Logs List */}
-      <div className="bg-[#0f1623] border border-gray-800 rounded-xl overflow-hidden">
+      <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500 mx-auto"></div>
           </div>
         ) : filteredLogs.length === 0 ? (
-          <div className="p-12 text-center text-gray-400">
+          <div className="p-12 text-center text-gray-400 dark:text-gray-500">
             Aucune activité récente
           </div>
         ) : (
-          <div className="divide-y divide-gray-800">
+          <div className="divide-y divide-gray-800 dark:divide-gray-200">
             {filteredLogs.map((log) => (
               <div
                 key={log.id}
-                className="p-4 hover:bg-gray-800/30 transition-colors"
+                className="p-4 hover:bg-gray-800/30 dark:hover:bg-gray-100/50 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
@@ -355,10 +355,10 @@ export default function AdminLogsPage() {
                       {getTypeIcon(log.type)}
                     </div>
                     <div>
-                      <p className="text-white font-medium">{log.description}</p>
+                      <p className="text-white dark:text-gray-900 font-medium">{log.description}</p>
                       <div className="flex items-center gap-2 mt-1">
                         {log.userName && (
-                          <span className="text-gray-400 text-sm">{log.userName}</span>
+                          <span className="text-gray-400 dark:text-gray-500 text-sm">{log.userName}</span>
                         )}
                         {log.adventureTitle && (
                           <span className="text-purple-400 text-sm">- {log.adventureTitle}</span>
@@ -370,7 +370,7 @@ export default function AdminLogsPage() {
                     <span className={`px-2 py-1 rounded-full text-xs border ${getTypeColor(log.type)}`}>
                       {getTypeLabel(log.type)}
                     </span>
-                    <span className="text-gray-400 text-sm whitespace-nowrap">
+                    <span className="text-gray-400 dark:text-gray-500 text-sm whitespace-nowrap">
                       {formatTimeAgo(log.timestamp)}
                     </span>
                   </div>

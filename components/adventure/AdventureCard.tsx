@@ -67,7 +67,7 @@ const AdventureCard = React.memo(function AdventureCard({
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      toast.error("Vous devez etre connecte pour voter");
+      toast.error("Vous devez être connecté pour voter");
       return;
     }
     await toggleVote();
@@ -81,21 +81,21 @@ const AdventureCard = React.memo(function AdventureCard({
       <Link
         href={personnageId ? href : '#'}
         onClick={!personnageId ? handleCardClick : undefined}
-        className="group relative bg-[#131e35] rounded-xl overflow-hidden border border-gray-800/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 block"
+        className="group relative bg-[#131e35] rounded-xl overflow-hidden border border-gray-800/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 block dark:bg-gray-100 dark:border-gray-200/50"
       >
         <div className="p-4 space-y-3">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-white font-bold text-base leading-tight group-hover:text-cyan-400 transition-colors flex-1">
+            <h3 className="text-white font-bold text-base leading-tight group-hover:text-cyan-400 transition-colors flex-1 dark:text-gray-900">
               {titre}
             </h3>
           </div>
 
-          <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
+          <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed dark:text-gray-500">
             {description ?? "Aucune description disponible."}
           </p>
 
-          <div className="flex items-center justify-between pt-2 border-t border-gray-800/50">
-            <div className="flex items-center gap-1.5 text-gray-500 text-xs">
+          <div className="flex items-center justify-between pt-2 border-t border-gray-800/50 dark:border-gray-200/50">
+            <div className="flex items-center gap-1.5 text-gray-500 text-xs dark:text-gray-600">
               <Star className="w-3.5 h-3.5" />
               <span>{currentPopularite}</span>
             </div>
@@ -106,7 +106,7 @@ const AdventureCard = React.memo(function AdventureCard({
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all ${
                 hasVoted
                   ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                  : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:bg-gray-700/50 hover:text-yellow-400 hover:border-yellow-500/30"
+                  : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:bg-gray-700/50 hover:text-yellow-400 hover:border-yellow-500/30 dark:bg-gray-200 dark:text-gray-600 dark:border-gray-300/50 dark:hover:bg-gray-300/50"
               }`}
             >
               <Star className={`w-3.5 h-3.5 ${hasVoted ? "fill-yellow-400" : ""}`} />

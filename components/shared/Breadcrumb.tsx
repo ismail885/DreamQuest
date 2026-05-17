@@ -20,7 +20,7 @@ export default function Breadcrumb({ items, currentStep, totalSteps }: Breadcrum
     <div className="flex items-center gap-2 text-sm">
       <Link 
         href="/" 
-        className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-1"
+        className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors flex items-center gap-1"
       >
         <Home className="w-4 h-4" />
         <span className="hidden sm:inline">Accueil</span>
@@ -32,7 +32,7 @@ export default function Breadcrumb({ items, currentStep, totalSteps }: Breadcrum
           {item.href ? (
             <Link 
               href={item.href}
-              className="text-gray-400 hover:text-cyan-400 transition-colors"
+              className="text-gray-400 dark:text-gray-500 hover:text-cyan-400 transition-colors"
             >
               {item.label}
             </Link>
@@ -44,7 +44,7 @@ export default function Breadcrumb({ items, currentStep, totalSteps }: Breadcrum
       
       {currentStep !== undefined && totalSteps !== undefined && (
         <div className="flex items-center gap-2 ml-auto">
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-gray-500 dark:text-gray-600">
             Étape {currentStep}/{totalSteps}
           </div>
           <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
@@ -104,18 +104,18 @@ export function ConfirmLeaveModal({
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onCancel}
       />
-      <div className="relative bg-[#0f1623] border border-gray-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-[#0f1623] dark:bg-white border border-gray-700 dark:border-gray-300 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl animate-in fade-in zoom-in duration-200">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
             <AlertTriangle className="w-5 h-5 text-yellow-400" />
           </div>
-          <h3 className="text-xl font-bold text-white">{title}</h3>
+          <h3 className="text-xl font-bold text-white dark:text-gray-900">{title}</h3>
         </div>
-        <p className="text-gray-400 mb-6">{message}</p>
+        <p className="text-gray-400 dark:text-gray-500 mb-6">{message}</p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 py-3 px-4 bg-[#1a2332] border border-gray-600 rounded-lg text-white font-medium hover:bg-[#1a2332]/80 transition-colors"
+            className="flex-1 py-3 px-4 bg-[#1a2332] dark:bg-gray-200 border border-gray-600 rounded-lg text-white dark:text-gray-900 font-medium hover:bg-[#1a2332]/80 dark:hover:bg-gray-200/80 transition-colors"
           >
             Annuler
           </button>

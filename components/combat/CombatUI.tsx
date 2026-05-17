@@ -96,7 +96,7 @@ export default function CombatUI({
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
       >
-        <div className="bg-[#0d1526] border border-red-500/50 rounded-xl max-w-lg w-full overflow-hidden">
+        <div className="bg-[#0d1526] dark:bg-white border border-red-500/50 rounded-xl max-w-lg w-full overflow-hidden">
           <div className="bg-red-900/30 border-b border-red-500/30 p-3 text-center">
             <h2 className="text-red-400 font-bold text-lg">COMBAT</h2>
           </div>
@@ -104,14 +104,14 @@ export default function CombatUI({
           <div className="p-4 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex-1">
-                <div className="text-white font-bold">Toi</div>
+                <div className="text-white dark:text-gray-900 font-bold">Toi</div>
                 <div className="h-4 bg-gray-700 rounded-full overflow-hidden w-32">
                   <div
                     className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all"
                     style={{ width: `${(combat.playerPv / combat.playerPvMax) * 100}%` }}
                   />
                 </div>
-                <div className="text-gray-400 text-sm">{combat.playerPv} / {combat.playerPvMax} PV</div>
+                <div className="text-gray-400 dark:text-gray-500 text-sm">{combat.playerPv} / {combat.playerPvMax} PV</div>
               </div>
               <div className="text-3xl">VS</div>
               <div className="flex-1 text-right">
@@ -122,7 +122,7 @@ export default function CombatUI({
                     style={{ width: `${((combat.enemy?.pv || 0) / (combat.enemy?.pvMax || 1)) * 100}%` }}
                   />
                 </div>
-                <div className="text-gray-400 text-sm">{combat.enemy?.pv} / {combat.enemy?.pvMax} PV</div>
+                <div className="text-gray-400 dark:text-gray-500 text-sm">{combat.enemy?.pv} / {combat.enemy?.pvMax} PV</div>
               </div>
             </div>
 
@@ -154,7 +154,7 @@ export default function CombatUI({
               </div>
             )}
 
-            <div className="bg-[#0a0e1a] rounded-lg p-3 h-32 overflow-y-auto">
+            <div className="bg-[#0a0e1a] dark:bg-gray-50 rounded-lg p-3 h-32 overflow-y-auto">
               <div className="space-y-1">
                 {combat.log.slice(-5).map((line, i) => (
                   <p key={i} className="text-gray-300 text-sm">{line}</p>

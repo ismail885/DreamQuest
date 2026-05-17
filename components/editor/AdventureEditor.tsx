@@ -179,14 +179,14 @@ const generateAdventureContent = (genre: string, title: string): BranchNode[] =>
     
     // 3 choix différents à chaque nœud
     const choiceOptions = [
-      ["Agir avec détermination", "Analyser la situation", "Chercher une solution pacifique"],
+       ["Agir avec détermination", "Analyser la situation", "Chercher une issue pacifique"],
       ["Aller de l'avant", "Reculer et observer", "Demander de l'aide"],
       ["Prendre des risques", "Jouer la sécurité", "Créer une diversion"],
       ["Faire confiance à votre instinct", "Utiliser vos compétences", "Improviser"],
       ["Combattre", "Négocier", "Fuir stratégiquement"],
       ["Explorer les profondeurs", "Rester ensemble", "Diviser pour mieux régner"],
       ["Sacrifice personnel", "Sacrifice stratégique", "Tricher pour survivre"],
-      ["Accepter l'aide d'un的神秘", "Refuser toute assistance", "Demander conseil aux anciens"]
+       ["Accepter l'aide d'un allié", "Refuser toute assistance", "Demander conseil aux anciens"]
     ];
     
     const choices = choiceOptions[i % choiceOptions.length].map((choiceText, idx) => ({
@@ -460,7 +460,7 @@ export default function AdventureEditor() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] px-4 py-8 text-white">
+    <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50 px-4 py-8 text-white dark:text-gray-900">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
           <button
@@ -481,9 +481,9 @@ export default function AdventureEditor() {
             {currentGenreStep > 0 && (
               <button
                 onClick={handlePreviousGenre}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 hover:bg-cyan-600/50 hover:scale-110 rounded-full p-3 transition-all duration-200 active:scale-95"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 dark:bg-gray-200/90 hover:bg-cyan-600/50 hover:scale-110 rounded-full p-3 transition-all duration-200 active:scale-95"
               >
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -495,7 +495,7 @@ export default function AdventureEditor() {
                 className={`w-full p-6 rounded-2xl border transition-all ${
                   genre === currentGenre.key
                     ? `bg-gradient-to-r ${currentGenre.accent} text-white border-transparent shadow-lg`
-                    : "bg-[#1a2332]/90 border-white/10 text-gray-300 hover:border-white/30"
+                    : "bg-[#1a2332]/90 dark:bg-gray-200/90 border-white/10 text-gray-300 hover:border-white/30"
                 }`}
               >
                 <h3 className="text-2xl font-bold mb-2">{currentGenre.title}</h3>
@@ -506,9 +506,9 @@ export default function AdventureEditor() {
             {currentGenreStep < totalGenreSteps - 1 && (
               <button
                 onClick={handleNextGenre}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 hover:bg-cyan-600/50 hover:scale-110 rounded-full p-3 transition-all duration-200 active:scale-95"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-[#1a2332]/90 dark:bg-gray-200/90 hover:bg-cyan-600/50 hover:scale-110 rounded-full p-3 transition-all duration-200 active:scale-95"
               >
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -533,7 +533,7 @@ export default function AdventureEditor() {
 
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-[#111827]/90 rounded-2xl border border-white/10 p-6 space-y-4">
+            <div className="bg-[#111827]/90 dark:bg-gray-100/90 rounded-2xl border border-white/10 dark:border-gray-300/50 p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Titre de l&apos;aventure</label>
                 <input
@@ -541,9 +541,14 @@ export default function AdventureEditor() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Entrez le titre de votre aventure..."
-                  className="w-full bg-[#0a0e1a] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full bg-[#0a0e1a] dark:bg-gray-50 border border-gray-700 dark:border-gray-300 rounded-lg px-4 py-3 text-white dark:text-gray-900 placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
                   maxLength={80}
                 />
+                <div className="flex justify-end mt-1">
+                  <span className={`text-xs ${title.length >= 75 ? 'text-amber-400' : 'text-gray-500 dark:text-gray-600'}`}>
+                    {title.length}/80
+                  </span>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
@@ -551,15 +556,15 @@ export default function AdventureEditor() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Une courte description..."
-                  className="w-full h-24 bg-[#0a0e1a] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full h-24 bg-[#0a0e1a] dark:bg-gray-50 border border-gray-700 dark:border-gray-300 rounded-lg px-4 py-3 text-white dark:text-gray-900 placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
                 />
               </div>
             </div>
 
-            <div className="bg-[#111827]/90 rounded-2xl border border-white/10 p-6">
+            <div className="bg-[#111827]/90 dark:bg-gray-100/90 rounded-2xl border border-white/10 dark:border-gray-300/50 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-cyan-400">
-                  Noeud: {selectedNodeId === "root" ? "Début" : selectedNodeId.slice(0, 12)}
+                  Nœud: {selectedNodeId === "root" ? "Début" : selectedNodeId.slice(0, 12)}
                   {selectedNode.isEnd && <span className="ml-2 text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">FIN</span>}
                 </h2>
                 <div className="flex gap-2">
@@ -580,7 +585,7 @@ export default function AdventureEditor() {
                   value={selectedNode.text}
                   onChange={(e) => updateNodeText(e.target.value)}
                   placeholder="Décrivez ce qui se passe dans ce passage..."
-                  className="w-full h-40 bg-[#0a0e1a] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full h-40 bg-[#0a0e1a] dark:bg-gray-50 border border-gray-700 dark:border-gray-300 rounded-lg px-4 py-3 text-white dark:text-gray-900 placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
                 />
               </div>
 
@@ -607,15 +612,15 @@ export default function AdventureEditor() {
                           value={choice.text}
                           onChange={(e) => updateChoice(idx, "text", e.target.value)}
                           placeholder={`Choix ${idx + 1}`}
-                          className="w-full bg-[#0a0e1a] border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
+                          className="w-full bg-[#0a0e1a] dark:bg-gray-50 border border-gray-700 dark:border-gray-300 rounded-lg px-4 py-2 text-white dark:text-gray-900 placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
                         />
                         <div className="mt-2 flex gap-2 items-center">
                           <select
                             value={choice.link}
                             onChange={(e) => updateChoice(idx, "link", e.target.value)}
-                            className="flex-1 bg-[#0a0e1a] border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white focus:border-cyan-500 focus:outline-none"
+                            className="flex-1 bg-[#0a0e1a] dark:bg-gray-50 border border-gray-700 dark:border-gray-300 rounded-lg px-3 py-1.5 text-sm text-white dark:text-gray-900 focus:border-cyan-500 focus:outline-none"
                           >
-                            <option value="">Sélectionner un noeud...</option>
+                            <option value="">Sélectionner un nœud...</option>
                             {nodes.filter(n => n.id !== selectedNodeId).map(n => (
                               <option key={n.id} value={n.id}>
                                 {n.id === "root" ? "Début" : n.id.slice(0, 15)} - {n.text.slice(0, 30)}...
@@ -632,7 +637,7 @@ export default function AdventureEditor() {
                         
                         {/* Effets sur les stats */}
                         <div className="mt-2 flex gap-2 items-center text-xs">
-                          <span className="text-gray-500">Effets:</span>
+                          <span className="text-gray-500 dark:text-gray-600">Effets:</span>
                           {['force', 'agility', 'magie', 'endurance'].map(stat => (
                             <select
                               key={stat}
@@ -655,9 +660,9 @@ export default function AdventureEditor() {
                                 });
                                 setNodes(updatedNodes);
                               }}
-                              className={`bg-[#0a0e1a] border rounded px-2 py-1 text-white focus:border-cyan-500 focus:outline-none ${
+                              className={`bg-[#0a0e1a] dark:bg-gray-50 border rounded px-2 py-1 text-white dark:text-gray-900 focus:border-cyan-500 focus:outline-none ${
                                 (choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0) > 0 ? 'border-green-500' :
-                                (choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0) < 0 ? 'border-red-500' : 'border-gray-700'
+                                (choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0) < 0 ? 'border-red-500' : 'border-gray-700 dark:border-gray-300'
                               }`}
                             >
                               <option value={0}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: 0</option>
@@ -674,7 +679,7 @@ export default function AdventureEditor() {
                       {selectedNode.choices.length > 1 && (
                         <button
                           onClick={() => removeChoice(idx)}
-                          className="p-2 text-gray-500 hover:text-red-400"
+                          className="p-2 text-gray-500 dark:text-gray-600 hover:text-red-400"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -716,8 +721,8 @@ export default function AdventureEditor() {
             )}
           </div>
 
-          <div className="bg-[#111827]/90 rounded-2xl border border-white/10 p-4">
-            <h3 className="text-lg font-bold text-cyan-400 mb-4">Noeuds ({nodes.length})</h3>
+          <div className="bg-[#111827]/90 dark:bg-gray-100/90 rounded-2xl border border-white/10 dark:border-gray-300/50 p-4">
+                  <h3 className="text-lg font-bold text-cyan-400 mb-4">Nœuds ({nodes.length})</h3>
             <div className="space-y-2 max-h-[600px] overflow-y-auto">
               {nodes.map((node) => (
                 <button
@@ -726,21 +731,21 @@ export default function AdventureEditor() {
                   className={`w-full text-left p-3 rounded-lg transition-all ${
                     selectedNodeId === node.id
                       ? "bg-cyan-500/20 border border-cyan-500/50"
-                      : "bg-gray-800/50 border border-transparent hover:bg-gray-700/50"
+                      : "bg-gray-800/50 dark:bg-gray-100/50 border border-transparent hover:bg-gray-700/50 dark:hover:bg-gray-200/50"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-cyan-400 font-mono text-xs">
-                      {node.id === "root" ? "START" : node.id.slice(0, 8)}
+                      {node.id === "root" ? "START" : `N${nodes.indexOf(node)}`}
                     </span>
                     {node.isEnd && (
                       <span className="text-xs bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded">FIN</span>
                     )}
                   </div>
-                  <p className="text-gray-400 text-sm mt-1 truncate">
+                  <p className="text-gray-400 dark:text-gray-500 text-sm mt-1 truncate">
                     {node.text || "(texte vide)"}
                   </p>
-                  <p className="text-gray-500 text-xs mt-1">
+                  <p className="text-gray-500 dark:text-gray-600 text-xs mt-1">
                     {node.choices.length} choix
                   </p>
                 </button>

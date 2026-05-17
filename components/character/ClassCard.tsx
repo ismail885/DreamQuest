@@ -58,10 +58,10 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
       onClick={onSelect}
-      className={`relative bg-[#0f1623]/80 border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
+      className={`relative bg-[#0f1623]/80 dark:bg-white/80 border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
         isSelected 
           ? 'border-cyan-400 shadow-lg shadow-cyan-400/20 scale-[1.02]' 
-          : 'border-gray-800/50 hover:border-cyan-500/50'
+          : 'border-gray-800/50 dark:border-gray-200/50 hover:border-cyan-500/50'
       }`}
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
@@ -73,7 +73,7 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
               <ClassIcon className="w-5 h-5 text-cyan-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-3xl font-bold text-white">
+              <h3 className="text-3xl font-bold text-white dark:text-gray-900">
                 {classInfo.name}
               </h3>
               <div className="flex items-center gap-2">
@@ -86,11 +86,11 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
             </div>
           </div>
           
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-gray-400 dark:text-gray-500 text-sm mb-4">
             {classInfo.description}
           </p>
           
-          <div className="inline-block px-3 py-1 bg-gray-800/50 rounded-full text-xs text-gray-500 mb-6">
+          <div className="inline-block px-3 py-1 bg-gray-800/50 dark:bg-gray-100/50 rounded-full text-xs text-gray-500 dark:text-gray-600 mb-6">
             Mode: {classInfo.playstyle}
           </div>
 
@@ -107,13 +107,13 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
                   })()}
                 </span>
                 <span className={`text-sm w-20 ${stat.color}`}>{stat.label}</span>
-                <div className="flex-1 bg-[#1a1f2e] rounded-full h-2 overflow-hidden">
+                <div className="flex-1 bg-[#1a1f2e] dark:bg-gray-200 rounded-full h-2 overflow-hidden">
                   <div
                     className={`h-full bg-gradient-to-r ${getStatBarColor(stat.key)} transition-all duration-500`}
                     style={{ width: `${(stat.value / 10) * 100}%` }}
                   />
                 </div>
-                <span className="font-medium text-sm w-10 text-right text-white">
+                <span className="font-medium text-sm w-10 text-right text-white dark:text-gray-900">
                   {stat.value}/10
                 </span>
               </div>
@@ -128,14 +128,14 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
                   className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all duration-200 ${
                     index === 0
                       ? 'bg-cyan-900/50 text-cyan-300 border-cyan-500/50'
-                      : 'bg-[#1a1f2e] text-gray-500 border-gray-700'
+                      : 'bg-[#1a1f2e] dark:bg-gray-200 text-gray-500 dark:text-gray-600 border-gray-700 dark:border-gray-300'
                   } group-hover:brightness-110 group-hover:scale-105`}
                 >
                   {ability.name}
                 </span>
                 
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-lg bg-gray-900 border border-gray-700 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-lg bg-gray-900 dark:bg-gray-50 border border-gray-700 dark:border-gray-300 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
                   {/* Type de capacité */}
                   <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium mb-2 ${getAbilityTypeColor(ability.type)}`}>
                     {ability.type === 'OFFENSIVE' ? 'Offensive' :
@@ -151,13 +151,13 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
                   
                   {/* Cooldown si applicable */}
                   {ability.cooldown && ability.cooldown > 0 && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-600 mt-1">
                       Recharge : {ability.cooldown} tours
                     </p>
                   )}
                   
                   {/* Flèche du tooltip */}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 border-r border-b border-gray-700 rotate-45 -mt-1" />
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 dark:bg-gray-50 border-r border-b border-gray-700 dark:border-gray-300 rotate-45 -mt-1" />
                 </div>
               </div>
             ))}

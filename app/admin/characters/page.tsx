@@ -110,14 +110,14 @@ export default function AdminCharactersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Gestion des personnages</h1>
-          <p className="text-gray-400 mt-2">{totalCount} personnage{totalCount !== 1 ? "s" : ""} créé{totalCount !== 1 ? "s" : ""}</p>
+          <h1 className="text-3xl font-bold text-white dark:text-gray-900">Gestion des personnages</h1>
+          <p className="text-gray-400 dark:text-gray-500 mt-2">{totalCount} personnage{totalCount !== 1 ? "s" : ""} créé{totalCount !== 1 ? "s" : ""}</p>
         </div>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
         <input
           type="text"
           placeholder="Rechercher par nom..."
@@ -126,7 +126,7 @@ export default function AdminCharactersPage() {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-12 pr-4 py-3 bg-[#0f1623] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+          className="w-full pl-12 pr-4 py-3 bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg text-white dark:text-gray-900 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-cyan-500"
         />
       </div>
 
@@ -141,41 +141,41 @@ export default function AdminCharactersPage() {
       )}
 
       {/* Table */}
-      <div className="bg-[#0f1623] border border-gray-800 rounded-xl overflow-hidden">
+      <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-900/50">
+            <thead className="bg-gray-900/50 dark:bg-gray-100/50">
               <tr>
-                <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Personnage</th>
-                <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Classe</th>
-                <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Niveau</th>
-                <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">PV</th>
-                <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Propriétaire</th>
-                <th className="px-6 py-4 text-right text-gray-400 font-medium text-sm">Actions</th>
+                <th className="px-6 py-4 text-left text-gray-400 dark:text-gray-500 font-medium text-sm">Personnage</th>
+                <th className="px-6 py-4 text-left text-gray-400 dark:text-gray-500 font-medium text-sm">Classe</th>
+                <th className="px-6 py-4 text-left text-gray-400 dark:text-gray-500 font-medium text-sm">Niveau</th>
+                <th className="px-6 py-4 text-left text-gray-400 dark:text-gray-500 font-medium text-sm">PV</th>
+                <th className="px-6 py-4 text-left text-gray-400 dark:text-gray-500 font-medium text-sm">Propriétaire</th>
+                <th className="px-6 py-4 text-right text-gray-400 dark:text-gray-500 font-medium text-sm">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800">
+            <tbody className="divide-y divide-gray-800 dark:divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400 dark:text-gray-500">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500 mx-auto"></div>
                   </td>
                 </tr>
               ) : characters.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400 dark:text-gray-500">
                     Aucun personnage trouvé
                   </td>
                 </tr>
               ) : (
                 characters.map((character) => (
-                  <tr key={character.id} className="hover:bg-gray-800/30 transition-colors">
+                  <tr key={character.id} className="hover:bg-gray-800/30 dark:hover:bg-gray-100/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
                           <Sword className="w-5 h-5 text-cyan-400" />
                         </div>
-                        <span className="text-white font-medium">{character.nom_personnage}</span>
+                        <span className="text-white dark:text-gray-900 font-medium">{character.nom_personnage}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -183,34 +183,34 @@ export default function AdminCharactersPage() {
                         {character.classe}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-white font-medium">
+                    <td className="px-6 py-4 text-white dark:text-gray-900 font-medium">
                       {character.niveau}
                     </td>
-                    <td className="px-6 py-4 text-gray-400">
+                    <td className="px-6 py-4 text-gray-400 dark:text-gray-500">
                       {character.points_vie} / {character.points_vie_max || 100}
                     </td>
                     <td className="px-6 py-4">
                       {character.nom_utilisateur ? (
                         <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-gray-500" />
-                          <span className="text-gray-400">{character.nom_utilisateur}</span>
+                          <User className="w-4 h-4 text-gray-500 dark:text-gray-600" />
+                          <span className="text-gray-400 dark:text-gray-500">{character.nom_utilisateur}</span>
                         </div>
                       ) : (
-                        <span className="text-gray-500">Inconnu</span>
+                        <span className="text-gray-500 dark:text-gray-600">Inconnu</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setViewCharacter(character)}
-                          className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 dark:text-gray-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
                           title="Voir"
                         >
                           <Search className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteConfirm(character.id!)}
-                          className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Supprimer"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -226,15 +226,15 @@ export default function AdminCharactersPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-800 flex items-center justify-between">
-            <p className="text-gray-400 text-sm">
+          <div className="px-6 py-4 border-t border-gray-800 dark:border-gray-200 flex items-center justify-between">
+            <p className="text-gray-400 dark:text-gray-500 text-sm">
               Affichage {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -247,7 +247,7 @@ export default function AdminCharactersPage() {
                     className={`px-3 py-1 rounded-lg text-sm ${
                       currentPage === page
                         ? "bg-cyan-500 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-gray-800"
+                        : "text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200"
                     }`}
                   >
                     {page}
@@ -257,7 +257,7 @@ export default function AdminCharactersPage() {
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -269,10 +269,10 @@ export default function AdminCharactersPage() {
       {/* View Modal */}
       {viewCharacter && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0f1623] border border-gray-800 rounded-xl w-full max-w-lg">
-            <div className="flex items-center justify-between p-6 border-b border-gray-800">
-              <h2 className="text-xl font-bold text-white">{viewCharacter.nom_personnage}</h2>
-              <button onClick={() => setViewCharacter(null)} className="text-gray-400 hover:text-white">
+          <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800 dark:border-gray-200">
+              <h2 className="text-xl font-bold text-white dark:text-gray-900">{viewCharacter.nom_personnage}</h2>
+              <button onClick={() => setViewCharacter(null)} className="text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -281,40 +281,40 @@ export default function AdminCharactersPage() {
                 <div className={`px-4 py-2 rounded-full text-sm border ${getClassColor(viewCharacter.classe)}`}>
                   {viewCharacter.classe}
                 </div>
-                <div className="text-gray-400">
-                  Niveau <span className="text-white font-bold">{viewCharacter.niveau}</span>
+                <div className="text-gray-400 dark:text-gray-500">
+                  Niveau <span className="text-white dark:text-gray-900 font-bold">{viewCharacter.niveau}</span>
                 </div>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-900/50 rounded-lg">
+              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-900/50 dark:bg-gray-100/50 rounded-lg">
                 <div>
-                  <label className="text-gray-400 text-xs">Force</label>
-                  <p className="text-white font-bold">{viewCharacter.stats?.force || 0}</p>
+                  <label className="text-gray-400 dark:text-gray-500 text-xs">Force</label>
+                  <p className="text-white dark:text-gray-900 font-bold">{viewCharacter.stats?.force || 0}</p>
                 </div>
                 <div>
-                  <label className="text-gray-400 text-xs">Agilité</label>
-                  <p className="text-white font-bold">{viewCharacter.stats?.agility || 0}</p>
+                  <label className="text-gray-400 dark:text-gray-500 text-xs">Agilité</label>
+                  <p className="text-white dark:text-gray-900 font-bold">{viewCharacter.stats?.agility || 0}</p>
                 </div>
                 <div>
-                  <label className="text-gray-400 text-xs">Intelligence</label>
-                  <p className="text-white font-bold">{viewCharacter.stats?.magie || 0}</p>
+                  <label className="text-gray-400 dark:text-gray-500 text-xs">Intelligence</label>
+                  <p className="text-white dark:text-gray-900 font-bold">{viewCharacter.stats?.magie || 0}</p>
                 </div>
                 <div>
-                  <label className="text-gray-400 text-xs">Endurance</label>
-                  <p className="text-white font-bold">{viewCharacter.stats?.endurance || 0}</p>
+                  <label className="text-gray-400 dark:text-gray-500 text-xs">Endurance</label>
+                  <p className="text-white dark:text-gray-900 font-bold">{viewCharacter.stats?.endurance || 0}</p>
                 </div>
               </div>
 
               {/* Health */}
               <div>
-                <label className="text-gray-400 text-sm">Points de vie</label>
+                <label className="text-gray-400 dark:text-gray-500 text-sm">Points de vie</label>
                 <div className="mt-2">
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white">{viewCharacter.points_vie} / {viewCharacter.points_vie_max || 100}</span>
-                    <span className="text-gray-400">{Math.round((viewCharacter.points_vie / (viewCharacter.points_vie_max || 100)) * 100)}%</span>
+                    <span className="text-white dark:text-gray-900">{viewCharacter.points_vie} / {viewCharacter.points_vie_max || 100}</span>
+                    <span className="text-gray-400 dark:text-gray-500">{Math.round((viewCharacter.points_vie / (viewCharacter.points_vie_max || 100)) * 100)}%</span>
                   </div>
-                  <div className="w-full bg-gray-800 rounded-full h-2">
+                  <div className="w-full bg-gray-800 dark:bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-green-500 h-2 rounded-full transition-all"
                       style={{ width: `${Math.min(100, (viewCharacter.points_vie / (viewCharacter.points_vie_max || 100)) * 100)}%` }}
@@ -325,8 +325,8 @@ export default function AdminCharactersPage() {
 
               {/* Owner */}
               <div>
-                <label className="text-gray-400 text-sm">Propriétaire</label>
-                <p className="text-white mt-1 flex items-center gap-2">
+                <label className="text-gray-400 dark:text-gray-500 text-sm">Propriétaire</label>
+                <p className="text-white dark:text-gray-900 mt-1 flex items-center gap-2">
                   <User className="w-4 h-4" />
                   {viewCharacter.nom_utilisateur || `ID: ${viewCharacter.id_utilisateur}`}
                 </p>
@@ -339,20 +339,20 @@ export default function AdminCharactersPage() {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0f1623] border border-gray-800 rounded-xl w-full max-w-sm">
+          <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl w-full max-w-sm">
             <div className="p-6 text-center">
               <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-8 h-8 text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Confirmer la suppression</h3>
-              <p className="text-gray-400">
+              <h3 className="text-xl font-bold text-white dark:text-gray-900 mb-2">Confirmer la suppression</h3>
+              <p className="text-gray-400 dark:text-gray-500">
                 Êtes-vous sûr de vouloir supprimer ce personnage ? Cette action est irréversible.
               </p>
             </div>
             <div className="flex gap-3 p-6 pt-0">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 px-4 py-3 border border-gray-700 text-gray-400 rounded-lg hover:bg-gray-800 transition-colors"
+                className="flex-1 px-4 py-3 border border-gray-700 dark:border-gray-300 text-gray-400 dark:text-gray-500 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
               >
                 Annuler
               </button>

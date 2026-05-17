@@ -10,7 +10,7 @@ import { Home, Users, BookOpen, User, PlusCircle } from "lucide-react";
 const navItems = [
   { href: "/dashboard", label: "Accueil", icon: Home },
   { href: "/adventure", label: "Aventures", icon: BookOpen },
-  { href: "/create-character", label: "Creer", icon: Users },
+  { href: "/create-character", label: "Créer", icon: Users },
   { href: "/profil", label: "Profil", icon: User },
 ];
 
@@ -21,7 +21,7 @@ const BottomNav = React.memo(function BottomNav() {
   const isCreator = user && (userRole === "createur" || userRole === "admin");
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0e1a]/95 backdrop-blur-md border-t border-gray-800/50 md:hidden z-50 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0e1a]/95 dark:bg-gray-50/95 backdrop-blur-md border-t border-gray-800/50 dark:border-gray-200/50 md:hidden z-50 safe-area-bottom">
       <div className="flex items-center justify-around py-2 px-4">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
@@ -34,7 +34,7 @@ const BottomNav = React.memo(function BottomNav() {
               className={`flex flex-col items-center gap-1 py-2 px-4 rounded-lg transition-colors ${
                 isActive
                   ? "text-cyan-400"
-                  : "text-gray-400 hover:text-white"
+                  : "text-gray-400 dark:text-gray-500 hover:text-white"
               }`}
             >
               <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
@@ -48,7 +48,7 @@ const BottomNav = React.memo(function BottomNav() {
             className={`flex flex-col items-center gap-1 py-2 px-4 rounded-lg transition-colors ${
               pathname.startsWith("/create-adventure")
                 ? "text-purple-400"
-                : "text-gray-400 hover:text-white"
+                : "text-gray-400 dark:text-gray-500 hover:text-white"
             }`}
           >
             <PlusCircle size={24} strokeWidth={pathname.startsWith("/create-adventure") ? 2.5 : 2} />

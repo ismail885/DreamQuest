@@ -16,7 +16,7 @@ const CharacterList = dynamic(() => import("@/components/character/CharacterList
   loading: () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-[#131e35] border border-gray-800/50 rounded-xl animate-pulse h-48" />
+        <div key={i} className="bg-[#131e35] dark:bg-gray-100 border border-gray-800/50 dark:border-gray-200/50 rounded-xl animate-pulse h-48" />
       ))}
     </div>
   ),
@@ -141,7 +141,7 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white flex flex-col">
+    <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50 text-white dark:text-gray-900 flex flex-col">
       <Header />
 
       <main
@@ -175,15 +175,15 @@ export default function DashboardPage() {
                 {user?.username || "Aventurier"}
               </span>
             </h1>
-            <p className="text-gray-400 text-sm md:text-base">
-              Pret a vivre de nouvelles aventures ?
+            <p className="text-gray-400 dark:text-gray-500 text-sm md:text-base">
+              Prêt à vivre de nouvelles aventures ?
             </p>
           </div>
 
           {/* Section personnages */}
           <div className="mb-8 md:mb-12">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
-              <h2 className="text-xl md:text-2xl font-bold text-white">
+              <h2 className="text-xl md:text-2xl font-bold text-white dark:text-gray-900">
                 Mes Personnages
               </h2>
               <button
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                 className="w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
               >
                 <Plus className="w-5 h-5" />
-                Creer un Personnage
+                Créer un Personnage
               </button>
             </div>
             <CharacterList userId={user.id} />
@@ -199,7 +199,7 @@ export default function DashboardPage() {
 
           {/* Statistiques */}
           <div className="mb-8 md:mb-12">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
+            <h2 className="text-xl md:text-2xl font-bold text-white dark:text-gray-900 mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 dark:bg-gray-50/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
               Vos Statistiques
             </h2>
 
@@ -212,9 +212,9 @@ export default function DashboardPage() {
             {statsLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="bg-[#131e35] border border-gray-800/50 rounded-xl md:rounded-2xl p-4 md:p-6 animate-pulse">
-                    <div className="h-8 bg-gray-700/50 rounded w-12 mb-2" />
-                    <div className="h-4 bg-gray-700/50 rounded w-20" />
+                  <div key={i} className="bg-[#131e35] dark:bg-gray-100 border border-gray-800/50 dark:border-gray-200/50 rounded-xl md:rounded-2xl p-4 md:p-6 animate-pulse">
+                    <div className="h-8 bg-gray-700/50 dark:bg-gray-300/50 rounded w-12 mb-2" />
+                    <div className="h-4 bg-gray-700/50 dark:bg-gray-300/50 rounded w-20" />
                   </div>
                 ))}
               </div>
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                   <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">
                     {stats.charactersCount}
                   </div>
-                  <div className="text-gray-400 text-xs md:text-sm">
+                  <div className="text-gray-400 dark:text-gray-500 text-xs md:text-sm">
                     Personnages
                   </div>
                 </div>
@@ -232,13 +232,13 @@ export default function DashboardPage() {
                   <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-1 md:mb-2">
                     {stats.completedQuests}
                   </div>
-                  <div className="text-gray-400 text-xs md:text-sm">Quetes</div>
+                  <div className="text-gray-400 dark:text-gray-500 text-xs md:text-sm">Quetes</div>
                 </div>
                 <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
                   <div className="text-2xl md:text-3xl font-bold text-yellow-400 mb-1 md:mb-2">
                     {stats.totalXp}
                   </div>
-                  <div className="text-gray-400 text-xs md:text-sm">
+                  <div className="text-gray-400 dark:text-gray-500 text-xs md:text-sm">
                     Points XP
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                   <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">
                     -
                   </div>
-                  <div className="text-gray-400 text-xs md:text-sm">
+                  <div className="text-gray-400 dark:text-gray-500 text-xs md:text-sm">
                     Niveau max
                   </div>
                 </div>
@@ -257,7 +257,7 @@ export default function DashboardPage() {
           {/* Suggestions */}
           {!loadingSuggestions && suggestions.length > 0 && (
             <div className="mb-8 md:mb-12">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white dark:text-gray-900 mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/80 dark:bg-gray-50/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
                 <Sparkles className="w-5 h-5 text-yellow-400" />
                 Pour Vous
               </h2>
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                   <div
                     key={adventure.id}
                     onClick={() => router.push(`/adventure/${adventure.id}`)}
-                    className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
+                    className="bg-gradient-to-br from-[#0d1526] dark:from-gray-50 to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
@@ -276,10 +276,10 @@ export default function DashboardPage() {
                         Recommande
                       </span>
                     </div>
-                    <h3 className="text-white font-semibold mb-2 line-clamp-1">
+                    <h3 className="text-white dark:text-gray-900 font-semibold mb-2 line-clamp-1">
                       {adventure.titre}
                     </h3>
-                    <p className="text-gray-400 text-sm line-clamp-2">
+                    <p className="text-gray-400 dark:text-gray-500 text-sm line-clamp-2">
                       {adventure.description || "Une aventure palpitante vous attend..."}
                     </p>
                   </div>

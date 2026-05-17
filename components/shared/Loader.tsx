@@ -41,7 +41,7 @@ export default function Loader({
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className={`${logoSizeClasses[size]} relative rounded-full bg-[#0b0d1e] p-2 flex items-center justify-center shadow-2xl border-2 border-cyan-500/20`}>
+          <div className={`${logoSizeClasses[size]} relative rounded-full bg-[#0b0d1e] dark:bg-gray-50 p-2 flex items-center justify-center shadow-2xl border-2 border-cyan-500/20`}>
             <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={100} height={100} className="object-contain animate-float" priority />
           </div>
         </div>

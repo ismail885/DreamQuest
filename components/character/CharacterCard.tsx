@@ -28,7 +28,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
     <motion.div
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
-      className={`bg-gray-900/50 backdrop-blur-sm border rounded-lg overflow-hidden transition-all duration-300 group ${isSelected ? 'border-cyan-400 ring-2 ring-cyan-400/50' : 'border-gray-800 hover:border-cyan-400'}`}
+      className={`bg-gray-900/50 dark:bg-gray-50/50 backdrop-blur-sm border rounded-lg overflow-hidden transition-all duration-300 group ${isSelected ? 'border-cyan-400 ring-2 ring-cyan-400/50' : 'border-gray-800 dark:border-gray-200 hover:border-cyan-400'}`}
     >
       <div className="relative h-48 bg-gradient-to-b from-gray-800 to-gray-900">
         <Image
@@ -57,7 +57,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
             <span>XP</span>
             <span>{Math.floor(xpInCurrentLevel)} / {xpForNextLevel}</span>
           </div>
-          <div className="h-1.5 bg-gray-900/80 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-gray-900/80 dark:bg-gray-50/80 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500"
               style={{ width: `${xpPercent}%` }}
@@ -67,7 +67,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
       </div>
 
       <div className="p-4">
-        <h3 className="text-xl font-bold text-white mb-1">{character.nom_personnage}</h3>
+        <h3 className="text-xl font-bold text-white dark:text-gray-900 mb-1">{character.nom_personnage}</h3>
         <p className="text-cyan-400 text-sm mb-3">{character.classe}</p>
 
         {/* Passif de la classe */}
@@ -76,12 +76,12 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
             <div className="flex items-center gap-2">
               <span className="text-cyan-400 text-xs font-medium">{passif.name}</span>
             </div>
-            <span className="text-xs text-gray-400">{passif.description}</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">{passif.description}</span>
           </div>
         )}
 
         <div className="mb-3">
-          <div className="flex justify-between text-xs text-gray-400 mb-1">
+          <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mb-1">
             <span>Points de Vie</span>
             <span>{pv} / {pvMax}</span>
           </div>
@@ -103,8 +103,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
           {Object.entries(character.stats ?? {}).map(([stat, value]) => (
             <div key={stat} className="flex items-center gap-2 text-sm">
               <span className="text-xl">{React.createElement(STAT_ICONS[stat as keyof typeof STAT_ICONS], { className: "w-5 h-5" })}</span>
-              <span className="text-gray-400 capitalize">{stat}:</span>
-              <span className="text-white font-bold">{value}</span>
+              <span className="text-gray-400 dark:text-gray-500 capitalize">{stat}:</span>
+              <span className="text-white dark:text-gray-900 font-bold">{value}</span>
             </div>
           ))}
         </div>

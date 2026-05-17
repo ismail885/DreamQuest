@@ -182,8 +182,8 @@ export default function AdminDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Erreur de connexion</h2>
-          <p className="text-gray-400">{error}</p>
+          <h2 className="text-xl font-bold text-white dark:text-gray-900 mb-2">Erreur de connexion</h2>
+          <p className="text-gray-400 dark:text-gray-500">{error}</p>
           <button
             onClick={handleManualRefresh}
             className="mt-6 px-6 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
@@ -200,19 +200,19 @@ export default function AdminDashboard() {
       {/* Header with Live Controls */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Dashboard Administrateur</h1>
-          <p className="text-gray-400 mt-2">Vue d&apos;ensemble de votre application</p>
+          <h1 className="text-3xl font-bold text-white dark:text-gray-900">Dashboard Administrateur</h1>
+          <p className="text-gray-400 dark:text-gray-500 mt-2">Vue d&apos;ensemble de votre application</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-2 bg-[#0f1623] border border-gray-800 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-2 bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg">
             {isLive ? (
               <Wifi className="w-4 h-4 text-green-400" />
             ) : (
-              <WifiOff className="w-4 h-4 text-gray-500" />
+              <WifiOff className="w-4 h-4 text-gray-500 dark:text-gray-600" />
             )}
             <button
               onClick={toggleLive}
-              className={`text-sm font-medium ${isLive ? "text-green-400" : "text-gray-500"}`}
+              className={`text-sm font-medium ${isLive ? "text-green-400" : "text-gray-500 dark:text-gray-600"}`}
             >
               {isLive ? "En direct" : "Hors ligne"}
             </button>
@@ -220,13 +220,13 @@ export default function AdminDashboard() {
           <button
             onClick={handleManualRefresh}
             disabled={isRefreshing}
-            className="p-2 bg-[#0f1623] border border-gray-800 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="p-2 bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`w-5 h-5 text-gray-400 ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-5 h-5 text-gray-400 dark:text-gray-500 ${isRefreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
-      <p className="text-gray-400 text-sm -mt-4">
+      <p className="text-gray-400 dark:text-gray-500 text-sm -mt-4">
         Dernière mise à jour: {lastUpdate.toLocaleTimeString("fr-FR")}
       </p>
 
@@ -237,13 +237,13 @@ export default function AdminDashboard() {
           return (
             <div
               key={index}
-              className="bg-[#0f1623] border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all"
+              className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl p-6 hover:border-gray-700 dark:hover:border-gray-300 transition-all"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm">{stat.title}</p>
-                  <p className="text-3xl font-bold text-white mt-2">{stat.value.toLocaleString()}</p>
-                  <p className="text-gray-500 text-xs mt-2">{stat.subtitle}</p>
+                  <p className="text-gray-400 dark:text-gray-500 text-sm">{stat.title}</p>
+                  <p className="text-3xl font-bold text-white dark:text-gray-900 mt-2">{stat.value.toLocaleString()}</p>
+                  <p className="text-gray-500 dark:text-gray-600 text-xs mt-2">{stat.subtitle}</p>
                 </div>
                 <div className={`p-3 rounded-lg ${stat.bgColor}`}>
                   <Icon className={`w-6 h-6 ${stat.color}`} />
@@ -257,18 +257,18 @@ export default function AdminDashboard() {
       {/* Two columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Role Distribution */}
-        <div className="bg-[#0f1623] border border-gray-800 rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">Distribution des rôles</h2>
+        <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl p-6">
+          <h2 className="text-xl font-bold text-white dark:text-gray-900 mb-6">Distribution des rôles</h2>
           <div className="space-y-4">
             {roleDistribution.map((item, index) => {
               const percentage = stats.totalUsers > 0 ? (item.count / stats.totalUsers) * 100 : 0;
               return (
                 <div key={index}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-400 text-sm">{item.role}</span>
-                    <span className="text-white font-medium">{item.count}</span>
+                    <span className="text-gray-400 dark:text-gray-500 text-sm">{item.role}</span>
+                    <span className="text-white dark:text-gray-900 font-medium">{item.count}</span>
                   </div>
-                  <div className="w-full bg-gray-800 rounded-full h-2">
+                  <div className="w-full bg-gray-800 dark:bg-gray-200 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full ${item.color}`}
                       style={{ width: `${percentage}%` }}
@@ -281,52 +281,52 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-[#0f1623] border border-gray-800 rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">Actions rapides</h2>
+        <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl p-6">
+          <h2 className="text-xl font-bold text-white dark:text-gray-900 mb-6">Actions rapides</h2>
           <div className="grid grid-cols-2 gap-4">
             <a
               href="/admin/users"
-              className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center"
+              className="p-4 bg-gray-800/50 dark:bg-gray-200/50 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-center"
             >
               <Users className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
-              <span className="text-gray-400 text-sm">Gérer utilisateurs</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">Gérer utilisateurs</span>
             </a>
             <a
               href="/admin/adventures"
-              className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center"
+              className="p-4 bg-gray-800/50 dark:bg-gray-200/50 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-center"
             >
               <BookOpen className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-              <span className="text-gray-400 text-sm">Gérer aventures</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">Gérer aventures</span>
             </a>
             <a
               href="/admin/characters"
-              className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center"
+              className="p-4 bg-gray-800/50 dark:bg-gray-200/50 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-center"
             >
               <UserRound className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
-              <span className="text-gray-400 text-sm">Gérer personnages</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">Gérer personnages</span>
             </a>
             <a
               href="/dashboard"
-              className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center"
+              className="p-4 bg-gray-800/50 dark:bg-gray-200/50 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-center"
             >
               <Activity className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-              <span className="text-gray-400 text-sm">Voir le site</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">Voir le site</span>
             </a>
           </div>
         </div>
       </div>
 
       {/* System Info */}
-      <div className="bg-[#0f1623] border border-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Informations système</h2>
+      <div className="bg-[#0f1623] dark:bg-white border border-gray-800 dark:border-gray-200 rounded-xl p-6">
+        <h2 className="text-xl font-bold text-white dark:text-gray-900 mb-4">Informations système</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-green-500/10 rounded-lg">
               <Activity className="w-5 h-5 text-green-400" />
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Statut</p>
-              <p className="text-white font-medium">Opérationnel</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm">Statut</p>
+              <p className="text-white dark:text-gray-900 font-medium">Opérationnel</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -334,8 +334,8 @@ export default function AdminDashboard() {
               <Calendar className="w-5 h-5 text-cyan-400" />
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Dernière mise à jour</p>
-              <p className="text-white font-medium">{new Date().toLocaleDateString("fr-FR")}</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm">Dernière mise à jour</p>
+              <p className="text-white dark:text-gray-900 font-medium">{new Date().toLocaleDateString("fr-FR")}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -343,8 +343,8 @@ export default function AdminDashboard() {
               <TrendingUp className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Version</p>
-              <p className="text-white font-medium">DreamQuest v0.1.0</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm">Version</p>
+              <p className="text-white dark:text-gray-900 font-medium">DreamQuest v0.1.0</p>
             </div>
           </div>
         </div>

@@ -92,7 +92,7 @@ function AdventurePageContent() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#3b9ede]">
               Explorez les Aventures
             </h1>
-            <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto">
+            <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto dark:text-gray-500">
               Choisissez votre prochaine aventure parmi nos histoires épiques
             </p>
           </div>
@@ -112,16 +112,16 @@ function AdventurePageContent() {
             </div>
           )}
 
-          <div className="max-w-4xl mx-auto space-y-4 mb-8 md:mb-12 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/90 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-4 -mt-4 md:-mt-6">
+          <div className="max-w-4xl mx-auto space-y-4 mb-8 md:mb-12 sticky top-16 md:top-20 z-20 bg-[#0a0e1a]/90 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-4 -mt-4 md:-mt-6 dark:bg-gray-50/90">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Rechercher une histoire..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="w-full px-4 md:px-6 py-3 md:py-3.5 bg-[#1a1f2e] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm md:text-base"
+                className="w-full px-4 md:px-6 py-3 md:py-3.5 bg-[#1a1f2e] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm md:text-base dark:bg-gray-200 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600"
               />
-              <Search className="absolute right-4 md:right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Search className="absolute right-4 md:right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-600" />
             </div>
 
             <div className="flex items-center justify-between gap-3">
@@ -133,14 +133,14 @@ function AdventurePageContent() {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       activeFilter === option.value
                         ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
-                        : 'bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500'
+                        : 'bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 dark:border-gray-300 dark:text-gray-500 dark:hover:text-gray-900'
                     }`}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
-              <div className="text-gray-500 text-sm">
+              <div className="text-gray-500 text-sm dark:text-gray-600">
                 <span className="font-semibold text-cyan-400">{filteredAdventures.length}</span> aventure{filteredAdventures.length !== 1 ? 's' : ''} trouvée{filteredAdventures.length !== 1 ? 's' : ''}
               </div>
             </div>
@@ -173,7 +173,7 @@ function AdventurePageContent() {
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-[#1a2332] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#1a2332]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-[#1a2332] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#1a2332]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:bg-gray-200 dark:border-gray-300 dark:text-gray-600 dark:hover:bg-gray-300/80"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -200,7 +200,7 @@ function AdventurePageContent() {
                           className={`w-10 h-10 rounded-lg font-medium transition-colors ${
                             currentPage === pageNum
                               ? "bg-cyan-500 text-white"
-                              : "bg-[#1a2332] border border-gray-700 text-gray-400 hover:bg-[#1a2332]/80"
+                              : "bg-[#1a2332] border border-gray-700 text-gray-400 hover:bg-[#1a2332]/80 dark:bg-gray-200 dark:border-gray-300 dark:text-gray-600 dark:hover:bg-gray-300/80"
                           }`}
                         >
                           {pageNum}
@@ -212,7 +212,7 @@ function AdventurePageContent() {
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-[#1a2332] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#1a2332]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-[#1a2332] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#1a2332]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:bg-gray-200 dark:border-gray-300 dark:text-gray-600 dark:hover:bg-gray-300/80"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -221,19 +221,19 @@ function AdventurePageContent() {
                 </div>
               )}
               
-              <p className="text-center text-gray-400 text-sm mt-4">
+              <p className="text-center text-gray-400 text-sm mt-4 dark:text-gray-500">
                 {totalCount} aventures • Page {currentPage}/{totalPages}
               </p>
             </>
           ) : (
             <div className="text-center py-20">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800/50 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800/50 mb-4 dark:bg-gray-200/50">
                 <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-gray-400 text-lg">Aucune aventure trouvée</p>
-              <p className="text-gray-400 text-sm mt-2">Essayez de modifier vos critères de recherche</p>
+              <p className="text-gray-400 text-lg dark:text-gray-500">Aucune aventure trouvée</p>
+              <p className="text-gray-400 text-sm mt-2 dark:text-gray-500">Essayez de modifier vos critères de recherche</p>
             </div>
           )}
         </div>
@@ -244,10 +244,10 @@ function AdventurePageContent() {
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowCharacterModal(false)}
           />
-          <div className="relative bg-[#0f1322] border border-gray-700 rounded-t-2xl md:rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto md:max-h-none">
+          <div className="relative bg-[#0f1322] border border-gray-700 rounded-t-2xl md:rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto md:max-h-none dark:bg-white dark:border-gray-300">
             <button
               onClick={() => setShowCharacterModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white dark:text-gray-500 dark:hover:text-gray-900"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -261,8 +261,8 @@ function AdventurePageContent() {
                 </svg>
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2">Sélectionnez un personnage</h3>
-              <p className="text-gray-400 mb-6">Vous devez choisir un personnage avant de commencer une aventure.</p>
+              <h3 className="text-xl font-bold text-white mb-2 dark:text-gray-900">Sélectionnez un personnage</h3>
+              <p className="text-gray-400 mb-6 dark:text-gray-500">Vous devez choisir un personnage avant de commencer une aventure.</p>
               
               <div className="flex flex-col gap-3">
                 <button
@@ -270,7 +270,7 @@ function AdventurePageContent() {
                     setShowCharacterModal(false);
                     window.location.href = '/profil?tab=characters';
                   }}
-                  className="w-full px-6 py-3 bg-[#0f1623] border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors"
+                    className="w-full px-6 py-3 bg-[#0f1623] border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors dark:bg-white"
                 >
                   Mes personnages
                 </button>

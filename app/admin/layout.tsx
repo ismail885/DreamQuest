@@ -39,13 +39,13 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="p-4 md:p-6 border-b border-gray-800">
+      <div className="p-4 md:p-6 border-b border-gray-800 dark:border-gray-200">
         <Link href="/dashboard" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-cyan-500 flex items-center justify-center flex-shrink-0">
             <span className="text-white font-bold text-xl">D</span>
           </div>
           <div className="min-w-0">
-            <span className="text-xl font-bold text-white">DreamQuest</span>
+            <span className="text-xl font-bold text-white dark:text-gray-900">DreamQuest</span>
             <span className="block text-xs text-cyan-400">Administration</span>
           </div>
         </Link>
@@ -64,7 +64,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                 active
                   ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
-                  : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                  : "text-gray-400 dark:text-gray-500 hover:bg-gray-800 dark:hover:bg-gray-200 hover:text-white dark:hover:text-gray-900"
               }`}
             >
               <Icon className="w-5 h-5 flex-shrink-0" />
@@ -75,21 +75,21 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       {/* User info & logout */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-gray-800 dark:border-gray-200">
         <div className="flex items-center gap-3 mb-4 px-4">
           <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold flex-shrink-0">
             {user?.username?.substring(0, 2).toUpperCase() || "AD"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white font-medium truncate">{user?.username || "Admin"}</p>
-            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            <p className="text-white dark:text-gray-900 font-medium truncate">{user?.username || "Admin"}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-600 truncate">{user?.email}</p>
           </div>
         </div>
         <div className="space-y-2 px-4">
           <Link
             href="/dashboard"
             onClick={onNavigate}
-            className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-800 dark:hover:bg-gray-200 hover:text-white dark:hover:text-gray-900 transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Retour au site</span>
@@ -131,16 +131,16 @@ export default function AdminLayout({
 
   if (loading || !isAuthorized) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a]">
+    <div className="min-h-screen bg-[#0a0e1a] dark:bg-gray-50">
       {/* Mobile header with hamburger */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a0e1a]/95 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a0e1a]/95 dark:bg-gray-50/95 backdrop-blur-md border-b border-gray-800 dark:border-gray-200 px-4 py-3 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center">
             <span className="text-white font-bold text-sm">D</span>
@@ -149,14 +149,14 @@ export default function AdminLayout({
         </Link>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+          className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
         >
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-[#0f1623] border-r border-gray-800 flex-col z-30">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-[#0f1623] dark:bg-white border-r border-gray-800 dark:border-gray-200 flex-col z-30">
         <Sidebar />
       </aside>
 
@@ -169,7 +169,7 @@ export default function AdminLayout({
             onClick={() => setSidebarOpen(false)}
           />
           {/* Drawer */}
-          <div className="absolute left-0 top-0 h-full w-64 bg-[#0f1623] border-r border-gray-800 shadow-2xl">
+          <div className="absolute left-0 top-0 h-full w-64 bg-[#0f1623] dark:bg-white border-r border-gray-800 dark:border-gray-200 shadow-2xl">
             <Sidebar onNavigate={() => setSidebarOpen(false)} />
           </div>
         </div>
