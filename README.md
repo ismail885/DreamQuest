@@ -16,7 +16,7 @@ Application web de jeu de rôle textuel interactif permettant de créer des pers
 
 ## Description
 
-DreamQuest est une application web de RPG textuel narrative où les joueurs peuvent :
+DreamQuest est une application web de RPG textuel narratif où les joueurs peuvent :
 
 - **Créer des personnages** avec 10 classes uniques (Guerrier, Mage, Archer, Assassin, Paladin, Prêtre, Druide, Nécromancien, Voleur, Barbare)
 - **Vivre des aventures** interactives avec des choix qui influencent l'histoire
@@ -33,10 +33,10 @@ DreamQuest est une application web de RPG textuel narrative où les joueurs peuv
 | Inscription/Connexion | Authentification JWT sécurisée |
 | Création de personnages | 10 classes avec stats et abilities uniques |
 | Aventures interactives | Parcours à choix multiples avec embranchements |
-| Sauvegarde automatique | Toutes les 30 secondes |
+| Sauvegarde automatique | Toutes les 30 secondes (historique + stats) |
 | Système de votes | Un vote par utilisateur par aventure |
 | Classement | Tri par popularité |
-| Thème | Mode clair/sombre |
+| Génération procédurale | Moteur local 4 genres (fantasy, horreur, sci-fi, romance) |
 
 ---
 
@@ -46,6 +46,7 @@ DreamQuest est une application web de RPG textuel narrative où les joueurs peuv
 - **TypeScript** - Typage statique
 - **Supabase** - Base de données PostgreSQL (BaaS)
 - **TailwindCSS** - Framework CSS utilitaire
+- **Framer Motion** - Animations
 - **JWT (jose)** - Authentification par tokens
 
 ---
@@ -109,17 +110,25 @@ DreamQuest/
 ├── context/                 # Context API
 │   ├── AuthContext.tsx     # Authentification
 │   └── ThemeContext.tsx    # Thème clair/sombre
-├── hooks/                   # Custom hooks
-│   ├── useAuth.ts
-│   ├── useAdventure.ts
-│   ├── useSave.ts
-│   ├── useVote.ts
-│   └── useTheme.ts
-├── lib/                     # Utilitaires
-│   ├── supabaseClient.ts   # Client Supabase
-│   ├── jwt.ts              # Fonctions JWT
-│   └── utils.ts            # Helpers
-├── types/                   # Types TypeScript
+│   ├── hooks/                   # Custom hooks
+│   │   ├── useAuth.ts
+│   │   ├── useAdventure.ts     # Navigation embranchée avec BDD
+│   │   ├── useSave.ts          # Auto-save toutes les 30s
+│   │   ├── useVote.ts          # Vote avec timeout 10s + garde loadingRef
+│   │   ├── useTheme.ts
+│   ├── lib/                     # Utilitaires
+│   │   ├── supabaseClient.ts   # Client Supabase (timeout 15s, cache, retry)
+│   │   ├── jwt.ts              # Fonctions JWT
+│   │   ├── randomGenerator.ts  # Génération aléatoire (stats, abilities, événements)
+│   │   ├── generator/           # Moteur de génération procédurale
+│   │   │   ├── types.ts        # Types partagés
+│   │   │   ├── engine.ts       # Assembleur de séquences narratives
+│   │   │   ├── fantasy.ts      # Banque fantasy (~60 entrées)
+│   │   │   ├── horror.ts       # Banque horreur (~50 entrées)
+│   │   │   ├── scifi.ts        # Banque sci-fi (~55 entrées)
+│   │   │   ├── romance.ts      # Banque romance (~50 entrées)
+│   │   ├── utils.ts            # Helpers
+│   │   ├── combat.ts           # Système de combat tour par tour
 │   ├── user.ts
 │   ├── character.ts
 │   ├── adventure.ts
@@ -205,3 +214,5 @@ npm run test         # Exécuter les tests
 Projet développé dans un cadre éducatif (CDA).
 
 ---
+
+
