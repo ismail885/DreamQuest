@@ -83,8 +83,8 @@ export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
 
 export async function updateQuestProgress(userId: number, questId: string, amount: number = 1): Promise<DailyQuestData> {
   const today = getDateKey();
+  const safeAmount = Math.max(1, Math.min(amount, 100));
 
-  // Charger la quete actuelle
   const { data: existing } = await supabase
     .from("quete_quotidienne")
     .select("*")
@@ -100,7 +100,7 @@ export async function updateQuestProgress(userId: number, questId: string, amoun
 
   const poolQuest = QUEST_POOL.find(q => q.id === questId);
   const target = poolQuest?.target ?? 1;
-  const newProgress = Math.min(existing.progression + amount, target);
+  const newProgress = Math.min(existing.progression + safeAmount, target);
   const newComple = newProgress >= target;
 
   await supabase

@@ -18,17 +18,28 @@ function isValidCharacterClass(value: string | null): value is CharacterClass {
 }
 
 export async function GET(request: Request) {
- const { searchParams } = new URL(request.url);
- const action = searchParams.get('action');
- const classeParam = searchParams.get('classe');
- const niveau = parseInt(searchParams.get('niveau') || '1');
- const ownedAbilities = searchParams.get('owned') ? searchParams.get('owned')!.split(',') : [];
+  const { searchParams } = new URL(request.url);
+  const action = searchParams.get('action');
+  const classeParam = searchParams.get('classe');
+  const niveauRaw = searchParams.get('niveau') || '1';
+  const niveau = parseInt(niveauRaw, 10);
+  const xpRaw = searchParams.get('xp') || '0';
+  const xp = parseInt(xpRaw, 10);
+  const ownedAbilities = searchParams.get('owned') ? searchParams.get('owned')!.split(',') : [];
 
- if (!classeParam || !isValidCharacterClass(classeParam)) {
- return NextResponse.json({ error: 'Classe invalide' }, { status: 400 });
- }
- 
- const classe = classeParam as CharacterClass;
+  if (!classeParam || !isValidCharacterClass(classeParam)) {
+    return NextResponse.json({ error: 'Classe invalide' }, { status: 400 });
+  }
+
+  if (!Number.isInteger(niveau) || niveau < 1 || niveau > 100) {
+    return NextResponse.json({ error: 'Niveau invalide (1-100)' }, { status: 400 });
+  }
+
+  if (!Number.isInteger(xp) || xp < 0) {
+    return NextResponse.json({ error: 'XP invalide' }, { status: 400 });
+  }
+
+  const classe = classeParam as CharacterClass;
 
  switch (action) {
  case 'stats':
@@ -43,10 +54,10 @@ export async function GET(request: Request) {
  const abilities = getAbilitiesForLevel(classe, niveau, ownedAbilities);
  return NextResponse.json({ abilities });
 
- case 'xp':
- const xpNeeded = calculateXPForLevel(niveau);
- const levelFromXP = getLevelFromXP(parseInt(searchParams.get('xp') || '0'));
- return NextResponse.json({ xpNeeded, levelFromXP });
+  case 'xp':
+    const xpNeeded = calculateXPForLevel(niveau);
+    const levelFromXP = getLevelFromXP(xp);
+    return NextResponse.json({ xpNeeded, levelFromXP });
 
  case 'event':
  const event = getRandomEvent();

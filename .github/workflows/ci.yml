@@ -32,6 +32,6 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          JWT_SECRET: DreamQuest_Super_Secret_Key_2024_RPG_Adventure_Game_Secure_Token
-          NEXT_PUBLIC_SUPABASE_URL: https://erfdfbtbgrspnychqpgl.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyZmRmYnRiZ3JzcG55Y2hxcGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyNDQ0MjIsImV4cCI6MjA3NjgyMDQyMn0.oz8pZ3IChmZD947_lZHNdUpaWRJ4_W7gl9kGK1OQ76U
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

@@ -104,11 +104,11 @@ describe('JWT Utility Functions', () => {
       expect(cookie).toContain('Max-Age=')
     })
 
-    it('devrait avoir une durée de 7 jours (604800 secondes)', () => {
+    it('devrait avoir une durée de 1 heure (3600 secondes)', () => {
       const token = 'test'
       const cookie = createAuthCookie(token)
 
-      expect(cookie).toContain('Max-Age=604800')
+      expect(cookie).toContain('Max-Age=3600')
     })
   })
 

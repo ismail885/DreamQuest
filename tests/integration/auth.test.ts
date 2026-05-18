@@ -28,7 +28,7 @@ describe('Intégration - Authentification', () => {
 
       expect(authCookie).toContain(`auth_token=${token}`)
       expect(authCookie).toContain('HttpOnly')
-      expect(authCookie).toContain('Max-Age=604800') // 7 jours
+      expect(authCookie).toContain('Max-Age=3600') // 1h
 
       // 2. Le cookie est envoyé au navigateur...
       // (simulation de l'extraction)

@@ -15,9 +15,6 @@ interface SauvegardeWithRelations extends Save {
   personnage: { nom_personnage: string } | null
 }
 
-/**
- * Recupere une aventure avec les informations de l'auteur
- */
 export async function getAdventureWithAuthor(adventureId: number): Promise<AdventureWithAuthor | null> {
   try {
     const { data, error } = await supabase
@@ -39,14 +36,12 @@ export async function getAdventureWithAuthor(adventureId: number): Promise<Adven
       popularite: adventure.popularite,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }
-  } catch {
+  } catch (err) {
+    console.error('[utils] getAdventureWithAuthor failed:', err, 'adventureId:', adventureId)
     return null
   }
 }
 
-/**
- * Recupere toutes les aventures avec les informations des auteurs
- */
 export async function getAllAdventuresWithAuthors(): Promise<AdventureWithAuthor[]> {
   try {
     const { data, error } = await supabase
@@ -67,14 +62,12 @@ export async function getAllAdventuresWithAuthors(): Promise<AdventureWithAuthor
       popularite: adventure.popularite,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
-  } catch {
+  } catch (err) {
+    console.error('[utils] getAllAdventuresWithAuthors failed:', err)
     return []
   }
 }
 
-/**
- * Recupere les sauvegardes d'un utilisateur avec les details
- */
 export async function getUserSavesWithDetails(userId: number): Promise<SaveWithDetails[]> {
   try {
     const { data, error } = await supabase
@@ -98,55 +91,47 @@ export async function getUserSavesWithDetails(userId: number): Promise<SaveWithD
       aventure_titre: save.aventure?.titre,
       personnage_nom: save.personnage?.nom_personnage
     }))
-  } catch {
+  } catch (err) {
+    console.error('[utils] getUserSavesWithDetails failed:', err, 'userId:', userId)
     return []
   }
 }
 
-/**
- * Vote pour une aventure (un utilisateur ne peut voter qu'une fois par aventure)
- */
 export async function voteForAdventure(userId: number, adventureId: number): Promise<boolean> {
   try {
-    const { data: existingVote } = await supabase
-      .from('vote')
-      .select('id')
-      .eq('id_utilisateur', userId)
-      .eq('id_aventure', adventureId)
-      .single()
-
-    if (existingVote) {
-      return false
-    }
-
     const { error: voteError } = await supabase
       .from('vote')
       .insert({ id_utilisateur: userId, id_aventure: adventureId })
 
-    if (voteError) throw voteError
+    if (voteError) {
+      if (voteError.code === '23505' || voteError.message?.includes('duplicate key')) {
+        return false
+      }
+      throw voteError
+    }
 
-    const { data: currentAdventure } = await supabase
-      .from('aventure')
-      .select('popularite')
-      .eq('id', adventureId)
-      .single()
-
-    if (currentAdventure) {
-      await supabase
+    const { error: rpcError } = await supabase.rpc('incrementer_popularite', { aventure_id: adventureId })
+    if (rpcError && rpcError.message?.includes('does not exist')) {
+      const { data: current } = await supabase
         .from('aventure')
-        .update({ popularite: (currentAdventure as { popularite: number }).popularite + 1 })
+        .select('popularite')
         .eq('id', adventureId)
+        .single()
+      if (current) {
+        await supabase
+          .from('aventure')
+          .update({ popularite: (current as { popularite: number }).popularite + 1 })
+          .eq('id', adventureId)
+      }
     }
 
     return true
-  } catch {
+  } catch (err) {
+    console.error('[utils] voteForAdventure failed:', err, 'userId:', userId, 'adventureId:', adventureId)
     return false
   }
 }
 
-/**
- * Recupere les aventures les plus populaires
- */
 export async function getTopAdventures(limit: number = 10): Promise<AdventureWithAuthor[]> {
   try {
     const { data, error } = await supabase
@@ -168,14 +153,12 @@ export async function getTopAdventures(limit: number = 10): Promise<AdventureWit
       popularite: adventure.popularite,
       auteur_nom: adventure.utilisateur?.nom_utilisateur
     }))
-  } catch {
+  } catch (err) {
+    console.error('[utils] getTopAdventures failed:', err, 'limit:', limit)
     return []
   }
 }
 
-/**
- * Recupere un embranchement par son ID
- */
 export async function getBranchById(branchId: number) {
   try {
     const { data, error } = await supabase
@@ -186,14 +169,12 @@ export async function getBranchById(branchId: number) {
 
 if (error) throw error
     return data
-  } catch {
+  } catch (err) {
+    console.error('[utils] getBranchById failed:', err, 'branchId:', branchId)
     return null
   }
 }
 
-/**
- * Cree ou met a jour une sauvegarde
- */
 export async function saveProgress(
   userId: number,
   adventureId: number,
@@ -235,7 +216,8 @@ export async function saveProgress(
     }
 
     return true
-  } catch {
+  } catch (err) {
+    console.error('[utils] saveProgress failed:', err, 'userId:', userId, 'adventureId:', adventureId)
     return false
   }
 }

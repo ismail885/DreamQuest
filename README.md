@@ -95,50 +95,72 @@ Ouvrir [http://localhost:3000](http://localhost:3000)
 DreamQuest/
 ├── app/                      # Pages Next.js (App Router)
 │   ├── page.tsx             # Page d'accueil
-│   ├── login/               # Page connexion
-│   ├── register/            # Page inscription
+│   ├── layout.tsx           # Layout racine (Providers)
+│   ├── auth/                # Authentification
+│   │   ├── login/           # Page connexion
+│   │   ├── register/        # Page inscription
+│   │   └── callback/        # Callback OAuth
 │   ├── dashboard/           # Tableau de bord
 │   ├── create-character/    # Création personnage
+│   ├── create-adventure/    # Création aventure
 │   ├── adventure/           # Liste aventures
-│   ├── adventure/[id]/     # Lecture aventure
-│   └── profil/             # Profil utilisateur
+│   ├── adventure/[id]/      # Lecture aventure
+│   ├── classement/          # Classement
+│   ├── profil/              # Profil utilisateur
+│   ├── profil/[username]/   # Profil public
+│   ├── forgot-password/     # Récupération mot de passe
+│   └── admin/               # Administration
+│       ├── users/           # Gestion utilisateurs
+│       ├── characters/      # Gestion personnages
+│       ├── adventures/      # Gestion aventures
+│       ├── logs/            # Logs système
+│       └── settings/        # Paramètres
 ├── components/              # Composants React
 │   ├── auth/               # LoginForm, RegisterForm
 │   ├── character/          # CharacterCard, ClassCard, CreateCharacterForm
 │   ├── adventure/           # AdventureCard
-│   └── shared/             # Header, Footer, Loader, ConfirmDeleteModal
+│   ├── editor/             # AdventureEditor
+│   ├── combat/             # CombatUI
+│   └── shared/             # Header, Footer, Loader, Skeleton, BottomNav, Breadcrumb
 ├── context/                 # Context API
 │   ├── AuthContext.tsx     # Authentification
 │   └── ThemeContext.tsx    # Thème clair/sombre
-│   ├── hooks/                   # Custom hooks
-│   │   ├── useAuth.ts
-│   │   ├── useAdventure.ts     # Navigation embranchée avec BDD
-│   │   ├── useSave.ts          # Auto-save toutes les 30s
-│   │   ├── useVote.ts          # Vote avec timeout 10s + garde loadingRef
-│   │   ├── useTheme.ts
-│   ├── lib/                     # Utilitaires
-│   │   ├── supabaseClient.ts   # Client Supabase (timeout 15s, cache, retry)
-│   │   ├── jwt.ts              # Fonctions JWT
-│   │   ├── randomGenerator.ts  # Génération aléatoire (stats, abilities, événements)
-│   │   ├── generator/           # Moteur de génération procédurale
-│   │   │   ├── types.ts        # Types partagés
-│   │   │   ├── engine.ts       # Assembleur de séquences narratives
-│   │   │   ├── fantasy.ts      # Banque fantasy (~60 entrées)
-│   │   │   ├── horror.ts       # Banque horreur (~50 entrées)
-│   │   │   ├── scifi.ts        # Banque sci-fi (~55 entrées)
-│   │   │   ├── romance.ts      # Banque romance (~50 entrées)
-│   │   ├── utils.ts            # Helpers
-│   │   ├── combat.ts           # Système de combat tour par tour
-│   ├── user.ts
-│   ├── character.ts
-│   ├── adventure.ts
-│   ├── save.ts
-│   └── story.ts
+├── hooks/                   # Custom hooks
+│   ├── useAuth.ts          # Hook d'authentification
+│   ├── useAdventure.ts     # Navigation embranchée avec BDD
+│   ├── useSave.ts          # Auto-save toutes les 30s
+│   ├── useVote.ts          # Vote avec timeout 10s
+│   └── useCachedQuery.ts   # Requêtes avec cache client
+├── lib/                     # Utilitaires
+│   ├── supabaseClient.ts   # Client Supabase (timeout 15s)
+│   ├── jwt.ts              # Fonctions JWT
+│   ├── randomGenerator.ts  # Génération aléatoire
+│   ├── dailyQuests.ts      # Quêtes quotidiennes
+│   ├── specialEvents.ts    # Événements spéciaux
+│   ├── achievements.ts     # Système de succès
+│   ├── combat.ts           # Système de combat tour par tour
+│   ├── characters/         # Définitions des classes
+│   └── generator/          # Moteur de génération procédurale
+│       ├── engine.ts       # Assembleur de séquences narratives
+│       ├── fantasy.ts      # Banque fantasy
+│       ├── horror.ts       # Banque horreur
+│       ├── scifi.ts        # Banque sci-fi
+│       └── romance.ts      # Banque romance
+├── types/                   # Définitions TypeScript
+│   ├── character.ts        # Types personnage
+│   ├── adventure.ts        # Types aventure
+│   ├── user.ts             # Types utilisateur
+│   ├── save.ts             # Types sauvegarde
+│   └── story.ts            # Types histoire
+├── app/api/                 # API Routes
+│   ├── auth/session/       # Gestion session JWT
+│   ├── generator/          # Génération stats/abilities
+│   └── generate-story/     # Génération procédurale
 ├── tests/                   # Tests
 │   ├── lib/                # Tests unitaires
 │   └── integration/       # Tests d'intégration
 ├── documents/               # Documentation
-│   ├── bdd/                # Schémas BDD (MCD, MLD, MPD)
+│   ├── bdd/                # Schémas BDD (MCD, MLD, MPD, UML)
 │   ├── maquette/           # Maquettes Figma
 │   └── plan_de_tests.md   # Plan de tests
 └── public/                 # Fichiers statiques
@@ -148,7 +170,7 @@ DreamQuest/
 
 ## Base de données
 
-### Schéma (6 tables)
+### Schéma (9 tables)
 
 | Table | Description |
 |-------|-------------|
@@ -158,6 +180,9 @@ DreamQuest/
 | `embranchement` | Nœuds narratifs avec choix |
 | `sauvegarde` | Progression des joueurs |
 | `vote` | Votes communautaires |
+| `parametre_utilisateur` | Préférences utilisateur |
+| `quete_quotidienne` | Quêtes journalières |
+| `participation_evenement` | Événements spéciaux |
 
 Voir `documents/bdd/MPD_DreamQuest.sql` pour le schéma complet.
 
@@ -193,10 +218,11 @@ npm run test         # Exécuter les tests
 
 | Route | Méthode | Description |
 |-------|---------|-------------|
-| `/api/auth/register` | POST | Inscription utilisateur |
-| `/api/auth/login` | POST | Connexion |
-| `/api/auth/logout` | POST | Déconnexion |
-| `/api/auth/me` | GET | Vérifier session |
+| `/auth/login` | GET | Page de connexion |
+| `/auth/register` | GET | Page d'inscription |
+| `/api/auth/session` | POST/DELETE | Gestion session JWT |
+| `/api/generator` | GET | Génération stats/abilities |
+| `/api/generate-story` | POST | Génération procédurale d'aventures |
 
 ---
 

@@ -105,13 +105,14 @@ export function useAdventure(
 
  const isEnd = !branch.choix1_lien && !branch.choix2_lien;
  setState({ adventure, currentBranch: branch, loading: false, error: null, isEnd, history: [branch] });
- } catch {
- setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
- }
- };
+  } catch (err) {
+    console.error('[useAdventure] loadAdventure failed:', err, 'adventureId:', adventureId)
+    setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
+  }
+  };
 
- loadAdventure();
- }, [adventureId, userId]);
+  loadAdventure();
+  }, [adventureId, userId]);
 
  const chooseOption = useCallback(async (branchId: number | null) => {
  if (!branchId || !userIdRef.current) return;
@@ -141,10 +142,11 @@ export function useAdventure(
  isEnd,
  history: [...s.history, branch],
  }));
- } catch {
- setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
- }
- }, [state.adventure?.id, state.loading]);
+  } catch (err) {
+    console.error('[useAdventure] chooseOption failed:', err, 'branchId:', branchId)
+    setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
+  }
+  }, [state.adventure?.id, state.loading]);
 
  const restart = useCallback(async () => {
  if (!state.adventure || !userIdRef.current) return;
@@ -157,9 +159,9 @@ export function useAdventure(
  .delete()
  .eq('id_aventure', state.adventure.id)
  .eq('id_utilisateur', userIdRef.current);
- } catch {
- // Ignore
- }
+  } catch (err) {
+    console.warn('[useAdventure] restart delete save failed:', err)
+  }
 
  // Charger le premier nœud
  const { data: firstBranch } = await supabase

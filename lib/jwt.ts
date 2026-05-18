@@ -9,7 +9,7 @@ if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env.local file.');
 }
 
-const MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 jours
+const MAX_AGE_SECONDS = 3600; // 1h — aligné sur la session Supabase Auth
 const ALGORITHM = 'HS256';
 
 // ============================================
@@ -31,7 +31,7 @@ export type TokenPayload = Omit<UserJWTPayload, 'iat' | 'exp'>;
 
 /**
  * Signe un token JWT avec les données utilisateur.
- * Expire après 7 jours.
+ * Expire après 1h (aligné sur Supabase Auth).
  */
 export async function signToken(payload: TokenPayload): Promise<string> {
   const secret = new TextEncoder().encode(JWT_SECRET);
