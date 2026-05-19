@@ -4,12 +4,15 @@ import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 // Configuration JWT
 // ============================================
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env.local file.');
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env.local file.');
+  }
+  return secret;
 }
 
-const MAX_AGE_SECONDS = 3600; // 1h — aligné sur la session Supabase Auth
+const MAX_AGE_SECONDS = 3600; // 1h - aligné sur la session Supabase Auth
 const ALGORITHM = 'HS256';
 
 // ============================================
@@ -34,7 +37,7 @@ export type TokenPayload = Omit<UserJWTPayload, 'iat' | 'exp'>;
  * Expire après 1h (aligné sur Supabase Auth).
  */
 export async function signToken(payload: TokenPayload): Promise<string> {
-  const secret = new TextEncoder().encode(JWT_SECRET);
+  const secret = new TextEncoder().encode(getJwtSecret());
   
   const token = await new SignJWT({ ...payload })
     .setProtectedHeader({ alg: ALGORITHM })
@@ -51,7 +54,7 @@ export async function signToken(payload: TokenPayload): Promise<string> {
  */
 export async function verifyToken(token: string): Promise<UserJWTPayload | null> {
   try {
-    const secret = new TextEncoder().encode(JWT_SECRET);
+    const secret = new TextEncoder().encode(getJwtSecret());
     const { payload } = await jwtVerify(token, secret);
     return payload as UserJWTPayload;
   } catch (error: unknown) {
