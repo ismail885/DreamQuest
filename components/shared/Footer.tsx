@@ -7,9 +7,9 @@ export default function Footer() {
  return (
  <footer className="border-t border-gray-800/50 bg-[#070b15] ">
  <div className="container mx-auto px-4 md:px-6 py-10 md:py-12">
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
  {/* Brand */}
- <div className="lg:col-span-1">
+ <div className="lg:col-span-2">
  <Link
  href="/"
  className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity mb-4"
@@ -62,18 +62,23 @@ export default function Footer() {
  <li><Link href="/contact" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Contact</Link></li>
  </ul>
  </div>
+
+ {/* Informations légales */}
+ <div>
+ <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Informations légales</h3>
+ <ul className="space-y-2.5">
+ <li><Link href="/privacy" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Confidentialité</Link></li>
+ <li><Link href="/terms" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">CGU</Link></li>
+ <li><Link href="/cookies" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Cookies</Link></li>
+ <li><Link href="/licenses" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">Licences</Link></li>
+ </ul>
+ </div>
  </div>
 
  <div className="border-t border-gray-800/50 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
  <p className="text-gray-500 text-xs">
  &copy; {currentYear} DreamQuest. Tous droits réservés.
  </p>
- <div className="flex items-center gap-4 text-xs">
- <Link href="/privacy" className="text-gray-500 hover:text-cyan-400 transition-colors">Confidentialité</Link>
- <Link href="/terms" className="text-gray-500 hover:text-cyan-400 transition-colors">CGU</Link>
- <Link href="/cookies" className="text-gray-500 hover:text-cyan-400 transition-colors">Cookies</Link>
- <Link href="/licenses" className="text-gray-500 hover:text-cyan-400 transition-colors">Licences</Link>
- </div>
  <p className="text-gray-600 text-xs">Made by Ismail Abou-zaid</p>
  </div>
  </div>
