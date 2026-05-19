@@ -35,7 +35,6 @@ function getContentForGenre(genre: string): GenreContent {
 export function generateAdventure(input: GeneratorInput): GeneratedNode[] {
   const { title, genre } = input;
   const content = getContentForGenre(genre);
-  const titleUpper = title.toUpperCase();
   const usedLocations = new Set<{ name: string; description: string }>();
   const usedNpcs = new Set<{ name: string; role: string; description: string }>();
   const usedTwists = new Set<string>();

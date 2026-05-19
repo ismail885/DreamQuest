@@ -4,10 +4,6 @@ import type { UserRole } from '@/types/user'
 const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey: string = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Variables Supabase manquantes dans .env')
-}
-
 const REQUEST_TIMEOUT = 15_000; // 15 secondes
 
 async function fetchWithTimeout(
@@ -27,15 +23,38 @@ async function fetchWithTimeout(
   }
 }
 
-// Client ANON (publique)
+// Client ANON (publique) - Initialisation lazy pour eviter le crash au build
 // ==============================================================
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-  global: {
-    fetch: fetchWithTimeout,
+let _supabase: SupabaseClient | null = null
+
+export function getSupabaseClient(): SupabaseClient {
+  if (!_supabase) {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Variables Supabase manquantes dans .env')
+    }
+    _supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+      global: {
+        fetch: fetchWithTimeout,
+      },
+    })
+  }
+  return _supabase
+}
+
+// Export compatible avec l'usage existant `import { supabase } from ...`
+// On utilise un Proxy pour initialiser lazy au premier acces
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const client = getSupabaseClient()
+    const value = Reflect.get(client, prop)
+    if (typeof value === 'function') {
+      return value.bind(client)
+    }
+    return value
   },
 })
 

@@ -4,7 +4,6 @@ import React from 'react';
 import Image from 'next/image';
 import { ClassInfo, CLASS_ICONS, STAT_LABELS, STAT_COLORS, ABILITIES_DATA, CLASS_DIFFICULTIES, DIFFICULTY_LABELS, AbilityInfo } from '@/types';
 import { motion } from 'framer-motion';
-import { Info } from 'lucide-react';
 
 interface ClassCardProps {
  classInfo: ClassInfo;
@@ -98,14 +97,7 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
  <div className="space-y-3 mb-6">
  {stats.map((stat) => (
  <div key={stat.key} className="flex items-center gap-3">
- <span className={`w-5 h-5 ${stat.color}`}>
- {(() => {
- const Icon = classInfo.baseStats[stat.key] !== undefined 
- ? undefined 
- : undefined;
- return null;
- })()}
- </span>
+  <span className={`w-5 h-5 ${stat.color}`} />
  <span className={`text-sm w-20 ${stat.color}`}>{stat.label}</span>
  <div className="flex-1 bg-[#121827] rounded-full h-2 overflow-hidden">
  <div

@@ -80,23 +80,22 @@ export default function ProfilPage() {
  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
  const [notifications, setNotifications] = useState(true);
 
- const loadSettings = async () => {
- if (!user) return;
- const { data } = await supabase
- .from("parametre_utilisateur")
- .select("notifications, langue")
- .eq("id_utilisateur", user.id)
- .maybeSingle();
+  const loadSettings = useCallback(async () => {
+  if (!user) return;
+  const { data } = await supabase
+  .from("parametre_utilisateur")
+  .select("notifications, langue")
+  .eq("id_utilisateur", user.id)
+  .maybeSingle();
 
- if (data) {
- setNotifications(data.notifications ?? true);
- if (data.langue) setLanguage(data.langue);
- }
- };
+  if (data) {
+  setNotifications(data.notifications ?? true);
+  if (data.langue) setLanguage(data.langue);
+  }
+  }, [user]);
 
- // eslint-disable-next-line react-hooks/exhaustive-deps
- const settingsLoadedRef = useRef(false);
- useEffect(() => { if (user && !settingsLoadedRef.current) { settingsLoadedRef.current = true; loadSettings(); } }, [user]);
+  const settingsLoadedRef = useRef(false);
+  useEffect(() => { if (user && !settingsLoadedRef.current) { settingsLoadedRef.current = true; loadSettings(); } }, [user, loadSettings]);
 
  // Définition de loadUserData AVANT les useEffects qui l'utilisent
  const loadUserData = useCallback(async (userId: number) => {

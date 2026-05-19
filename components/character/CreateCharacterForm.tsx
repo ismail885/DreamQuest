@@ -64,9 +64,7 @@ export default function CreateCharacterForm({ userId, onCharacterCreated }: Crea
  setNameError(result.valid ? '' : (result.error ?? ''));
  };
 
- const isFormValid = () => validateCharacterName(characterName).valid;
-
- const statBars = [
+  const statBars = [
  { key: 'force', label: 'Force', value: classInfo.baseStats.force, icon: Swords },
  { key: 'agility', label: 'Agilite', value: classInfo.baseStats.agility, icon: Zap },
  { key: 'magie', label: 'Intelligence', value: classInfo.baseStats.magie, icon: Brain },
