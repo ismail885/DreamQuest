@@ -902,18 +902,18 @@ export default function ProfilPage() {
  const xpInCurrentLevel = Math.max(0, totalXp - xpAtLevelStart);
  const xpForNextLevel = calculateRequiredXP(niveau);
  const xpPercent = xpForNextLevel > 0 ? Math.min(100, (xpInCurrentLevel / xpForNextLevel) * 100) : 0;
- const passifs: Record<string, { name: string; desc: string; icon: string }> = {
- Guerrier: { name: "Force du Combattant", desc: "+10% dégâts physiques", icon: "⚔️" },
- Mage: { name: "Arcane Résistant", desc: "+10% résistance magique", icon: "🔮" },
- Assassin: { name: "Coup Fatal", desc: "+15% critique", icon: "🗡️" },
- Prêtre: { name: "Foi Guérisseuse", desc: "+5% soins reçus", icon: "✨" },
- Paladin: { name: "Bouclier Sacré", desc: "+5% PV max", icon: "🛡️" },
- Archer: { name: "Œil de Lynx", desc: "+10% précision", icon: "🏹" },
- Druide: { name: "Force de la Nature", desc: "+10% régénération", icon: "🌿" },
- Nécromancien: { name: "Lien Sombre", desc: "+5% vol de vie", icon: "💀" },
- Voleur: { name: "Ombre Fugitive", desc: "+10% esquive", icon: "👤" },
- Barbare: { name: "Furie Sauvage", desc: "+10% force brute", icon: "🔥" },
- };
+  const passifs: Record<string, { name: string; desc: string; icon: string }> = {
+  Guerrier: { name: "Force du Combattant", desc: "+10% dégâts physiques", icon: "Swords" },
+  Mage: { name: "Arcane Résistant", desc: "+10% résistance magique", icon: "Sparkles" },
+  Assassin: { name: "Coup Fatal", desc: "+15% critique", icon: "Knife" },
+  Prêtre: { name: "Foi Guérisseuse", desc: "+5% soins reçus", icon: "Star" },
+  Paladin: { name: "Bouclier Sacré", desc: "+5% PV max", icon: "Shield" },
+  Archer: { name: "Œil de Lynx", desc: "+10% précision", icon: "Crosshair" },
+  Druide: { name: "Force de la Nature", desc: "+10% régénération", icon: "Leaf" },
+  Nécromancien: { name: "Lien Sombre", desc: "+5% vol de vie", icon: "Skull" },
+  Voleur: { name: "Ombre Fugitive", desc: "+10% esquive", icon: "User" },
+  Barbare: { name: "Furie Sauvage", desc: "+10% force brute", icon: "Flame" },
+  };
  const passif = passifs[char.classe as string];
  const stats = char.stats || { force: 0, agility: 0, magie: 0, endurance: 0 };
  const maxStat = Math.max(stats.force, stats.agility, stats.magie, stats.endurance);
@@ -959,16 +959,19 @@ export default function ProfilPage() {
  })}
  </div>
  
- {/* Passif */}
- {passif && (
- <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
- <div className="flex items-center gap-2 mb-1">
- <span className="text-lg">{passif.icon}</span>
- <span className="text-cyan-400 font-medium">{passif.name}</span>
- </div>
- <span className="text-gray-400 text-sm">{passif.desc}</span>
- </div>
- )}
+  {/* Passif */}
+  {passif && (() => {
+  const IconComponent = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[passif.icon];
+  return (
+  <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
+  <div className="flex items-center gap-2 mb-1">
+  {IconComponent && <IconComponent className="w-5 h-5 text-cyan-400" />}
+  <span className="text-cyan-400 font-medium">{passif.name}</span>
+  </div>
+  <span className="text-gray-400 text-sm">{passif.desc}</span>
+  </div>
+  );
+  })()}
  </div>
  );
  })}

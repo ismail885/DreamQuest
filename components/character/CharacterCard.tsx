@@ -2,6 +2,7 @@ import React from 'react';
 import { Character, CHARACTER_CLASSES, STAT_ICONS, CLASS_PASSIVES, getTotalXPForLevel, calculateRequiredXP } from '@/types';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 interface CharacterCardProps {
  character: Character;
@@ -41,11 +42,11 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
  
  <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
- {isSelected && (
- <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold text-sm">
- ✓Sélectionné
- </span>
- )}
+  {isSelected && (
+  <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold text-sm flex items-center gap-1">
+  <Check className="w-3.5 h-3.5" />Sélectionné
+  </span>
+  )}
  <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold">
  Niv. {character.niveau}
  </span>

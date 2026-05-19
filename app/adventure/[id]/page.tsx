@@ -15,7 +15,7 @@ import { playerAttack, enemyAttack, createCombatState, useAbility as executeAbil
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
-import { Heart, Swords, Brain, RotateCcw, ArrowLeft } from "lucide-react";
+import { Heart, Swords, Brain, RotateCcw, ArrowLeft, Sparkles } from "lucide-react";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
  1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -69,7 +69,7 @@ function AdventureReader({ params }: Props) {
  
  // Détecter le type combat
  if (effect.type === "combat") {
- return { hasImpact: true, isPositive: false, impactText: "⚔️ Combat!", isCombat: true };
+  return { hasImpact: true, isPositive: false, impactText: "Combat!", isCombat: true };
  }
  
  if (!effect || (effect.pv === 0 && !effect.force && !effect.agility && !effect.magie && !effect.endurance)) {
@@ -867,12 +867,15 @@ function AdventureReader({ params }: Props) {
  );
  })()}
 
- {/* Compétences de classe */}
- {availableAbilities.length > 0 && character?.classe && !currentEvent && (
- <div className="mt-4 pt-4 border-t border-gray-800 ">
- <p className="text-purple-400 text-xs font-semibold mb-3">
- ✨ COMPÉTENCE {character.classe.toUpperCase()}
- </p>
+  {/* Compétences de classe */}
+  {availableAbilities.length > 0 && character?.classe && !currentEvent && (
+  <div className="mt-4 pt-4 border-t border-gray-800 ">
+  <div className="flex items-center gap-2 mb-3">
+  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+  <p className="text-purple-400 text-xs font-semibold">
+  COMPÉTENCE {character.classe.toUpperCase()}
+  </p>
+  </div>
  <div className="flex flex-col gap-2">
  {availableAbilities.map((ability) => (
  <button
