@@ -961,7 +961,7 @@ export default function ProfilPage() {
  
   {/* Passif */}
   {passif && (() => {
-  const IconComponent = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[passif.icon];
+  const IconComponent = (LucideIcons as unknown as Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>>)[passif.icon];
   return (
   <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
   <div className="flex items-center gap-2 mb-1">
