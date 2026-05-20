@@ -62,7 +62,7 @@ async function ensureUtilisateurAfterOAuth(user: User): Promise<void> {
  .insert({
  nom_utilisateur: username,
  email: user.email,
- mot_de_passe: "",
+  mot_de_passe: null,
  role: "joueur",
  auth_id: user.id,
  })

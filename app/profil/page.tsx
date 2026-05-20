@@ -351,7 +351,7 @@ export default function ProfilPage() {
  setSaveMessage(null);
 
  try {
- const { error: profileError } = await supabase
+ const { error: updateError } = await supabase
  .from("utilisateur")
  .update({
  nom_utilisateur: editUsername,
@@ -359,16 +359,15 @@ export default function ProfilPage() {
  })
  .eq("id", user.id);
 
- if (profileError) {
- const { error: insertError } = await supabase
- .from("utilisateur")
- .upsert({
- id: user.id,
- nom_utilisateur: editUsername,
- email: editEmail,
- });
-
- if (insertError) throw insertError;
+ if (updateError) {
+ // Si l'email est deja utilise par un autre user
+ if (updateError.code === "23505" || updateError.message?.includes("duplicate") || updateError.message?.includes("unique")) {
+ setSaveMessage({ type: "error", text: "Cet email est deja utilise par un autre compte." });
+ } else {
+ setSaveMessage({ type: "error", text: "Erreur lors de la mise a jour du profil." });
+ }
+ setIsSaving(false);
+ return;
  }
 
  setUserProfile(prev => prev ? {
@@ -377,7 +376,7 @@ export default function ProfilPage() {
  email: editEmail,
  } : null);
 
- setSaveMessage({ type: "success", text: "Profil mis à jour avec succès !" });
+ setSaveMessage({ type: "success", text: "Profil mis a jour avec succes !" });
  updateUser({ username: editUsername, email: editEmail });
  
  setTimeout(() => {
@@ -386,7 +385,7 @@ export default function ProfilPage() {
 
  } catch (error) {
  console.error("Erreur lors de la sauvegarde:", error);
- setSaveMessage({ type: "error", text: "Erreur lors de la mise à jour du profil." });
+ setSaveMessage({ type: "error", text: "Erreur lors de la mise a jour du profil." });
  } finally {
  setIsSaving(false);
  }
@@ -545,7 +544,17 @@ export default function ProfilPage() {
  : "text-gray-400 hover:text-white hover:bg-gray-700/20"
  }`}
  >
- Réalisations
+ RÃ©alisations
+ </button>
+ <button
+ onClick={() => setActiveTab("creations")}
+ className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
+ activeTab === "creations"
+ ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
+ : "text-gray-400 hover:text-white hover:bg-gray-700/20"
+ }`}
+ >
+ Mes CrÃ©ations
  </button>
  <button
  onClick={() => setActiveTab("quests")}

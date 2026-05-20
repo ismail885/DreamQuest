@@ -26,6 +26,9 @@ interface UserStats {
  charactersCount: number;
  completedQuests: number;
  totalXp: number;
+ maxLevel: number;
+ userLevel: number;
+ userXp: number;
 }
 
 export default function DashboardPage() {
@@ -35,6 +38,9 @@ export default function DashboardPage() {
  charactersCount: 0,
  completedQuests: 0,
  totalXp: 0,
+ maxLevel: 0,
+ userLevel: 0,
+ userXp: 0,
  });
  const [statsLoading, setStatsLoading] = useState(true);
  const [statsError, setStatsError] = useState<string | null>(null);
@@ -87,8 +93,9 @@ export default function DashboardPage() {
  setLoadingSuggestions(true);
  setStatsError(null);
  try {
- const [charResult, saveResult] = await Promise.all([
- supabase.from("personnage").select("experience").eq("id_utilisateur", user.id),
+ const [userResult, charResult, saveResult] = await Promise.all([
+ supabase.from("utilisateur").select("niveau, experience").eq("id", user.id).maybeSingle(),
+ supabase.from("personnage").select("experience, niveau").eq("id_utilisateur", user.id),
  supabase.from("sauvegarde").select("progression, id_aventure").eq("id_utilisateur", user.id),
  ]);
 
@@ -101,6 +108,9 @@ export default function DashboardPage() {
  charactersCount: characters.length,
  completedQuests: saves.filter((s) => (s.progression ?? 0) >= 100).length,
  totalXp: characters.reduce((sum, c) => sum + (c.experience ?? 0), 0),
+ maxLevel: characters.length > 0 ? Math.max(...characters.map((c) => c.niveau ?? 1)) : 0,
+ userLevel: userResult?.data?.niveau ?? 1,
+ userXp: userResult?.data?.experience ?? 0,
  });
 
  const playedIds = saves.map((s) => s.id_aventure).filter(Boolean);
@@ -210,8 +220,8 @@ export default function DashboardPage() {
  )}
 
  {statsLoading ? (
- <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
- {[1, 2, 3, 4].map((i) => (
+ <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
+ {[1, 2, 3, 4, 5].map((i) => (
  <div key={i} className="bg-[#131e35] border border-gray-800/50 rounded-xl md:rounded-2xl p-4 md:p-6 animate-pulse">
  <div className="h-8 bg-gray-700/50 rounded w-12 mb-2" />
  <div className="h-4 bg-gray-700/50 rounded w-20" />
@@ -219,7 +229,7 @@ export default function DashboardPage() {
  ))}
  </div>
  ) : (
- <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+ <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
  <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
  <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">
  {stats.charactersCount}
@@ -244,10 +254,18 @@ export default function DashboardPage() {
  </div>
  <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
  <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">
- -
+ {stats.maxLevel > 0 ? stats.maxLevel : "—"}
  </div>
  <div className="text-gray-400 text-xs md:text-sm">
- Niveau max
+ Niveau max perso
+ </div>
+ </div>
+ <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
+ <div className="text-2xl md:text-3xl font-bold text-violet-400 mb-1 md:mb-2">
+ {stats.userLevel}
+ </div>
+ <div className="text-gray-400 text-xs md:text-sm">
+ Niveau user
  </div>
  </div>
  </div>

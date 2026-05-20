@@ -254,7 +254,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  const { error: insertError } = await supabase.from("utilisateur").insert({
  nom_utilisateur: username,
  email,
- mot_de_passe: "",
+ mot_de_passe: null,
  role: "joueur",
  auth_id: authData.user.id,
  });

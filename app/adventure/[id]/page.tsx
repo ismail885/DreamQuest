@@ -10,12 +10,13 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
-import { LEVEL_BONUS, RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
+import { RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
 import { playerAttack, enemyAttack, createCombatState, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
 import { Heart, Swords, Brain, RotateCcw, ArrowLeft, Sparkles } from "lucide-react";
+import { applyXpGain, saveCharacterProgress, updateUserXp } from "@/lib/xp";
 
 const ADVENTURE_IMAGES: Record<number, string> = {
  1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
@@ -164,7 +165,7 @@ function AdventureReader({ params }: Props) {
  const progress = await loadCharacterProgress();
  const currentExp = progress?.experience ?? character.experience ?? 0;
  const currentLevel = progress?.niveau ?? character.niveau ?? 1;
- await saveCharacterProgress(currentLevel, newStats, currentExp);
+ await saveCharacterStats(currentLevel, newStats, currentExp);
 
  setLastConsequence({
  pv_change: effect?.pv ?? 0,
@@ -353,11 +354,48 @@ function AdventureReader({ params }: Props) {
  const handleCombatEnd = async () => {
  if (!character) return;
  
- // Sauvegarder les PV après combat
+ // Si le combat est gagne, appliquer l'XP
+ if (combatState?.won) {
+ const xpGain = combatState.enemy?.xpReward || 0;
+ const currentXp = character.experience ?? 0;
+ const currentLevel = character.niveau ?? 1;
+ const basePvMax = character.points_vie_max || 100;
+ 
+ const result = applyXpGain(currentLevel, currentXp, xpGain, basePvMax);
+ 
+ const newStats = {
+ force: (character.stats?.force ?? 5) + (result.statBonuses.force ?? 0),
+ agility: (character.stats?.agility ?? 5) + (result.statBonuses.agility ?? 0),
+ magie: (character.stats?.magie ?? 5) + (result.statBonuses.magie ?? 0),
+ endurance: (character.stats?.endurance ?? 5) + (result.statBonuses.endurance ?? 0),
+ };
+ 
+ const newPv = result.leveledUp
+ ? Math.min(character.points_vie + (result.newMaxPv - basePvMax), result.newMaxPv)
+ : character.points_vie;
+ 
+ if (character.id) {
+ await saveCharacterProgress(character.id, result.newLevel, result.newExperience, newStats, newPv);
+ }
+ if (user?.id) {
+ await updateUserXp(user.id, xpGain);
+ }
+ 
+ setCharacter(prev => prev ? {
+ ...prev,
+ niveau: result.newLevel,
+ stats: newStats,
+ experience: result.newExperience,
+ points_vie: newPv,
+ points_vie_max: result.newMaxPv,
+ } : null);
+ } else {
+ // Sauvegarder les PV apres combat perdu
  if (character.id) {
  await supabase.from('personnage').update({
  points_vie: character.points_vie,
  }).eq('id', character.id);
+ }
  }
  
  setInCombat(false);
@@ -522,7 +560,7 @@ function AdventureReader({ params }: Props) {
  return null;
  }, [user, characterIdNum]);
 
- const saveCharacterProgress = useCallback(async (niveau: number, stats: { force: number; agility: number; magie: number; endurance: number }, experience: number) => {
+ const saveCharacterStats = useCallback(async (niveau: number, stats: { force: number; agility: number; magie: number; endurance: number }, experience: number) => {
  if (!user || !characterIdNum) return;
  await supabase
  .from("personnage")
@@ -542,26 +580,41 @@ function AdventureReader({ params }: Props) {
  (async () => {
  save();
  const progress = await loadCharacterProgress() || { niveau: character.niveau ?? 1, stats: { force: 5, agility: 5, magie: 5, endurance: 5 }, experience: 0 };
- const xpGained = history.length * 50;
- const newExperience = progress.experience + xpGained;
- const newLevel = Math.min(Math.floor(newExperience / 500) + 1, 10);
- const bonus = LEVEL_BONUS[newLevel] || {};
+ 
+ // XP par choix fait + bonus de fin
+ const xpPerChoice = 30;
+ const endBonus = 100;
+ const xpGained = history.length * xpPerChoice + endBonus;
+ 
+ const basePvMax = character.points_vie_max || 100;
+ const result = applyXpGain(progress.niveau, progress.experience, xpGained, basePvMax);
+ 
  const newStats = {
- force: (progress.stats?.force ?? 5) + (bonus.force ?? 0),
- agility: (progress.stats?.agility ?? 5) + (bonus.agility ?? 0),
- magie: (progress.stats?.magie ?? 5) + (bonus.magie ?? 0),
- endurance: (progress.stats?.endurance ?? 5) + (bonus.endurance ?? 0),
+ force: (progress.stats?.force ?? 5) + (result.statBonuses.force ?? 0),
+ agility: (progress.stats?.agility ?? 5) + (result.statBonuses.agility ?? 0),
+ magie: (progress.stats?.magie ?? 5) + (result.statBonuses.magie ?? 0),
+ endurance: (progress.stats?.endurance ?? 5) + (result.statBonuses.endurance ?? 0),
  };
- await saveCharacterProgress(newLevel, newStats, newExperience);
+ 
+ // PV mis a jour si level up
+ const newPv = result.leveledUp
+ ? Math.min(character.points_vie + (result.newMaxPv - basePvMax), result.newMaxPv)
+ : character.points_vie;
+ 
+ await saveCharacterProgress(characterIdNum, result.newLevel, result.newExperience, newStats, newPv);
+ await updateUserXp(user.id, xpGained);
+ 
  setCharacter(prev => prev ? {
  ...prev,
- niveau: newLevel,
+ niveau: result.newLevel,
  stats: newStats,
- experience: newExperience,
+ experience: result.newExperience,
+ points_vie: newPv,
+ points_vie_max: result.newMaxPv,
  } : prev);
  })();
  }
- }, [isEnd, user, characterIdNum, character, save, history.length, loadCharacterProgress, saveCharacterProgress]);
+ }, [isEnd, user, characterIdNum, character, save, history.length, loadCharacterProgress]);
 
  const image = ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
 
