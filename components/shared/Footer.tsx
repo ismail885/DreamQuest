@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 
 export default function Footer() {
@@ -53,17 +53,18 @@ export default function Footer() {
  </div>
  </div>
 
- <div className="border-t border-gray-800/50 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
- <p className="text-gray-500 text-xs">
- &copy; {currentYear} DreamQuest. Tous droits réservés.
- </p>
+ <div className="border-t border-gray-800/50 mt-10 pt-6 flex flex-col items-center gap-3">
+ <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Informations légales</h3>
  <div className="flex items-center gap-4 text-xs">
  <Link href="/privacy" className="text-gray-500 hover:text-cyan-400 transition-colors">Confidentialité</Link>
  <Link href="/terms" className="text-gray-500 hover:text-cyan-400 transition-colors">CGU</Link>
  <Link href="/cookies" className="text-gray-500 hover:text-cyan-400 transition-colors">Cookies</Link>
  <Link href="/licenses" className="text-gray-500 hover:text-cyan-400 transition-colors">Licences</Link>
  </div>
- <p className="text-gray-600 text-xs">Made by Ismail Abou-zaid</p>
+ <p className="text-gray-500 text-xs">
+ &copy; {currentYear} DreamQuest. Tous droits réservés.
+ </p>
+ <p className="text-gray-600 text-xs">Fait par Ismail Abou-zaid</p>
  </div>
  </div>
  </footer>
