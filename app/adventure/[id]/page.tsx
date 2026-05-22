@@ -11,7 +11,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
 import { RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
-import { playerAttack, enemyAttack, createCombatState, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, MANA_REGEN_PER_TURN, type CombatState, type CombatAbility } from "@/lib/combat";
+import { playerAttack, enemyAttack, playerDefense, createCombatState, executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateCooldowns, updateEnemyStatus, MANA_REGEN_PER_TURN, type CombatState, type CombatAbility } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
@@ -198,13 +198,12 @@ function AdventureReader({ params }: Props) {
  const newEnemyPv = Math.max(0, combatState.enemy.pv - result.dmg);
  const newLog = [...combatState.log, result.log];
  
- if (newEnemyPv <= 0) {
- // Victoire - gain d'XP et potentiellement de level
- const xpGain = combatState.enemy.xpReward || 0;
- const newPv = character.points_vie || 0;
- 
- setCharacter(prev => prev ? { ...prev, points_vie: newPv, experience: (prev.experience || 0) + xpGain } : null);
- setCombatState({ ...combatState, enemy: { ...combatState.enemy!, pv: 0 }, log: newLog, won: true });
+  if (newEnemyPv <= 0) {
+  // Victoire - l'XP sera gérée par handleCombatEnd via applyXpGain
+  const newPv = character.points_vie || 0;
+  
+  setCharacter(prev => prev ? { ...prev, points_vie: newPv } : null);
+  setCombatState({ ...combatState, enemy: { ...combatState.enemy!, pv: 0 }, log: newLog, won: true });
  } else {
  setCombatState({
  ...combatState,
@@ -225,12 +224,11 @@ function AdventureReader({ params }: Props) {
  endurance: character.stats?.endurance || 0,
  };
  
- const reduction = Math.floor((playerStats.agility + (character.stats?.endurance || 0)) / 4);
- const hasThorns = combatState.status.buff_defense > 0;
-  const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns, playerStats.agility);
-  const dmg = Math.max(1, result.dmg - reduction);
- const newPlayerPv = Math.max(0, combatState.playerPv - dmg);
- const newLog = [...combatState.log, result.log, `Tu pare! -${reduction} dégats.`];
+   const { reduction } = playerDefense(playerStats, combatState.status);
+    const result = enemyAttack(combatState.enemy!, combatState.status, playerStats.agility);
+    const dmg = Math.max(1, result.dmg - reduction);
+  const newPlayerPv = Math.max(0, combatState.playerPv - dmg);
+  const newLog = [...combatState.log, result.log, `Tu pare! -${reduction} dégats.`];
  
   setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
   setCombatState({
@@ -257,9 +255,8 @@ function AdventureReader({ params }: Props) {
  if (success) {
  setCombatState({ ...combatState, fled: true, log: [...combatState.log, "Tu fuis le combat!"] });
  } else {
-  const hasThorns = combatState.status.buff_defense > 0;
-  const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns, playerStats.agility);
-  const newPlayerPv = Math.max(0, combatState.playerPv - result.dmg);
+   const result = enemyAttack(combatState.enemy!, combatState.status, playerStats.agility);
+   const newPlayerPv = Math.max(0, combatState.playerPv - result.dmg);
   setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
   setCombatState({
   ...combatState,
@@ -288,15 +285,16 @@ function AdventureReader({ params }: Props) {
  endurance: character.stats?.endurance || 0,
  };
 
- const result = executeAbility(
- ability.id,
- character.classe || "guerrier",
- playerStats,
- combatState.enemy,
- combatState.status,
- combatState.playerPv,
- combatState.playerMana
- );
+  const result = executeAbility(
+  ability.id,
+  character.classe || "guerrier",
+  playerStats,
+  combatState.enemy,
+  combatState.status,
+  combatState.playerPv,
+  combatState.playerMana,
+  combatState.cooldowns
+  );
 
  if (!result.success) {
  setCombatState(prev => prev ? { 
@@ -319,38 +317,38 @@ function AdventureReader({ params }: Props) {
  newEnemyStatus = [...newEnemyStatus, ...(result.newEnemyStatus || [])];
  }
 
- // Vérifier si l'ennemi est vaincu
- if (newEnemyPv <= 0) {
- const xpGain = combatState.enemy.xpReward || 0;
- setCharacter(prev => prev ? { 
- ...prev, 
- points_vie: newPlayerPv, 
- experience: (prev.experience || 0) + xpGain 
- } : null);
- setCombatState({
- ...combatState,
- enemy: { ...combatState.enemy!, pv: 0 },
- playerPv: newPlayerPv,
- playerMana: combatState.playerMana - result.manaUsed,
- log: newLog,
- won: true,
- status: newStatus,
- enemyStatus: newEnemyStatus,
- });
- return;
- }
+  // Vérifier si l'ennemi est vaincu
+   if (newEnemyPv <= 0) {
+   setCharacter(prev => prev ? { 
+   ...prev, 
+   points_vie: newPlayerPv, 
+   } : null);
+  setCombatState({
+  ...combatState,
+  enemy: { ...combatState.enemy!, pv: 0 },
+  playerPv: newPlayerPv,
+  playerMana: combatState.playerMana - result.manaUsed,
+  log: newLog,
+  won: true,
+  status: newStatus,
+  enemyStatus: newEnemyStatus,
+  cooldowns: result.newCooldowns ?? combatState.cooldowns,
+  });
+  return;
+  }
 
- // Passer au tour de l'ennemi
- setCombatState({
- ...combatState,
- enemy: { ...combatState.enemy!, pv: newEnemyPv },
- playerPv: newPlayerPv,
- playerMana: combatState.playerMana - result.manaUsed,
- log: newLog,
- turn: "enemy",
- status: newStatus,
- enemyStatus: newEnemyStatus,
- });
+  // Passer au tour de l'ennemi
+  setCombatState({
+  ...combatState,
+  enemy: { ...combatState.enemy!, pv: newEnemyPv },
+  playerPv: newPlayerPv,
+  playerMana: combatState.playerMana - result.manaUsed,
+  log: newLog,
+  turn: "enemy",
+  status: newStatus,
+  enemyStatus: newEnemyStatus,
+  cooldowns: result.newCooldowns ?? combatState.cooldowns,
+  });
  };
 
  const handleCombatEnd = async () => {
@@ -409,37 +407,49 @@ function AdventureReader({ params }: Props) {
  if (!combatState || !character || !combatState.enemy) return;
  if (combatState.turn !== "enemy" || combatState.won || combatState.fled) return;
  
- const timer = setTimeout(() => {
- // Vérifier si l'ennemi est étourdi
- if (combatState.enemyStatus.includes("stunned")) {
- const newStatus = updateEnemyStatus(combatState.enemyStatus);
- setCombatState(prev => prev ? {
- ...prev,
- log: [...prev.log, `${prev.enemy?.name} est étourdi et passe son tour!`],
- turn: "player",
- enemyStatus: newStatus,
- playerMana: Math.min(prev.playerManaMax, prev.playerMana + 10),
- status: updateCombatStatus(prev.status),
- } : null);
- return;
- }
+  const timer = setTimeout(() => {
+  // Appliquer les dégats du poison (même si étourdi)
+  if (!combatState.enemy) return;
+  let currentEnemyPv = combatState.enemy.pv;
+  let currentPlayerPv = combatState.playerPv;
+  const logMessages: string[] = [];
+  
+  if (combatState.enemyStatus.includes("poison")) {
+  const poisonResult = applyPoisonDamage(combatState.enemy);
+  currentEnemyPv = Math.max(0, currentEnemyPv - poisonResult.dmg);
+  logMessages.push(poisonResult.log);
+  
+  // Vérifier si l'ennemi meurt du poison
+  if (currentEnemyPv <= 0) {
+  setCombatState(prev => prev ? {
+  ...prev,
+  enemy: { ...prev.enemy!, pv: 0 },
+  log: [...prev.log, ...logMessages],
+  won: true,
+  cooldowns: updateCooldowns(prev.cooldowns),
+  } : null);
+  return;
+  }
+  }
+  
+  // Vérifier si l'ennemi est étourdi (après poison)
+  if (combatState.enemyStatus.includes("stunned")) {
+  const newStatus = updateEnemyStatus(combatState.enemyStatus);
+  setCombatState(prev => prev ? {
+  ...prev,
+  log: [...prev.log, `${prev.enemy?.name} est étourdi et passe son tour!`],
+  turn: "player",
+  enemyStatus: newStatus,
+  playerMana: Math.min(prev.playerManaMax, prev.playerMana + MANA_REGEN_PER_TURN),
+  status: updateCombatStatus(prev.status),
+  cooldowns: updateCooldowns(prev.cooldowns),
+  } : null);
+  return;
+  }
 
- // Appliquer les dégats du poison
- if (!combatState.enemy) return;
- let currentEnemyPv = combatState.enemy.pv;
- let currentPlayerPv = combatState.playerPv;
- const logMessages: string[] = [];
- 
- if (combatState.enemyStatus.includes("poison")) {
- const poisonResult = applyPoisonDamage(combatState.enemy);
- currentEnemyPv = Math.max(0, currentEnemyPv - poisonResult.dmg);
- logMessages.push(poisonResult.log);
- }
-
-  // Attaque de l'ennemi
-  const hasThorns = combatState.status.buff_defense > 0;
-  const result = enemyAttack(combatState.enemy, combatState.status, hasThorns, character.stats?.agility ?? 0);
-  const finalDmg = Math.max(1, result.dmg - (combatState.status.buff_defense > 0 ? Math.floor(result.dmg * 0.3) : 0));
+   // Attaque de l'ennemi
+   const result = enemyAttack(combatState.enemy, combatState.status, character.stats?.agility ?? 0);
+   const finalDmg = Math.max(1, result.dmg);
  currentPlayerPv = Math.max(0, currentPlayerPv - finalDmg);
  logMessages.push(result.log);
 
@@ -449,27 +459,29 @@ function AdventureReader({ params }: Props) {
  }
 
  // Vérifier si le joueur est mort
- if (currentPlayerPv <= 0) {
- setCombatState(prev => prev ? {
- ...prev,
- playerPv: 0,
- log: [...prev.log, ...logMessages, "Tu as été vaincu!"],
- won: false,
- } : null);
- return;
- }
+  if (currentPlayerPv <= 0) {
+  setCombatState(prev => prev ? {
+  ...prev,
+  playerPv: 0,
+  log: [...prev.log, ...logMessages, "Tu as été vaincu!"],
+  won: false,
+  cooldowns: updateCooldowns(prev.cooldowns),
+  } : null);
+  return;
+  }
 
- // Passer au tour du joueur avec régénération de mana et mise à jour des statuts
- setCombatState(prev => prev ? {
- ...prev,
- enemy: { ...prev.enemy!, pv: currentEnemyPv },
- playerPv: currentPlayerPv,
- log: [...prev.log, ...logMessages],
- turn: "player",
- playerMana: Math.min(prev.playerManaMax, prev.playerMana + 10),
- status: updateCombatStatus(prev.status),
- enemyStatus: updateEnemyStatus(prev.enemyStatus),
- } : null);
+  // Passer au tour du joueur avec régénération de mana et mise à jour des statuts
+  setCombatState(prev => prev ? {
+  ...prev,
+  enemy: { ...prev.enemy!, pv: currentEnemyPv },
+  playerPv: currentPlayerPv,
+  log: [...prev.log, ...logMessages],
+  turn: "player",
+  playerMana: Math.min(prev.playerManaMax, prev.playerMana + MANA_REGEN_PER_TURN),
+  status: updateCombatStatus(prev.status),
+  enemyStatus: updateEnemyStatus(prev.enemyStatus),
+  cooldowns: updateCooldowns(prev.cooldowns),
+  } : null);
  }, 1000);
 
  return () => clearTimeout(timer);
@@ -1077,13 +1089,17 @@ function AdventureReader({ params }: Props) {
  <div className="mt-4">
  <div className="text-purple-400 text-sm font-semibold mb-2">Compétences</div>
  <div className="grid grid-cols-1 gap-2">
- {getAbilitiesForClass(character?.classe || "guerrier").map((ability) => (
- <button
- key={ability.id}
- onClick={() => handleCombatAbility(ability)}
- disabled={combatState.turn !== "player" || combatState.playerMana < ability.manaCost}
- className={`py-2 px-3 rounded-lg text-left transition-all ${
- combatState.playerMana < ability.manaCost
+  {getAbilitiesForClass(character?.classe || "guerrier").map((ability) => {
+  const inCooldown = (combatState.cooldowns[ability.id] || 0) > 0;
+  return (
+  <button
+  key={ability.id}
+  onClick={() => handleCombatAbility(ability)}
+  disabled={combatState.turn !== "player" || inCooldown || combatState.playerMana < ability.manaCost}
+  className={`py-2 px-3 rounded-lg text-left transition-all ${
+  inCooldown
+  ? "bg-gray-800/50 border border-gray-700 text-gray-500 cursor-not-allowed"
+  : combatState.playerMana < ability.manaCost
  ? "bg-gray-800/50 border border-gray-700 text-gray-500 cursor-not-allowed"
  : ability.type === "attack"
  ? "bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20"
@@ -1096,12 +1112,13 @@ function AdventureReader({ params }: Props) {
  <span className="font-medium">{ability.name}</span>
  <span className="text-xs">{ability.manaCost} Mana</span>
  </div>
- <div className="text-xs text-gray-400 mt-1">{ability.description}</div>
- </button>
- ))}
- </div>
- </div>
- )}
+  <div className="text-xs text-gray-400 mt-1">{ability.description}</div>
+  </button>
+  );
+  })}
+  </div>
+  </div>
+  )}
 
  <div className="bg-[#070b15] rounded-lg p-3 h-32 overflow-y-auto ">
  <div className="space-y-1">

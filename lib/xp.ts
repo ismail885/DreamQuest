@@ -14,16 +14,18 @@ export interface LevelUpResult {
  * Calcule le niveau à partir de l'XP totale cumulée.
  * Utilise la formule exponentielle: 100 * 1.5^(level-1) par niveau.
  */
+export const MAX_LEVEL = 100;
+
 export function calculateLevel(totalXp: number): number {
- let level = 1
- let cumulativeXp = 0
- while (true) {
- const xpForNext = calculateRequiredXP(level)
- if (cumulativeXp + xpForNext > totalXp) break
- cumulativeXp += xpForNext
- level++
- }
- return level
+  let level = 1
+  let cumulativeXp = 0
+  while (level < MAX_LEVEL) {
+  const xpForNext = calculateRequiredXP(level)
+  if (cumulativeXp + xpForNext > totalXp) break
+  cumulativeXp += xpForNext
+  level++
+  }
+  return level
 }
 
 /**

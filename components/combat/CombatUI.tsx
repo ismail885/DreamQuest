@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { CombatState } from "@/lib/combat";
-import { playerAttack, enemyAttack, createCombatState, applyPoisonDamage, updateEnemyStatus, updateCombatStatus, regenerateMana, useAbility, getAbilitiesForClass } from "@/lib/combat";
+import { playerAttack, enemyAttack, playerDefense, createCombatState, applyPoisonDamage, updateEnemyStatus, updateCombatStatus, updateCooldowns, regenerateMana, executeAbility, getAbilitiesForClass } from "@/lib/combat";
 
 interface CombatUIProps {
   playerStats: { force: number; agility: number; magie: number; endurance: number };
@@ -52,6 +52,7 @@ export default function CombatUI({
             enemy: { ...c.enemy!, pv: 0 },
             log: newLog,
             won: true,
+            cooldowns: updateCooldowns(c.cooldowns),
           };
         }
 
@@ -61,8 +62,7 @@ export default function CombatUI({
         let playerPv = c.playerPv;
         if (!isStunned) {
           // Attaque ennemie
-          const hasThorns = c.status.buff_defense > 0;
-          const attack = enemyAttack(c.enemy!, c.status, hasThorns, playerStats.agility);
+          const attack = enemyAttack(c.enemy!, c.status, playerStats.agility);
           playerPv = Math.max(0, c.playerPv - attack.dmg);
           newLog.push(attack.log);
         } else {
@@ -93,6 +93,7 @@ export default function CombatUI({
             turn: "player",
             status: newPlayerStatus,
             enemyStatus,
+            cooldowns: updateCooldowns(c.cooldowns),
           };
         }
 
@@ -105,6 +106,7 @@ export default function CombatUI({
           turn: "player",
           status: newPlayerStatus,
           enemyStatus,
+          cooldowns: updateCooldowns(c.cooldowns),
         };
       });
     }, 800);
@@ -112,17 +114,18 @@ export default function CombatUI({
     return () => clearTimeout(timeout);
   }, [combat.turn, combat.won, combat.fled, defending, onPlayerHpChange]);
 
-  const useAbilityAction = useCallback((abilityId: string) => {
+  const handleAbility = useCallback((abilityId: string) => {
   if (combat.turn !== "player" || combat.won || combat.lost) return;
 
-  const result = useAbility(
+  const result = executeAbility(
     abilityId,
     characterClass,
     playerStats,
     combat.enemy!,
     combat.status,
     combat.playerPv,
-    combat.playerMana
+    combat.playerMana,
+    combat.cooldowns
   );
 
   if (!result.success) {
@@ -163,6 +166,7 @@ export default function CombatUI({
         won: true,
         status: newStatus,
         enemyStatus: newEnemyStatus,
+        cooldowns: result.newCooldowns ?? c.cooldowns,
       };
     }
 
@@ -175,6 +179,7 @@ export default function CombatUI({
       turn: "enemy",
       status: newStatus,
       enemyStatus: newEnemyStatus,
+      cooldowns: result.newCooldowns ?? c.cooldowns,
     };
   });
   }, [combat, characterClass, playerStats, onWin]);
@@ -204,7 +209,7 @@ export default function CombatUI({
 
   const defendAction = useCallback(() => {
   if (defending || combat.turn !== "player") return;
-  const reduction = defending ? 0 : Math.floor((playerStats.agility + playerStats.endurance) / 4);
+  const { reduction } = defending ? { reduction: 0 } : playerDefense(playerStats, combat.status);
   setDefending(true);
   setTimeout(() => {
   setCombat((c) => {
@@ -221,8 +226,7 @@ export default function CombatUI({
   }
 
   // Attaque ennemie (réduite par la défense)
-  const hasThorns = c.status.buff_defense > 0;
-  const result = enemyAttack(c.enemy!, c.status, hasThorns, playerStats.agility);
+  const result = enemyAttack(c.enemy!, c.status, playerStats.agility);
   const dmg = result.dodged ? 0 : Math.max(1, result.dmg - reduction);
   const newPlayerPv = Math.max(0, c.playerPv - dmg);
   if (result.dodged) {
@@ -240,6 +244,7 @@ export default function CombatUI({
   playerPv: newPlayerPv,
   log: newLog,
   won: true,
+  cooldowns: updateCooldowns(c.cooldowns),
   };
   }
 
@@ -255,6 +260,7 @@ export default function CombatUI({
   won: false,
   lost: true,
   turn: "player",
+  cooldowns: updateCooldowns(c.cooldowns),
   };
   }
 
@@ -275,6 +281,7 @@ export default function CombatUI({
   turn: "player",
   status: newPlayerStatus,
   enemyStatus,
+  cooldowns: updateCooldowns(c.cooldowns),
   };
   });
   setDefending(false);
@@ -300,8 +307,7 @@ export default function CombatUI({
   newLog.push(poison.log);
   }
 
-  const hasThorns = c.status.buff_defense > 0;
-  const result = enemyAttack(c.enemy!, c.status, hasThorns, playerStats.agility);
+  const result = enemyAttack(c.enemy!, c.status, playerStats.agility);
   const newPlayerPv = Math.max(0, c.playerPv - result.dmg);
   newLog.push(result.log, result.dodged ? "Fuite échouée mais tu esquives!" : "Fuite échouée!");
 
@@ -314,6 +320,7 @@ export default function CombatUI({
   playerPv: newPlayerPv,
   log: newLog,
   won: true,
+  cooldowns: updateCooldowns(c.cooldowns),
   };
   }
 
@@ -328,6 +335,7 @@ export default function CombatUI({
   won: false,
   lost: true,
   turn: "player",
+  cooldowns: updateCooldowns(c.cooldowns),
   };
   }
 
@@ -347,6 +355,7 @@ export default function CombatUI({
   turn: "player",
   status: newPlayerStatus,
   enemyStatus,
+  cooldowns: updateCooldowns(c.cooldowns),
   };
   });
   }
@@ -435,7 +444,7 @@ export default function CombatUI({
   return (
   <button
   key={ability.id}
-  onClick={() => useAbilityAction(ability.id)}
+  onClick={() => handleAbility(ability.id)}
   disabled={combat.turn !== "player" || combat.won || combat.lost || inCooldown || !enoughMana}
   className={`py-2 px-3 rounded-lg border text-sm transition-all ${
   inCooldown

@@ -19,6 +19,7 @@ interface UserStatsInput {
   storiesCreated: number;
   totalLikes: number;
   level: number;
+  lastPlayedAt?: string;
 }
 
 // Liste des achievements disponibles (utilise les noms des icônes Lucide)
@@ -51,7 +52,7 @@ export const ACHIEVEMENTS_CONFIG: Array<{
   { id: 'level_10', title: 'Expert', description: 'Atteignez le niveau 10', icon: 'Zap', condition: (stats) => stats.level >= 10 },
   
   // DIVERS
-  { id: 'night_owl', title: 'Noctambule', description: 'Jouez pendant la nuit', icon: 'Moon', condition: () => { const h = new Date().getHours(); return h >= 22 || h < 6; } },
+  { id: 'night_owl', title: 'Noctambule', description: 'Jouez pendant la nuit', icon: 'Moon', condition: (stats) => { if (!stats.lastPlayedAt) return false; const h = new Date(stats.lastPlayedAt).getHours(); return h >= 22 || h < 6; } },
   { id: 'explorer', title: 'Explorateur', description: 'Jouez à 5 aventures différentes', icon: 'Compass', condition: (stats) => stats.storiesPlayed >= 5 },
 ];
 
@@ -62,6 +63,7 @@ export function calculateAchievements(userStats: UserStatsInput): UserAchievemen
     description: config.description,
     icon: config.icon,
     unlocked: config.condition(userStats),
+    unlockedAt: config.condition(userStats) ? new Date().toISOString() : undefined,
   }));
 
   const totalUnlocked = achievements.filter(a => a.unlocked).length;

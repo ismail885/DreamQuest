@@ -119,6 +119,7 @@ export interface PlayerStatus {
   buff_agility: number;
   buff_defense: number;
   regen: number;
+  thorns: number;
 }
 
 const ENEMIES: Enemy[] = [
@@ -142,8 +143,8 @@ export function getEnemyById(id: string): Enemy | undefined {
   return ENEMIES.find(e => e.id === id);
 }
 
-export function playerAttack(stats: { force: number; agility: number; magie: number }, enemy: Enemy, status: PlayerStatus): { dmg: number; log: string; isCrit: boolean } {
-  const baseDmg = stats.force + Math.floor(stats.agility / 2);
+export function playerAttack(stats: { force: number; agility: number; magie: number; endurance: number }, enemy: Enemy, status: PlayerStatus): { dmg: number; log: string; isCrit: boolean } {
+  const baseDmg = stats.force + Math.floor(stats.agility / 2) + Math.floor(stats.endurance * 0.2);
   const bonusForce = status.buff_force > 0 ? Math.floor(stats.force * BUFF_FORCE_BONUS) : 0;
   const finalDmg = baseDmg + bonusForce;
   
@@ -158,15 +159,16 @@ export function playerAttack(stats: { force: number; agility: number; magie: num
   };
 }
 
-export function useAbility(
+export function executeAbility(
   abilityId: string,
   characterClass: string,
   stats: { force: number; agility: number; magie: number; endurance: number },
   enemy: Enemy,
   currentStatus: PlayerStatus,
   playerPv: number,
-  playerMana: number
-): { success: boolean; damage?: number; heal?: number; newStatus?: PlayerStatus; newEnemyStatus?: StatusEffect[]; log: string; manaUsed: number } {
+  playerMana: number,
+  currentCooldowns: Record<string, number> = {}
+): { success: boolean; damage?: number; heal?: number; newStatus?: PlayerStatus; newEnemyStatus?: StatusEffect[]; log: string; manaUsed: number; newCooldowns?: Record<string, number> } {
   const abilities = ABILITIES[characterClass.toLowerCase()] || ABILITIES["guerrier"];
   const ability = abilities.find(a => a.id === abilityId);
   
@@ -176,6 +178,11 @@ export function useAbility(
   
   if (playerMana < ability.manaCost) {
     return { success: false, log: "Pas assez de mana", manaUsed: 0 };
+  }
+  
+  // Vérifier le cooldown
+  if (ability.cooldown > 0 && (currentCooldowns[abilityId] || 0) > 0) {
+    return { success: false, log: `${ability.name} est en recharge (${currentCooldowns[abilityId]} tours restants)`, manaUsed: 0 };
   }
   
   let damage = 0;
@@ -292,7 +299,7 @@ export function useAbility(
       break;
       
     case "purification":
-      newStatus = { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0 };
+      newStatus = { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0, thorns: 0 };
       heal = Math.floor(stats.magie * 0.5);
       log = `Purification! Tous les effets annulés et +${heal} PV.`;
       break;
@@ -303,7 +310,7 @@ export function useAbility(
       break;
       
     case "épines":
-      newStatus.buff_defense += 2;
+      newStatus.thorns += 2;
       log = "Épines! L'ennemi se blesse en attaquant.";
       break;
       
@@ -348,7 +355,23 @@ export function useAbility(
       log = "Compétence non implémentée.";
   }
   
-  return { success: true, damage, heal, newStatus, newEnemyStatus, log, manaUsed };
+  // Appliquer le cooldown si la compétence en a un
+  const newCooldowns = ability.cooldown > 0
+    ? { ...currentCooldowns, [abilityId]: ability.cooldown }
+    : currentCooldowns;
+
+  return { success: true, damage, heal, newStatus, newEnemyStatus, log, manaUsed, newCooldowns };
+}
+
+export function updateCooldowns(cooldowns: Record<string, number>): Record<string, number> {
+  const updated: Record<string, number> = {};
+  for (const [id, turns] of Object.entries(cooldowns)) {
+    if (turns > 1) {
+      updated[id] = turns - 1;
+    }
+    // Si turns === 1, on laisse tomber la clé (cooldown fini)
+  }
+  return updated;
 }
 
 export function playerDefense(stats: { agility: number; endurance: number }, status: PlayerStatus): { reduction: number; log: string } {
@@ -364,13 +387,14 @@ export function playerDefense(stats: { agility: number; endurance: number }, sta
   };
 }
 
-export function enemyAttack(enemy: Enemy, playerStatus: PlayerStatus, hasThorns: boolean, playerAgility: number = 0): { dmg: number; log: string; dodged: boolean } {
+export function enemyAttack(enemy: Enemy, playerStatus: PlayerStatus, playerAgility: number = 0): { dmg: number; log: string; dodged: boolean } {
   // Chance d'esquive basée sur l'agilité
   let dodgeChance = Math.min(0.5, playerAgility / 100);
   if (playerStatus.buff_agility > 0) {
     dodgeChance = Math.min(0.75, dodgeChance * STEALTH_DODGE_BONUS);
   }
   
+  const hasThorns = playerStatus.thorns > 0;
   if (Math.random() < dodgeChance) {
     // thorns damage back even on dodge (épines réactives)
     const thornsDmg = hasThorns ? Math.floor(enemy.force * THORNS_DAMAGE_RATIO) : 0;
@@ -416,6 +440,7 @@ export function updateCombatStatus(currentStatus: PlayerStatus): PlayerStatus {
     buff_agility: Math.max(0, currentStatus.buff_agility - 1),
     buff_defense: Math.max(0, currentStatus.buff_defense - 1),
     regen: Math.max(0, currentStatus.regen - 1),
+    thorns: Math.max(0, currentStatus.thorns - 1),
   };
 }
 
@@ -442,7 +467,7 @@ export function createCombatState(initialPlayerPv: number, initialMana: number =
     won: false,
     lost: false,
     fled: false,
-    status: { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0 },
+    status: { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0, thorns: 0 },
     enemyStatus: [],
     cooldowns: {},
   };
