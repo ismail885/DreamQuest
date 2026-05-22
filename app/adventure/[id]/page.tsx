@@ -11,7 +11,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
 import { RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
-import { playerAttack, enemyAttack, createCombatState, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, type CombatState, type CombatAbility } from "@/lib/combat";
+import { playerAttack, enemyAttack, createCombatState, useAbility as executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateEnemyStatus, MANA_REGEN_PER_TURN, type CombatState, type CombatAbility } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
 import { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
@@ -227,19 +227,21 @@ function AdventureReader({ params }: Props) {
  
  const reduction = Math.floor((playerStats.agility + (character.stats?.endurance || 0)) / 4);
  const hasThorns = combatState.status.buff_defense > 0;
- const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns);
- const dmg = Math.max(1, result.dmg - reduction);
+  const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns, playerStats.agility);
+  const dmg = Math.max(1, result.dmg - reduction);
  const newPlayerPv = Math.max(0, combatState.playerPv - dmg);
  const newLog = [...combatState.log, result.log, `Tu pare! -${reduction} dégats.`];
  
- setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
- setCombatState({
- ...combatState,
- playerPv: newPlayerPv,
- log: newLog,
- turn: "player",
- });
- };
+  setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
+  setCombatState({
+  ...combatState,
+  playerPv: newPlayerPv,
+  log: newLog,
+  turn: "player",
+  status: updateCombatStatus(combatState.status),
+  playerMana: Math.min(combatState.playerManaMax, combatState.playerMana + MANA_REGEN_PER_TURN),
+  });
+  };
 
  const handleCombatFlee = () => {
  if (!combatState || !character) return;
@@ -255,14 +257,14 @@ function AdventureReader({ params }: Props) {
  if (success) {
  setCombatState({ ...combatState, fled: true, log: [...combatState.log, "Tu fuis le combat!"] });
  } else {
- const hasThorns = combatState.status.buff_defense > 0;
- const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns);
- const newPlayerPv = Math.max(0, combatState.playerPv - result.dmg);
- setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
- setCombatState({
- ...combatState,
- playerPv: newPlayerPv,
- log: [...combatState.log, result.log, "Fuite échouée!"],
+  const hasThorns = combatState.status.buff_defense > 0;
+  const result = enemyAttack(combatState.enemy!, combatState.status, hasThorns, playerStats.agility);
+  const newPlayerPv = Math.max(0, combatState.playerPv - result.dmg);
+  setCharacter(prev => prev ? { ...prev, points_vie: newPlayerPv } : null);
+  setCombatState({
+  ...combatState,
+  playerPv: newPlayerPv,
+  log: [...combatState.log, result.log, "Fuite échouée!"],
  turn: "player",
  });
  }
@@ -434,10 +436,10 @@ function AdventureReader({ params }: Props) {
  logMessages.push(poisonResult.log);
  }
 
- // Attaque de l'ennemi
- const hasThorns = combatState.status.buff_defense > 0;
- const result = enemyAttack(combatState.enemy, combatState.status, hasThorns);
- const finalDmg = Math.max(1, result.dmg - (combatState.status.buff_defense > 0 ? Math.floor(result.dmg * 0.3) : 0));
+  // Attaque de l'ennemi
+  const hasThorns = combatState.status.buff_defense > 0;
+  const result = enemyAttack(combatState.enemy, combatState.status, hasThorns, character.stats?.agility ?? 0);
+  const finalDmg = Math.max(1, result.dmg - (combatState.status.buff_defense > 0 ? Math.floor(result.dmg * 0.3) : 0));
  currentPlayerPv = Math.max(0, currentPlayerPv - finalDmg);
  logMessages.push(result.log);
 
