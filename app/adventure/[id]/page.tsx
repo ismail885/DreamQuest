@@ -10,7 +10,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import type { Character, ConsequenceEffect } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
-import { RANDOM_EVENTS, ABILITIES_POOL, getRandomEvent } from "@/lib/randomGenerator";
+import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomGenerator";
+import { getPoolAbilityNames } from "@/lib/abilities";
 import { playerAttack, enemyAttack, playerDefense, createCombatState, executeAbility, getAbilitiesForClass, applyPoisonDamage, updateCombatStatus, updateCooldowns, updateEnemyStatus, MANA_REGEN_PER_TURN, type CombatState, type CombatAbility } from "@/lib/combat";
 import { motion } from "framer-motion";
 import type { CharacterClass } from "@/types";
@@ -528,13 +529,13 @@ function AdventureReader({ params }: Props) {
  });
  }, [personnageId]);
 
- // Charger les abilities du personnage lors du chargement
- useEffect(() => {
- if (!character?.classe) return;
- const classAbilities = ABILITIES_POOL[character.classe as CharacterClass] || [];
- // Sélectionner les 3 premières abilities comme disponibles
- setAvailableAbilities(classAbilities.slice(0, 3));
- }, [character?.classe]);
+  // Charger les abilities du personnage lors du chargement
+  useEffect(() => {
+    if (!character?.classe) return;
+    const classAbilities = getPoolAbilityNames(character.classe as CharacterClass);
+    // Sélectionner les 3 premières abilities comme disponibles
+    setAvailableAbilities(classAbilities.slice(0, 3));
+  }, [character?.classe]);
 
  // Déclencher un événement aléatoire (15% de chance)
  const lastBranchIdRef = useRef<number | null>(null);

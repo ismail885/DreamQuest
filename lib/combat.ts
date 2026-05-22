@@ -1,19 +1,8 @@
-export interface Enemy {
-  id: string;
-  name: string;
-  description: string;
-  pv: number;
-  pvMax: number;
-  force: number;
-  agility: number;
-  intelligence: number;
-  xpReward: number;
-  loot?: string;
-  status?: StatusEffect[];
-}
+import { getCombatAbilitiesByClass, ALL_ABILITIES } from './abilities';
+import { type Enemy, type StatusEffect, ENEMIES } from '@/data/enemies';
 
-export type StatusEffect = "poison" | "stunned" | "buff_force" | "buff_agility" | "buff_defense" | "regen";
-
+// Ré-exporter pour compatibilité
+export type { Enemy, StatusEffect };
 
 export const CRIT_CHANCE_MAX = 0.5;
 
@@ -44,58 +33,25 @@ export interface CombatAbility {
   cooldown: number;
 }
 
-export const ABILITIES: Record<string, CombatAbility[]> = {
-  guerrier: [
-    { id: "coup_violent", name: "Coup Violent", description: "Attaque puissante qui ignore partiellement la défense", manaCost: 15, type: "attack", cooldown: 0 },
-    { id: "parade", name: "Parade", description: "Réduit les dommages du prochain attack", manaCost: 10, type: "defense", cooldown: 0 },
-    { id: "cri_guerre", name: "Cri de Guerre", description: "Augmente votre force pour 3 tours", manaCost: 20, type: "special", cooldown: 3 },
-  ],
-  mage: [
-    { id: "boule_feu", name: "Boule de Feu", description: "Attaque magique puissante", manaCost: 20, type: "attack", cooldown: 0 },
-    { id: "bouclier_magique", name: "Bouclier Magique", description: "Barrière protectrice pendant 2 tours", manaCost: 15, type: "defense", cooldown: 2 },
-    { id: "glace", name: "Champ de Glace", description: "Ralentit l'ennemi et réduit son agilité", manaCost: 25, type: "special", cooldown: 3 },
-  ],
-  assassin: [
-    { id: "attaque_sournoise", name: "Attaque Sournoise", description: "Coup critique garanti si caché", manaCost: 15, type: "attack", cooldown: 0 },
-    { id: "empoisonnement", name: "Empoisonnement", description: "Empoisonne l'ennemi pour 3 tours", manaCost: 20, type: "special", cooldown: 2 },
-    { id: "cachette", name: "Cachette", description: "Deviens difficile à toucher pendant 2 tours", manaCost: 10, type: "defense", cooldown: 2 },
-  ],
-  nécromancien: [
-    { id: "drain_vie", name: "Drain de Vie", description: "Vole des PV à l'ennemi", manaCost: 15, type: "attack", cooldown: 0 },
-    { id: "invocation_squelette", name: "Invocation", description: "Invoque un squelette qui attaque l'ennemi", manaCost: 30, type: "special", cooldown: 4 },
-    { id: "malédiction", name: "Malédiction", description: "Réduit les stats de l'ennemi", manaCost: 25, type: "special", cooldown: 3 },
-  ],
-  archer: [
-    { id: "tir_precis", name: "Tir Précis", description: "Attaque à distance précise", manaCost: 10, type: "attack", cooldown: 0 },
-    { id: "piege", name: "Piège", description: "Immobilise l'ennemi pendant 1 tour", manaCost: 15, type: "special", cooldown: 2 },
-    { id: "visée", name: "Visée", description: "Augmente les chances de critique", manaCost: 20, type: "special", cooldown: 3 },
-  ],
-  paladin: [
-    { id: "frappe_sainte", name: "Frappe Sainte", description: "Attaque sacrée contre les morts-vivants", manaCost: 20, type: "attack", cooldown: 0 },
-    { id: "bouclier_faith", name: "Bouclier de Foi", description: "Invulnérable pendant 1 tour", manaCost: 25, type: "defense", cooldown: 3 },
-    { id: "bénédiction", name: "Bénédiction", description: "Restaure des PV et augmente la défense", manaCost: 20, type: "special", cooldown: 2 },
-  ],
-  prêtre: [
-    { id: "rayon_lumière", name: "Rayon de Lumière", description: "Attaque sacrée", manaCost: 15, type: "attack", cooldown: 0 },
-    { id: "soin", name: "Soin", description: "Restaure des PV", manaCost: 20, type: "special", cooldown: 0 },
-    { id: "purification", name: "Purification", description: "Soigne tous les effets de statut", manaCost: 15, type: "special", cooldown: 2 },
-  ],
-  druide: [
-    { id: "griffes_nature", name: "Griffes de Nature", description: "Attaque naturelle", manaCost: 10, type: "attack", cooldown: 0 },
-    { id: "épines", name: "Épines", description: "L'ennemi prend des dégâts en attaquant", manaCost: 15, type: "defense", cooldown: 2 },
-    { id: "guérison", name: "Guérison", description: "Restaure des PV et du mana", manaCost: 25, type: "special", cooldown: 3 },
-  ],
-  voleur: [
-    { id: "coup_dague", name: "Coup de Dague", description: "Attaque rapide", manaCost: 10, type: "attack", cooldown: 0 },
-    { id: "fumigène", name: "Fumigène", description: "Fuite garantie", manaCost: 5, type: "special", cooldown: 3 },
-    { id: "jet_de_sable", name: "Jet de Sable", description: "Étourdit l'ennemi", manaCost: 15, type: "special", cooldown: 2 },
-  ],
-  barbare: [
-    { id: "frénésie", name: "Frénésie", description: "Attaque double pour ce tour", manaCost: 20, type: "attack", cooldown: 0 },
-    { id: "rugissement", name: "Rugissement", description: "Terrifie l'ennemi, annule son prochain attack", manaCost: 15, type: "defense", cooldown: 2 },
-    { id: "furia", name: "Furie du Barbare", description: "Multiples attacks pendant 2 tours", manaCost: 30, type: "special", cooldown: 4 },
-  ],
-};
+/** Construire la map combat depuis la source unique */
+function buildCombatAbilitiesMap(): Record<string, CombatAbility[]> {
+  const classes = [...new Set(ALL_ABILITIES.filter(a => a.combat).map(a => a.class))];
+  const map: Record<string, CombatAbility[]> = {};
+  for (const cls of classes) {
+    const lower = cls.toLowerCase();
+    map[lower] = getCombatAbilitiesByClass(cls).map(a => ({
+      id: a.id,
+      name: a.name,
+      description: a.description,
+      manaCost: a.combat!.manaCost,
+      type: a.combat!.combatType,
+      cooldown: a.combat!.cooldown,
+    }));
+  }
+  return map;
+}
+
+export const ABILITIES: Record<string, CombatAbility[]> = buildCombatAbilitiesMap();
 
 export interface CombatState {
   inCombat: boolean;
@@ -121,16 +77,6 @@ export interface PlayerStatus {
   regen: number;
   thorns: number;
 }
-
-const ENEMIES: Enemy[] = [
-  { id: "gobelin", name: "Gobelin", description: "Une petite créature verdâtre", pv: 30, pvMax: 30, force: 8, agility: 10, intelligence: 4, xpReward: 20, loot: "couteau" },
-  { id: "loup", name: "Loup", description: "Un loup affamé", pv: 40, pvMax: 40, force: 12, agility: 14, intelligence: 6, xpReward: 30, loot: "fourrure" },
-  { id: "orc", name: "Orc", description: "Un guerrier orc", pv: 60, pvMax: 60, force: 18, agility: 8, intelligence: 8, xpReward: 50, loot: "hache" },
-  { id: "squelette", name: "Squelette", description: "Un mort-vivant", pv: 35, pvMax: 35, force: 10, agility: 12, intelligence: 2, xpReward: 25, loot: "os" },
-  { id: "sorciere", name: "Sorcière", description: "Une magicienne sombre", pv: 25, pvMax: 25, force: 6, agility: 10, intelligence: 20, xpReward: 40, loot: "potion" },
-  { id: "troll", name: "Troll", description: "Un troll des montagnes", pv: 80, pvMax: 80, force: 22, agility: 4, intelligence: 4, xpReward: 70, loot: "peau" },
-  { id: "dragon", name: "Jeune Dragon", description: "Un dragon affamé", pv: 100, pvMax: 100, force: 25, agility: 12, intelligence: 14, xpReward: 100, loot: "ecaille" },
-];
 
 export function getRandomEnemy(level: number = 1): Enemy {
   const seuil = Math.max(30, level * 40 + 30);
