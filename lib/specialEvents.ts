@@ -26,7 +26,7 @@ const EVENTS: SpecialEvent[] = [
   {
     id: "summer_2026",
     name: "Ete Magique",
-    description: "Les jours rallongent... des nouvelles quetes vous attendent.",
+    description: "Les jours rallongent... des nouvelles quêtes vous attendent.",
     startDate: "2026-06-01",
     endDate: "2026-06-30",
     theme: "default",
@@ -36,7 +36,7 @@ const EVENTS: SpecialEvent[] = [
   {
     id: "halloween_2026",
     name: "Nuit d'Halloween",
-    description: "Les tenebres arrivent...",
+    description: "Les ténèbres arrivent...",
     startDate: "2026-10-25",
     endDate: "2026-11-01",
     theme: "halloween",

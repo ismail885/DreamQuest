@@ -11,7 +11,7 @@ export interface LevelUpResult {
 }
 
 /**
- * Calcule le niveau a partir de l'XP totale cumulee.
+ * Calcule le niveau à partir de l'XP totale cumulée.
  * Utilise la formule exponentielle: 100 * 1.5^(level-1) par niveau.
  */
 export function calculateLevel(totalXp: number): number {
@@ -27,7 +27,7 @@ export function calculateLevel(totalXp: number): number {
 }
 
 /**
- * Applique le gain d'XP a un personnage et gere la montee de niveau.
+ * Applique le gain d'XP à un personnage et gère la montée de niveau.
  */
 export function applyXpGain(
  currentLevel: number,
@@ -91,7 +91,7 @@ export async function saveCharacterProgress(
 }
 
 /**
- * Met a jour l'XP du user (10% de l'XP du personnage).
+ * Met à jour l'XP du user avec l'XP gagnée par le personnage.
  */
 export async function updateUserXp(
  userId: number | undefined,

@@ -249,7 +249,7 @@ Nom d&apos;aventurier
 
  {/* Lien connexion */}
  <p className="text-center text-sm text-gray-400 mt-4">
- Deja un compte ?{" "}
+ Déjà un compte ?{" "}
  <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
  Se connecter
  </Link>

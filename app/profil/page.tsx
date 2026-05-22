@@ -292,10 +292,12 @@ export default function ProfilPage() {
  return username.substring(0, 2).toUpperCase();
  };
 
- const currentLevel = userProfile?.niveau || 1;
- const currentExperience = userProfile?.experience || 0;
- const maxExperience = currentLevel * 1000; // 1000 XP par niveau
- const experiencePercentage = maxExperience > 0 ? (currentExperience / maxExperience) * 100 : 0;
+  const currentLevel = userProfile?.niveau || 1;
+  const currentExperience = userProfile?.experience || 0;
+  const xpAtLevelStart = currentLevel > 1 ? getTotalXPForLevel(currentLevel) : 0;
+  const xpInCurrentLevel = Math.max(0, currentExperience - xpAtLevelStart);
+  const xpForNextLevel = calculateRequiredXP(currentLevel);
+  const experiencePercentage = xpForNextLevel > 0 ? Math.min(100, (xpInCurrentLevel / xpForNextLevel) * 100) : 0;
 
  const openEditModal = () => {
  setEditUsername(userProfile?.nom_utilisateur || "");
@@ -360,12 +362,12 @@ export default function ProfilPage() {
  .eq("id", user.id);
 
  if (updateError) {
- // Si l'email est deja utilise par un autre user
- if (updateError.code === "23505" || updateError.message?.includes("duplicate") || updateError.message?.includes("unique")) {
- setSaveMessage({ type: "error", text: "Cet email est deja utilise par un autre compte." });
- } else {
- setSaveMessage({ type: "error", text: "Erreur lors de la mise a jour du profil." });
- }
+ // Si l'email est déjà utilisé par un autre utilisateur
+      if (updateError.code === "23505" || updateError.message?.includes("duplicate") || updateError.message?.includes("unique")) {
+      setSaveMessage({ type: "error", text: "Cet email est déjà utilisé par un autre compte." });
+      } else {
+      setSaveMessage({ type: "error", text: "Erreur lors de la mise à jour du profil." });
+      }
  setIsSaving(false);
  return;
  }
@@ -376,7 +378,7 @@ export default function ProfilPage() {
  email: editEmail,
  } : null);
 
- setSaveMessage({ type: "success", text: "Profil mis a jour avec succes !" });
+  setSaveMessage({ type: "success", text: "Profil mis à jour avec succès !" });
  updateUser({ username: editUsername, email: editEmail });
  
  setTimeout(() => {
@@ -385,7 +387,7 @@ export default function ProfilPage() {
 
  } catch (error) {
  console.error("Erreur lors de la sauvegarde:", error);
- setSaveMessage({ type: "error", text: "Erreur lors de la mise a jour du profil." });
+ setSaveMessage({ type: "error", text: "Erreur lors de la mise à jour du profil." });
  } finally {
  setIsSaving(false);
  }
@@ -462,7 +464,7 @@ export default function ProfilPage() {
  <div className="mb-6">
  <div className="flex justify-between text-sm mb-2">
  <span className="text-gray-400 ">Expérience</span>
- <span className="text-red-400 font-semibold">{currentExperience.toLocaleString()} / {maxExperience.toLocaleString()}</span>
+  <span className="text-red-400 font-semibold">{Math.floor(xpInCurrentLevel).toLocaleString()} / {xpForNextLevel.toLocaleString()} XP</span>
  </div>
  <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
  <div 
@@ -544,7 +546,7 @@ export default function ProfilPage() {
  : "text-gray-400 hover:text-white hover:bg-gray-700/20"
  }`}
  >
- RÃ©alisations
+ Réalisations
  </button>
  <button
  onClick={() => setActiveTab("creations")}
@@ -554,7 +556,7 @@ export default function ProfilPage() {
  : "text-gray-400 hover:text-white hover:bg-gray-700/20"
  }`}
  >
- Mes CrÃ©ations
+ Mes Créations
  </button>
  <button
  onClick={() => setActiveTab("quests")}

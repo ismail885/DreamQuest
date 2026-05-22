@@ -42,7 +42,7 @@ function mapDbQuestToDailyQuest(dbRow: { quest_id: string; progression: number; 
 export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
   const today = getDateKey();
 
-  // Charger les quetes du jour depuis la BDD
+  // Charger les quêtes du jour depuis la BDD
   const { data: dbQuests } = await supabase
     .from("quete_quotidienne")
     .select("*")
@@ -57,7 +57,7 @@ export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
     return { quests, lastReset: today };
   }
 
-  // Pas de quetes aujourd'hui → en generer 3 aleatoires
+  // Pas de quêtes aujourd'hui → en générer 3 aléatoires
   const randomQuests = [...QUEST_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
   
   // Insérer en BDD
@@ -94,7 +94,7 @@ export async function updateQuestProgress(userId: number, questId: string, amoun
     .maybeSingle();
 
   if (!existing || existing.complet) {
-    // Si deja complete ou inexistante, retourner l'etat actuel
+    // Si déjà complétée ou inexistante, retourner l'état actuel
     return getDailyQuests(userId);
   }
 

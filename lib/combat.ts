@@ -14,6 +14,27 @@ export interface Enemy {
 
 export type StatusEffect = "poison" | "stunned" | "buff_force" | "buff_agility" | "buff_defense" | "regen";
 
+
+export const CRIT_CHANCE_MAX = 0.5;
+
+export const CRIT_BONUS = 0.5;
+
+export const BUFF_FORCE_BONUS = 0.3;
+
+export const DEFENSE_BUFF_REDUCTION = 0.5;
+
+export const PLAYER_SHIELD_ENEMY_REDUCTION = 0.3;
+
+export const MANA_REGEN_PER_TURN = 10;
+
+export const POISON_DAMAGE_RATIO = 0.1;
+
+export const THORNS_DAMAGE_RATIO = 0.2;
+
+export const DEFENSE_DIVISOR = 4;
+
+export const STEALTH_DODGE_BONUS = 1.5;
+
 export interface CombatAbility {
   id: string;
   name: string;
@@ -61,7 +82,7 @@ export const ABILITIES: Record<string, CombatAbility[]> = {
   ],
   druide: [
     { id: "griffes_nature", name: "Griffes de Nature", description: "Attaque naturelle", manaCost: 10, type: "attack", cooldown: 0 },
-    { id: "épines", name: "Épines", description: "L'ennemi prend des dégats en attackant", manaCost: 15, type: "defense", cooldown: 2 },
+    { id: "épines", name: "Épines", description: "L'ennemi prend des dégâts en attaquant", manaCost: 15, type: "defense", cooldown: 2 },
     { id: "guérison", name: "Guérison", description: "Restaure des PV et du mana", manaCost: 25, type: "special", cooldown: 3 },
   ],
   voleur: [
@@ -86,6 +107,7 @@ export interface CombatState {
   turn: "player" | "enemy";
   log: string[];
   won: boolean;
+  lost: boolean;
   fled: boolean;
   status: PlayerStatus;
   enemyStatus: StatusEffect[];
@@ -122,16 +144,16 @@ export function getEnemyById(id: string): Enemy | undefined {
 
 export function playerAttack(stats: { force: number; agility: number; magie: number }, enemy: Enemy, status: PlayerStatus): { dmg: number; log: string; isCrit: boolean } {
   const baseDmg = stats.force + Math.floor(stats.agility / 2);
-  const bonusForce = status.buff_force > 0 ? Math.floor(stats.force * 0.3) : 0;
+  const bonusForce = status.buff_force > 0 ? Math.floor(stats.force * BUFF_FORCE_BONUS) : 0;
   const finalDmg = baseDmg + bonusForce;
   
-  const critChance = Math.min(0.5, stats.agility / 100);
+  const critChance = Math.min(CRIT_CHANCE_MAX, stats.agility / 100);
   const isCrit = Math.random() < critChance;
-  const dmg = Math.max(1, finalDmg + (isCrit ? Math.floor(finalDmg * 0.5) : 0));
+  const dmg = Math.max(1, finalDmg + (isCrit ? Math.floor(finalDmg * CRIT_BONUS) : 0));
   
   return {
     dmg,
-    log: isCrit ? `Coup critique! Tu infliges ${dmg} dégats!` : `Tu frappes pour ${dmg} dégats.`,
+    log: isCrit ? `Coup critique! Tu infliges ${dmg} dégâts!` : `Tu frappes pour ${dmg} dégâts.`,
     isCrit,
   };
 }
@@ -166,26 +188,26 @@ export function useAbility(
   switch (abilityId) {
     case "coup_violent":
       damage = Math.floor(stats.force * 1.5);
-      log = `Coup Violent! ${damage} dégats!`;
+      log = `Coup Violent! ${damage} dégâts!`;
       break;
       
     case "parade":
-      newStatus.buff_defense = 2;
-      log = "Parade! Réduction des dégats pour 2 tours.";
+      newStatus.buff_defense += 2;
+      log = "Parade! Réduction des dégâts pour 2 tours.";
       break;
       
     case "cri_guerre":
-      newStatus.buff_force = 3;
+      newStatus.buff_force += 3;
       log = "Cri de Guerre! Force augmentée pour 3 tours!";
       break;
       
     case "boule_feu":
       damage = Math.floor(stats.magie * 2);
-      log = `Boule de Feu! ${damage} dégats magiques!`;
+      log = `Boule de Feu! ${damage} dégâts magiques!`;
       break;
       
     case "bouclier_magique":
-      newStatus.buff_defense = 2;
+      newStatus.buff_defense += 2;
       log = "Bouclier Magique! Protégé pendant 2 tours.";
       break;
       
@@ -197,7 +219,7 @@ export function useAbility(
     case "attaque_sournoise":
       const sneakBonus = currentStatus.buff_agility > 0 ? 1.5 : 1;
       damage = Math.floor(stats.agility * sneakBonus * 1.2);
-      log = `Attaque Sournoise! ${damage} dégats!`;
+      log = `Attaque Sournoise! ${damage} dégâts!`;
       break;
       
     case "empoisonnement":
@@ -206,20 +228,20 @@ export function useAbility(
       break;
       
     case "cachette":
-      newStatus.buff_agility = 2;
+      newStatus.buff_agility += 2;
       log = "Cachette! Plus difficile à toucher pendant 2 tours.";
       break;
       
     case "drain_vie":
       damage = Math.floor(stats.magie * 1.2);
       heal = Math.floor(damage / 2);
-      log = `Drain de Vie! ${damage} dégats et +${heal} PV!`;
+      log = `Drain de Vie! ${damage} dégâts et +${heal} PV!`;
       break;
       
     case "invocation_squelette":
       damage = Math.floor(stats.magie * 0.8);
       heal = Math.floor(stats.magie * 0.5);
-      log = `Invocation! Squelette inflige ${damage} dégats et te soigne de ${heal} PV.`;
+      log = `Invocation! Squelette inflige ${damage} dégâts et te soigne de ${heal} PV.`;
       break;
       
     case "malédiction":
@@ -229,7 +251,7 @@ export function useAbility(
       
     case "tir_precis":
       damage = Math.floor(stats.agility * 1.3);
-      log = `Tir Précis! ${damage} dégats!`;
+      log = `Tir Précis! ${damage} dégâts!`;
       break;
       
     case "piege":
@@ -238,30 +260,30 @@ export function useAbility(
       break;
       
     case "visée":
-      newStatus.buff_agility = 2;
+      newStatus.buff_agility += 2;
       log = "Visée! Chances de critique augmentées!";
       break;
       
     case "frappe_sainte":
       const isUndead = enemy.id === "squelette" || enemy.id === "nécromancien";
       damage = isUndead ? Math.floor(stats.magie * 2.5) : Math.floor(stats.magie * 1.2);
-      log = isUndead ? `Frappe Sainte! SUPER EFFICACE! ${damage} dégats!` : `Frappe Sainte! ${damage} dégats!`;
+      log = isUndead ? `Frappe Sainte! SUPER EFFICACE! ${damage} dégâts!` : `Frappe Sainte! ${damage} dégâts!`;
       break;
       
     case "bouclier_faith":
-      newStatus.buff_defense = 3;
+      newStatus.buff_defense += 3;
       log = "Bouclier de Foi! Invulnérable ce tour!";
       break;
       
     case "bénédiction":
       heal = Math.floor(stats.magie * 1.5);
-      newStatus.buff_defense = 2;
+      newStatus.buff_defense += 2;
       log = `Bénédiction! +${heal} PV et défense augmentée!`;
       break;
       
     case "rayon_lumière":
       damage = Math.floor(stats.magie * 1.4);
-      log = `Rayon de Lumière! ${damage} dégats!`;
+      log = `Rayon de Lumière! ${damage} dégâts!`;
       break;
       
     case "soin":
@@ -277,12 +299,12 @@ export function useAbility(
       
     case "griffes_nature":
       damage = Math.floor(stats.force * 1.2 + stats.agility * 0.5);
-      log = `Griffes de Nature! ${damage} dégats!`;
+      log = `Griffes de Nature! ${damage} dégâts!`;
       break;
       
     case "épines":
-      newStatus.buff_defense = 2;
-      log = "Épines! L'ennemi se blesse en attackant.";
+      newStatus.buff_defense += 2;
+      log = "Épines! L'ennemi se blesse en attaquant.";
       break;
       
     case "guérison":
@@ -293,7 +315,7 @@ export function useAbility(
       
     case "coup_dague":
       damage = Math.floor(stats.agility * 1.1);
-      log = `Coup de Dague! ${damage} dégats!`;
+      log = `Coup de Dague! ${damage} dégâts!`;
       break;
       
     case "fumigène":
@@ -308,18 +330,18 @@ export function useAbility(
       const hit1 = Math.floor(stats.force * 0.8);
       const hit2 = Math.floor(stats.force * 0.8);
       damage = hit1 + hit2;
-      log = `Frénésie! Deux coups pour ${damage} dégats!`;
+      log = `Frénésie! Deux coups pour ${damage} dégâts!`;
       break;
       
     case "rugissement":
-      newStatus.buff_defense = 2;
+      newStatus.buff_defense += 2;
       log = "Rugissement! L'ennemi est terrifié!";
       break;
       
     case "furia":
-      newStatus.buff_force = 2;
-      newStatus.buff_agility = 2;
-      log = "Furie du Barbare! Force et Agilité doublées pour 2 tours!";
+      newStatus.buff_force += 2;
+      newStatus.buff_agility += 2;
+      log = "Furie du Barbare! Force et Agilité augmentées pour 2 tours!";
       break;
       
     default:
@@ -330,46 +352,62 @@ export function useAbility(
 }
 
 export function playerDefense(stats: { agility: number; endurance: number }, status: PlayerStatus): { reduction: number; log: string } {
-  const baseReduction = Math.floor((stats.agility + stats.endurance) / 4);
-  const bonusDef = status.buff_defense > 0 ? Math.floor(baseReduction * 0.5) : 0;
+  const baseReduction = Math.floor((stats.agility + stats.endurance) / DEFENSE_DIVISOR);
+  const bonusDef = status.buff_defense > 0 ? Math.floor(baseReduction * DEFENSE_BUFF_REDUCTION) : 0;
   const reduction = baseReduction + bonusDef;
   
   return {
     reduction,
     log: status.buff_defense > 0 
-      ? `Parade parfaite! -${reduction} dégats (bouclier actif).` 
-      : `Tu pare! -${reduction} dégats.`,
+      ? `Parade parfaite! -${reduction} dégâts (bouclier actif).` 
+      : `Tu pare! -${reduction} dégâts.`,
   };
 }
 
-export function enemyAttack(enemy: Enemy, playerStatus: PlayerStatus, hasThorns: boolean): { dmg: number; log: string } {
+export function enemyAttack(enemy: Enemy, playerStatus: PlayerStatus, hasThorns: boolean, playerAgility: number = 0): { dmg: number; log: string; dodged: boolean } {
+  // Chance d'esquive basée sur l'agilité
+  let dodgeChance = Math.min(0.5, playerAgility / 100);
+  if (playerStatus.buff_agility > 0) {
+    dodgeChance = Math.min(0.75, dodgeChance * STEALTH_DODGE_BONUS);
+  }
+  
+  if (Math.random() < dodgeChance) {
+    // thorns damage back even on dodge (épines réactives)
+    const thornsDmg = hasThorns ? Math.floor(enemy.force * THORNS_DAMAGE_RATIO) : 0;
+    let log = `${enemy.name} t'attaque mais tu esquives!`;
+    if (hasThorns) {
+      log += ` L'ennemi subit ${thornsDmg} dégâts d'épines!`;
+    }
+    return { dmg: 0, log, dodged: true };
+  }
+  
   const baseDmg = enemy.force + Math.floor(enemy.agility / 2);
   
   // Apply debuff from player status
   let reduction = 0;
   if (playerStatus.buff_defense > 0) {
-    reduction = Math.floor(baseDmg * 0.3);
+    reduction = Math.floor(baseDmg * PLAYER_SHIELD_ENEMY_REDUCTION);
   }
   
   const dmg = Math.max(1, baseDmg - reduction);
   
   // thorns damage back
-  const thornsDmg = hasThorns ? Math.floor(dmg * 0.2) : 0;
+  const thornsDmg = hasThorns ? Math.floor(dmg * THORNS_DAMAGE_RATIO) : 0;
   
-  let log = `${enemy.name} attaque pour ${dmg} dégats!`;
+  let log = `${enemy.name} attaque pour ${dmg} dégâts!`;
   if (playerStatus.buff_defense > 0) {
     log += ` (Réduit par bouclier)`;
   }
   if (hasThorns) {
-    log += ` L'ennemi subit ${thornsDmg} dégats d'épines!`;
+    log += ` L'ennemi subit ${thornsDmg} dégâts d'épines!`;
   }
   
-  return { dmg, log: log };
+  return { dmg, log, dodged: false };
 }
 
 export function applyPoisonDamage(enemy: Enemy): { dmg: number; log: string } {
-  const dmg = Math.floor(enemy.pvMax * 0.1);
-  return { dmg, log: `Le poison fait ${dmg} dégats!` };
+  const dmg = Math.floor(enemy.pvMax * POISON_DAMAGE_RATIO);
+  return { dmg, log: `Le poison fait ${dmg} dégâts!` };
 }
 
 export function updateCombatStatus(currentStatus: PlayerStatus): PlayerStatus {
@@ -382,11 +420,12 @@ export function updateCombatStatus(currentStatus: PlayerStatus): PlayerStatus {
 }
 
 export function updateEnemyStatus(statuses: StatusEffect[]): StatusEffect[] {
-  return statuses.filter(s => s !== "stunned" && s !== "poison" && s !== "buff_agility");
+  // "stunned" dure 1 tour, "poison" est permanent jusqu'à la fin du combat
+  return statuses.filter(s => s !== "stunned" && s !== "buff_agility");
 }
 
 export function regenerateMana(currentMana: number, maxMana: number): number {
-  return Math.min(maxMana, currentMana + 10);
+  return Math.min(maxMana, currentMana + MANA_REGEN_PER_TURN);
 }
 
 export function createCombatState(initialPlayerPv: number, initialMana: number = 50, level: number = 1): CombatState {
@@ -399,8 +438,9 @@ export function createCombatState(initialPlayerPv: number, initialMana: number =
     playerMana: initialMana,
     playerManaMax: initialMana,
     turn: "player",
-    log: [`Un ${enemy.name} apparait!${enemy.description ? " (" + enemy.description + ")" : ""}`],
+    log: [`Un ${enemy.name} apparaît!${enemy.description ? " (" + enemy.description + ")" : ""}`],
     won: false,
+    lost: false,
     fled: false,
     status: { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0 },
     enemyStatus: [],

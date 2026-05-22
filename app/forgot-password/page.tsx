@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
  return;
  }
 
- setMessage("Mot de passe modifie avec succes !");
+ setMessage("Mot de passe modifié avec succès !");
  setTimeout(() => router.push("/auth/login"), 2000);
  } catch {
  setError("Une erreur est survenue");

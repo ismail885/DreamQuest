@@ -6,7 +6,7 @@ export const ABILITIES_POOL: Record<CharacterClass, string[]> = {
   Guerrier: [
     'Rage', 'Coup Puissant', 'Défense de Fer', 'Cri de Guerre',
     'Coup de Bouclier', 'Force du Taureau', 'Frappe Brutale',
-    'Posture Définitif', 'Charge Héroïque', 'Éventration'
+    'Posture Défensive', 'Charge Héroïque', 'Éventration'
   ],
   Mage: [
     'Boule de Feu', 'Éclair', 'Bouclier Magique', 'Téléportation',
@@ -21,7 +21,7 @@ export const ABILITIES_POOL: Record<CharacterClass, string[]> = {
   Nécromancien: [
     'Drain de Vie', 'Armée de Morts', 'Malédiction', 'Terreur',
     'Sceau des Ombres', 'Résurrection Noir', 'Corruption',
-    'Voile de la Mort', 'Âme Parchée', 'Invocation de Squelette'
+    'Voile de la Mort', 'Âme Parcheminée', 'Invocation de Squelette'
   ],
   Paladin: [
     'Bouclier Sacré', 'Faveur Divine', 'Châtiment', 'Jugement',
@@ -36,12 +36,12 @@ export const ABILITIES_POOL: Record<CharacterClass, string[]> = {
   Archer: [
     'Tir Précis', 'Pluie de Flèches', 'Instinct de Chasseur', 'Tir en Arc',
     'Flèche Empoisonnée', 'Tir Rapide', 'Vision d\'Aigle',
-    'Chasseur Expérimenté', 'Tir Coulissant', 'Coup de Précision'
+    'Chasseur Expérimenté', 'Tir Fusant', 'Coup de Précision'
   ],
   Druide: [
     'Forme Animale', 'Étreinte de la Nature', 'Régénération', 'Métamorphose',
     'Tempête de Feu', 'Croissance Accélérée', 'Lien Spirituel',
-    'Sérénité du Forêt', 'Puissance Primordiale', 'Guérison Totale'
+    'Sérénité de la Forêt', 'Puissance Primordiale', 'Guérison Totale'
   ],
   Voleur: [
     'Coup Silencieux', 'Filouterie', 'Fuite Agile', 'Ombre Fugitive',
@@ -68,33 +68,33 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   10: { endurance: 3 }
 };
 
-// Evenements aleatoires dans les aventures
+// Événements aléatoires dans les aventures
 export const RANDOM_EVENTS = [
   {
     id: 'rencontre',
-    text: 'Vous rencontrez un voyageur solitaire qui vous demande de aide.',
+    text: 'Vous rencontrez un voyageur solitaire qui vous demande de l\'aide.',
     choices: [
       { text: 'Lui parler', consequence: { xp: 20, pv: 0, stat: null } },
-      { text: 'Lignorer', consequence: { xp: 0, pv: 0, stat: null } },
-      { text: 'Lattaquer', consequence: { xp: 10, pv: -15, stat: 'force' } }
+      { text: 'L\'ignorer', consequence: { xp: 0, pv: 0, stat: null } },
+      { text: 'L\'attaquer', consequence: { xp: 10, pv: -15, stat: 'force' } }
     ]
   },
   {
     id: 'tresor',
     text: 'Vous trouvez un coffre ancien!',
     choices: [
-      { text: 'Louvrir prudemment', consequence: { xp: 15, pv: 0, stat: null } },
+      { text: 'L\'ouvrir prudemment', consequence: { xp: 15, pv: 0, stat: null } },
       { text: 'Le forcer', consequence: { xp: 5, pv: -5, stat: 'force' } },
-      { text: 'Lignorer', consequence: { xp: 0, pv: 0, stat: null } }
+      { text: 'L\'ignorer', consequence: { xp: 0, pv: 0, stat: null } }
     ]
   },
   {
     id: 'piege',
-    text: 'Vous tombez dans un piege!',
+    text: 'Vous tombez dans un piège!',
     choices: [
       { text: 'Esquiver', consequence: { xp: 10, pv: -10, stat: 'agility' } },
-      { text: 'Briser les chaines', consequence: { xp: 20, pv: -20, stat: 'force' } },
-      { text: 'Appeler a laide', consequence: { xp: 5, pv: 0, stat: null } }
+      { text: 'Briser les chaînes', consequence: { xp: 20, pv: -20, stat: 'force' } },
+      { text: 'Appeler à l\'aide', consequence: { xp: 5, pv: 0, stat: null } }
     ]
   },
   {
@@ -108,7 +108,7 @@ export const RANDOM_EVENTS = [
   },
   {
     id: 'bestiole',
-    text: 'Une creature mysterieuse apparait!',
+    text: 'Une créature mystérieuse apparaît!',
     choices: [
       { text: 'Combattre', consequence: { xp: 30, pv: -15, stat: 'force' } },
       { text: 'Fuir', consequence: { xp: 5, pv: 0, stat: 'agility' } },
@@ -117,7 +117,7 @@ export const RANDOM_EVENTS = [
   }
 ];
 
-// Fonction principale de generation aleatoire
+// Fonction principale de génération aléatoire
 export function generateRandomStats(classe: CharacterClass): CharacterStats {
   const classInfo = CHARACTER_CLASSES[classe] as ClassInfo | undefined;
   const base = classInfo?.baseStats ?? { force: 5, agility: 5, magie: 5, endurance: 5 };
