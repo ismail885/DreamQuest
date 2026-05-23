@@ -29,6 +29,7 @@ export function useAdventure(
  userIdRef.current = userId;
  const onChoiceRef = useRef(onChoice);
  onChoiceRef.current = onChoice;
+ const isLoadingRef = useRef(false);
 
  // Charger l'aventure depuis la BDD
  useEffect(() => {
@@ -115,9 +116,10 @@ export function useAdventure(
   }, [adventureId, userId]);
 
  const chooseOption = useCallback(async (branchId: number | null) => {
- if (!branchId || !userIdRef.current) return;
- if (state.loading) return;
+ if (!branchId) return;
+ if (isLoadingRef.current) return;
 
+ isLoadingRef.current = true;
  setState((s) => ({ ...s, loading: true }));
  try {
  const { data: branch, error } = await supabase
@@ -128,25 +130,29 @@ export function useAdventure(
 
  if (error || !branch) {
  setState((s) => ({ ...s, loading: false, error: "Impossible de charger la suite." }));
+ isLoadingRef.current = false;
  return;
  }
 
  const isEnd = !branch.choix1_lien && !branch.choix2_lien;
 
- onChoiceRef.current?.(branchId, state.history);
-
- setState((s) => ({
+ setState((s) => {
+ onChoiceRef.current?.(branchId, s.history);
+ return {
  ...s,
  currentBranch: branch,
  loading: false,
  isEnd,
  history: [...s.history, branch],
- }));
+ };
+ });
+ isLoadingRef.current = false;
   } catch (err) {
     console.error('[useAdventure] chooseOption failed:', err, 'branchId:', branchId)
     setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
+    isLoadingRef.current = false;
   }
-  }, [state.adventure?.id, state.loading]);
+  }, []);
 
  const restart = useCallback(async () => {
  if (!state.adventure || !userIdRef.current) return;

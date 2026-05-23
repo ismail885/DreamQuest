@@ -81,7 +81,7 @@ export function useConsequences({
   // Parse le JSON de conséquence pour afficher l'impact
   const getConsequenceImpact = useCallback(
     (
-      consequencesJson: string | null | undefined,
+      consequencesJson: string | null | undefined | Record<string, any>,
     ): ConsequenceImpact => {
       if (!consequencesJson)
         return {
@@ -92,7 +92,10 @@ export function useConsequences({
         };
 
       try {
-        const effect = JSON.parse(consequencesJson);
+        // Si c'est déjà un objet (JSONB retourné par Supabase), l'utiliser directement
+        const effect = typeof consequencesJson === 'string' 
+          ? JSON.parse(consequencesJson) 
+          : consequencesJson;
 
         // Détecter le type combat
         if (effect.type === "combat") {
@@ -176,7 +179,7 @@ export function useConsequences({
   const applyConsequence = useCallback(
     async (
       _choixNum: 1 | 2,
-      consequencesJson: string | null | undefined,
+      consequencesJson: string | null | undefined | Record<string, any>,
     ): Promise<boolean> => {
       if (!character || !consequencesJson) return false;
 
@@ -192,25 +195,30 @@ export function useConsequences({
       } | null = null;
       const statChanges: Record<string, number> = {};
 
-      // Essayer le format JSON d'abord
-      try {
-        effect = JSON.parse(consequencesJson);
-      } catch {
-        // Format texte "Stats: force:2,agility:-1"
-        if (consequencesJson.includes("Stats:")) {
-          const statsMatch = consequencesJson.match(
-            /Stats:\s*([\w:,\s+-]+)/,
-          );
-          if (statsMatch) {
-            const statPairs = statsMatch[1].split(",");
-            for (const pair of statPairs) {
-              const [stat, value] = pair
-                .split(":")
-                .map((s) => s.trim());
-              if (stat && value) {
-                const numValue = parseInt(value);
-                if (!isNaN(numValue)) {
-                  statChanges[stat] = numValue;
+      // Si c'est déjà un objet (JSONB retourné par Supabase), l'utiliser directement
+      if (typeof consequencesJson === 'object') {
+        effect = consequencesJson;
+      } else if (typeof consequencesJson === 'string') {
+        // Essayer le format JSON d'abord
+        try {
+          effect = JSON.parse(consequencesJson);
+        } catch {
+          // Format texte "Stats: force:2,agility:-1"
+          if (consequencesJson.includes("Stats:")) {
+            const statsMatch = consequencesJson.match(
+              /Stats:\s*([\w:,\s+-]+)/,
+            );
+            if (statsMatch) {
+              const statPairs = statsMatch[1].split(",");
+              for (const pair of statPairs) {
+                const [stat, value] = pair
+                  .split(":")
+                  .map((s) => s.trim());
+                if (stat && value) {
+                  const numValue = parseInt(value);
+                  if (!isNaN(numValue)) {
+                    statChanges[stat] = numValue;
+                  }
                 }
               }
             }

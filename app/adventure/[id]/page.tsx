@@ -219,23 +219,31 @@ function AdventureReader({ params }: Props) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              {currentBranch.choix1 && currentBranch.choix1_lien && (
+              {currentBranch.choix1 && (
                 <ChoiceButton
                   label="1"
                   text={currentBranch.choix1}
                   impact={getConsequenceImpact(currentBranch.choix1_consequences)}
                   onClick={async () => {
+                    if (!currentBranch.choix1_lien) {
+                      console.error('Choix 1 lien manquant');
+                      return;
+                    }
                     const isCombat = await applyConsequence(1, currentBranch?.choix1_consequences);
                     if (!isCombat) chooseOption(currentBranch.choix1_lien);
                   }}
                 />
               )}
-              {currentBranch.choix2 && currentBranch.choix2_lien && (
+              {currentBranch.choix2 && (
                 <ChoiceButton
                   label="2"
                   text={currentBranch.choix2}
                   impact={getConsequenceImpact(currentBranch.choix2_consequences)}
                   onClick={async () => {
+                    if (!currentBranch.choix2_lien) {
+                      console.error('Choix 2 lien manquant');
+                      return;
+                    }
                     const isCombat = await applyConsequence(2, currentBranch?.choix2_consequences);
                     if (!isCombat) chooseOption(currentBranch.choix2_lien);
                   }}
