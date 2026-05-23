@@ -8,12 +8,6 @@ interface RandomEventChoice {
   consequence: { xp: number; pv: number; stat: string | null };
 }
 
-interface RandomEvent {
-  id: string;
-  text: string;
-  choices: RandomEventChoice[];
-}
-
 interface RandomEventCardProps {
   event: (typeof RANDOM_EVENTS)[0];
   onChoice: (consequence: RandomEventChoice["consequence"]) => void;

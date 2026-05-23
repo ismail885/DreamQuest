@@ -3,12 +3,12 @@ import {
  generateRandomStats, 
  getRandomAbility, 
  getAbilitiesForLevel, 
- calculateXPForLevel, 
- getLevelFromXP,
  getRandomEvent,
- ABILITIES_POOL,
  LEVEL_BONUS
 } from '@/lib/randomGenerator';
+import { getPoolAbilityNames } from '@/lib/abilities';
+import { calculateLevel } from '@/lib/xp';
+import { calculateRequiredXP } from '@/lib/characters/classDefinitions';
 import { CHARACTER_CLASSES, type CharacterClass } from '@/types';
 
 // Validate that a string is a valid CharacterClass
@@ -55,17 +55,17 @@ export async function GET(request: Request) {
  return NextResponse.json({ abilities });
 
   case 'xp':
-    const xpNeeded = calculateXPForLevel(niveau);
-    const levelFromXP = getLevelFromXP(xp);
+    const xpNeeded = calculateRequiredXP(niveau);
+    const levelFromXP = calculateLevel(xp);
     return NextResponse.json({ xpNeeded, levelFromXP });
 
  case 'event':
  const event = getRandomEvent();
  return NextResponse.json(event);
 
- case 'pool':
- const pool = ABILITIES_POOL[classe] || [];
- return NextResponse.json({ pool });
+  case 'pool':
+  const pool = getPoolAbilityNames(classe);
+  return NextResponse.json({ pool });
 
  case 'levelBonus':
  const bonus = LEVEL_BONUS[niveau] || {};

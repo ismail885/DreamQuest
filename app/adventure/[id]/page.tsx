@@ -51,7 +51,6 @@ function AdventureReader({ params }: Props) {
  const adventureId = parseInt(id, 10);
  const router = useRouter();
  const searchParams = useSearchParams();
- const personnageId = searchParams.get("personnage");
  const { user } = useAuthContext();
 
  const [currentEvent, setCurrentEvent] = useState<typeof RANDOM_EVENTS[0] | null>(null);

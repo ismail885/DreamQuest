@@ -8,10 +8,6 @@ import {
   Users,
   BookOpen,
   Trophy,
-  Shield,
-  FileText,
-  Cookie,
-  Scale,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
