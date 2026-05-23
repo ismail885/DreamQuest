@@ -81,7 +81,7 @@ export function useConsequences({
   // Parse le JSON de conséquence pour afficher l'impact
   const getConsequenceImpact = useCallback(
     (
-      consequencesJson: string | null | undefined | Record<string, any>,
+      consequencesJson: string | null | undefined | Record<string, unknown>,
     ): ConsequenceImpact => {
       if (!consequencesJson)
         return {
@@ -179,7 +179,7 @@ export function useConsequences({
   const applyConsequence = useCallback(
     async (
       _choixNum: 1 | 2,
-      consequencesJson: string | null | undefined | Record<string, any>,
+      consequencesJson: string | null | undefined | Record<string, unknown>,
     ): Promise<boolean> => {
       if (!character || !consequencesJson) return false;
 
