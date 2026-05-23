@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { getPoolAbilityNames } from "@/lib/abilities";
+import { applyXpGain, saveCharacterProgress, updateUserXp } from "@/lib/xp";
 import type { Character, CharacterClass } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
 
@@ -42,6 +43,10 @@ interface UseCharacterReturn {
     experience: number,
   ) => Promise<void>;
   characterIdNum: number | null;
+  completeAdventure: (
+    historyLength: number,
+    userId: number,
+  ) => Promise<void>;
 }
 
 export function useCharacter({
@@ -159,6 +164,54 @@ export function useCharacter({
     [userId, characterIdNum],
   );
 
+  // Fin d'aventure : calcul XP, level up, sauvegarde BDD
+  const completeAdventure = useCallback(
+    async (historyLength: number, userId: number) => {
+      if (!characterIdNum || !character) return;
+
+      const progress = (await loadCharacterProgress()) || {
+        niveau: character.niveau ?? 1,
+        stats: { force: 5, agility: 5, magie: 5, endurance: 5 },
+        experience: 0,
+      };
+
+      const xpPerChoice = 30;
+      const endBonus = 100;
+      const xpGained = historyLength * xpPerChoice + endBonus;
+
+      const basePvMax = character.points_vie_max || 100;
+      const result = applyXpGain(progress.niveau, progress.experience, xpGained, basePvMax);
+
+      const newStats = {
+        force: (progress.stats?.force ?? 5) + (result.statBonuses.force ?? 0),
+        agility: (progress.stats?.agility ?? 5) + (result.statBonuses.agility ?? 0),
+        magie: (progress.stats?.magie ?? 5) + (result.statBonuses.magie ?? 0),
+        endurance: (progress.stats?.endurance ?? 5) + (result.statBonuses.endurance ?? 0),
+      };
+
+      const newPv = result.leveledUp
+        ? Math.min(character.points_vie + (result.newMaxPv - basePvMax), result.newMaxPv)
+        : character.points_vie;
+
+      await saveCharacterProgress(characterIdNum, result.newLevel, result.newExperience, newStats, newPv);
+      await updateUserXp(userId, xpGained);
+
+      setCharacter((prev) =>
+        prev
+          ? {
+              ...prev,
+              niveau: result.newLevel,
+              stats: newStats,
+              experience: result.newExperience,
+              points_vie: newPv,
+              points_vie_max: result.newMaxPv,
+            }
+          : prev,
+      );
+    },
+    [character, characterIdNum, loadCharacterProgress],
+  );
+
   return {
     character,
     setCharacter,
@@ -168,5 +221,6 @@ export function useCharacter({
     loadCharacterProgress,
     saveCharacterStats,
     characterIdNum,
+    completeAdventure,
   };
 }

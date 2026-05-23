@@ -13,9 +13,6 @@ import { useAuthContext } from "@/context/AuthContext";
 import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomGenerator";
 import { motion } from "framer-motion";
 import { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
-
-
-import { applyXpGain, saveCharacterProgress, updateUserXp } from "@/lib/xp";
 import CharacterHUD from "@/components/adventure/CharacterHUD";
 import EffectIndicator from "@/components/adventure/EffectIndicator";
 import ChoiceButton from "@/components/adventure/ChoiceButton";
@@ -69,6 +66,7 @@ function AdventureReader({ params }: Props) {
  loadCharacterProgress,
  saveCharacterStats,
  characterIdNum,
+ completeAdventure,
  } = useCharacter({
  personnageId: searchParams.get("personnage"),
  userId: user?.id ?? null,
@@ -131,44 +129,10 @@ function AdventureReader({ params }: Props) {
 
  useEffect(() => {
  if (isEnd && user && characterIdNum && character) {
- (async () => {
  save();
- const progress = await loadCharacterProgress() || { niveau: character.niveau ?? 1, stats: { force: 5, agility: 5, magie: 5, endurance: 5 }, experience: 0 };
- 
- // XP par choix fait + bonus de fin
- const xpPerChoice = 30;
- const endBonus = 100;
- const xpGained = history.length * xpPerChoice + endBonus;
- 
- const basePvMax = character.points_vie_max || 100;
- const result = applyXpGain(progress.niveau, progress.experience, xpGained, basePvMax);
- 
- const newStats = {
- force: (progress.stats?.force ?? 5) + (result.statBonuses.force ?? 0),
- agility: (progress.stats?.agility ?? 5) + (result.statBonuses.agility ?? 0),
- magie: (progress.stats?.magie ?? 5) + (result.statBonuses.magie ?? 0),
- endurance: (progress.stats?.endurance ?? 5) + (result.statBonuses.endurance ?? 0),
- };
- 
- // PV mis a jour si level up
- const newPv = result.leveledUp
- ? Math.min(character.points_vie + (result.newMaxPv - basePvMax), result.newMaxPv)
- : character.points_vie;
- 
- await saveCharacterProgress(characterIdNum, result.newLevel, result.newExperience, newStats, newPv);
- await updateUserXp(user.id, xpGained);
- 
- setCharacter(prev => prev ? {
- ...prev,
- niveau: result.newLevel,
- stats: newStats,
- experience: result.newExperience,
- points_vie: newPv,
- points_vie_max: result.newMaxPv,
- } : prev);
- })();
+ completeAdventure(history.length, user.id);
  }
- }, [isEnd, user, characterIdNum, character, save, history.length, loadCharacterProgress]);
+ }, [isEnd, user, characterIdNum, character, save, history.length, completeAdventure]);
 
  const image = ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
 
