@@ -118,9 +118,15 @@ DreamQuest/
 ├── components/              # Composants React
 │   ├── auth/               # LoginForm, RegisterForm
 │   ├── character/          # CharacterCard, ClassCard, CreateCharacterForm
-│   ├── adventure/           # AdventureCard
+│   ├── adventure/          # AdventureCard, AdventureHeader, AdventureEndScreen,
+│   │                       # CharacterHUD, ChoiceButton, StorySection, CombatUI,
+│   │                       # EffectIndicator, RandomEventCard, ClassAbilitiesPanel,
+│   │                       # AdventurePagination
+│   ├── profile/            # TabStories, TabAchievements, TabCreations, TabQuests,
+│   │                       # TabCharacters, TabEvolution, ProfileSidebar,
+│   │                       # SettingsModal, EditProfileModal
+│   ├── dashboard/          # DashboardStats, DashboardSuggestions
 │   ├── editor/             # AdventureEditor
-│   ├── combat/             # CombatUI
 │   └── shared/             # Header, Footer, Loader, Skeleton, BottomNav, Breadcrumb
 ├── context/                 # Context API
 │   ├── AuthContext.tsx     # Authentification
@@ -130,7 +136,11 @@ DreamQuest/
 │   ├── useAdventure.ts     # Navigation embranchée avec BDD
 │   ├── useSave.ts          # Auto-save toutes les 30s
 │   ├── useVote.ts          # Vote avec timeout 10s
-│   └── useCachedQuery.ts   # Requêtes avec cache client
+│   ├── useCachedQuery.ts   # Requêtes avec cache client
+│   ├── useCharacter.ts     # Gestion des personnages (création, level-up)
+│   ├── useProfileData.ts   # Chargement données profil utilisateur
+│   ├── useDashboardData.ts # Statistiques + suggestions dashboard
+│   └── useAdventureList.ts # Liste aventures avec pagination
 ├── lib/                     # Utilitaires
 │   ├── supabaseClient.ts   # Client Supabase (timeout 15s)
 │   ├── jwt.ts              # Fonctions JWT

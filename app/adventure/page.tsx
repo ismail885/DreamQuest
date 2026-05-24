@@ -1,26 +1,15 @@
 "use client";
 
-import { useState, useEffect, Suspense, useRef } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import AdventureCard from "@/components/adventure/AdventureCard";
 import { SkeletonAdventureList } from "@/components/shared/Skeleton";
-import { supabase } from "@/lib/supabaseClient";
-import type { AdventureListItem } from "@/types/adventure";
 import { Search } from "lucide-react";
-
-const ITEMS_PER_PAGE = 12;
-
-type FilterOption = 'tous' | 'fantasy' | 'scifi' | 'horreur' | 'romance';
-
-const FILTER_OPTIONS: { value: FilterOption; label: string }[] = [
- { value: 'tous', label: 'Tous' },
- { value: 'fantasy', label: 'Fantasy' },
- { value: 'scifi', label: 'Sci-Fi' },
- { value: 'horreur', label: 'Horreur' },
-];
+import { useAdventureList, FILTER_OPTIONS } from "@/hooks/useAdventureList";
+import AdventurePagination from "@/components/adventure/AdventurePagination";
 
 export default function AdventurePage() {
  return (
@@ -31,53 +20,22 @@ export default function AdventurePage() {
 }
 
 function AdventurePageContent() {
- const searchParams = useSearchParams();
- const personnageId = searchParams.get("personnage");
- const [searchQuery, setSearchQuery] = useState("");
- const [adventures, setAdventures] = useState<AdventureListItem[]>([]);
- const [loading, setLoading] = useState(true);
- const [error, setError] = useState<string | null>(null);
- const [currentPage, setCurrentPage] = useState(1);
- const [totalCount, setTotalCount] = useState(0);
- const [activeFilter, setActiveFilter] = useState<FilterOption>('tous');
- const [showCharacterModal, setShowCharacterModal] = useState(false);
- const fetchingRef = useRef(false);
-
- useEffect(() => {
- if (fetchingRef.current) return;
- const fetchAdventures = async () => {
- fetchingRef.current = true;
- setLoading(true);
- 
- const from = (currentPage - 1) * ITEMS_PER_PAGE;
- const to = from + ITEMS_PER_PAGE - 1;
- 
- const query = supabase
- .from("aventure")
- .select("id, titre, description, popularite", { count: "exact" })
- .order("popularite", { ascending: false });
-
- const { data, error, count } = await query.range(from, to);
-
- if (error) {
- setError("Impossible de charger les aventures.");
- } else {
- setAdventures(data ?? []);
- setTotalCount(count ?? 0);
- }
- setLoading(false);
- fetchingRef.current = false;
- };
-
- fetchAdventures();
- return () => { fetchingRef.current = false; };
- }, [currentPage]);
-
- const filteredAdventures = adventures.filter((adventure) =>
- adventure.titre.toLowerCase().includes(searchQuery.toLowerCase())
- );
-
- const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+  const searchParams = useSearchParams();
+  const personnageId = searchParams.get("personnage");
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
+  const {
+  adventures: filteredAdventures,
+  loading,
+  error,
+  currentPage,
+  totalCount,
+  totalPages,
+  activeFilter,
+  searchQuery,
+  setCurrentPage,
+  setActiveFilter,
+  setSearchQuery,
+  } = useAdventureList();
 
  return (
  <div className="min-h-screen flex flex-col">
@@ -171,62 +129,12 @@ function AdventurePageContent() {
  ))}
  </div>
 
- {totalPages > 1 && (
- <div className="flex justify-center items-center gap-2 mt-8">
- <button
- onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
- disabled={currentPage === 1}
- className="px-4 py-2 bg-[#141d2e] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#141d2e]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
- >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
- </svg>
- </button>
- 
- <div className="flex items-center gap-1">
- {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
- let pageNum;
- if (totalPages <= 5) {
- pageNum = i + 1;
- } else if (currentPage <= 3) {
- pageNum = i + 1;
- } else if (currentPage >= totalPages - 2) {
- pageNum = totalPages - 4 + i;
- } else {
- pageNum = currentPage - 2 + i;
- }
- 
- return (
- <button
- key={pageNum}
- onClick={() => setCurrentPage(pageNum)}
- className={`w-10 h-10 rounded-lg font-medium transition-colors ${
- currentPage === pageNum
- ? "bg-cyan-500 text-white"
- : "bg-[#141d2e] border border-gray-700 text-gray-400 hover:bg-[#141d2e]/80"
- }`}
- >
- {pageNum}
- </button>
- );
- })}
- </div>
- 
- <button
- onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
- disabled={currentPage === totalPages}
- className="px-4 py-2 bg-[#141d2e] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#141d2e]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
- >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
- </svg>
- </button>
- </div>
- )}
- 
- <p className="text-center text-gray-400 text-sm mt-4 ">
- {totalCount} aventures • Page {currentPage}/{totalPages}
- </p>
+  <AdventurePagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  totalCount={totalCount}
+  onPageChange={setCurrentPage}
+  />
  </>
  ) : (
  <div className="text-center py-20">
