@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabaseClient";
-import { Sparkles, Plus, ChevronDown } from "lucide-react";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { Plus, ChevronDown } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
+import DashboardStats from "@/components/dashboard/DashboardStats";
+import DashboardSuggestions from "@/components/dashboard/DashboardSuggestions";
 
 const CharacterList = dynamic(() => import("@/components/character/CharacterList"), {
  ssr: false,
@@ -22,35 +24,21 @@ const CharacterList = dynamic(() => import("@/components/character/CharacterList
  ),
 });
 
-interface UserStats {
- charactersCount: number;
- completedQuests: number;
- totalXp: number;
- maxLevel: number;
- userLevel: number;
- userXp: number;
-}
-
 export default function DashboardPage() {
- const router = useRouter();
- const { user, loading } = useAuthContext();
- const [stats, setStats] = useState<UserStats>({
- charactersCount: 0,
- completedQuests: 0,
- totalXp: 0,
- maxLevel: 0,
- userLevel: 0,
- userXp: 0,
- });
- const [statsLoading, setStatsLoading] = useState(true);
- const [statsError, setStatsError] = useState<string | null>(null);
- const [suggestions, setSuggestions] = useState<{ id: number; titre: string; description: string | null }[]>([]);
- const [loadingSuggestions, setLoadingSuggestions] = useState(true);
- const [refreshKey, setRefreshKey] = useState(0);
- const pullDistanceRef = useRef(0);
- const [pullDistance, setPullDistance] = useState(0);
- const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
- const touchStartY = useRef(0);
+  const router = useRouter();
+  const { user, loading } = useAuthContext();
+  const {
+  stats,
+  statsLoading,
+  statsError,
+  suggestions,
+  loadingSuggestions,
+  refresh,
+  } = useDashboardData(user?.id ?? null);
+  const pullDistanceRef = useRef(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
+  const touchStartY = useRef(0);
 
  const handleTouchStart = (e: React.TouchEvent) => {
  if (window.scrollY <= 0) touchStartY.current = e.touches[0].clientY;
@@ -65,85 +53,26 @@ export default function DashboardPage() {
  setPullDistance(d);
  }
  };
- const endPull = () => {
- if (pullDistanceRef.current >= 55) {
- setPullState("refreshing");
- setPullDistance(128);
- setRefreshKey((k) => k + 1);
- } else {
- setPullState("idle");
- setPullDistance(0);
- }
- pullDistanceRef.current = 0;
- touchStartY.current = 0;
- };
+  const endPull = () => {
+  if (pullDistanceRef.current >= 55) {
+  setPullState("refreshing");
+  setPullDistance(128);
+  refresh();
+  } else {
+  setPullState("idle");
+  setPullDistance(0);
+  }
+  pullDistanceRef.current = 0;
+  touchStartY.current = 0;
+  };
 
- useEffect(() => {
- if (!loading && !user) {
- router.replace("/auth/login");
- }
- }, [loading, user, router]);
+  useEffect(() => {
+  if (!loading && !user) {
+  router.replace("/auth/login");
+  }
+  }, [loading, user, router]);
 
- useEffect(() => {
- if (!user) return;
- let cancelled = false;
-
- const fetchData = async () => {
- setStatsLoading(true);
- setLoadingSuggestions(true);
- setStatsError(null);
- try {
- const [userResult, charResult, saveResult] = await Promise.all([
- supabase.from("utilisateur").select("niveau, experience").eq("id", user.id).maybeSingle(),
- supabase.from("personnage").select("experience, niveau").eq("id_utilisateur", user.id),
- supabase.from("sauvegarde").select("progression, id_aventure").eq("id_utilisateur", user.id),
- ]);
-
- if (cancelled) return;
-
- const characters = charResult.data ?? [];
- const saves = saveResult.data ?? [];
-
- setStats({
- charactersCount: characters.length,
- completedQuests: saves.filter((s) => (s.progression ?? 0) >= 100).length,
- totalXp: characters.reduce((sum, c) => sum + (c.experience ?? 0), 0),
- maxLevel: characters.length > 0 ? Math.max(...characters.map((c) => c.niveau ?? 1)) : 0,
- userLevel: userResult?.data?.niveau ?? 1,
- userXp: userResult?.data?.experience ?? 0,
- });
-
- const playedIds = saves.map((s) => s.id_aventure).filter(Boolean);
- const advQuery = supabase
- .from("aventure")
- .select("id, titre, description")
- .order("popularite", { ascending: false })
- .limit(3);
-
- if (playedIds.length > 0) {
- advQuery.not("id", "in", `(${playedIds.join(",")})`);
- }
-
- const { data: advData } = await advQuery;
- if (!cancelled) setSuggestions(advData ?? []);
- } catch (err) {
- console.error("[Dashboard] Erreur chargement:", err);
- setStatsError("Impossible de charger vos statistiques. Réessayez plus tard.");
- } finally {
- if (!cancelled) {
- setStatsLoading(false);
- setLoadingSuggestions(false);
- setPullDistance(0);
- setPullState("idle");
- }
- }
- };
-
- fetchData();
- return () => { cancelled = true; };
- }, [user, refreshKey]);
-
- // Auth pas encore pret -> loader bloquant (normal)
+  // Auth pas encore pret -> loader bloquant (normal)
  if (loading) {
  return <Loader fullScreen message="Chargement de votre espace..." />;
  }
@@ -207,104 +136,9 @@ export default function DashboardPage() {
  <CharacterList userId={user.id} />
  </div>
 
- {/* Statistiques */}
- <div className="mb-8 md:mb-12">
- <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-[#070b15]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
- Vos Statistiques
- </h2>
+  <DashboardStats stats={stats} loading={statsLoading} error={statsError} />
 
- {statsError && (
- <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
- {statsError}
- </div>
- )}
-
- {statsLoading ? (
- <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
- {[1, 2, 3, 4, 5].map((i) => (
- <div key={i} className="bg-[#131e35] border border-gray-800/50 rounded-xl md:rounded-2xl p-4 md:p-6 animate-pulse">
- <div className="h-8 bg-gray-700/50 rounded w-12 mb-2" />
- <div className="h-4 bg-gray-700/50 rounded w-20" />
- </div>
- ))}
- </div>
- ) : (
- <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
- <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
- <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">
- {stats.charactersCount}
- </div>
- <div className="text-gray-400 text-xs md:text-sm">
- Personnages
- </div>
- </div>
- <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
- <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-1 md:mb-2">
- {stats.completedQuests}
- </div>
- <div className="text-gray-400 text-xs md:text-sm">Quetes</div>
- </div>
- <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
- <div className="text-2xl md:text-3xl font-bold text-yellow-400 mb-1 md:mb-2">
- {stats.totalXp}
- </div>
- <div className="text-gray-400 text-xs md:text-sm">
- Points XP
- </div>
- </div>
- <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
- <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">
- {stats.maxLevel > 0 ? stats.maxLevel : "—"}
- </div>
- <div className="text-gray-400 text-xs md:text-sm">
- Niveau max perso
- </div>
- </div>
- <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
- <div className="text-2xl md:text-3xl font-bold text-violet-400 mb-1 md:mb-2">
- {stats.userLevel}
- </div>
- <div className="text-gray-400 text-xs md:text-sm">
- Niveau user
- </div>
- </div>
- </div>
- )}
- </div>
-
- {/* Suggestions */}
- {!loadingSuggestions && suggestions.length > 0 && (
- <div className="mb-8 md:mb-12">
- <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-[#070b15]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
- <Sparkles className="w-5 h-5 text-yellow-400" />
- Pour Vous
- </h2>
- <div className="grid md:grid-cols-3 gap-4 md:gap-6">
- {suggestions.map((adventure) => (
- <div
- key={adventure.id}
- onClick={() => router.push(`/adventure/${adventure.id}`)}
- className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
- >
- <div className="flex items-center gap-2 mb-3">
- <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
- <Sparkles className="w-4 h-4 text-yellow-400" />
- </div>
- <span className="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
- Recommande
- </span>
- </div>
- <h3 className="text-white font-semibold mb-2 line-clamp-1">
- {adventure.titre}
- </h3>
- <p className="text-gray-400 text-sm line-clamp-2">
- {adventure.description || "Une aventure palpitante vous attend..."}
- </p>
- </div>
- ))}
- </div>
- </div>
- )}
+  <DashboardSuggestions suggestions={suggestions} loading={loadingSuggestions} />
  </div>
  </div>
  </main>
