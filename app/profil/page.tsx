@@ -8,6 +8,7 @@ import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
 import { useAuthContext } from "@/context/AuthContext";
 import { useProfileData } from "@/hooks/useProfileData";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import SettingsModal from "@/components/profile/SettingsModal";
 import EditProfileModal from "@/components/profile/EditProfileModal";
@@ -23,45 +24,20 @@ export default function ProfilPage() {
  const { user, loading: authLoading, updateUser, logout } = useAuthContext();
  const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters" | "evolution">("stories");
 
- const {
- loading,
- dataError,
- userProfile,
- userSaves,
- userCreations,
- userCharacters,
- userAchievements,
- dailyQuests,
- stats,
- refresh,
- } = useProfileData({ userId: user?.id ?? null });
-
- const [pullDistance, setPullDistance] = useState(0);
- const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
- const touchStartY = useRef(0);
-
- const handleTouchStart = (e: React.TouchEvent) => {
- if (window.scrollY <= 0) touchStartY.current = e.touches[0].clientY;
- };
- const handleTouchMove = (e: React.TouchEvent) => {
- if (!touchStartY.current || pullState !== "idle") return;
- const diff = e.touches[0].clientY - touchStartY.current;
- if (diff > 0 && window.scrollY <= 0) {
- setPullState("pulling");
- setPullDistance(Math.min(diff * 0.35, 100));
- }
- };
- const handleTouchEnd = () => {
- if (pullDistance >= 55) {
- setPullState("refreshing");
- setPullDistance(128);
- refresh();
- } else {
- setPullDistance(0);
- setPullState("idle");
- }
- touchStartY.current = 0;
- };
+  const {
+  loading,
+  dataError,
+  userProfile,
+  userSaves,
+  userCreations,
+  userCharacters,
+  userAchievements,
+  dailyQuests,
+  stats,
+  refresh,
+  } = useProfileData({ userId: user?.id ?? null });
+  const { pullDistance, pullState, handleTouchStart, handleTouchMove, handleTouchEnd } =
+  usePullToRefresh(refresh);
 
  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
  const [editUsername, setEditUsername] = useState("");

@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Plus, ChevronDown } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
@@ -35,36 +36,8 @@ export default function DashboardPage() {
   loadingSuggestions,
   refresh,
   } = useDashboardData(user?.id ?? null);
-  const pullDistanceRef = useRef(0);
-  const [pullDistance, setPullDistance] = useState(0);
-  const [pullState, setPullState] = useState<"idle" | "pulling" | "refreshing">("idle");
-  const touchStartY = useRef(0);
-
- const handleTouchStart = (e: React.TouchEvent) => {
- if (window.scrollY <= 0) touchStartY.current = e.touches[0].clientY;
- };
- const handleTouchMove = (e: React.TouchEvent) => {
- if (!touchStartY.current || pullState !== "idle") return;
- const diff = e.touches[0].clientY - touchStartY.current;
- if (diff > 0 && window.scrollY <= 0) {
- const d = Math.min(diff * 0.35, 100);
- pullDistanceRef.current = d;
- setPullState("pulling");
- setPullDistance(d);
- }
- };
-  const endPull = () => {
-  if (pullDistanceRef.current >= 55) {
-  setPullState("refreshing");
-  setPullDistance(128);
-  refresh();
-  } else {
-  setPullState("idle");
-  setPullDistance(0);
-  }
-  pullDistanceRef.current = 0;
-  touchStartY.current = 0;
-  };
+  const { pullDistance, pullState, handleTouchStart, handleTouchMove, handleTouchEnd } =
+  usePullToRefresh(refresh);
 
   useEffect(() => {
   if (!loading && !user) {
@@ -87,7 +60,7 @@ export default function DashboardPage() {
  className="flex-1 relative pb-24 md:pb-0"
  onTouchStart={handleTouchStart}
  onTouchMove={handleTouchMove}
- onTouchEnd={endPull}
+  onTouchEnd={handleTouchEnd}
  >
  {pullState !== "idle" && (
  <div

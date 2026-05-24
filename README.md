@@ -140,7 +140,9 @@ DreamQuest/
 │   ├── useCharacter.ts     # Gestion des personnages (création, level-up)
 │   ├── useProfileData.ts   # Chargement données profil utilisateur
 │   ├── useDashboardData.ts # Statistiques + suggestions dashboard
-│   └── useAdventureList.ts # Liste aventures avec pagination
+│   ├── useAdventureList.ts # Liste aventures avec pagination
+│   ├── useClassementData.ts # Classement aventures et joueurs
+│   └── usePullToRefresh.ts  # Pull-to-refresh partagé
 ├── lib/                     # Utilitaires
 │   ├── supabaseClient.ts   # Client Supabase (timeout 15s)
 │   ├── jwt.ts              # Fonctions JWT
