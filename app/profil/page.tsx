@@ -18,10 +18,18 @@ import TabCreations from "@/components/profile/TabCreations";
 import TabQuests from "@/components/profile/TabQuests";
 import TabCharacters from "@/components/profile/TabCharacters";
 
+function getTabFromUrl(): "stories" | "achievements" | "creations" | "quests" | "characters" {
+ if (typeof window === "undefined") return "stories";
+ const params = new URLSearchParams(window.location.search);
+ const tab = params.get("tab");
+ if (tab === "achievements" || tab === "creations" || tab === "quests" || tab === "characters") return tab;
+ return "stories";
+}
+
 export default function ProfilPage() {
  const router = useRouter();
  const { user, loading: authLoading, updateUser, logout } = useAuthContext();
- const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters">("stories");
+ const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters">(getTabFromUrl);
 
   const {
   loading,
