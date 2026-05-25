@@ -112,7 +112,7 @@ export default function CombatUI({
     }, 800);
 
     return () => clearTimeout(timeout);
-  }, [combat.turn, combat.won, combat.fled, defending, onPlayerHpChange]);
+  }, [combat.turn, combat.won, combat.fled, defending, onPlayerHpChange, playerStats.agility]);
 
   const handleAbility = useCallback((abilityId: string) => {
   if (combat.turn !== "player" || combat.won || combat.lost) return;
@@ -190,12 +190,12 @@ export default function CombatUI({
  const newLog = [...combat.log, result.log];
 
  if (newEnemyPv <= 0) {
- setCombat({
- ...combat,
- enemy: { ...combat.enemy!, pv: 0 },
+ setCombat((c) => ({
+ ...c,
+ enemy: { ...c.enemy!, pv: 0 },
  log: newLog,
  won: true,
- });
+ }));
  onWin(combat.enemy!.xpReward, combat.enemy!.loot || "");
  } else {
  setCombat((c) => ({
@@ -205,7 +205,7 @@ export default function CombatUI({
  turn: "enemy",
  }));
  }
- }, [combat, playerStats, onWin]);
+ }, [combat.enemy, combat.status, combat.log, playerStats, onWin]);
 
   const defendAction = useCallback(() => {
   if (defending || combat.turn !== "player") return;
@@ -359,7 +359,7 @@ export default function CombatUI({
   };
   });
   }
-  }, [combat, playerStats, onPlayerHpChange, onFlee]);
+  }, [playerStats, onPlayerHpChange, onFlee]);
 
  return (
  <AnimatePresence>

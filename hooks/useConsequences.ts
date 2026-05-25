@@ -39,7 +39,6 @@ interface UseConsequencesProps {
     },
     experience: number,
   ) => Promise<void>;
-  characterIdNum: number | null;
 }
 
 interface UseConsequencesReturn {
@@ -60,7 +59,6 @@ export function useConsequences({
   startCombat,
   loadCharacterProgress,
   saveCharacterStats,
-  characterIdNum,
 }: UseConsequencesProps): UseConsequencesReturn {
   const [lastConsequence, setLastConsequence] =
     useState<ConsequenceEffect | null>(null);

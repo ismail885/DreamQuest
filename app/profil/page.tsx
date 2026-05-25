@@ -17,12 +17,11 @@ import TabAchievements from "@/components/profile/TabAchievements";
 import TabCreations from "@/components/profile/TabCreations";
 import TabQuests from "@/components/profile/TabQuests";
 import TabCharacters from "@/components/profile/TabCharacters";
-import TabEvolution from "@/components/profile/TabEvolution";
 
 export default function ProfilPage() {
  const router = useRouter();
  const { user, loading: authLoading, updateUser, logout } = useAuthContext();
- const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters" | "evolution">("stories");
+ const [activeTab, setActiveTab] = useState<"stories" | "achievements" | "creations" | "quests" | "characters">("stories");
 
   const {
   loading,
@@ -289,16 +288,6 @@ export default function ProfilPage() {
  >
  Mes Persos
  </button>
- <button
- onClick={() => setActiveTab("evolution")}
- className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
- activeTab === "evolution"
- ? "bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-400"
- : "text-gray-400 hover:text-white hover:bg-gray-700/20"
- }`}
- >
- Évolution
- </button>
  </div>
 
  <div className="p-6">
@@ -307,7 +296,6 @@ export default function ProfilPage() {
   {activeTab === "creations" && <TabCreations creations={userCreations} />}
   {activeTab === "quests" && <TabQuests quests={dailyQuests} />}
   {activeTab === "characters" && <TabCharacters characters={userCharacters} />}
-  {activeTab === "evolution" && <TabEvolution characters={userCharacters} />}
  </div>
  </div>
  </div>

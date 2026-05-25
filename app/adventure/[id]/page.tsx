@@ -93,7 +93,6 @@ function AdventureReader({ params }: Props) {
  startCombat,
  loadCharacterProgress,
  saveCharacterStats,
- characterIdNum,
  });
 
  const { adventure, currentBranch, loading, error, isEnd, history, chooseOption, restart } =

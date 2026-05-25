@@ -11,7 +11,7 @@ export default function LoginForm() {
  const searchParams = useSearchParams();
  const redirectParam = searchParams.get("redirect");
  const redirect = redirectParam?.startsWith("/") ? redirectParam : "/dashboard";
- const { login, loginWithGoogle, loginWithApple } = useAuthContext();
+ const { login, loginWithGoogle } = useAuthContext();
  const [emailOrUsername, setEmailOrUsername] = useState("");
  const [password, setPassword] = useState("");
  const [showPassword, setShowPassword] = useState(false);
@@ -29,16 +29,6 @@ export default function LoginForm() {
  } catch {
  setError("Erreur inattendue");
  } finally {
- setIsLoading(false);
- }
- };
-
- const handleAppleLogin = async () => {
- setIsLoading(true);
- setError("");
- const result = await loginWithApple();
- if (!result.success) {
- setError(result.error || "Erreur avec Apple");
  setIsLoading(false);
  }
  };
