@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/jwt';
+import { verifyToken, getTokenFromCookies } from '@/lib/jwt';
 
 const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/create-adventure', '/adventure', '/admin'];
 const adminRoutes = ['/admin'];
@@ -27,23 +27,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // ============================================
-  // VÉRIFICATION JWT — signature vérifiée côté serveur
+  // VÉRIFICATION JWT — via lib/jwt
   // ============================================
-  const authToken = request.cookies.get('auth_token')?.value ?? null;
-
-  let payload = null;
-  if (authToken) {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    if (secret.length > 0) {
-      try {
-        const { jwtVerify } = await import('jose');
-        const { payload: decoded } = await jwtVerify(authToken, secret);
-        payload = decoded as { userId: string; email: string; username: string; role: string };
-      } catch {
-        payload = null;
-      }
-    }
-  }
+  const authToken = getTokenFromCookies(request.headers.get('cookie'));
+  const payload = authToken ? await verifyToken(authToken) : null;
   
   const isAuthenticated = !!payload;
   const role = payload?.role ?? null;

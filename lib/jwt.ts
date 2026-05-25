@@ -12,8 +12,26 @@ function getJwtSecret(): string {
   return secret;
 }
 
-const MAX_AGE_SECONDS = 3600; // 1h - aligné sur la session Supabase Auth
 const ALGORITHM = 'HS256';
+
+/**
+ * Parse une durée lisible (ex: "7d", "24h", "3600") en secondes.
+ */
+function parseDuration(value: string | undefined): number {
+  if (!value) return 3600;
+  const match = value.match(/^(\d+)\s*(s|m|h|d)?$/i);
+  if (!match) return 3600;
+  const num = parseInt(match[1], 10);
+  const unit = (match[2] || 's').toLowerCase();
+  switch (unit) {
+    case 'd': return num * 86400;
+    case 'h': return num * 3600;
+    case 'm': return num * 60;
+    default: return num;
+  }
+}
+
+const MAX_AGE_SECONDS = parseDuration(process.env.JWT_EXPIRES_IN);
 
 // ============================================
 // Types

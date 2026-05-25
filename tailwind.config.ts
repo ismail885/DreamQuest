@@ -1,9 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: 'class',
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
@@ -21,6 +19,13 @@ const config: Config = {
         secondary: {
           DEFAULT: '#9333ea',
           dark: '#7c3aed',
+        },
+        surface: {
+          DEFAULT: '#0c1322',
+          card: '#131e35',
+        },
+        deep: {
+          DEFAULT: '#070b15',
         },
       },
       animation: {

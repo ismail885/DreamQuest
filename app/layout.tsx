@@ -1,10 +1,8 @@
 import "@/styles/globals.css";
 import dynamic from "next/dynamic";
 import { AuthProvider } from "@/context/AuthContext";
-import { ThemeProvider } from "@/context/ThemeContext";
 
 const Toaster = dynamic(() => import("react-hot-toast").then((m) => m.Toaster));
-
 
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
@@ -34,18 +32,17 @@ export default function RootLayout({
  <head>
  {/* Blocking inline script — lit le cookie theme avant le rendu pour éviter le FOIT */}
  <script dangerouslySetInnerHTML={{
- __html: `(function(){try{var c=document.cookie.match(new RegExp("(?:^|; )dreamquest_theme=([^;]+)"));var dark=c?c[1]==="dark":true;if(dark)document.documentElement.classList.add("dark");document.documentElement.classList.add("disable-transition")}catch(e){}})()`
+ __html: `(function(){try{var c=document.cookie.match(new RegExp("(?:^|; )dreamquest_theme=([^;]+)"));var dark=c?c[1]==="dark":true;if(dark)document.documentElement.classList.add("dark")}catch(e){}})()`
  }} />
  <link rel="icon" href="/Logo_DreamQuest.png" sizes="any" />
  <meta name="theme-color" content="#00d4ff" />
  <meta name="viewport" content="width=device-width, initial-scale=1" />
  </head>
- <body className={`${plusJakartaSans.variable} bg-[#0b0d1e] text-white antialiased`}>
+ <body className={`${plusJakartaSans.variable} bg-[#070b15] text-white antialiased`}>
  <AuthProvider>
- <ThemeProvider>
  <div className="relative min-h-screen flex flex-col">
  <div className="fixed inset-0 -z-10 overflow-hidden">
- <div className="absolute inset-0 bg-gradient-to-br from-[#0b0d1e] via-[#111827] to-[#0b0d1e]"></div>
+ <div className="absolute inset-0 bg-gradient-to-br from-[#070b15] via-[#111827] to-[#070b15]"></div>
  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
 
  </div>
@@ -73,7 +70,6 @@ export default function RootLayout({
  },
  }}
  />
- </ThemeProvider>
  </AuthProvider>
  </body>
  </html>
