@@ -78,6 +78,8 @@ export function useAdminUsers() {
     }
   };
 
+  const clearSelection = () => setSelectedUsers(new Set());
+
   const toggleSelectUser = (userId: number) => {
     const newSelected = new Set(selectedUsers);
     if (newSelected.has(userId)) {
@@ -257,6 +259,7 @@ export function useAdminUsers() {
     fetchUsers,
     toggleSelectAll,
     toggleSelectUser,
+    clearSelection,
     handleBulkDelete,
     handleBulkRoleChange,
     openModal,
