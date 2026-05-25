@@ -1,3 +1,29 @@
+jest.mock('jose', () => {
+  const store = new Map<string, Record<string, unknown>>();
+  let counter = 0;
+  return {
+    SignJWT: class {
+      private _payload: Record<string, unknown>;
+      constructor(payload: Record<string, unknown>) { this._payload = { ...payload }; }
+      setProtectedHeader() { return this; }
+      setIssuedAt() { return this; }
+      setExpirationTime() { return this; }
+      async sign() {
+        counter++;
+        const token = `mocked_token_${counter}_${Date.now()}`;
+        store.set(token, { ...this._payload, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 3600 });
+        return token;
+      }
+    },
+    jwtVerify: async (token: string) => {
+      const payload = store.get(token);
+      if (!payload) throw new Error('mock: token not found');
+      return { payload };
+    },
+    JWTPayload: Object,
+  };
+});
+
 import { signToken, verifyToken, createAuthCookie, clearAuthCookie } from '@/lib/jwt'
 
 describe('Intégration - Authentification', () => {

@@ -9,7 +9,6 @@ import {
  Users, 
  BookOpen, 
  UserRound, 
- Settings, 
  LogOut,
  ChevronLeft,
  Menu,
@@ -24,7 +23,6 @@ const navigation = [
  { name: "Utilisateurs", href: "/admin/users", icon: Users },
  { name: "Aventures", href: "/admin/adventures", icon: BookOpen },
  { name: "Personnages", href: "/admin/characters", icon: UserRound },
- { name: "Paramètres", href: "/admin/settings", icon: Settings },
 ];
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
