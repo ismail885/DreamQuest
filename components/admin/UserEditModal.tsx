@@ -1,7 +1,8 @@
 "use client";
 
 import { User, UserRole } from "@/types";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface UserEditModalProps {
   isOpen: boolean;
@@ -28,6 +29,17 @@ export default function UserEditModal({
   onSubmit,
   onClose,
 }: UserEditModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitWithLoading = async (e: React.FormEvent) => {
+    setIsSubmitting(true);
+    try {
+      await onSubmit(e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -43,7 +55,7 @@ export default function UserEditModal({
             <X className="w-5 h-5" />
           </button>
         </div>
-        <form onSubmit={onSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmitWithLoading} className="p-6 space-y-4">
           <div>
             <label className="block text-gray-400 text-sm mb-2">
               Nom d&apos;utilisateur
@@ -97,9 +109,17 @@ export default function UserEditModal({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
+              disabled={isSubmitting}
+              className="flex-1 px-4 py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Enregistrer
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Enregistrement...
+                </>
+              ) : (
+                "Enregistrer"
+              )}
             </button>
           </div>
         </form>

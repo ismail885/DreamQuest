@@ -70,7 +70,7 @@ export default function AdminUsersTable({
         <table className="w-full">
           <thead className="bg-gray-900/50">
             <tr>
-              <th className="px-4 py-4 text-left text-gray-400 font-medium text-sm w-12">
+              <th className="px-4 py-4 text-left text-gray-300 font-medium text-sm w-12">
                 <button
                   onClick={toggleSelectAll}
                   className="text-gray-400 hover:text-white"
@@ -82,19 +82,19 @@ export default function AdminUsersTable({
                   )}
                 </button>
               </th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
                 Utilisateur
               </th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
                 Email
               </th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
                 Rôle
               </th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
                 Inscription
               </th>
-              <th className="px-6 py-4 text-right text-gray-400 font-medium text-sm">
+              <th className="px-6 py-4 text-right text-gray-300 font-medium text-sm">
                 Actions
               </th>
             </tr>

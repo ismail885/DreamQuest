@@ -31,17 +31,17 @@ export default function CombatUI({
 }: CombatUIProps) {
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-      <div className="bg-[#0d1526] border border-red-500/50 rounded-xl max-w-lg w-full overflow-hidden">
-        <div className="bg-red-900/30 border-b border-red-500/30 p-3 text-center">
+      <div className="bg-[#0d1526] border border-red-500/50 rounded-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto flex flex-col">
+        <div className="bg-red-900/30 border-b border-red-500/30 p-4 text-center sticky top-0 z-10">
           <h2 className="text-red-400 font-bold text-lg">COMBAT</h2>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-6 space-y-5 flex-1">
           {/* Player vs Enemy HP */}
-          <div className="flex justify-between items-center">
-            <div className="flex-1">
-              <div className="text-white font-bold">Toi</div>
-              <div className="h-4 bg-gray-700 rounded-full overflow-hidden w-32">
+          <div className="grid grid-cols-3 gap-4 items-center">
+            <div>
+              <div className="text-white font-bold mb-2">Vous</div>
+              <div className="h-4 bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all"
                   style={{
@@ -49,12 +49,12 @@ export default function CombatUI({
                   }}
                 />
               </div>
-              <div className="text-gray-400 text-sm">
+              <div className="text-gray-400 text-xs mt-1">
                 {combatState.playerPv} / {combatState.playerPvMax} PV
               </div>
               {/* Mana bar */}
-              <div className="mt-2">
-                <div className="h-3 bg-gray-700 rounded-full overflow-hidden w-32">
+              <div className="mt-3">
+                <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all"
                     style={{
@@ -62,17 +62,17 @@ export default function CombatUI({
                     }}
                   />
                 </div>
-                <div className="text-blue-400 text-sm">
+                <div className="text-blue-400 text-xs mt-1">
                   {combatState.playerMana} / {combatState.playerManaMax} Mana
                 </div>
               </div>
             </div>
-            <div className="text-3xl">VS</div>
-            <div className="flex-1 text-right">
-              <div className="text-red-400 font-bold">
+            <div className="text-2xl font-bold text-white text-center">VS</div>
+            <div className="text-right">
+              <div className="text-red-400 font-bold mb-2">
                 {combatState.enemy?.name}
               </div>
-              <div className="h-4 bg-gray-700 rounded-full overflow-hidden w-32 ml-auto">
+              <div className="h-4 bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-red-400 to-red-500 transition-all"
                   style={{
@@ -80,7 +80,7 @@ export default function CombatUI({
                   }}
                 />
               </div>
-              <div className="text-gray-400 text-sm">
+              <div className="text-gray-400 text-xs mt-1">
                 {combatState.enemy?.pv} / {combatState.enemy?.pvMax} PV
               </div>
             </div>

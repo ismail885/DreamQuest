@@ -9,10 +9,10 @@ import { Menu, X } from "lucide-react";
 function NavLinks({ user, onNavigate }: { user: { username?: string; email?: string; role?: string } | null; onNavigate?: () => void }) {
  return (
  <>
- <Link href="/dashboard" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
+ <Link href="/dashboard" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
  Accueil
  </Link>
- <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
+ <Link href="/adventure" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
  Aventures
  </Link>
  {(user?.role === 'createur' || user?.role === 'admin') && (
@@ -25,10 +25,10 @@ function NavLinks({ user, onNavigate }: { user: { username?: string; email?: str
  ADMIN
  </Link>
  )}
- <Link href="/classement" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
+ <Link href="/classement" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
  Classement
  </Link>
- <Link href="/profil" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
+ <Link href="/profil" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium" onClick={onNavigate}>
  Profil
  </Link>
  </>
@@ -122,16 +122,16 @@ const Header = React.memo(function Header() {
  </Link>
 
  <div className="hidden md:flex items-center gap-8">
- <Link href="/" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
+ <Link href="/" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
  Accueil
  </Link>
- <Link href="/adventure" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
+ <Link href="/adventure" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
  Aventures
  </Link>
- <Link href="/create-character" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
+ <Link href="/create-character" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
  Créer
  </Link>
- <Link href="/classement" className="text-gray-400 hover:text-cyan-400 transition-colors font-medium">
+ <Link href="/classement" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
  Classement
  </Link>
  </div>

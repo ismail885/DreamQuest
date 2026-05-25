@@ -7,7 +7,7 @@ import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import AdventureCard from "@/components/adventure/AdventureCard";
 import { SkeletonAdventureList } from "@/components/shared/Skeleton";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useAdventureList, FILTER_OPTIONS } from "@/hooks/useAdventureList";
 import AdventurePagination from "@/components/adventure/AdventurePagination";
 
@@ -82,6 +82,15 @@ function AdventurePageContent() {
  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
  className="w-full px-3 md:px-4 py-3 md:py-3.5 bg-transparent text-white placeholder-gray-500 focus:outline-none text-sm md:text-base"
  />
+ {searchQuery && (
+ <button
+ onClick={() => { setSearchQuery(""); setCurrentPage(1); }}
+ className="mr-3 p-1 text-gray-400 hover:text-white transition-colors"
+ title="Effacer la recherche"
+ >
+ <X className="w-5 h-5" />
+ </button>
+ )}
  </div>
  </div>
 

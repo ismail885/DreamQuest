@@ -42,8 +42,20 @@ export default function AdminUsersPage() {
  setSearchTerm(e.target.value);
  setCurrentPage(1);
  }}
- className="w-full pl-12 pr-4 py-3 bg-[#0c1322] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+ className="w-full pl-12 pr-10 py-3 bg-[#0c1322] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
  />
+ {searchTerm && (
+ <button
+ onClick={() => {
+ setSearchTerm("");
+ setCurrentPage(1);
+ }}
+ className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+ title="Effacer la recherche"
+ >
+ <X className="w-5 h-5" />
+ </button>
+ )}
  </div>
 
  {/* Error toast */}

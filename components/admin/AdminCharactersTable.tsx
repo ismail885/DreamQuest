@@ -55,12 +55,12 @@ export default function AdminCharactersTable({
         <table className="w-full">
           <thead className="bg-gray-900/50">
             <tr>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Personnage</th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Classe</th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Niveau</th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">PV</th>
-              <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Propriétaire</th>
-              <th className="px-6 py-4 text-right text-gray-400 font-medium text-sm">Actions</th>
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Personnage</th>
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Classe</th>
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Niveau</th>
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">PV</th>
+              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Propriétaire</th>
+              <th className="px-6 py-4 text-right text-gray-300 font-medium text-sm">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
