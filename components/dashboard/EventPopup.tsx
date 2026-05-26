@@ -14,7 +14,7 @@ export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
 
   if (!event) return null;
 
-  const timeRemaining = getTimeRemaining(event.endDate);
+  const timeRemaining = getTimeRemaining(event);
 
   // Couleurs basées sur le thème
   const themeColors: Record<string, { bg: string; border: string; accent: string; glow: string }> = {

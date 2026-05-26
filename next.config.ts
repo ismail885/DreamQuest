@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+const withAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -16,7 +21,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, 
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', '@supabase/supabase-js'],
+    optimizePackageImports: ['lucide-react', '@supabase/supabase-js', 'framer-motion'],
   },
   trailingSlash: false,
   compress: true,
@@ -44,4 +49,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withAnalyzer(nextConfig);

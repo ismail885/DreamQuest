@@ -15,7 +15,7 @@ export default function EventCard({ showUpcoming = false }: EventCardProps) {
   if (!event) return null;
 
   const isActive = activeEvent !== null;
-  const timeRemaining = getTimeRemaining(event.endDate);
+  const timeRemaining = getTimeRemaining(event);
 
   // Couleurs basées sur le thème de l'événement
   const themeColors: Record<string, { bg: string; border: string; badge: string; text: string }> = {
