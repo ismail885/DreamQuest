@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signToken, createAuthCookies, clearAuthCookies, UserJWTPayload } from '@/lib/jwt';
+import { signToken, createAuthCookie, clearAuthCookie, UserJWTPayload } from '@/lib/jwt';
 
 type SessionPayload = {
  userId: string;
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
  }
 
  const token = await signToken({ userId, email, username, role } as Omit<UserJWTPayload, 'iat' | 'exp'>);
- const cookie = createAuthCookies(token);
+ const cookie = createAuthCookie(token);
 
  return new NextResponse(JSON.stringify({ ok: true }), {
  status: 200,
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE() {
- const cookie = clearAuthCookies();
+ const cookie = clearAuthCookie();
  return new NextResponse(JSON.stringify({ ok: true }), {
  status: 200,
  headers: {

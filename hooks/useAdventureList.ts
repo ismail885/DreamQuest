@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { useCachedQuery } from "@/hooks/useCachedQuery";
 import type { AdventureListItem } from "@/types/adventure";
 
 const ITEMS_PER_PAGE = 12;
@@ -37,40 +38,39 @@ export function useAdventureList(): UseAdventureListReturn {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [activeFilter, setActiveFilter] = useState<AdventureFilter>("tous");
-  const fetchingRef = useRef(false);
+
+  // Fonction de fetch mise en cache
+  const fetchAdventures = async () => {
+    const from = (currentPage - 1) * ITEMS_PER_PAGE;
+    const to = from + ITEMS_PER_PAGE - 1;
+
+    const query = supabase
+      .from("aventure")
+      .select("id, titre, description, popularite", { count: "exact" })
+      .order("popularite", { ascending: false });
+
+    const { data, error: fetchError, count } = await query.range(from, to);
+
+    if (fetchError) {
+      setError("Impossible de charger les aventures.");
+      return [];
+    } else {
+      setAdventures(data ?? []);
+      setTotalCount(count ?? 0);
+      return data ?? [];
+    }
+  };
+
+  // Utiliser le cache pour optimiser les appels API
+  const { data: cachedAdventures, loading: cacheLoading } = useCachedQuery(
+    `adventures_page_${currentPage}`,
+    fetchAdventures,
+    { cacheDuration: 3 * 60 * 1000, refetchOnFocus: true } // Cache 3 minutes
+  );
 
   useEffect(() => {
-    if (fetchingRef.current) return;
-
-    const fetchAdventures = async () => {
-      fetchingRef.current = true;
-      setLoading(true);
-
-      const from = (currentPage - 1) * ITEMS_PER_PAGE;
-      const to = from + ITEMS_PER_PAGE - 1;
-
-      const query = supabase
-        .from("aventure")
-        .select("id, titre, description, popularite", { count: "exact" })
-        .order("popularite", { ascending: false });
-
-      const { data, error, count } = await query.range(from, to);
-
-      if (error) {
-        setError("Impossible de charger les aventures.");
-      } else {
-        setAdventures(data ?? []);
-        setTotalCount(count ?? 0);
-      }
-      setLoading(false);
-      fetchingRef.current = false;
-    };
-
-    fetchAdventures();
-    return () => {
-      fetchingRef.current = false;
-    };
-  }, [currentPage]);
+    setLoading(cacheLoading);
+  }, [cacheLoading]);
 
   const filteredAdventures = adventures.filter((adventure) =>
     adventure.titre.toLowerCase().includes(searchQuery.toLowerCase())

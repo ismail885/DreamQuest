@@ -7,9 +7,9 @@ export default function Footer() {
   return (
     <footer className="border-t border-gray-800/50 bg-[#070b15] ">
       <div className="container mx-auto px-4 md:px-6 py-10 md:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12">
-          {/* Brand */}
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {/* Brand - LEFT */}
+          <div>
             <Link
               href="/"
               className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity mb-4"
@@ -53,7 +53,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Aventures */}
+          {/* Aventures - CENTER */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Aventures
@@ -93,42 +93,48 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
+          {/* Informations légales - RIGHT */}
+          <div className="flex flex-col items-start">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              Informations légales
+            </h3>
+            <div className="flex flex-col gap-2.5 text-sm">
+              <Link
+                href="/privacy"
+                className="text-gray-400 hover:text-cyan-400 transition-colors"
+              >
+                Confidentialité
+              </Link>
+              <Link
+                href="/terms"
+                className="text-gray-400 hover:text-cyan-400 transition-colors"
+              >
+                CGU
+              </Link>
+              <Link
+                href="/cookies"
+                className="text-gray-400 hover:text-cyan-400 transition-colors"
+              >
+                Cookies
+              </Link>
+              <Link
+                href="/licenses"
+                className="text-gray-400 hover:text-cyan-400 transition-colors"
+              >
+                Licences
+              </Link>
+            </div>
+          </div>
         </div>
 
-        <div className="border-t border-gray-800/50 mt-10 pt-6 flex flex-col items-center gap-3">
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-            Informations légales
-          </h3>
-          <div className="flex items-center gap-4 text-xs">
-            <Link
-              href="/privacy"
-              className="text-gray-500 hover:text-cyan-400 transition-colors"
-            >
-              Confidentialité
-            </Link>
-            <Link
-              href="/terms"
-              className="text-gray-500 hover:text-cyan-400 transition-colors"
-            >
-              CGU
-            </Link>
-            <Link
-              href="/cookies"
-              className="text-gray-500 hover:text-cyan-400 transition-colors"
-            >
-              Cookies
-            </Link>
-            <Link
-              href="/licenses"
-              className="text-gray-500 hover:text-cyan-400 transition-colors"
-            >
-              Licences
-            </Link>
-          </div>
-          <p className="text-gray-500 text-xs">
+        <div className="border-t border-gray-800/50 mt-10 pt-6 flex flex-col items-center gap-2">
+          <p className="text-gray-400 text-xs">
             &copy; {currentYear} DreamQuest. Tous droits réservés.
           </p>
-          <p className="text-gray-600 text-xs">Fait par Ismail Abou-zaid</p>
+          <p className="text-gray-500 text-xs hover:text-gray-400 transition-colors">
+            Fait par <a href="https://github.com/ismail885" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Ismail Abou-zaid</a>
+          </p>
         </div>
       </div>
     </footer>

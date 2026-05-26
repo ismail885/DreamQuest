@@ -4,10 +4,13 @@ import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 // Configuration JWT
 // ============================================
 
-function getJwtSecret(): string {
+export function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env.local file.');
+  }
+  if (secret.length < 32) {
+    console.warn('[JWT] Warning: JWT_SECRET is shorter than 32 characters. Recommended for security.');
   }
   return secret;
 }
@@ -17,7 +20,7 @@ const ALGORITHM = 'HS256';
 /**
  * Parse une durée lisible (ex: "7d", "24h", "3600") en secondes.
  */
-function parseDuration(value: string | undefined): number {
+export function parseDuration(value: string | undefined): number {
   if (!value) return 3600;
   const match = value.match(/^(\d+)\s*(s|m|h|d)?$/i);
   if (!match) return 3600;
@@ -55,6 +58,11 @@ export type TokenPayload = Omit<UserJWTPayload, 'iat' | 'exp'>;
  * Expire après 1h (aligné sur Supabase Auth).
  */
 export async function signToken(payload: TokenPayload): Promise<string> {
+  // Validation du payload
+  if (!payload.userId || !payload.email) {
+    throw new Error('Invalid token payload: userId and email are required');
+  }
+  
   const secret = new TextEncoder().encode(getJwtSecret());
   
   const token = await new SignJWT({ ...payload })
@@ -87,7 +95,7 @@ export async function verifyToken(token: string): Promise<UserJWTPayload | null>
 // Gestion des cookies HttpOnly
 // ============================================
 
-/** Strict�t� du cookie : Secure uniquement en production (HTTPS) */
+/** Sécurité du cookie : Secure uniquement en production (HTTPS) */
 const COOKIE_OPTIONS = `Path=/; HttpOnly${process.env.NODE_ENV === 'production' ? '; Secure' : ''}; SameSite=Strict`;
 
 /**
@@ -128,8 +136,6 @@ export function getTokenFromCookies(cookieHeader: string | null): string | null 
 }
 
 // Backup des anciennes signatures pour compatibilité
-/** @deprecated Utiliser createAuthCookie */
-export const createAuthCookies = createAuthCookie;
-/** @deprecated Utiliser clearAuthCookie */
-export const clearAuthCookies = clearAuthCookie;
+/** @deprecated Utiliser signToken */
+export const createToken = signToken;
 

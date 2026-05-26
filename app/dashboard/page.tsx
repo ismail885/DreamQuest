@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
-import { Plus, ChevronDown } from "lucide-react";
+import { Plus, ChevronDown, Zap } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import DashboardSuggestions from "@/components/dashboard/DashboardSuggestions";
+import EventPopup from "@/components/dashboard/EventPopup";
 
 const CharacterList = dynamic(() => import("@/components/character/CharacterList"), {
  ssr: false,
@@ -27,6 +28,7 @@ const CharacterList = dynamic(() => import("@/components/character/CharacterList
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [isEventPopupOpen, setIsEventPopupOpen] = useState(false);
   const { user, loading } = useAuthContext();
   const {
   stats,
@@ -79,6 +81,16 @@ export default function DashboardPage() {
 
  <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
  <div className="max-w-7xl mx-auto">
+ {/* Bouton événement flottant */}
+ <button
+ onClick={() => setIsEventPopupOpen(true)}
+ className="absolute top-6 right-6 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-lg flex items-center gap-2 transition-all animate-pulse-ring z-20"
+ aria-label="Voir l'événement spécial"
+ >
+ <Zap size={18} />
+ <span className="hidden sm:inline">Événement</span>
+ </button>
+
  {/* En-tete */}
  <div className="mb-8 md:mb-10">
  <h1 className="text-2xl md:text-4xl font-bold mb-2">
@@ -118,6 +130,9 @@ export default function DashboardPage() {
 
  <BottomNav />
  <Footer />
+
+ {/* Event Popup */}
+ <EventPopup isOpen={isEventPopupOpen} onClose={() => setIsEventPopupOpen(false)} />
  </div>
  );
 }
