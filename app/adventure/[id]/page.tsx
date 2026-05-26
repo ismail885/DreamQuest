@@ -11,8 +11,9 @@ import { useCharacter } from "@/hooks/useCharacter";
 import { useConsequences } from "@/hooks/useConsequences";
 import { useAuthContext } from "@/context/AuthContext";
 import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomGenerator";
+import { getAdventureImage } from "@/data/adventureImages";
 import { motion } from "framer-motion";
-import { ConfirmLeaveModal } from "@/components/shared/Breadcrumb";
+import ConfirmLeaveModal from "@/components/shared/ConfirmLeaveModal";
 import CharacterHUD from "@/components/adventure/CharacterHUD";
 import EffectIndicator from "@/components/adventure/EffectIndicator";
 import ChoiceButton from "@/components/adventure/ChoiceButton";
@@ -22,15 +23,6 @@ import ClassAbilitiesPanel from "@/components/adventure/ClassAbilitiesPanel";
 import CombatUI from "@/components/adventure/CombatUI";
 import AdventureHeader from "@/components/adventure/AdventureHeader";
 import AdventureEndScreen from "@/components/adventure/AdventureEndScreen";
-
-const ADVENTURE_IMAGES: Record<number, string> = {
- 1: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&h=500&fit=crop",
- 2: "https://images.unsplash.com/photo-1511497584788-876760111969?w=1200&h=500&fit=crop",
- 3: "https://images.unsplash.com/photo-1589308078059-be1415eab064?w=1200&h=500&fit=crop",
- 4: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1200&h=500&fit=crop",
- 5: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=500&fit=crop",
- 6: "https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=1200&h=500&fit=crop",
-};
 
 const MAX_STEPS = 8;
 
@@ -132,7 +124,7 @@ function AdventureReader({ params }: Props) {
  }
  }, [isEnd, user, characterIdNum, character, save, history.length, completeAdventure]);
 
- const image = ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
+ const image = getAdventureImage(adventureId);
 
  if (loading) {
  return (

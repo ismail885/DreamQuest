@@ -5,7 +5,6 @@ import React, {
  useContext,
  useState,
  useEffect,
- useCallback,
  ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -29,7 +28,6 @@ interface AuthContextType {
  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
  loginWithApple: () => Promise<{ success: boolean; error?: string }>;
  logout: () => Promise<void>;
- checkAuth: () => Promise<void>;
  updateUser: (updates: Partial<User>) => void;
 }
 
@@ -97,29 +95,6 @@ const fetchUserFromAuthId = async (authId: string): Promise<User | null> => {
 export function AuthProvider({ children }: { children: ReactNode }): React.JSX.Element {
  const [user, setUser] = useState<User | null>(null);
  const [loading, setLoading] = useState(true);
-
- // Synchronisation utilisateur depuis Supabase Auth
- const syncUser = useCallback(async () => {
- const { data: { session } } = await supabase.auth.getSession();
- if (session?.user) {
- const loggedUser = await fetchUserFromAuthId(session.user.id);
- if (loggedUser) {
- await setAuthSession(loggedUser);
- setUser(loggedUser);
- } else {
- setUser(null);
- }
- } else {
- await clearAuthSession();
- setUser(null);
- }
- setLoading(false);
- }, []);
-
- // Vérification initiale
- const checkAuth = useCallback(async () => {
- await syncUser();
- }, [syncUser]);
 
  useEffect(() => {
  let mounted = true;
@@ -329,7 +304,6 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  loginWithGoogle,
  loginWithApple,
  logout,
- checkAuth,
  updateUser,
  }}
  >

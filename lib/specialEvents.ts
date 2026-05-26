@@ -14,16 +14,6 @@ export interface SpecialEvent {
 
 const EVENTS: SpecialEvent[] = [
   {
-    id: "spring_2026",
-    name: "Festival de Printemps",
-    description: "La nature se réveille. Participez pour earn special rewards!",
-    startDate: "2026-04-20",
-    endDate: "2026-05-01",
-    theme: "spring",
-    badge: "Fleur",
-    reward: 300,
-  },
-  {
     id: "summer_2026",
     name: "Ete Magique",
     description: "Les jours rallongent... des nouvelles quêtes vous attendent.",

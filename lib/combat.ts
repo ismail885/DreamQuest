@@ -1,4 +1,5 @@
 import { getCombatAbilitiesByClass, ALL_ABILITIES } from './abilities';
+import { ABILITY_HANDLERS } from './combatAbilityHandlers';
 import { type Enemy, type StatusEffect, ENEMIES } from '@/data/enemies';
 
 // Ré-exporter pour compatibilité
@@ -131,175 +132,32 @@ export function executeAbility(
     return { success: false, log: `${ability.name} est en recharge (${currentCooldowns[abilityId]} tours restants)`, manaUsed: 0 };
   }
   
-  let damage = 0;
-  let heal = 0;
-  let newStatus = { ...currentStatus };
-  const newEnemyStatus: StatusEffect[] = [];
-  let log = "";
   const manaUsed = ability.manaCost;
-  
-  switch (abilityId) {
-    case "coup_violent":
-      damage = Math.floor(stats.force * 1.5);
-      log = `Coup Violent! ${damage} dégâts!`;
-      break;
-      
-    case "parade":
-      newStatus.buff_defense += 2;
-      log = "Parade! Réduction des dégâts pour 2 tours.";
-      break;
-      
-    case "cri_guerre":
-      newStatus.buff_force += 3;
-      log = "Cri de Guerre! Force augmentée pour 3 tours!";
-      break;
-      
-    case "boule_feu":
-      damage = Math.floor(stats.magie * 2);
-      log = `Boule de Feu! ${damage} dégâts magiques!`;
-      break;
-      
-    case "bouclier_magique":
-      newStatus.buff_defense += 2;
-      log = "Bouclier Magique! Protégé pendant 2 tours.";
-      break;
-      
-    case "glace":
-      enemy.agility = Math.max(1, enemy.agility - 5);
-      log = "Champ de Glace! L'ennemi est ralenti!";
-      break;
-      
-    case "attaque_sournoise":
-      const sneakBonus = currentStatus.buff_agility > 0 ? 1.5 : 1;
-      damage = Math.floor(stats.agility * sneakBonus * 1.2);
-      log = `Attaque Sournoise! ${damage} dégâts!`;
-      break;
-      
-    case "empoisonnement":
-      newEnemyStatus.push("poison");
-      log = "Empoisonnement! L'ennemi est empoisonné.";
-      break;
-      
-    case "cachette":
-      newStatus.buff_agility += 2;
-      log = "Cachette! Plus difficile à toucher pendant 2 tours.";
-      break;
-      
-    case "drain_vie":
-      damage = Math.floor(stats.magie * 1.2);
-      heal = Math.floor(damage / 2);
-      log = `Drain de Vie! ${damage} dégâts et +${heal} PV!`;
-      break;
-      
-    case "invocation_squelette":
-      damage = Math.floor(stats.magie * 0.8);
-      heal = Math.floor(stats.magie * 0.5);
-      log = `Invocation! Squelette inflige ${damage} dégâts et te soigne de ${heal} PV.`;
-      break;
-      
-    case "malédiction":
-      newEnemyStatus.push("stunned");
-      log = "Malédiction! L'ennemi est étourdi!";
-      break;
-      
-    case "tir_precis":
-      damage = Math.floor(stats.agility * 1.3);
-      log = `Tir Précis! ${damage} dégâts!`;
-      break;
-      
-    case "piege":
-      newEnemyStatus.push("stunned");
-      log = "Piège! L'ennemi est immobilisé ce tour.";
-      break;
-      
-    case "visée":
-      newStatus.buff_agility += 2;
-      log = "Visée! Chances de critique augmentées!";
-      break;
-      
-    case "frappe_sainte":
-      const isUndead = enemy.id === "squelette" || enemy.id === "nécromancien";
-      damage = isUndead ? Math.floor(stats.magie * 2.5) : Math.floor(stats.magie * 1.2);
-      log = isUndead ? `Frappe Sainte! SUPER EFFICACE! ${damage} dégâts!` : `Frappe Sainte! ${damage} dégâts!`;
-      break;
-      
-    case "bouclier_faith":
-      newStatus.buff_defense += 3;
-      log = "Bouclier de Foi! Invulnérable ce tour!";
-      break;
-      
-    case "bénédiction":
-      heal = Math.floor(stats.magie * 1.5);
-      newStatus.buff_defense += 2;
-      log = `Bénédiction! +${heal} PV et défense augmentée!`;
-      break;
-      
-    case "rayon_lumière":
-      damage = Math.floor(stats.magie * 1.4);
-      log = `Rayon de Lumière! ${damage} dégâts!`;
-      break;
-      
-    case "soin":
-      heal = Math.floor(stats.magie * 2);
-      log = `Soin! +${heal} PV!`;
-      break;
-      
-    case "purification":
-      newStatus = { buff_force: 0, buff_agility: 0, buff_defense: 0, regen: 0, thorns: 0 };
-      heal = Math.floor(stats.magie * 0.5);
-      log = `Purification! Tous les effets annulés et +${heal} PV.`;
-      break;
-      
-    case "griffes_nature":
-      damage = Math.floor(stats.force * 1.2 + stats.agility * 0.5);
-      log = `Griffes de Nature! ${damage} dégâts!`;
-      break;
-      
-    case "épines":
-      newStatus.thorns += 2;
-      log = "Épines! L'ennemi se blesse en attaquant.";
-      break;
-      
-    case "guérison":
-      heal = Math.floor(stats.magie * 1.5);
-      playerMana = Math.min(playerMana + 20, 100);
-      log = `Guérison! +${heal} PV et +20 Mana!`;
-      break;
-      
-    case "coup_dague":
-      damage = Math.floor(stats.agility * 1.1);
-      log = `Coup de Dague! ${damage} dégâts!`;
-      break;
-      
-    case "fumigène":
-      return { success: true, log: "Tu utilises le fumigène et fuis le combat!", manaUsed };
-      
-    case "jet_de_sable":
-      newEnemyStatus.push("stunned");
-      log = "Jet de Sable! L'ennemi est étourdi!";
-      break;
-      
-    case "frénésie":
-      const hit1 = Math.floor(stats.force * 0.8);
-      const hit2 = Math.floor(stats.force * 0.8);
-      damage = hit1 + hit2;
-      log = `Frénésie! Deux coups pour ${damage} dégâts!`;
-      break;
-      
-    case "rugissement":
-      newStatus.buff_defense += 2;
-      log = "Rugissement! L'ennemi est terrifié!";
-      break;
-      
-    case "furia":
-      newStatus.buff_force += 2;
-      newStatus.buff_agility += 2;
-      log = "Furie du Barbare! Force et Agilité augmentées pour 2 tours!";
-      break;
-      
-    default:
-      log = "Compétence non implémentée.";
+
+  // Chercher le handler dans le registry
+  const handler = ABILITY_HANDLERS[abilityId];
+
+  if (!handler) {
+    return { success: false, log: "Compétence non implémentée.", manaUsed: 0 };
   }
+
+  const result = handler({ stats, enemy, currentStatus, playerPv, playerMana });
+
+  // Appliquer les modifications à l'ennemi (ex: glace réduit l'agilité)
+  if (result.enemyModifications) {
+    Object.assign(enemy, result.enemyModifications);
+  }
+
+  // Gérer les flags spéciaux (ex: fuite)
+  if (result.specialFlag === 'fled') {
+    return { success: true, log: result.log, manaUsed };
+  }
+
+  const damage = result.damage ?? 0;
+  const heal = result.heal ?? 0;
+  const log = result.log;
+  const newStatus = result.newStatus ?? { ...currentStatus };
+  const newEnemyStatus = result.newEnemyStatus ?? [];
   
   // Appliquer le cooldown si la compétence en a un
   const newCooldowns = ability.cooldown > 0
