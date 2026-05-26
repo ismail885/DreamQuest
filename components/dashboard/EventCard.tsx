@@ -25,12 +25,6 @@ export default function EventCard({ showUpcoming = false }: EventCardProps) {
       badge: "bg-orange-600",
       text: "text-orange-400",
     },
-    spring: {
-      bg: "bg-green-900/20",
-      border: "border-green-600/40",
-      badge: "bg-green-600",
-      text: "text-green-400",
-    },
     summer: {
       bg: "bg-yellow-900/20",
       border: "border-yellow-600/40",

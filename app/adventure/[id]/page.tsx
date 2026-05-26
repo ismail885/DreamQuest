@@ -10,7 +10,7 @@ import { useCombat } from "@/hooks/useCombat";
 import { useCharacter } from "@/hooks/useCharacter";
 import { useConsequences } from "@/hooks/useConsequences";
 import { useAuthContext } from "@/context/AuthContext";
-import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomGenerator";
+import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomEvents";
 import { getAdventureImage } from "@/data/adventureImages";
 import { motion } from "framer-motion";
 import ConfirmLeaveModal from "@/components/shared/ConfirmLeaveModal";

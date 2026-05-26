@@ -1,6 +1,6 @@
 import { supabase } from './supabaseClient'
 import { calculateRequiredXP } from './characters/classDefinitions'
-import { LEVEL_BONUS } from './randomGenerator'
+import { LEVEL_BONUS } from './levelBonus'
 
 export interface LevelUpResult {
   leveledUp: boolean

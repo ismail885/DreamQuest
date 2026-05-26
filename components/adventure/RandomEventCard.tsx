@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { RANDOM_EVENTS } from "@/lib/randomGenerator";
+import { RANDOM_EVENTS } from "@/lib/randomEvents";
 
 interface RandomEventChoice {
   text: string;

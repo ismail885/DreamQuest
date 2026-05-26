@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import { 
  generateRandomStats, 
  getRandomAbility, 
- getAbilitiesForLevel, 
- getRandomEvent,
- LEVEL_BONUS
+ getAbilitiesForLevel
 } from '@/lib/randomGenerator';
+import { getRandomEvent } from '@/lib/randomEvents';
+import { LEVEL_BONUS } from '@/lib/levelBonus';
 import { getPoolAbilityNames } from '@/lib/abilities';
 import { calculateLevel } from '@/lib/xp';
 import { calculateRequiredXP } from '@/lib/characters/classDefinitions';

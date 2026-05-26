@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Zap } from "lucide-react";
-import { getActiveEvent, getTimeRemaining } from "@/lib/specialEvents";
+import { getActiveEvent, getUpcomingEvent, getTimeRemaining } from "@/lib/specialEvents";
 
 interface EventPopupProps {
   isOpen: boolean;
@@ -10,7 +10,10 @@ interface EventPopupProps {
 }
 
 export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
-  const event = getActiveEvent();
+  const activeEvent = getActiveEvent();
+  const upcomingEvent = getUpcomingEvent();
+  const event = activeEvent || upcomingEvent;
+  const isActive = activeEvent !== null;
 
   if (!event) return null;
 
@@ -23,12 +26,6 @@ export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
       border: "border-orange-500",
       accent: "text-orange-400",
       glow: "shadow-orange-500/50",
-    },
-    spring: {
-      bg: "from-green-900 to-emerald-900",
-      border: "border-green-500",
-      accent: "text-green-400",
-      glow: "shadow-green-500/50",
     },
     summer: {
       bg: "from-yellow-900 to-amber-900",
@@ -85,7 +82,7 @@ export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
                   </div>
                   <h2 className={`text-2xl font-bold ${colors.accent}`}>{event.name}</h2>
                 </div>
-                <p className="text-gray-300 text-sm">Événement spécial en cours</p>
+                <p className="text-gray-300 text-sm">{isActive ? "Événement spécial en cours" : "Événement à venir"}</p>
               </div>
 
               {/* Content */}
@@ -116,7 +113,7 @@ export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
                    onClick={onClose}
                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${colors.accent} bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40`}
                  >
-                   Explorez l&apos;événement
+                   {isActive ? "Explorez l'événement" : "Voir plus"}
                  </button>
               </div>
 
