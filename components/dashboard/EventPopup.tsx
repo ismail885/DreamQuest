@@ -113,11 +113,11 @@ export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
 
                 {/* CTA Button */}
                 <button
-                  onClick={onClose}
-                  className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${colors.accent} bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40`}
-                >
-                  Explorez l'événement
-                </button>
+                   onClick={onClose}
+                   className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${colors.accent} bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40`}
+                 >
+                   Explorez l&apos;événement
+                 </button>
               </div>
 
               {/* Footer */}

@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { getActiveEvent, getUpcomingEvent, getTimeRemaining } from "@/lib/specialEvents";
-import type { SpecialEvent } from "@/lib/specialEvents";
 
 interface EventCardProps {
   showUpcoming?: boolean;

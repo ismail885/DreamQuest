@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useCachedQuery } from "@/hooks/useCachedQuery";
 import type { AdventureListItem } from "@/types/adventure";
@@ -62,7 +62,7 @@ export function useAdventureList(): UseAdventureListReturn {
   };
 
   // Utiliser le cache pour optimiser les appels API
-  const { data: cachedAdventures, loading: cacheLoading } = useCachedQuery(
+  const { loading: cacheLoading } = useCachedQuery(
     `adventures_page_${currentPage}`,
     fetchAdventures,
     { cacheDuration: 3 * 60 * 1000, refetchOnFocus: true } // Cache 3 minutes
