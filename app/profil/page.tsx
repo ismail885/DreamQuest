@@ -186,8 +186,7 @@ export default function ProfilPage() {
  closeEditModal();
  }, 1500);
 
- } catch (error) {
- console.error("Erreur lors de la sauvegarde:", error);
+ } catch {
  setSaveMessage({ type: "error", text: "Erreur lors de la mise à jour du profil." });
  } finally {
  setIsSaving(false);

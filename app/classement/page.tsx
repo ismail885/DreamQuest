@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Trophy, BookOpen, Users, ChevronDown } from "lucide-react";
+import { Trophy, BookOpen, Users, ChevronDown, AlertCircle } from "lucide-react";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
@@ -26,7 +26,7 @@ export default function ClassementPage() {
   usePullToRefresh(refresh);
 
   return (
- <div className="min-h-screen bg-[#070b15] text-white flex flex-col">
+    <div className="min-h-screen bg-[#0d1117] text-white flex flex-col">
  <Header />
 
  <main
@@ -67,17 +67,15 @@ export default function ClassementPage() {
  {/* Tabs */}
  <ClassementTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
- {fetchError ? (
- <div className="text-center py-20">
- <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
- <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
- </svg>
- </div>
- <h2 className="text-xl font-bold text-white mb-2">Erreur de chargement</h2>
- <p className="text-gray-400 ">{fetchError}</p>
- </div>
- ) : loading ? (
+  {fetchError ? (
+    <div className="text-center py-20">
+      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
+        <AlertCircle className="w-8 h-8 text-red-400" />
+      </div>
+      <h2 className="text-xl font-bold text-white mb-2">Erreur de chargement</h2>
+      <p className="text-gray-400 ">{fetchError}</p>
+    </div>
+  ) : loading ? (
  <div className="text-center py-20">
  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto"></div>
  <p className="text-gray-400 mt-4">Chargement du classement...</p>

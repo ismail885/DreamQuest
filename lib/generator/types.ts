@@ -30,3 +30,10 @@ export interface GeneratorInput {
   genre: string;
   description?: string;
 }
+
+export interface GeneratedAdventure {
+  nodes: GeneratedNode[];
+  description: string;
+  difficulty: "easy" | "normal" | "hard";
+  duree_estimee: number;
+}

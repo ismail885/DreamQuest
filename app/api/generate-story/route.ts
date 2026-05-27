@@ -249,7 +249,8 @@ export async function POST(req: NextRequest) {
       genreInfo
 
     // 3. Génération des nœuds via le moteur
-    const nodes = generateAdventure({ title: titre, genre: genreMoteur })
+    const generated = generateAdventure({ title: titre, genre: genreMoteur })
+    const nodes = generated.nodes
 
     if (nodes.length === 0) {
       return errorResponse(

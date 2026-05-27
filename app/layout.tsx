@@ -1,8 +1,10 @@
 import "@/styles/globals.css";
 import dynamic from "next/dynamic";
 import { AuthProvider } from "@/context/AuthContext";
+import { EventProvider } from "@/context/EventContext";
 
 const Toaster = dynamic(() => import("react-hot-toast").then((m) => m.Toaster));
+const EventPopupWrapper = dynamic(() => import("@/components/dashboard/EventPopupWrapper"), { ssr: false });
 
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
@@ -38,40 +40,43 @@ export default function RootLayout({
  <meta name="theme-color" content="#00d4ff" />
  <meta name="viewport" content="width=device-width, initial-scale=1" />
  </head>
- <body className={`${plusJakartaSans.variable} bg-[#070b15] text-white antialiased`}>
- <AuthProvider>
- <div className="relative min-h-screen flex flex-col">
- <div className="fixed inset-0 -z-10 overflow-hidden">
- <div className="absolute inset-0 bg-gradient-to-br from-[#070b15] via-[#111827] to-[#070b15]"></div>
- <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
+  <body className={`${plusJakartaSans.variable} bg-[#070b15] text-white antialiased`}>
+  <AuthProvider>
+  <EventProvider>
+  <div className="relative min-h-screen flex flex-col">
+  <div className="fixed inset-0 -z-10 overflow-hidden">
+  <div className="absolute inset-0 bg-gradient-to-br from-[#070b15] via-[#111827] to-[#070b15]"></div>
+  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
 
- </div>
- {children}
- </div>
- <Toaster 
- position="bottom-right"
- toastOptions={{
- style: {
- background: '#111827',
- color: '#fff',
- border: '1px solid #1f2937',
- },
- success: {
- iconTheme: {
- primary: '#10b981',
- secondary: '#fff',
- },
- },
- error: {
- iconTheme: {
- primary: '#ef4444',
- secondary: '#fff',
- },
- },
- }}
- />
- </AuthProvider>
- </body>
+  </div>
+  {children}
+  </div>
+  <Toaster 
+  position="bottom-right"
+  toastOptions={{
+  style: {
+  background: '#111827',
+  color: '#fff',
+  border: '1px solid #1f2937',
+  },
+  success: {
+  iconTheme: {
+  primary: '#10b981',
+  secondary: '#fff',
+  },
+  },
+  error: {
+  iconTheme: {
+  primary: '#ef4444',
+  secondary: '#fff',
+  },
+  },
+  }}
+  />
+  <EventPopupWrapper />
+  </EventProvider>
+  </AuthProvider>
+  </body>
  </html>
  );
 }

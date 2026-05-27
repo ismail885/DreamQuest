@@ -49,10 +49,10 @@ export default function PublicProfilePage() {
 
  if (!profile) return null;
 
- return (
- <div className="min-h-screen bg-[#070b15] text-white p-4">
- <div className="max-w-2xl mx-auto">
- <div className="bg-[#0c1322] border border-gray-700/50 rounded-xl p-6 mb-6">
+  return (
+    <div className="min-h-screen bg-[#0d1117] text-white p-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-[#131e35] border border-gray-700/50 rounded-xl p-6 mb-6">
  <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
  {username.substring(0, 2).toUpperCase()}
  </div>
@@ -62,12 +62,12 @@ export default function PublicProfilePage() {
  </p>
  </div>
 
- <div className="bg-[#0c1322] border border-gray-700/50 rounded-xl p-6 mb-6">
- <h2 className="text-lg font-bold text-cyan-400 mb-4">Personnages</h2>
- {characters.length > 0 ? (
- <div className="space-y-3">
- {characters.map((c, i) => (
- <div key={i} className="flex justify-between items-center p-3 bg-[#141d2e] rounded-lg">
+  <div className="bg-[#131e35] border border-gray-700/50 rounded-xl p-6 mb-6">
+    <h2 className="text-lg font-bold text-cyan-400 mb-4">Personnages</h2>
+    {characters.length > 0 ? (
+      <div className="space-y-3">
+        {characters.map((c, i) => (
+          <div key={i} className="flex justify-between items-center p-3 bg-[#141d2e] rounded-lg">
  <div>
  <p className="font-semibold">{c.nom_personnage}</p>
  <p className="text-gray-400 text-sm">{c.classe}</p>
@@ -81,8 +81,8 @@ export default function PublicProfilePage() {
  )}
  </div>
 
- <div className="bg-[#0c1322] border border-gray-700/50 rounded-xl p-6">
- <h2 className="text-lg font-bold text-cyan-400 mb-4">Aventures</h2>
+  <div className="bg-[#131e35] border border-gray-700/50 rounded-xl p-6">
+    <h2 className="text-lg font-bold text-cyan-400 mb-4">Aventures</h2>
  {adventures.length > 0 ? (
  <div className="space-y-3">
  {adventures.map((a, i) => (

@@ -1,4 +1,4 @@
-import type { GeneratedNode, GenreContent, GeneratorInput } from "./types";
+import type { GeneratedNode, GenreContent, GeneratorInput, GeneratedAdventure } from "./types";
 import { FANTASY_CONTENT } from "./fantasy";
 import { HORROR_CONTENT } from "./horror";
 import { SCIFI_CONTENT } from "./scifi";
@@ -32,13 +32,51 @@ function getContentForGenre(genre: string): GenreContent {
   }
 }
 
-export function generateAdventure(input: GeneratorInput): GeneratedNode[] {
-  const { genre } = input;
+function generateDescription(title: string, genre: string): string {
+  const genreDescriptions: Record<string, string[]> = {
+    fantasy: [
+      `Une épopée fantastique intitulée "${title}". Un voyage rempli de magie, de mystères et de créatures légendaires.`,
+      `"${title}" - Une quête épique dans un monde de fantasy peuplé de héros courageux et de royaumes lointains.`,
+      `Plongez dans "${title}", une aventure magique où chaque choix façonne votre destin.`,
+    ],
+    horror: [
+      `"${title}" - Une histoire d'horreur qui vous glaçera le sang. Découvrez les secrets terrifiants qui l'attendent.`,
+      `Une aventure horrifiante intitulée "${title}". Explorez les ténèbres et survivez si vous le pouvez.`,
+      `"${title}" - Un thriller sombre rempli de suspense, de frissons et de révélations dérangeantes.`,
+    ],
+    scifi: [
+      `"${title}" - Une aventure de science-fiction futuriste. Explorez des mondes technologiques et des mystères cosmiques.`,
+      `Voyagez dans "${title}", une odyssée spatiale remplie de technologie avancée et d'explorations interstellaires.`,
+      `"${title}" - Un voyage sci-fi captivant à travers l'univers, où l'impossible devient réalité.`,
+    ],
+    romance: [
+      `"${title}" - Une histoire d'amour captivante où les cœurs se nouent et les destins s'entrelacent.`,
+      `Découvrez "${title}", une romance passionnante remplie d'émotions, de rencontres inattendues et de moments magiques.`,
+      `"${title}" - Une aventure romantique où l'amour triomphe contre tous les obstacles.`,
+    ],
+  };
+
+  const descriptions = genreDescriptions[genre] || genreDescriptions.fantasy;
+  return pick(descriptions);
+}
+
+export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
+  const { genre, title, description: userDescription } = input;
   const content = getContentForGenre(genre);
   const usedLocations = new Set<{ name: string; description: string }>();
   const usedNpcs = new Set<{ name: string; role: string; description: string }>();
   const usedTwists = new Set<string>();
   const nodeCount = 10 + Math.floor(Math.random() * 6); // 10-15 nodes
+
+  // Générer une description si elle n'existe pas
+  const description = userDescription || generateDescription(title, genre);
+  
+  // Générer la difficulté basée sur le nombre de nœuds
+  const difficulty: "easy" | "normal" | "hard" = 
+    nodeCount < 12 ? "easy" : nodeCount < 14 ? "normal" : "hard";
+  
+  // Estimer la durée (en minutes) : ~3-5 min par nœud
+  const duree_estimee = nodeCount * 4;
 
   const nodes: GeneratedNode[] = [];
 
@@ -145,7 +183,12 @@ export function generateAdventure(input: GeneratorInput): GeneratedNode[] {
     });
   }
 
-  return nodes;
+  return {
+    nodes,
+    description,
+    difficulty,
+    duree_estimee,
+  };
 }
 
 

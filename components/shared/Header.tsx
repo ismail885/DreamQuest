@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuthContext } from "@/context/AuthContext";
 import { Menu, X } from "lucide-react";
+import EventButton from "@/components/dashboard/EventButton";
 
 function NavLinks({ user, onNavigate }: { user: { username?: string; email?: string; role?: string } | null; onNavigate?: () => void }) {
  return (
@@ -36,28 +37,29 @@ function NavLinks({ user, onNavigate }: { user: { username?: string; email?: str
 }
 
 function ActionButtons({ user, isMobile = false, onNavigate }: { user: { username?: string; email?: string } | null; isMobile?: boolean; onNavigate?: () => void }) {
- const getUserInitials = () => {
- const username = user?.username || user?.email || "U";
- return username.substring(0, 2).toUpperCase();
- };
+  const getUserInitials = () => {
+  const username = user?.username || user?.email || "U";
+  return username.substring(0, 2).toUpperCase();
+  };
 
- return (
- <>
- <Link href="/create-character" onClick={onNavigate}>
- <button className={`${isMobile ? 'w-full justify-center' : ''} px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors`}>
- Nouveau Personnage
- </button>
- </Link>
- <Link href="/profil" onClick={onNavigate}>
- <button 
- className={`${isMobile ? 'w-full justify-center' : ''} w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold hover:bg-cyan-600 transition-colors`}
- title="Mon profil"
- >
- {getUserInitials()}
- </button>
- </Link>
- </>
- );
+  return (
+  <>
+  <EventButton />
+  <Link href="/create-character" onClick={onNavigate}>
+  <button className={`${isMobile ? 'w-full justify-center' : ''} px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors`}>
+  Nouveau Personnage
+  </button>
+  </Link>
+  <Link href="/profil" onClick={onNavigate}>
+  <button 
+  className={`${isMobile ? 'w-full justify-center' : ''} w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold hover:bg-cyan-600 transition-colors`}
+  title="Mon profil"
+  >
+  {getUserInitials()}
+  </button>
+  </Link>
+  </>
+  );
 }
 
 const Header = React.memo(function Header() {

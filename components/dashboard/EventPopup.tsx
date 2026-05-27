@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { X, Zap } from "lucide-react";
 import { getActiveEvent, getUpcomingEvent, getTimeRemaining } from "@/lib/specialEvents";
 
@@ -10,6 +11,7 @@ interface EventPopupProps {
 }
 
 export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
+  const router = useRouter();
   const activeEvent = getActiveEvent();
   const upcomingEvent = getUpcomingEvent();
   const event = activeEvent || upcomingEvent;
@@ -110,7 +112,10 @@ export default function EventPopup({ isOpen, onClose }: EventPopupProps) {
 
                 {/* CTA Button */}
                 <button
-                   onClick={onClose}
+                   onClick={() => {
+                     onClose();
+                     router.push("/adventure");
+                   }}
                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${colors.accent} bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40`}
                  >
                    {isActive ? "Explorez l'événement" : "Voir plus"}

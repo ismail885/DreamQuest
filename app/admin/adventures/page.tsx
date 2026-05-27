@@ -35,13 +35,12 @@ export default function AdminAdventuresPage() {
  const { data, count, error } = await query;
 
  if (error) throw error;
- setAdventures(data || []);
- setTotalCount(count || 0);
- } catch (error) {
- console.error("Error fetching adventures:", error);
- } finally {
- setLoading(false);
- }
+  setAdventures(data || []);
+  setTotalCount(count || 0);
+  } catch (error) {
+  } finally {
+  setLoading(false);
+  }
  }, [currentPage, searchTerm]);
 
  useEffect(() => {
@@ -62,14 +61,13 @@ export default function AdminAdventuresPage() {
  .delete()
  .eq("id_aventure", aventureId);
 
- if (error) throw error;
- setDeleteConfirm(null);
- fetchAdventures();
- } catch (error) {
- console.error("Error deleting adventure:", error);
- setActionError("Erreur lors de la suppression de l'aventure.");
- setDeleteConfirm(null);
- }
+  if (error) throw error;
+  setDeleteConfirm(null);
+  fetchAdventures();
+  } catch (error) {
+  setActionError("Erreur lors de la suppression de l'aventure.");
+  setDeleteConfirm(null);
+  }
  }
 
  return (

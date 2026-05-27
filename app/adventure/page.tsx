@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import AdventureCard from "@/components/adventure/AdventureCard";
 import { SkeletonAdventureList } from "@/components/shared/Skeleton";
-import { Search, X } from "lucide-react";
+import { Search, X, User, Frown } from "lucide-react";
 import { useAdventureList, FILTER_OPTIONS } from "@/hooks/useAdventureList";
 import AdventurePagination from "@/components/adventure/AdventurePagination";
 
@@ -20,6 +20,7 @@ export default function AdventurePage() {
 }
 
 function AdventurePageContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const personnageId = searchParams.get("personnage");
   const [showCharacterModal, setShowCharacterModal] = useState(false);
@@ -55,20 +56,18 @@ function AdventurePageContent() {
  </p>
  </div>
 
- {personnageId && (
- <div className="max-w-4xl mx-auto mb-6 md:mb-8">
- <div className="flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
- <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
- <svg className="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
- </svg>
- </div>
- <p className="text-cyan-300 text-sm">
- Personnage sélectionné — choisissez une aventure pour commencer !
- </p>
- </div>
- </div>
- )}
+  {personnageId && (
+  <div className="max-w-4xl mx-auto mb-6 md:mb-8">
+  <div className="flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
+  <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+  <User className="w-4 h-4 text-cyan-400" />
+  </div>
+  <p className="text-cyan-300 text-sm">
+  Personnage sélectionné — choisissez une aventure pour commencer !
+  </p>
+  </div>
+  </div>
+  )}
 
  <div className="max-w-4xl mx-auto mb-8 md:mb-12">
  <div className="relative group">
@@ -145,17 +144,15 @@ function AdventurePageContent() {
   onPageChange={setCurrentPage}
   />
  </>
- ) : (
- <div className="text-center py-20">
- <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800/50 mb-4 ">
- <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
- </svg>
- </div>
- <p className="text-gray-400 text-lg ">Aucune aventure trouvée</p>
- <p className="text-gray-400 text-sm mt-2 ">Essayez de modifier vos critères de recherche</p>
- </div>
- )}
+  ) : (
+  <div className="text-center py-20">
+  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800/50 mb-4 ">
+  <Frown className="w-8 h-8 text-gray-600" />
+  </div>
+  <p className="text-gray-400 text-lg ">Aucune aventure trouvée</p>
+  <p className="text-gray-400 text-sm mt-2 ">Essayez de modifier vos critères de recherche</p>
+  </div>
+  )}
  </div>
 
  {showCharacterModal && (
@@ -164,46 +161,42 @@ function AdventurePageContent() {
  className="absolute inset-0 bg-black/70 backdrop-blur-sm"
  onClick={() => setShowCharacterModal(false)}
  />
- <div className="relative bg-[#0f1322] border border-gray-700 rounded-t-2xl md:rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto md:max-h-none ">
- <button
- onClick={() => setShowCharacterModal(false)}
- className="absolute top-4 right-4 text-gray-400 hover:text-white"
- >
- <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
- </svg>
- </button>
+  <div className="relative bg-[#0f1322] border border-gray-700 rounded-t-2xl md:rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto md:max-h-none ">
+  <button
+  onClick={() => setShowCharacterModal(false)}
+  className="absolute top-4 right-4 text-gray-400 hover:text-white"
+  >
+  <X className="w-6 h-6" />
+  </button>
  
- <div className="text-center">
- <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-cyan-500/20 flex items-center justify-center">
- <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
- </svg>
- </div>
+  <div className="text-center">
+  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-cyan-500/20 flex items-center justify-center">
+  <User className="w-8 h-8 text-cyan-400" />
+  </div>
  
  <h3 className="text-xl font-bold text-white mb-2 ">Sélectionnez un personnage</h3>
  <p className="text-gray-400 mb-6 ">Vous devez choisir un personnage avant de commencer une aventure.</p>
  
- <div className="flex flex-col gap-3">
- <button
- onClick={() => {
- setShowCharacterModal(false);
- window.location.href = '/profil?tab=characters';
- }}
- className="w-full px-6 py-3 bg-[#0c1322] border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors "
- >
- Mes personnages
- </button>
- <button
- onClick={() => {
- setShowCharacterModal(false);
- window.location.href = '/create-character';
- }}
- className="w-full px-6 py-3 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
- >
- Créer un personnage
- </button>
- </div>
+  <div className="flex flex-col gap-3">
+  <button
+  onClick={() => {
+  setShowCharacterModal(false);
+  router.push('/profil?tab=characters');
+  }}
+  className="w-full px-6 py-3 bg-[#0c1322] border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500/10 transition-colors "
+  >
+  Mes personnages
+  </button>
+  <button
+  onClick={() => {
+  setShowCharacterModal(false);
+  router.push('/create-character');
+  }}
+  className="w-full px-6 py-3 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
+  >
+  Créer un personnage
+  </button>
+  </div>
  </div>
  </div>
  </div>
