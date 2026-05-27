@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
-import { useEventContext } from "@/context/EventContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Plus, ChevronDown } from "lucide-react";

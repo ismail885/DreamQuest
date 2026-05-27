@@ -2,9 +2,9 @@ import "@/styles/globals.css";
 import dynamic from "next/dynamic";
 import { AuthProvider } from "@/context/AuthContext";
 import { EventProvider } from "@/context/EventContext";
+import EventPopupWrapper from "@/components/dashboard/EventPopupWrapper";
 
 const Toaster = dynamic(() => import("react-hot-toast").then((m) => m.Toaster));
-const EventPopupWrapper = dynamic(() => import("@/components/dashboard/EventPopupWrapper"), { ssr: false });
 
 import { Plus_Jakarta_Sans } from 'next/font/google';
 

@@ -32,12 +32,11 @@ export default function AdminAdventuresPage() {
         query = query.ilike("titre", `%${searchTerm}%`);
       }
 
-      const { data, count, error } = await query;
+      const { data, count } = await query;
 
-      if (error) throw error;
       setAdventures(data || []);
       setTotalCount(count || 0);
-    } catch (_error) {
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -64,7 +63,7 @@ export default function AdminAdventuresPage() {
       if (error) throw error;
       setDeleteConfirm(null);
       fetchAdventures();
-    } catch (_error) {
+    } catch {
       setActionError("Erreur lors de la suppression de l'aventure.");
       setDeleteConfirm(null);
     }

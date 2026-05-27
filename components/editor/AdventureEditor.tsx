@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import { generateAdventure } from "@/lib/generator/engine";
-import { ChevronLeft, ChevronRight, AlertCircle, Check, Wand2, Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertCircle, Check, Wand2, Plus } from "lucide-react";
 
 interface Choice {
  text: string;
@@ -284,13 +284,13 @@ export default function AdventureEditor() {
  }
  }
 
-  setNotice("Aventure créée ! Redirection...");
-  setTimeout(() => router.push("/dashboard"), 1500);
-  } catch (e) {
-  setError("Erreur lors de la sauvegarde");
-  } finally {
-  setSaving(false);
-  }
+   setNotice("Aventure créée ! Redirection...");
+   setTimeout(() => router.push("/dashboard"), 1500);
+   } catch {
+   setError("Erreur lors de la sauvegarde");
+   } finally {
+   setSaving(false);
+   }
  };
 
   if (!user) return null;
@@ -602,110 +602,6 @@ export default function AdventureEditor() {
         </div>
       </div>
     </div>
-  );
-}
- };
- return { ...node, choices: newChoices };
- }
- return node;
- });
- setNodes(updatedNodes);
- }}
- className={`bg-[#070b15] border rounded px-2 py-1 text-white focus:border-cyan-500 focus:outline-none ${
- (choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0) > 0 ? 'border-green-500' :
- (choice.statChange?.[stat as keyof typeof choice.statChange] ?? 0) < 0 ? 'border-red-500' : 'border-gray-700 '
- }`}
- >
- <option value={0}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: 0</option>
- <option value={-3}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: -3</option>
- <option value={-2}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: -2</option>
- <option value={-1}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: -1</option>
- <option value={1}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: +1</option>
- <option value={2}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: +2</option>
- <option value={3}>{stat === 'magie' ? 'Magie' : stat.charAt(0).toUpperCase() + stat.slice(1)}: +3</option>
- </select>
- ))}
- </div>
- </div>
- {selectedNode.choices.length > 1 && (
- <button
- onClick={() => removeChoice(idx)}
- className="p-2 text-gray-500 hover:text-red-400"
- >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
- </svg>
- </button>
- )}
- </div>
- ))}
- </div>
- )}
- </div>
-
- <div className="flex flex-wrap gap-3">
- <button
- onClick={generateWithAI}
- disabled={generating}
- className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-500 hover:to-blue-500 font-medium disabled:opacity-50 shadow-lg shadow-cyan-500/20"
- >
- {generating ? "Génération..." : "Générer avec IA"}
- </button>
- <button
- onClick={handleSave}
- disabled={saving}
- className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:from-cyan-400 hover:to-blue-400 font-medium disabled:opacity-50"
- >
- {saving ? "Publication..." : "Publier"}
- </button>
- </div>
-
- {error && (
- <div className="p-3 bg-red-500/10 border border-red-500/60 rounded-lg text-red-300 text-sm">
- {error}
- </div>
- )}
- {notice && (
- <div className="p-3 bg-green-500/10 border border-green-500/60 rounded-lg text-green-300 text-sm">
- {notice}
- </div>
- )}
- </div>
-
- <div className="bg-[#111827]/90 rounded-2xl border border-white/10 p-4">
- <h3 className="text-lg font-bold text-cyan-400 mb-4">Nœuds ({nodes.length})</h3>
- <div className="space-y-2 max-h-[600px] overflow-y-auto">
- {nodes.map((node) => (
- <button
- key={node.id}
- onClick={() => setSelectedNodeId(node.id)}
- className={`w-full text-left p-3 rounded-lg transition-all ${
- selectedNodeId === node.id
- ? "bg-cyan-500/20 border border-cyan-500/50"
- : "bg-gray-800/50 border border-transparent hover:bg-gray-700/50"
- }`}
- >
- <div className="flex items-center gap-2">
- <span className="text-cyan-400 font-mono text-xs">
- {node.id === "root" ? "START" : `N${nodes.indexOf(node)}`}
- </span>
- {node.isEnd && (
- <span className="text-xs bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded">FIN</span>
- )}
- </div>
- <p className="text-gray-400 text-sm mt-1 truncate">
- {node.text || "(texte vide)"}
- </p>
- <p className="text-gray-500 text-xs mt-1">
- {node.choices.length} choix
- </p>
- </button>
- ))}
- </div>
- </div>
- </div>
- </div>
- </div>
- );
+   );
 }
 
