@@ -51,6 +51,9 @@ interface UseConsequencesReturn {
     choixNum: 1 | 2,
     consequencesJson: string | null | undefined,
   ) => Promise<boolean>;
+  parseStatChanges: (
+    consequencesJson: string | null | undefined | Record<string, unknown>,
+  ) => Record<string, number>;
 }
 
 export function useConsequences({
@@ -332,5 +335,26 @@ export function useConsequences({
     showEffect,
     getConsequenceImpact,
     applyConsequence,
+    parseStatChanges: (consequencesJson: string | null | undefined | Record<string, unknown>): Record<string, number> => {
+      if (!consequencesJson) return {};
+      
+      try {
+        const effect = typeof consequencesJson === 'string' 
+          ? JSON.parse(consequencesJson) 
+          : consequencesJson;
+        
+        const statChanges: Record<string, number> = {};
+        
+        if (effect.pv && effect.pv !== 0) statChanges.points_vie = effect.pv;
+        if (effect.force && effect.force !== 0) statChanges.force = effect.force;
+        if (effect.agility && effect.agility !== 0) statChanges.agility = effect.agility;
+        if (effect.magie && effect.magie !== 0) statChanges.magie = effect.magie;
+        if (effect.endurance && effect.endurance !== 0) statChanges.endurance = effect.endurance;
+        
+        return statChanges;
+      } catch {
+        return {};
+      }
+    },
   };
 }

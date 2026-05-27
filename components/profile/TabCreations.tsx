@@ -18,7 +18,7 @@ export default function TabCreations({ creations }: TabCreationsProps) {
         <h3 className="text-lg font-semibold text-white mb-2">Aucune création</h3>
         <p className="text-gray-400 mb-4">Créez votre première aventure pour la voir apparaître ici.</p>
         <button
-          onClick={() => window.location.href = "/create"}
+          onClick={() => window.location.href = "/create-adventure"}
           className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
         >
           Créer une aventure
