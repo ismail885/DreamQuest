@@ -8,14 +8,6 @@
 
 import type { Enemy, StatusEffect } from '@/data/enemies';
 import type { PlayerStatus } from './combat';
-import {
-  CRIT_CHANCE_MAX,
-  CRIT_BONUS,
-  BUFF_FORCE_BONUS,
-  PLAYER_SHIELD_ENEMY_REDUCTION,
-  THORNS_DAMAGE_RATIO,
-  STEALTH_DODGE_BONUS,
-} from './combat';
 
 // ===== TYPES =====
 

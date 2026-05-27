@@ -19,29 +19,29 @@ export default function AdminAdventuresPage() {
  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
  const [actionError, setActionError] = useState<string | null>(null);
 
- const fetchAdventures = useCallback(async () => {
- setLoading(true);
- try {
- let query = supabase
- .from("aventure")
- .select("*", { count: "exact" })
- .order("date_creation", { ascending: false })
- .range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1);
+  const fetchAdventures = useCallback(async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from("aventure")
+        .select("*", { count: "exact" })
+        .order("date_creation", { ascending: false })
+        .range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1);
 
- if (searchTerm) {
- query = query.ilike("titre", `%${searchTerm}%`);
- }
+      if (searchTerm) {
+        query = query.ilike("titre", `%${searchTerm}%`);
+      }
 
- const { data, count, error } = await query;
+      const { data, count, error } = await query;
 
- if (error) throw error;
-  setAdventures(data || []);
-  setTotalCount(count || 0);
-  } catch (error) {
-  } finally {
-  setLoading(false);
-  }
- }, [currentPage, searchTerm]);
+      if (error) throw error;
+      setAdventures(data || []);
+      setTotalCount(count || 0);
+    } catch (_error) {
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, searchTerm]);
 
  useEffect(() => {
  fetchAdventures();
@@ -49,26 +49,26 @@ export default function AdminAdventuresPage() {
 
  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
- async function handleDelete(aventureId: number) {
- try {
- // Delete related records first
- await supabase.from("vote").delete().eq("id_aventure", aventureId);
- await supabase.from("sauvegarde").delete().eq("id_aventure", aventureId);
- await supabase.from("embranchement").delete().eq("id_aventure", aventureId);
- 
- const { error } = await supabase
- .from("aventure")
- .delete()
- .eq("id_aventure", aventureId);
+  async function handleDelete(aventureId: number) {
+    try {
+      // Delete related records first
+      await supabase.from("vote").delete().eq("id_aventure", aventureId);
+      await supabase.from("sauvegarde").delete().eq("id_aventure", aventureId);
+      await supabase.from("embranchement").delete().eq("id_aventure", aventureId);
 
-  if (error) throw error;
-  setDeleteConfirm(null);
-  fetchAdventures();
-  } catch (error) {
-  setActionError("Erreur lors de la suppression de l'aventure.");
-  setDeleteConfirm(null);
+      const { error } = await supabase
+        .from("aventure")
+        .delete()
+        .eq("id_aventure", aventureId);
+
+      if (error) throw error;
+      setDeleteConfirm(null);
+      fetchAdventures();
+    } catch (_error) {
+      setActionError("Erreur lors de la suppression de l'aventure.");
+      setDeleteConfirm(null);
+    }
   }
- }
 
  return (
  <div className="space-y-6">

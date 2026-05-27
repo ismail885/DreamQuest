@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
@@ -30,7 +30,6 @@ const CharacterList = dynamic(() => import("@/components/character/CharacterList
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuthContext();
-  const { openEventPopup } = useEventContext();
   const {
   stats,
   statsLoading,

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { getActiveEvent, getUpcomingEvent, getTimeRemaining } from "@/lib/specialEvents";
+import { getActiveEvent, getUpcomingEvent, getTimeRemaining, type SpecialEvent } from "@/lib/specialEvents";
 
 interface EventCardProps {
   showUpcoming?: boolean;
@@ -10,7 +10,7 @@ interface EventCardProps {
 export default function EventCard({ showUpcoming = false }: EventCardProps) {
   const activeEvent = getActiveEvent();
   const upcomingEvent = showUpcoming ? getUpcomingEvent() : null;
-  const event = activeEvent || upcomingEvent;
+  const event: SpecialEvent | null = activeEvent || upcomingEvent;
 
   if (!event) return null;
 
