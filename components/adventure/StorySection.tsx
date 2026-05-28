@@ -16,7 +16,6 @@ export default function StorySection({
 }: StorySectionProps) {
   return (
     <>
-      {/* Progression bar */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">
@@ -26,14 +25,13 @@ export default function StorySection({
         </div>
         <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-700"
+            className="h-full bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] rounded-full transition-all duration-700"
             style={{ width: `${progression}%` }}
           />
         </div>
       </div>
 
-      {/* Image */}
-      <div className="relative w-full h-96 rounded-xl overflow-hidden">
+      <div className="relative w-full h-96 rounded-[10px] overflow-hidden">
         <Image
           src={image}
           alt={adventureTitle}
@@ -45,13 +43,12 @@ export default function StorySection({
         <div className="absolute inset-0 bg-gradient-to-t from-[#070b15]/50 to-transparent" />
       </div>
 
-      {/* Story text */}
       {texte && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-[#070b15] border border-gray-800/60 rounded-xl p-6"
+          className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6"
         >
           <p className="text-gray-300 leading-relaxed text-base">{texte}</p>
         </motion.div>

@@ -3,12 +3,7 @@
 import Link from "next/link";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
-import {
-  Star,
-  Users,
-  BookOpen,
-  Trophy,
-} from "lucide-react";
+import { Zap, Users, BookOpen, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
 const fadeInUp = {
@@ -26,16 +21,46 @@ const staggerContainer = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#070b15] ">
+    <div className="min-h-screen flex flex-col bg-[#070b15]">
+      <div className="fixed inset-0 -z-10 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(6,182,212,0.10)",
+            left: "25%",
+            top: 0,
+            opacity: 0.83,
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(59,130,246,0.10)",
+            right: "25%",
+            top: "696px",
+            opacity: 0.51,
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(99,102,241,0.10)",
+            left: "51.54%",
+            top: "505px",
+            opacity: 0.93,
+          }}
+        />
+      </div>
+
       <Header />
       <section className="relative py-16 md:py-24 px-4 md:px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-blue-500/10 to-transparent pointer-events-none"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/30 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl opacity-20 animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-
         <motion.div
           className="container mx-auto max-w-7xl relative z-10"
           variants={staggerContainer}
@@ -45,18 +70,24 @@ export default function Home() {
           <div className="text-center space-y-6 md:space-y-8">
             <motion.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-500/15 border border-cyan-300/40 rounded-full text-cyan-300 text-sm font-medium backdrop-blur-sm"
+              className="inline-flex items-center gap-2 px-4 h-[37px] bg-[rgba(6,182,212,0.10)] border border-[rgba(6,182,212,0.3)] rounded-full text-[#06b6d4] text-[14px]"
             >
-              <Star className="w-4 h-4" />
+              <Zap size={16} />
               RPG Textuel Interactif
             </motion.div>
 
             <motion.h1
               variants={fadeInUp}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-white "
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
+              style={{
+                background:
+                  "linear-gradient(90deg,#06b6d4 0%,#3b82f6 50%,#6366f1 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
             >
-              Vivez Votre Propre
-              <span className="block mt-2 text-cyan-300">Aventure</span>
+              Vivez Votre Propre Aventure
             </motion.h1>
 
             <motion.p
@@ -75,7 +106,7 @@ export default function Home() {
               <Link
                 href="/create-character"
                 prefetch
-                className="px-8 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-white font-semibold rounded-lg transition-all duration-200 w-full sm:w-auto text-center shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                className="h-[58px] w-[250px] rounded-[10px] bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white text-[18px] font-semibold flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(6,182,212,0.5)] hover:opacity-90 transition-opacity"
               >
                 Créer un Personnage
               </Link>
@@ -83,7 +114,7 @@ export default function Home() {
               <Link
                 href="/adventure"
                 prefetch
-                className="px-8 py-3.5 bg-transparent border border-cyan-500/30 hover:border-cyan-400/60 text-gray-200 hover:text-white font-semibold rounded-lg transition-all duration-200 w-full sm:w-auto text-center"
+                className="h-[58px] w-[222px] rounded-[10px] border border-[rgba(6,182,212,0.2)] text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 transition-colors"
               >
                 Explorer les Quêtes
               </Link>
@@ -104,16 +135,16 @@ export default function Home() {
             <motion.div
               variants={fadeInUp}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group p-6 md:p-8 bg-[#0c1322]/50 border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300"
+              className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-cyan-500/20 group-hover:bg-cyan-500/30 rounded-lg flex items-center justify-center transition-colors">
-                  <Users className="w-6 h-6 text-cyan-400 group-hover:text-cyan-300" />
+                <div className="w-12 h-12 bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
                   Personnages Uniques
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-[16px] leading-[25.6px] text-gray-400">
                   Créez des héros avec 10 classes différentes, chacune avec ses
                   capacités et son histoire.
                 </p>
@@ -123,16 +154,16 @@ export default function Home() {
             <motion.div
               variants={fadeInUp}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group p-6 md:p-8 bg-[#0c1322]/50 border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300"
+              className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-cyan-500/20 group-hover:bg-cyan-500/30 rounded-lg flex items-center justify-center transition-colors">
-                  <BookOpen className="w-6 h-6 text-cyan-400 group-hover:text-cyan-300" />
+                <div className="w-12 h-12 bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
                   Histoires Immersives
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-[16px] leading-[25.6px] text-gray-400">
                   Plongez dans des récits à embranchements multiples où chaque
                   décision compte.
                 </p>
@@ -142,14 +173,14 @@ export default function Home() {
             <motion.div
               variants={fadeInUp}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group p-6 md:p-8 bg-[#0c1322]/50 border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300"
+              className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-cyan-500/20 group-hover:bg-cyan-500/30 rounded-lg flex items-center justify-center transition-colors">
-                  <Trophy className="w-6 h-6 text-cyan-400 group-hover:text-cyan-300" />
+                <div className="w-12 h-12 bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                  <Trophy className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">Classements</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-[16px] leading-[25.6px] text-gray-400">
                   Comparez vos exploits avec d&apos;autres aventuriers et
                   grimpez dans les rangs.
                 </p>

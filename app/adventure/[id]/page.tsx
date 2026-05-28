@@ -28,151 +28,163 @@ import AdventureEndScreen from "@/components/adventure/AdventureEndScreen";
 const MAX_STEPS = 8;
 
 interface Props {
- params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>;
 }
 
 export default function AdventureDetailPage({ params }: Props) {
- return (
- <Suspense>
- <AdventureReader params={params} />
- </Suspense>
- );
+  return (
+    <Suspense>
+      <AdventureReader params={params} />
+    </Suspense>
+  );
 }
 
 function AdventureReader({ params }: Props) {
- const { id } = use(params);
- const adventureId = parseInt(id, 10);
- const router = useRouter();
- const searchParams = useSearchParams();
- const { user } = useAuthContext();
+  const { id } = use(params);
+  const adventureId = parseInt(id, 10);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user } = useAuthContext();
 
- const [currentEvent, setCurrentEvent] = useState<typeof RANDOM_EVENTS[0] | null>(null);
- const [showLeaveModal, setShowLeaveModal] = useState(false);
-
- const {
- character,
- setCharacter,
- availableAbilities,
- usedAbilities,
- setUsedAbilities,
- loadCharacterProgress,
- saveCharacterStats,
- characterIdNum,
- completeAdventure,
- } = useCharacter({
- personnageId: searchParams.get("personnage"),
- userId: user?.id ?? null,
- });
-
- const {
- inCombat,
- combatState,
- startCombat,
- handleCombatAttack,
- handleCombatDefend,
- handleCombatFlee,
- handleCombatAbility,
- handleCombatEnd,
- } = useCombat({ character, setCharacter, userId: user?.id ?? null });
+  const [currentEvent, setCurrentEvent] = useState<
+    (typeof RANDOM_EVENTS)[0] | null
+  >(null);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   const {
-  lastConsequence,
-  showEffect,
-  applyConsequence,
-  parseStatChanges,
-  } = useConsequences({
-  character,
-  setCharacter,
-  startCombat,
-  loadCharacterProgress,
-  saveCharacterStats,
+    character,
+    setCharacter,
+    availableAbilities,
+    usedAbilities,
+    setUsedAbilities,
+    loadCharacterProgress,
+    saveCharacterStats,
+    characterIdNum,
+    completeAdventure,
+  } = useCharacter({
+    personnageId: searchParams.get("personnage"),
+    userId: user?.id ?? null,
   });
 
- const { adventure, currentBranch, loading, error, isEnd, history, chooseOption, restart } =
- useAdventure(adventureId, user?.id ?? null);
+  const {
+    inCombat,
+    combatState,
+    startCombat,
+    handleCombatAttack,
+    handleCombatDefend,
+    handleCombatFlee,
+    handleCombatAbility,
+    handleCombatEnd,
+  } = useCombat({ character, setCharacter, userId: user?.id ?? null });
 
- const progression = Math.min(Math.round((history.length / MAX_STEPS) * 100), 100);
+  const { lastConsequence, showEffect, applyConsequence, parseStatChanges } =
+    useConsequences({
+      character,
+      setCharacter,
+      startCombat,
+      loadCharacterProgress,
+      saveCharacterStats,
+    });
 
- const { isSaving, save } = useSave({
- userId: user?.id ?? null,
- adventureId: adventureId,
- characterId: characterIdNum,
- branchId: currentBranch?.id ?? null,
- progression,
- enabled: !!user && !!characterIdNum && !isEnd,
- intervalMs: 30_000,
- });
+  const {
+    adventure,
+    currentBranch,
+    loading,
+    error,
+    isEnd,
+    history,
+    chooseOption,
+    restart,
+  } = useAdventure(adventureId, user?.id ?? null);
 
- // Déclencher un événement aléatoire (15% de chance)
- const lastBranchIdRef = useRef<number | null>(null);
- useEffect(() => {
- if (!currentBranch || currentEvent || isEnd) return;
- if (lastBranchIdRef.current === currentBranch.id) return;
- 
- lastBranchIdRef.current = currentBranch.id;
- const shouldTrigger = Math.random() < 0.15;
- if (shouldTrigger) {
- const event = getRandomEvent();
- setCurrentEvent(event);
- }
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [currentBranch?.id, currentEvent, isEnd]);
+  const progression = Math.min(
+    Math.round((history.length / MAX_STEPS) * 100),
+    100,
+  );
 
-  // Compter le nombre d'aventures terminées par session
+  const { isSaving, save } = useSave({
+    userId: user?.id ?? null,
+    adventureId: adventureId,
+    characterId: characterIdNum,
+    branchId: currentBranch?.id ?? null,
+    progression,
+    enabled: !!user && !!characterIdNum && !isEnd,
+    intervalMs: 30_000,
+  });
+
+  const lastBranchIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!currentBranch || currentEvent || isEnd) return;
+    if (lastBranchIdRef.current === currentBranch.id) return;
+
+    lastBranchIdRef.current = currentBranch.id;
+    const shouldTrigger = Math.random() < 0.15;
+    if (shouldTrigger) {
+      const event = getRandomEvent();
+      setCurrentEvent(event);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentBranch?.id, currentEvent, isEnd]);
+
   const completedAdventuresRef = useRef(0);
 
   useEffect(() => {
-  if (isEnd && user && characterIdNum && character) {
-  save();
-  completeAdventure(history.length, user.id);
+    if (isEnd && user && characterIdNum && character) {
+      save();
+      completeAdventure(history.length, user.id);
 
-  // Suivi des quêtes: finir une aventure
-  completedAdventuresRef.current += 1;
-  const count = completedAdventuresRef.current;
-  updateQuestProgress(user.id, "finish_1", 1).catch(() => {});
-  if (count >= 2) {
-  updateQuestProgress(user.id, "finish_2", 1).catch(() => {});
-  }
-  }
-  }, [isEnd, user, characterIdNum, character, save, history.length, completeAdventure]);
+      completedAdventuresRef.current += 1;
+      const count = completedAdventuresRef.current;
+      updateQuestProgress(user.id, "finish_1", 1).catch(() => {});
+      if (count >= 2) {
+        updateQuestProgress(user.id, "finish_2", 1).catch(() => {});
+      }
+    }
+  }, [
+    isEnd,
+    user,
+    characterIdNum,
+    character,
+    save,
+    history.length,
+    completeAdventure,
+  ]);
 
-  // Suivi des quêtes: démarrer une aventure
   const startedQuestRef = useRef(false);
   useEffect(() => {
-  if (currentBranch && user && !startedQuestRef.current) {
-  startedQuestRef.current = true;
-  updateQuestProgress(user.id, "play_story", 1).catch(() => {});
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (currentBranch && user && !startedQuestRef.current) {
+      startedQuestRef.current = true;
+      updateQuestProgress(user.id, "play_story", 1).catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBranch?.id, user]);
 
- const image = getAdventureImage(adventureId);
+  const image = getAdventureImage(adventureId);
 
- if (loading) {
- return (
- <div className="min-h-screen bg-[#070b15] flex items-center justify-center">
- <Loader />
- </div>
- );
- }
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#070b15] flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
- if (error) {
- return (
- <div className="min-h-screen bg-[#070b15] flex flex-col items-center justify-center gap-4">
- <p className="text-red-400 text-lg">{error}</p>
- <button
- onClick={() => router.push("/adventure")}
- className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-medium transition-colors"
- >
- Retour aux aventures
- </button>
- </div>
- );
- }
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#070b15] flex flex-col items-center justify-center gap-4">
+        <p className="text-red-400 text-lg">{error}</p>
+        <button
+          onClick={() => router.push("/adventure")}
+          className="px-6 py-3 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white rounded-[10px] font-medium hover:opacity-90 transition-opacity"
+        >
+          Retour aux aventures
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#070b15] text-white flex flex-col">
-      {/* Header */}
       <AdventureHeader
         onBack={() => {
           if (history.length > 0 && !isEnd) {
@@ -185,15 +197,15 @@ function AdventureReader({ params }: Props) {
         isSaving={isSaving}
       />
 
-      {/* Effect popup */}
-      <EffectIndicator lastConsequence={lastConsequence} showEffect={showEffect} />
+      <EffectIndicator
+        lastConsequence={lastConsequence}
+        showEffect={showEffect}
+      />
 
-      {/* Character stats */}
       {character && <CharacterHUD character={character} />}
 
       <main className="flex-1 flex flex-col items-center px-4 py-6">
         <div className="w-full max-w-3xl space-y-5">
-          {/* Story section */}
           <StorySection
             progression={progression}
             image={image}
@@ -201,7 +213,6 @@ function AdventureReader({ params }: Props) {
             texte={currentBranch?.texte ?? ""}
           />
 
-          {/* End screen */}
           {isEnd && (
             <AdventureEndScreen
               historyLength={history.length}
@@ -210,20 +221,16 @@ function AdventureReader({ params }: Props) {
             />
           )}
 
-          {/* Random event */}
           {currentEvent && (
             <RandomEventCard
               event={currentEvent}
               onChoice={(consequence, choiceIndex) => {
-                // Si c'est un événement de combat et que le joueur choisit de combattre (index 0)
-                if (currentEvent.type === 'combat' && choiceIndex === 0) {
-                  // Récupérer le monstre et démarrer le combat
-                  import('@/lib/monsters').then(({ getMonsterById }) => {
+                if (currentEvent.type === "combat" && choiceIndex === 0) {
+                  import("@/lib/monsters").then(({ getMonsterById }) => {
                     const monsterId = currentEvent.monsterId;
                     if (monsterId) {
                       const monster = getMonsterById(monsterId);
                       if (monster) {
-                        // Démarrer le combat avec le niveau du monstre
                         startCombat(monster.level);
                       }
                     }
@@ -232,7 +239,6 @@ function AdventureReader({ params }: Props) {
                   return;
                 }
 
-                // Pour les événements narratifs, appliquer les conséquences normalement
                 applyConsequence(1, JSON.stringify(consequence));
                 setCurrentEvent(null);
                 if (currentBranch?.choix1_lien) {
@@ -242,7 +248,6 @@ function AdventureReader({ params }: Props) {
             />
           )}
 
-          {/* Choices + Class Abilities */}
           {!isEnd && currentBranch && (
             <motion.div
               className="space-y-3"
@@ -250,36 +255,45 @@ function AdventureReader({ params }: Props) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-                {currentBranch.choix1 && (
-                  <ChoiceButton
-                    text={currentBranch.choix1}
-                    statChanges={parseStatChanges(currentBranch.choix1_consequences)}
-                    onClick={async () => {
-                      if (!currentBranch.choix1_lien) {
-                        console.error('Choix 1 lien manquant');
-                        return;
-                      }
-                      const isCombat = await applyConsequence(1, currentBranch?.choix1_consequences);
-                      if (!isCombat) chooseOption(currentBranch.choix1_lien);
-                    }}
-                  />
-                )}
-                {currentBranch.choix2 && (
-                  <ChoiceButton
-                    text={currentBranch.choix2}
-                    statChanges={parseStatChanges(currentBranch.choix2_consequences)}
-                    onClick={async () => {
-                      if (!currentBranch.choix2_lien) {
-                        console.error('Choix 2 lien manquant');
-                        return;
-                      }
-                      const isCombat = await applyConsequence(2, currentBranch?.choix2_consequences);
-                      if (!isCombat) chooseOption(currentBranch.choix2_lien);
-                    }}
-                  />
-                )}
+              {currentBranch.choix1 && (
+                <ChoiceButton
+                  text={currentBranch.choix1}
+                  statChanges={parseStatChanges(
+                    currentBranch.choix1_consequences,
+                  )}
+                  onClick={async () => {
+                    if (!currentBranch.choix1_lien) {
+                      console.error("Choix 1 lien manquant");
+                      return;
+                    }
+                    const isCombat = await applyConsequence(
+                      1,
+                      currentBranch?.choix1_consequences,
+                    );
+                    if (!isCombat) chooseOption(currentBranch.choix1_lien);
+                  }}
+                />
+              )}
+              {currentBranch.choix2 && (
+                <ChoiceButton
+                  text={currentBranch.choix2}
+                  statChanges={parseStatChanges(
+                    currentBranch.choix2_consequences,
+                  )}
+                  onClick={async () => {
+                    if (!currentBranch.choix2_lien) {
+                      console.error("Choix 2 lien manquant");
+                      return;
+                    }
+                    const isCombat = await applyConsequence(
+                      2,
+                      currentBranch?.choix2_consequences,
+                    );
+                    if (!isCombat) chooseOption(currentBranch.choix2_lien);
+                  }}
+                />
+              )}
 
-              {/* Class abilities - only show during combat */}
               {character && inCombat && (
                 <ClassAbilitiesPanel
                   character={character}
@@ -289,7 +303,7 @@ function AdventureReader({ params }: Props) {
                     setUsedAbilities([...usedAbilities, ability]);
                     const newPv = Math.min(
                       (character.points_vie ?? 100) + 10,
-                      (character.points_vie ?? 100),
+                      character.points_vie ?? 100,
                     );
                     setCharacter({ ...character, points_vie: newPv });
                     if (currentBranch?.choix1_lien) {
@@ -315,7 +329,6 @@ function AdventureReader({ params }: Props) {
         message="Votre progression a été sauvegardée automatiquement."
       />
 
-      {/* Combat overlay */}
       {inCombat && combatState && character && (
         <CombatUI
           combatState={combatState}

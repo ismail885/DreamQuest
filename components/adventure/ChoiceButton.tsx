@@ -47,12 +47,12 @@ export default function ChoiceButton({
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`w-full text-left px-6 py-4 bg-[#131e35]/50 border rounded-xl transition-all duration-200 flex flex-col gap-3 min-h-[80px] group ${
+      className={`w-full text-left px-6 py-4 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border rounded-[10px] transition-all duration-200 flex flex-col gap-3 min-h-[80px] group ${
         hasNegative
-          ? "hover:border-red-500/60 hover:bg-red-500/5 border-gray-700/60 hover:border-red-500/40"
+          ? "hover:border-red-500/60 hover:bg-red-500/5 border-[rgba(6,182,212,0.2)] hover:border-red-500/40"
           : hasPositive
-            ? "hover:border-green-500/60 hover:bg-green-500/5 border-gray-700/60 hover:border-green-500/40"
-            : "hover:border-cyan-500/60 hover:bg-cyan-500/5 border-gray-700/60 hover:border-cyan-500/40"
+            ? "hover:border-green-500/60 hover:bg-green-500/5 border-[rgba(6,182,212,0.2)] hover:border-green-500/40"
+            : "hover:border-[rgba(6,182,212,0.4)] hover:bg-[rgba(6,182,212,0.05)] border-[rgba(6,182,212,0.2)] hover:border-[rgba(6,182,212,0.4)]"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -74,7 +74,8 @@ export default function ChoiceButton({
                   : "bg-red-500/20 text-red-400"
               }`}
             >
-              {getStatLabel(stat)} {value > 0 ? "+" : ""}{value}
+              {getStatLabel(stat)} {value > 0 ? "+" : ""}
+              {value}
             </span>
           ))}
         </div>
