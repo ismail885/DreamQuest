@@ -13,7 +13,6 @@ import BottomNav from "@/components/shared/BottomNav";
 import Loader from "@/components/shared/Loader";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import DashboardSuggestions from "@/components/dashboard/DashboardSuggestions";
-import EventButton from "@/components/dashboard/EventButton";
 
 const CharacterList = dynamic(() => import("@/components/character/CharacterList"), {
  ssr: false,
@@ -80,12 +79,7 @@ export default function DashboardPage() {
 
   <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
   <div className="max-w-7xl mx-auto">
-  {/* Bouton événement flottant */}
-  <div className="absolute top-6 right-6 z-20">
-  <EventButton />
-  </div>
-
- {/* En-tete */}
+  {/* En-tete */}
  <div className="mb-8 md:mb-10">
  <h1 className="text-2xl md:text-4xl font-bold mb-2">
  Bienvenue,{" "}

@@ -5,12 +5,12 @@ import { RANDOM_EVENTS } from "@/lib/randomEvents";
 
 interface RandomEventChoice {
   text: string;
-  consequence: { xp: number; pv: number; stat: string | null };
+  consequence: { xp?: number; pv?: number; stat?: string | null };
 }
 
 interface RandomEventCardProps {
   event: (typeof RANDOM_EVENTS)[0];
-  onChoice: (consequence: RandomEventChoice["consequence"]) => void;
+  onChoice: (consequence: RandomEventChoice["consequence"], choiceIndex: number) => void;
 }
 
 export default function RandomEventCard({
@@ -24,15 +24,19 @@ export default function RandomEventCard({
       className="bg-[#0c1322]/80 border border-amber-500/30 rounded-xl p-5 mb-4"
     >
       <p className="text-amber-400 text-xs font-semibold mb-2">
-        ÉVÉNEMENT ALÉATOIRE
+        {event.type === 'combat' ? 'COMBAT!' : 'ÉVÉNEMENT ALÉATOIRE'}
       </p>
       <p className="text-gray-400 leading-relaxed text-sm">{event.text}</p>
       <div className="flex flex-col gap-2 mt-4">
         {event.choices.map((choice, idx) => (
           <button
             key={idx}
-            onClick={() => onChoice(choice.consequence)}
-            className="w-full text-left px-4 py-3 bg-[#0c1322] border border-gray-700 hover:border-amber-500/50 rounded-lg text-gray-400 hover:text-white text-sm transition-all"
+            onClick={() => onChoice(choice.consequence, idx)}
+            className={`w-full text-left px-4 py-3 bg-[#0c1322] border rounded-lg text-sm transition-all ${
+              event.type === 'combat' && idx === 0
+                ? 'border-red-500/50 hover:border-red-500 text-gray-400 hover:text-red-300'
+                : 'border-gray-700 hover:border-amber-500/50 text-gray-400 hover:text-white'
+            }`}
           >
             {choice.text}
           </button>

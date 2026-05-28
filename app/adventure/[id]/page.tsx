@@ -12,6 +12,7 @@ import { useConsequences } from "@/hooks/useConsequences";
 import { useAuthContext } from "@/context/AuthContext";
 import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomEvents";
 import { getAdventureImage } from "@/data/adventureImages";
+import { updateQuestProgress } from "@/lib/dailyQuests";
 import { motion } from "framer-motion";
 import ConfirmLeaveModal from "@/components/shared/ConfirmLeaveModal";
 import CharacterHUD from "@/components/adventure/CharacterHUD";
@@ -77,7 +78,6 @@ function AdventureReader({ params }: Props) {
   const {
   lastConsequence,
   showEffect,
-  getConsequenceImpact,
   applyConsequence,
   parseStatChanges,
   } = useConsequences({
@@ -118,12 +118,33 @@ function AdventureReader({ params }: Props) {
  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [currentBranch?.id, currentEvent, isEnd]);
 
- useEffect(() => {
- if (isEnd && user && characterIdNum && character) {
- save();
- completeAdventure(history.length, user.id);
- }
- }, [isEnd, user, characterIdNum, character, save, history.length, completeAdventure]);
+  // Compter le nombre d'aventures terminées par session
+  const completedAdventuresRef = useRef(0);
+
+  useEffect(() => {
+  if (isEnd && user && characterIdNum && character) {
+  save();
+  completeAdventure(history.length, user.id);
+
+  // Suivi des quêtes: finir une aventure
+  completedAdventuresRef.current += 1;
+  const count = completedAdventuresRef.current;
+  updateQuestProgress(user.id, "finish_1", 1).catch(() => {});
+  if (count >= 2) {
+  updateQuestProgress(user.id, "finish_2", 1).catch(() => {});
+  }
+  }
+  }, [isEnd, user, characterIdNum, character, save, history.length, completeAdventure]);
+
+  // Suivi des quêtes: démarrer une aventure
+  const startedQuestRef = useRef(false);
+  useEffect(() => {
+  if (currentBranch && user && !startedQuestRef.current) {
+  startedQuestRef.current = true;
+  updateQuestProgress(user.id, "play_story", 1).catch(() => {});
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentBranch?.id, user]);
 
  const image = getAdventureImage(adventureId);
 
@@ -193,7 +214,25 @@ function AdventureReader({ params }: Props) {
           {currentEvent && (
             <RandomEventCard
               event={currentEvent}
-              onChoice={(consequence) => {
+              onChoice={(consequence, choiceIndex) => {
+                // Si c'est un événement de combat et que le joueur choisit de combattre (index 0)
+                if (currentEvent.type === 'combat' && choiceIndex === 0) {
+                  // Récupérer le monstre et démarrer le combat
+                  import('@/lib/monsters').then(({ getMonsterById }) => {
+                    const monsterId = currentEvent.monsterId;
+                    if (monsterId) {
+                      const monster = getMonsterById(monsterId);
+                      if (monster) {
+                        // Démarrer le combat avec le niveau du monstre
+                        startCombat(monster.level);
+                      }
+                    }
+                  });
+                  setCurrentEvent(null);
+                  return;
+                }
+
+                // Pour les événements narratifs, appliquer les conséquences normalement
                 applyConsequence(1, JSON.stringify(consequence));
                 setCurrentEvent(null);
                 if (currentBranch?.choix1_lien) {
@@ -213,9 +252,7 @@ function AdventureReader({ params }: Props) {
             >
                 {currentBranch.choix1 && (
                   <ChoiceButton
-                    label="1"
                     text={currentBranch.choix1}
-                    impact={getConsequenceImpact(currentBranch.choix1_consequences)}
                     statChanges={parseStatChanges(currentBranch.choix1_consequences)}
                     onClick={async () => {
                       if (!currentBranch.choix1_lien) {
@@ -229,9 +266,7 @@ function AdventureReader({ params }: Props) {
                 )}
                 {currentBranch.choix2 && (
                   <ChoiceButton
-                    label="2"
                     text={currentBranch.choix2}
-                    impact={getConsequenceImpact(currentBranch.choix2_consequences)}
                     statChanges={parseStatChanges(currentBranch.choix2_consequences)}
                     onClick={async () => {
                       if (!currentBranch.choix2_lien) {
@@ -244,8 +279,8 @@ function AdventureReader({ params }: Props) {
                   />
                 )}
 
-              {/* Class abilities */}
-              {character && !currentEvent && (
+              {/* Class abilities - only show during combat */}
+              {character && inCombat && (
                 <ClassAbilitiesPanel
                   character={character}
                   availableAbilities={availableAbilities}

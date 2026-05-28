@@ -121,10 +121,14 @@ export function useProfileData({
         setUserSaves([]);
       }
 
-      const { data: creationsData } = await supabase
+      const { data: creationsData, error: creationsError } = await supabase
         .from("aventure")
         .select("id_aventure, titre, popularite")
         .eq("auteur_id", uid);
+
+      if (creationsError) {
+        console.error("Erreur chargement créations:", creationsError);
+      }
 
       if (creationsData && creationsData.length > 0) {
         setUserCreations(
@@ -136,6 +140,8 @@ export function useProfileData({
             }),
           ),
         );
+      } else {
+        setUserCreations([]);
       }
 
       const { count: votesCount } = await supabase

@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuthContext } from "@/context/AuthContext";
 import { Menu, X } from "lucide-react";
-import EventButton from "@/components/dashboard/EventButton";
 
 function NavLinks({ user, onNavigate }: { user: { username?: string; email?: string; role?: string } | null; onNavigate?: () => void }) {
  return (
@@ -44,7 +43,6 @@ function ActionButtons({ user, isMobile = false, onNavigate }: { user: { usernam
 
   return (
   <>
-  <EventButton />
   <Link href="/create-character" onClick={onNavigate}>
   <button className={`${isMobile ? 'w-full justify-center' : ''} px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors`}>
   Nouveau Personnage

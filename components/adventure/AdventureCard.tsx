@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Star } from "lucide-react";
+import { updateQuestProgress } from "@/lib/dailyQuests";
 
 interface AdventureCardProps {
  id: number;
@@ -63,15 +64,17 @@ const AdventureCard = React.memo(function AdventureCard({
  }
  };
 
- const handleVoteClick = async (e: React.MouseEvent) => {
- e.preventDefault();
- e.stopPropagation();
- if (!user) {
- toast.error("Vous devez être connecté pour voter");
- return;
- }
- await toggleVote();
- };
+  const handleVoteClick = async (e: React.MouseEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!user) {
+  toast.error("Vous devez être connecté pour voter");
+  return;
+  }
+  await toggleVote();
+  // Suivi des quêtes: voter pour une histoire
+  updateQuestProgress(user.id, "vote_3", 1).catch(() => {});
+  };
 
  return (
  <motion.div

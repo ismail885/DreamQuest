@@ -5,6 +5,7 @@ import CreateCharacterForm from '@/components/character/CreateCharacterForm';
 import BottomNav from '@/components/shared/BottomNav';
 import { useRouter } from 'next/navigation';
 import type { Character } from '@/types';
+import { updateQuestProgress } from '@/lib/dailyQuests';
 
 export default function CreateCharacterPage() {
  const { user, loading } = useAuthContext();
@@ -29,6 +30,7 @@ export default function CreateCharacterPage() {
 
  // eslint-disable-next-line @typescript-eslint/no-unused-vars
  const handleCharacterCreated = (_character: Character) => {
+ updateQuestProgress(user.id, "create_char", 1).catch(() => {});
  router.push('/adventure');
  };
 

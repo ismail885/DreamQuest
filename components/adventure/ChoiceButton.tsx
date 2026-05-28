@@ -2,31 +2,26 @@
 
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import type { ConsequenceImpact } from "@/hooks/useConsequences";
 
 interface StatChange {
   [key: string]: number;
 }
 
 interface ChoiceButtonProps {
-  label: string;
   text: string;
-  impact: ConsequenceImpact;
   statChanges?: StatChange;
   onClick: () => void;
 }
 
 export default function ChoiceButton({
-  label,
   text,
-  impact,
   statChanges,
   onClick,
 }: ChoiceButtonProps) {
   // Extract stat changes from statChanges object
   const statsArray = statChanges
     ? Object.entries(statChanges)
-        .filter(([_, value]) => value !== 0)
+        .filter(([, value]) => value !== 0)
         .map(([stat, value]) => ({
           stat,
           value,
