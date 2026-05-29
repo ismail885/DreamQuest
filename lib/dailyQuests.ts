@@ -1,4 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
+import { addExperience } from "@/lib/leveling";
+import { getCurrentSeason } from "@/lib/seasons";
 
 export interface DailyQuest {
   id: string;
@@ -16,13 +18,25 @@ export interface DailyQuestData {
   lastReset: string;
 }
 
-const QUEST_POOL: Omit<DailyQuest, "progress" | "completed" | "completedAt">[] = [
+export interface QuestCompletionResult {
+  questId: string;
+  xpAwarded: number;
+  leveledUp: boolean;
+  newLevel: number;
+}
+
+const QUEST_POOL: Omit<DailyQuest, "progress" | "completed">[] = [
   { id: "finish_2", title: "Aventurier", description: "Terminer 2 aventures", target: 2, xpReward: 200, icon: "BookOpen" },
   { id: "finish_1", title: "Explorateur", description: "Terminer 1 aventure", target: 1, xpReward: 100, icon: "Compass" },
   { id: "vote_3", title: "Curieux", description: "Voter pour 3 histoires", target: 3, xpReward: 150, icon: "ThumbsUp" },
   { id: "create_char", title: "Créateur", description: "Créer un personnage", target: 1, xpReward: 50, icon: "UserPlus" },
   { id: "play_story", title: "Lecteur", description: "Commencer une aventure", target: 1, xpReward: 25, icon: "BookMarked" },
 ];
+
+function getSeasonalQuestPool(): Omit<DailyQuest, "progress" | "completed">[] {
+  const season = getCurrentSeason();
+  return QUEST_POOL.filter(q => season.questPool.includes(q.id));
+}
 
 function getDateKey(): string {
   const now = new Date();
@@ -39,15 +53,33 @@ function mapDbQuestToDailyQuest(dbRow: { quest_id: string; progression: number; 
   };
 }
 
+function generateLocalQuests(): DailyQuest[] {
+  const pool = getSeasonalQuestPool();
+  if (pool.length === 0) return [];
+
+  return [...pool]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, Math.min(3, pool.length))
+    .map(q => ({
+      ...q,
+      progress: 0,
+      completed: false,
+    }));
+}
+
 export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
   const today = getDateKey();
 
-  // Charger les quêtes du jour depuis la BDD
-  const { data: dbQuests } = await supabase
+  const { data: dbQuests, error: selectError } = await supabase
     .from("quete_quotidienne")
     .select("*")
     .eq("id_utilisateur", userId)
     .eq("date_jour", today);
+
+  if (selectError) {
+    console.warn("[DailyQuests] Erreur SELECT, fallback local :", selectError.message);
+    return { quests: generateLocalQuests(), lastReset: today };
+  }
 
   if (dbQuests && dbQuests.length > 0) {
     const quests: DailyQuest[] = dbQuests
@@ -57,10 +89,9 @@ export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
     return { quests, lastReset: today };
   }
 
-  // Pas de quêtes aujourd'hui → en générer 3 aléatoires
-  const randomQuests = [...QUEST_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
-  
-  // Insérer en BDD
+  const pool = getSeasonalQuestPool();
+  const randomQuests = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(3, pool.length));
+
   const newRows = randomQuests.map(q => ({
     id_utilisateur: userId,
     quest_id: q.id,
@@ -69,10 +100,15 @@ export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
     date_jour: today,
   }));
 
-  const { data: inserted } = await supabase
+  const { data: inserted, error: insertError } = await supabase
     .from("quete_quotidienne")
     .insert(newRows)
     .select();
+
+  if (insertError) {
+    console.warn("[DailyQuests] Erreur INSERT, fallback local :", insertError.message);
+    return { quests: generateLocalQuests(), lastReset: today };
+  }
 
   const quests: DailyQuest[] = (inserted || [])
     .map(row => mapDbQuestToDailyQuest(row))
@@ -81,7 +117,11 @@ export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
   return { quests, lastReset: today };
 }
 
-export async function updateQuestProgress(userId: number, questId: string, amount: number = 1): Promise<DailyQuestData> {
+export async function updateQuestProgress(
+  userId: number,
+  questId: string,
+  amount: number = 1,
+): Promise<DailyQuestData & { completion?: QuestCompletionResult }> {
   const today = getDateKey();
   const safeAmount = Math.max(1, Math.min(amount, 100));
 
@@ -94,21 +134,33 @@ export async function updateQuestProgress(userId: number, questId: string, amoun
     .maybeSingle();
 
   if (!existing || existing.complet) {
-    // Si déjà complétée ou inexistante, retourner l'état actuel
     return getDailyQuests(userId);
   }
 
   const poolQuest = QUEST_POOL.find(q => q.id === questId);
   const target = poolQuest?.target ?? 1;
   const newProgress = Math.min(existing.progression + safeAmount, target);
-  const newComple = newProgress >= target;
+  const justCompleted = !existing.complet && newProgress >= target;
 
   await supabase
     .from("quete_quotidienne")
-    .update({ progression: newProgress, complet: newComple })
+    .update({ progression: newProgress, complet: justCompleted })
     .eq("id", existing.id);
 
-  return getDailyQuests(userId);
+  let completion: QuestCompletionResult | undefined;
+  if (justCompleted && poolQuest) {
+    const result = await addExperience(userId, poolQuest.xpReward, `quête:${questId}`);
+    completion = {
+      questId,
+      xpAwarded: poolQuest.xpReward,
+      leveledUp: result.leveledUp,
+      newLevel: result.newLevel,
+    };
+
+  }
+
+  const questData = await getDailyQuests(userId);
+  return { ...questData, completion };
 }
 
 export function getTotalXPReward(data: DailyQuestData): number {

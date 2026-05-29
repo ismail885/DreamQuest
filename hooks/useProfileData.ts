@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
 import { getDailyQuests, DailyQuest } from "@/lib/dailyQuests";
+import { getCurrentSeason } from "@/lib/seasons";
 import type {
   ExtendedUserProfile,
   UserStats,
@@ -74,6 +75,8 @@ export function useProfileData({
         .eq("id", uid)
         .single();
 
+      const season = getCurrentSeason();
+
       if (profileData) {
         setUserProfile({
           id: profileData.id,
@@ -83,6 +86,8 @@ export function useProfileData({
           role: profileData.role || "joueur",
           niveau: profileData.niveau || 1,
           experience: profileData.experience || 0,
+          saison_actuelle: profileData.saison_actuelle ?? season.id,
+          meilleur_niveau: profileData.meilleur_niveau ?? (profileData.niveau || 1),
         });
       } else {
         setUserProfile({
@@ -93,6 +98,8 @@ export function useProfileData({
           role: "joueur",
           niveau: 1,
           experience: 0,
+          saison_actuelle: season.id,
+          meilleur_niveau: 1,
         });
       }
 
@@ -123,7 +130,7 @@ export function useProfileData({
 
       const { data: creationsData, error: creationsError } = await supabase
         .from("aventure")
-        .select("id_aventure, titre, popularite")
+        .select("id, titre, popularite")
         .eq("auteur_id", uid);
 
       if (creationsError) {
@@ -133,8 +140,8 @@ export function useProfileData({
       if (creationsData && creationsData.length > 0) {
         setUserCreations(
           creationsData.map(
-            (c: { id_aventure: number; titre: string; popularite: number }) => ({
-              id: c.id_aventure,
+            (c: { id: number; titre: string; popularite: number }) => ({
+              id: c.id,
               titre: c.titre,
               popularite: c.popularite || 0,
             }),

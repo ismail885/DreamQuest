@@ -10,6 +10,10 @@ CREATE TABLE utilisateur (
     mot_de_passe VARCHAR(255),
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     role VARCHAR(20) DEFAULT 'joueur',
+    niveau INT DEFAULT 1,
+    experience INT DEFAULT 0,
+    saison_actuelle INT DEFAULT 1,
+    meilleur_niveau INT DEFAULT 1,
     auth_id UUID
 );
 

@@ -1,13 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { getTotalXPForLevel, calculateRequiredXP } from "@/types";
+import {
+  getXPInCurrentLevel,
+  getXPForNextLevel,
+  getPrestigeTitle,
+} from "@/lib/leveling";
+import { getSeasonById, MAX_LEVEL } from "@/lib/seasons";
 
 interface ProfileSidebarProps {
   userProfile: {
     nom_utilisateur?: string;
     niveau?: number;
     experience?: number;
+    saison_actuelle?: number;
+    meilleur_niveau?: number;
   } | null;
   stats: {
     storiesPlayed: number;
@@ -33,18 +40,31 @@ export default function ProfileSidebar({
 
   const currentLevel = userProfile?.niveau || 1;
   const currentExperience = userProfile?.experience || 0;
-  const xpAtLevelStart =
-    currentLevel > 1 ? getTotalXPForLevel(currentLevel) : 0;
-  const xpInCurrentLevel = Math.max(0, currentExperience - xpAtLevelStart);
-  const xpForNextLevel = calculateRequiredXP(currentLevel);
+  const bestLevel = userProfile?.meilleur_niveau || currentLevel;
+  const seasonId = userProfile?.saison_actuelle || 1;
+  const season = getSeasonById(seasonId);
+  const prestigeTitle = getPrestigeTitle(bestLevel);
+
+  const xpInCurrentLevel = getXPInCurrentLevel(currentLevel, currentExperience);
+  const xpForNextLevel = getXPForNextLevel(currentLevel);
+  const isMaxLevel = currentLevel >= MAX_LEVEL;
   const experiencePercentage =
-    xpForNextLevel > 0
+    !isMaxLevel && xpForNextLevel > 0
       ? Math.min(100, (xpInCurrentLevel / xpForNextLevel) * 100)
-      : 0;
+      : 100;
 
   return (
     <div className="lg:w-80 flex-shrink-0">
       <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-4 md:p-6">
+        <div className="mb-4 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-900/40 to-cyan-900/40 border border-purple-500/20 text-center">
+          <p className="text-[10px] uppercase tracking-widest text-purple-400 font-semibold">
+            Saison {seasonId}
+          </p>
+          <p className="text-sm font-semibold text-white">
+            {season?.name ?? "Inconnue"}
+          </p>
+        </div>
+
         <div className="flex flex-col items-center mb-4 md:mb-6">
           <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-[rgba(6,182,212,0.3)]">
             {getUserInitials()}
@@ -53,8 +73,13 @@ export default function ProfileSidebar({
             {userProfile?.nom_utilisateur || "Aventurier"}
           </h2>
           <p className="text-gray-400 text-sm">
-            Niveau {currentLevel} • Rang +
-            {Math.floor(currentLevel * 3 + stats.likes / 100)}
+            Niveau {currentLevel}/{MAX_LEVEL}
+          </p>
+          <p className="text-yellow-400 text-xs font-medium">
+            {prestigeTitle}
+          </p>
+          <p className="text-gray-500 text-xs mt-0.5">
+            Meilleur : Niveau {bestLevel}
           </p>
           <a
             href={`/profil/${userProfile?.nom_utilisateur}`}
@@ -68,16 +93,26 @@ export default function ProfileSidebar({
           <div className="flex justify-between text-sm mb-2">
             <span className="text-gray-400">Expérience</span>
             <span className="text-red-400 font-semibold">
-              {Math.floor(xpInCurrentLevel).toLocaleString()} /{" "}
-              {xpForNextLevel.toLocaleString()} XP
+              {isMaxLevel
+                ? "MAX"
+                : `${Math.floor(xpInCurrentLevel).toLocaleString()} / ${xpForNextLevel.toLocaleString()} XP`}
             </span>
           </div>
           <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-red-500 to-[#06b6d4] rounded-full transition-all duration-500"
+              className={`h-full rounded-full transition-all duration-500 ${
+                isMaxLevel
+                  ? "bg-gradient-to-r from-yellow-500 to-orange-500"
+                  : "bg-gradient-to-r from-red-500 to-[#06b6d4]"
+              }`}
               style={{ width: `${experiencePercentage}%` }}
             />
           </div>
+          {isMaxLevel && (
+            <p className="text-yellow-400 text-xs text-center mt-1 font-semibold">
+              Niveau maximum atteint !
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">

@@ -20,6 +20,8 @@ export interface UserProfile {
 export interface ExtendedUserProfile extends UserProfile {
   niveau: number
   experience: number
+  saison_actuelle: number
+  meilleur_niveau: number
 }
 
 export interface UserStats {

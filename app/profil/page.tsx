@@ -401,7 +401,9 @@ export default function ProfilPage() {
                   {activeTab === "creations" && (
                     <TabCreations creations={userCreations} />
                   )}
-                  {activeTab === "quests" && <TabQuests quests={dailyQuests} />}
+                  {activeTab === "quests" && (
+                    <TabQuests quests={dailyQuests} loading={loading} />
+                  )}
                   {activeTab === "characters" && (
                     <TabCharacters characters={userCharacters} />
                   )}

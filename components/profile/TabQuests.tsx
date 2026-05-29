@@ -5,13 +5,25 @@ import { getTotalXPReward } from "@/lib/dailyQuests";
 
 interface TabQuestsProps {
   quests: DailyQuest[];
+  loading?: boolean;
 }
 
-export default function TabQuests({ quests }: TabQuestsProps) {
+export default function TabQuests({ quests, loading }: TabQuestsProps) {
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#06b6d4] mx-auto mb-4"></div>
+        <p className="text-gray-400">Chargement des quêtes...</p>
+      </div>
+    );
+  }
+
   if (quests.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-400">Chargement des quêtes...</p>
+        <p className="text-gray-400">
+          Aucune quête disponible aujourd&apos;hui.
+        </p>
       </div>
     );
   }
@@ -38,20 +50,36 @@ export default function TabQuests({ quests }: TabQuestsProps) {
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center gap-2">
                 {quest.completed && (
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-5 h-5 text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 )}
-                <h4 className={`font-semibold ${quest.completed ? "text-green-400" : "text-white"}`}>
+                <h4
+                  className={`font-semibold ${quest.completed ? "text-green-400" : "text-white"}`}
+                >
                   {quest.title}
                 </h4>
               </div>
-              <span className="text-yellow-400 text-sm">+{quest.xpReward} XP</span>
+              <span className="text-yellow-400 text-sm">
+                +{quest.xpReward} XP
+              </span>
             </div>
             <p className="text-gray-400 text-sm mb-2">{quest.description}</p>
             <div className="flex justify-between text-xs text-gray-500 mb-1">
               <span>Progression</span>
-              <span>{quest.progress} / {quest.target}</span>
+              <span>
+                {quest.progress} / {quest.target}
+              </span>
             </div>
             <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
               <div
