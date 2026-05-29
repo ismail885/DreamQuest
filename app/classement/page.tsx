@@ -37,7 +37,44 @@ export default function ClassementPage() {
   } = usePullToRefresh(refresh);
 
   return (
-    <div className="min-h-screen bg-[#070b15] text-white flex flex-col">
+    <div className="min-h-screen text-white flex flex-col relative bg-[#070b15]">
+      <div className="fixed inset-0 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(6,182,212,0.10)",
+            left: "25%",
+            top: 0,
+            opacity: 0.83,
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(59,130,246,0.10)",
+            right: "25%",
+            top: "696px",
+            opacity: 0.51,
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(99,102,241,0.10)",
+            left: "51.54%",
+            top: "505px",
+            opacity: 0.93,
+          }}
+        />
+      </div>
+
       <Header />
 
       <main
@@ -57,7 +94,7 @@ export default function ClassementPage() {
               <div
                 className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}
               >
-                <ChevronDown className="w-6 h-6 text-cyan-400" />
+                <ChevronDown className="w-6 h-6 text-[#06b6d4]" />
               </div>
             )}
           </div>
@@ -77,7 +114,6 @@ export default function ClassementPage() {
               </p>
             </div>
 
-            {/* Tabs */}
             <ClassementTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
             {fetchError ? (
@@ -92,7 +128,7 @@ export default function ClassementPage() {
               </div>
             ) : loading ? (
               <div className="text-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#06b6d4] mx-auto"></div>
                 <p className="text-gray-400 mt-4">
                   Chargement du classement...
                 </p>

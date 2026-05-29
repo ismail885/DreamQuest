@@ -203,7 +203,6 @@ export default function ProfilPage() {
         .eq("id", user.id);
 
       if (updateError) {
-        // Si l'email est déjà utilisé par un autre utilisateur
         if (
           updateError.code === "23505" ||
           updateError.message?.includes("duplicate") ||
@@ -248,7 +247,44 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070b15] text-white flex flex-col">
+    <div className="min-h-screen text-white flex flex-col bg-[#070b15]">
+      <div className="fixed inset-0 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(6,182,212,0.10)",
+            left: "25%",
+            top: 0,
+            opacity: 0.83,
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(59,130,246,0.10)",
+            right: "25%",
+            top: "696px",
+            opacity: 0.51,
+          }}
+        />
+        <div
+          className="absolute w-96 h-96 rounded-full blur-[40px]"
+          style={{
+            background: "rgba(99,102,241,0.10)",
+            left: "51.54%",
+            top: "505px",
+            opacity: 0.93,
+          }}
+        />
+      </div>
+
       <Header />
 
       <main
@@ -269,7 +305,7 @@ export default function ProfilPage() {
                 className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}
               >
                 <svg
-                  className="w-6 h-6 text-cyan-400"
+                  className="w-6 h-6 text-[#06b6d4]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -303,8 +339,8 @@ export default function ProfilPage() {
             />
 
             <div className="flex-1">
-              <div className="bg-[#0c1322] border border-gray-700/50 rounded-2xl overflow-hidden">
-                <div className="flex overflow-x-auto flex-nowrap border-b border-gray-700/50 bg-[#070b15] scrollbar-thin">
+              <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] overflow-hidden">
+                <div className="flex overflow-x-auto flex-nowrap border-b border-[rgba(6,182,212,0.15)] bg-[rgba(6,182,212,0.03)] scrollbar-thin">
                   <button
                     onClick={() => setActiveTab("stories")}
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${

@@ -58,7 +58,7 @@ export default function ProfileSidebar({
           </p>
           <a
             href={`/profil/${userProfile?.nom_utilisateur}`}
-            className="text-cyan-400 text-sm hover:underline mt-2"
+            className="text-[#06b6d4] text-sm hover:underline mt-2"
           >
             Voir profil public
           </a>
@@ -74,7 +74,7 @@ export default function ProfileSidebar({
           </div>
           <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-red-500 to-cyan-500 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-red-500 to-[#06b6d4] rounded-full transition-all duration-500"
               style={{ width: `${experiencePercentage}%` }}
             />
           </div>
@@ -151,7 +151,7 @@ export default function ProfileSidebar({
               await logout();
               router.push("/");
             }}
-            className="w-full py-3 px-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 font-medium hover:bg-red-500/20 hover:border-red-500/50 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 bg-red-500/10 border border-red-500/30 rounded-[10px] text-red-400 font-medium hover:bg-red-500/20 hover:border-red-500/50 transition-colors flex items-center justify-center gap-2"
           >
             <svg
               className="w-4 h-4"

@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 interface AdventurePaginationProps {
   currentPage: number;
   totalPages: number;
@@ -21,11 +23,9 @@ export default function AdventurePagination({
         <button
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-[#141d2e] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#141d2e]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-gray-400 hover:text-white hover:border-[rgba(6,182,212,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <ChevronLeft className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-1">
@@ -45,10 +45,10 @@ export default function AdventurePagination({
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`w-10 h-10 rounded-lg font-medium transition-colors ${
+                className={`w-10 h-10 rounded-[10px] font-medium transition-all duration-200 ${
                   currentPage === pageNum
-                    ? "bg-cyan-500 text-white"
-                    : "bg-[#141d2e] border border-gray-700 text-gray-400 hover:bg-[#141d2e]/80"
+                    ? "bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white"
+                    : "bg-transparent border border-[rgba(6,182,212,0.2)] text-gray-400 hover:text-white hover:border-[rgba(6,182,212,0.4)]"
                 }`}
               >
                 {pageNum}
@@ -60,11 +60,9 @@ export default function AdventurePagination({
         <button
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-[#141d2e] border border-gray-700 rounded-lg text-gray-400 hover:bg-[#141d2e]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-gray-400 hover:text-white hover:border-[rgba(6,182,212,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
