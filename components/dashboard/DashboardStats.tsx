@@ -63,7 +63,7 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
             <div className="text-2xl md:text-3xl font-bold text-violet-400 mb-1 md:mb-2">
               {stats.userLevel}
             </div>
-            <div className="text-gray-400 text-xs md:text-sm">Niveau user</div>
+            <div className="text-gray-400 text-xs md:text-sm">Niveau utilisateur</div>
           </div>
         </div>
       )}

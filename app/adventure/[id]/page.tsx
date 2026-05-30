@@ -20,7 +20,6 @@ import EffectIndicator from "@/components/adventure/EffectIndicator";
 import ChoiceButton from "@/components/adventure/ChoiceButton";
 import StorySection from "@/components/adventure/StorySection";
 import RandomEventCard from "@/components/adventure/RandomEventCard";
-import ClassAbilitiesPanel from "@/components/adventure/ClassAbilitiesPanel";
 import CombatUI from "@/components/adventure/CombatUI";
 import AdventureHeader from "@/components/adventure/AdventureHeader";
 import AdventureEndScreen from "@/components/adventure/AdventureEndScreen";
@@ -294,22 +293,15 @@ function AdventureReader({ params }: Props) {
                 />
               )}
 
-              {character && inCombat && (
-                <ClassAbilitiesPanel
+              {inCombat && combatState && character && (
+                <CombatUI
+                  combatState={combatState}
                   character={character}
-                  availableAbilities={availableAbilities}
-                  usedAbilities={usedAbilities}
-                  onUseAbility={(ability) => {
-                    setUsedAbilities([...usedAbilities, ability]);
-                    const newPv = Math.min(
-                      (character.points_vie ?? 100) + 10,
-                      character.points_vie ?? 100,
-                    );
-                    setCharacter({ ...character, points_vie: newPv });
-                    if (currentBranch?.choix1_lien) {
-                      chooseOption(currentBranch.choix1_lien);
-                    }
-                  }}
+                  onAttack={handleCombatAttack}
+                  onDefend={handleCombatDefend}
+                  onFlee={handleCombatFlee}
+                  onAbility={handleCombatAbility}
+                  onEnd={handleCombatEnd}
                 />
               )}
             </motion.div>
@@ -328,18 +320,6 @@ function AdventureReader({ params }: Props) {
         title="Quitter l'aventure ?"
         message="Votre progression a été sauvegardée automatiquement."
       />
-
-      {inCombat && combatState && character && (
-        <CombatUI
-          combatState={combatState}
-          character={character}
-          onAttack={handleCombatAttack}
-          onDefend={handleCombatDefend}
-          onFlee={handleCombatFlee}
-          onAbility={handleCombatAbility}
-          onEnd={handleCombatEnd}
-        />
-      )}
     </div>
   );
 }

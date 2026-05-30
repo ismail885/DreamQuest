@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { 
- generateRandomStats, 
- getRandomAbility, 
- getAbilitiesForLevel
+  generateRandomStats, 
+  getRandomAbility, 
+  getAbilitiesForLevel,
+  generateCharacterName,
+  generateAdventureTitle
 } from '@/lib/randomGenerator';
 import { getRandomEvent } from '@/lib/randomEvents';
 import { LEVEL_BONUS } from '@/lib/levelBonus';
@@ -67,13 +69,21 @@ export async function GET(request: Request) {
   const pool = getPoolAbilityNames(classe);
   return NextResponse.json({ pool });
 
- case 'levelBonus':
- const bonus = LEVEL_BONUS[niveau] || {};
- return NextResponse.json({ bonus });
+  case 'levelBonus':
+  const bonus = LEVEL_BONUS[niveau] || {};
+  return NextResponse.json({ bonus });
 
- default:
- return NextResponse.json({ 
- error: 'Action non reconnue. Actions disponibles: stats, ability, abilities, xp, event, pool, levelBonus' 
- });
+  case 'name':
+  const name = generateCharacterName();
+  return NextResponse.json({ name });
+
+  case 'adventureTitle':
+  const title = generateAdventureTitle();
+  return NextResponse.json({ title });
+
+  default:
+  return NextResponse.json({ 
+  error: 'Action non reconnue. Actions disponibles: stats, ability, abilities, xp, event, pool, levelBonus, name, adventureTitle' 
+  });
  }
 }

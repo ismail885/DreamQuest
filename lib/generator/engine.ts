@@ -66,21 +66,17 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
   const usedLocations = new Set<{ name: string; description: string }>();
   const usedNpcs = new Set<{ name: string; role: string; description: string }>();
   const usedTwists = new Set<string>();
-  const nodeCount = 10 + Math.floor(Math.random() * 6); // 10-15 nodes
+  const nodeCount = 10 + Math.floor(Math.random() * 6);
 
-  // Générer une description si elle n'existe pas
   const description = userDescription || generateDescription(title, genre);
-  
-  // Générer la difficulté basée sur le nombre de nœuds
-  const difficulty: "easy" | "normal" | "hard" = 
+
+  const difficulty: "easy" | "normal" | "hard" =
     nodeCount < 12 ? "easy" : nodeCount < 14 ? "normal" : "hard";
-  
-  // Estimer la durée (en minutes) : ~3-5 min par nœud
+
   const duree_estimee = nodeCount * 4;
 
   const nodes: GeneratedNode[] = [];
 
-  // ─── ROOT NODE ───
   const hook = pick(content.plotHooks);
   const location = pick(content.locations);
   usedLocations.add(location);
@@ -102,7 +98,6 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
     })),
   });
 
-  // ─── CONTENT NODES ───
   const depth = Math.floor(nodeCount / 3);
 
   for (let i = 0; i < nodeCount - 2; i++) {
@@ -111,7 +106,6 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
     const phase = i < depth ? "early" : i < depth * 2 ? "mid" : "climax";
 
     if (phase === "early") {
-      // Early game: exploration, meeting NPCs, first challenges
       if (Math.random() < 0.4 && content.npcs.length > 0) {
         const npc = pickUnique(content.npcs, usedNpcs);
         usedNpcs.add(npc);
@@ -132,7 +126,6 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
         consequence = ev.consequence;
       }
     } else if (phase === "mid") {
-      // Mid game: rising tension, twists, harder choices
       if (Math.random() < 0.3 && usedTwists.size < content.twists.length) {
         const twist = pickUnique(content.twists, usedTwists);
         usedTwists.add(twist);
@@ -145,19 +138,19 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
         consequence = ev.consequence;
       }
     } else {
-      // Climax: final confrontations
       const ev = pick(content.climaxEvents);
       eventText = ev.text;
       consequence = ev.consequence;
     }
 
-    // Generate 3 choices with variety
-    const choiceSet = pick(content.choiceSets);
-    const choices = choiceSet.slice(0, 3).map((text, idx) => ({
-      text,
-      link: i < nodeCount - 3 ? `node_${i + 1}_${idx}` : `ending_${idx}`,
-      consequences: idx === 0 ? consequence : "",
-    }));
+    const choices = [0, 1, 2].map((_, idx) => {
+      const set = pick(content.choiceSets);
+      return {
+        text: set[idx],
+        link: i < nodeCount - 3 ? `node_${i + 1}_${idx}` : `ending_${idx}`,
+        consequences: idx === 0 ? consequence : "",
+      };
+    });
 
     nodes.push({
       id: `node_${i}`,
@@ -167,8 +160,7 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
     });
   }
 
-  // ─── ENDINGS ───
-  const endingCount = 2 + Math.floor(Math.random() * 2); // 2-3 endings
+  const endingCount = 2 + Math.floor(Math.random() * 2);
   const endingSet = pickN(content.endings, endingCount);
 
   for (let i = 0; i < endingSet.length; i++) {
