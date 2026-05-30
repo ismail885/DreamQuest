@@ -115,41 +115,39 @@ export function useAdventure(
   loadAdventure();
   }, [adventureId, userId]);
 
- const chooseOption = useCallback(async (branchId: number | null) => {
- if (!branchId) return;
- if (isLoadingRef.current) return;
+  const chooseOption = useCallback(async (branchId: number | null) => {
+  if (!branchId) return;
+  if (isLoadingRef.current) return;
 
- isLoadingRef.current = true;
- setState((s) => ({ ...s, loading: true }));
- try {
- const { data: branch, error } = await supabase
- .from('embranchement')
- .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
- .eq('id', branchId)
- .single();
+  isLoadingRef.current = true;
+  try {
+  const { data: branch, error } = await supabase
+  .from('embranchement')
+  .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
+  .eq('id', branchId)
+  .single();
 
- if (error || !branch) {
- setState((s) => ({ ...s, loading: false, error: "Impossible de charger la suite." }));
- isLoadingRef.current = false;
- return;
- }
+  if (error || !branch) {
+  setState((s) => ({ ...s, error: "Impossible de charger la suite." }));
+  isLoadingRef.current = false;
+  return;
+  }
 
- const isEnd = !branch.choix1_lien && !branch.choix2_lien;
+  const isEnd = !branch.choix1_lien && !branch.choix2_lien;
 
- setState((s) => {
- onChoiceRef.current?.(branchId, s.history);
- return {
- ...s,
- currentBranch: branch,
- loading: false,
- isEnd,
- history: [...s.history, branch],
- };
- });
- isLoadingRef.current = false;
+  setState((s) => {
+  onChoiceRef.current?.(branchId, s.history);
+  return {
+  ...s,
+  currentBranch: branch,
+  isEnd,
+  history: [...s.history, branch],
+  };
+  });
+  isLoadingRef.current = false;
   } catch (err) {
     console.error('[useAdventure] chooseOption failed:', err, 'branchId:', branchId)
-    setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
+    setState((s) => ({ ...s, error: "Une erreur est survenue." }));
     isLoadingRef.current = false;
   }
   }, []);

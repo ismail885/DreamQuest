@@ -194,7 +194,7 @@ export function useCharacter({
         : character.points_vie;
 
       await saveCharacterProgress(characterIdNum, result.newLevel, result.newExperience, newStats, newPv);
-      await updateUserXp(userId, xpGained);
+      await updateUserXp(userId, "aventure", xpGained);
 
       setCharacter((prev) =>
         prev

@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { calculateRequiredXP } from './characters/classDefinitions'
+import { addExperience } from './leveling'
 import { LEVEL_BONUS } from './levelBonus'
 
 export interface LevelUpResult {
@@ -10,23 +11,7 @@ export interface LevelUpResult {
   newMaxPv: number
 }
 
-/**
- * Calcule le niveau à partir de l'XP totale cumulée.
- * Utilise la formule exponentielle: 100 * 1.5^(level-1) par niveau.
- */
 export const MAX_LEVEL = 100;
-
-export function calculateLevel(totalXp: number): number {
-  let level = 1
-  let cumulativeXp = 0
-  while (level < MAX_LEVEL) {
-    const xpForNext = calculateRequiredXP(level)
-    if (cumulativeXp + xpForNext > totalXp) break
-    cumulativeXp += xpForNext
-    level++
-  }
-  return level
-}
 
 /**
  * Applique le gain d'XP à un personnage et gère la montée de niveau.
@@ -38,7 +23,7 @@ export function applyXpGain(
   basePvMax: number
 ): LevelUpResult {
   const newExperience = currentXp + xpGained
-  const newLevel = calculateLevel(newExperience)
+  const newLevel = calculateLevel(newExperience, currentLevel)
   const leveledUp = newLevel > currentLevel
 
   const statBonuses: Record<string, number> = {}
@@ -64,6 +49,21 @@ export function applyXpGain(
     statBonuses,
     newMaxPv,
   }
+}
+
+export function calculateLevel(totalXp: number, minLevel: number = 1): number {
+  let level = minLevel;
+  let cumulativeXp = 0;
+  for (let i = 1; i < level; i++) {
+    cumulativeXp += calculateRequiredXP(i);
+  }
+  while (level < MAX_LEVEL) {
+    const xpForNext = calculateRequiredXP(level);
+    if (cumulativeXp + xpForNext > totalXp) break;
+    cumulativeXp += xpForNext;
+    level++;
+  }
+  return level;
 }
 
 /**
@@ -93,30 +93,13 @@ export async function saveCharacterProgress(
 }
 
 /**
- * Met à jour l'XP du user avec l'XP gagnée par le personnage.
+ * Met à jour l'XP du compte utilisateur via le nouveau système (saison + courbe 1-100).
  */
 export async function updateUserXp(
   userId: number | undefined,
-  characterXp: number
+  source: string,
+  xpAmount: number
 ): Promise<void> {
-  if (!userId || characterXp <= 0) return
-
-  const { data: userData } = await supabase
-    .from('utilisateur')
-    .select('experience, niveau')
-    .eq('id', userId)
-    .maybeSingle()
-
-  const currentXp = userData?.experience ?? 0
-  const currentLevel = userData?.niveau ?? 1
-  const newXp = currentXp + characterXp
-  const newLevel = Math.max(currentLevel, calculateLevel(newXp))
-
-  await supabase
-    .from('utilisateur')
-    .update({
-      experience: newXp,
-      niveau: newLevel,
-    })
-    .eq('id', userId)
+  if (!userId || xpAmount <= 0) return
+  await addExperience(userId, xpAmount, source)
 }

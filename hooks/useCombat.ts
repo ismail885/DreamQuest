@@ -312,7 +312,7 @@ export function useCombat({
         );
       }
       if (userId) {
-        await updateUserXp(userId, xpGain);
+        await updateUserXp(userId, "combat", xpGain);
       }
 
       setCharacter(
