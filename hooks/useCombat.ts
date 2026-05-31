@@ -28,6 +28,7 @@ interface UseCombatProps {
   character: Character | null;
   setCharacter: React.Dispatch<React.SetStateAction<Character | null>>;
   userId: number | null;
+  onCombatEnd?: (won: boolean) => void;
 }
 
 interface UseCombatReturn {
@@ -45,6 +46,7 @@ export function useCombat({
   character,
   setCharacter,
   userId,
+  onCombatEnd,
 }: UseCombatProps): UseCombatReturn {
   const [inCombat, setInCombat] = useState(false);
   const [combatState, setCombatState] = useState<CombatState | null>(null);
@@ -340,7 +342,8 @@ export function useCombat({
 
     setInCombat(false);
     setCombatState(null);
-  }, [character, combatState, userId, setCharacter]);
+    onCombatEnd?.(combatState?.won ?? false);
+  }, [character, combatState, userId, setCharacter, onCombatEnd]);
 
   // Timer du tour ennemi
   useEffect(() => {

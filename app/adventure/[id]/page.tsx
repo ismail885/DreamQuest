@@ -49,13 +49,18 @@ function AdventureReader({ params }: Props) {
     (typeof RANDOM_EVENTS)[0] | null
   >(null);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [initialStats, setInitialStats] = useState<{
+    xp: number;
+    force: number;
+    agility: number;
+    magie: number;
+    endurance: number;
+  } | null>(null);
+  const [combatStats, setCombatStats] = useState({ wins: 0, losses: 0 });
 
   const {
     character,
     setCharacter,
-    availableAbilities,
-    usedAbilities,
-    setUsedAbilities,
     loadCharacterProgress,
     saveCharacterStats,
     characterIdNum,
@@ -74,7 +79,17 @@ function AdventureReader({ params }: Props) {
     handleCombatFlee,
     handleCombatAbility,
     handleCombatEnd,
-  } = useCombat({ character, setCharacter, userId: user?.id ?? null });
+  } = useCombat({
+    character,
+    setCharacter,
+    userId: user?.id ?? null,
+    onCombatEnd: (won) => {
+      setCombatStats((prev) => ({
+        wins: prev.wins + (won ? 1 : 0),
+        losses: prev.losses + (won ? 0 : 1),
+      }));
+    },
+  });
 
   const { lastConsequence, showEffect, applyConsequence, parseStatChanges } =
     useConsequences({
@@ -92,12 +107,14 @@ function AdventureReader({ params }: Props) {
     error,
     isEnd,
     history,
+    totalBranches,
     chooseOption,
     restart,
   } = useAdventure(adventureId, user?.id ?? null);
 
+  const totalNodes = totalBranches || MAX_STEPS;
   const progression = Math.min(
-    Math.round((history.length / MAX_STEPS) * 100),
+    Math.round((history.length / Math.max(totalNodes, 1)) * 100),
     100,
   );
 
@@ -112,6 +129,17 @@ function AdventureReader({ params }: Props) {
   });
 
   const lastBranchIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!character || initialStats) return;
+    setInitialStats({
+      xp: character.experience ?? 0,
+      force: character.stats?.force ?? 0,
+      agility: character.stats?.agility ?? 0,
+      magie: character.stats?.magie ?? 0,
+      endurance: character.stats?.endurance ?? 0,
+    });
+  }, [character, initialStats]);
+
   useEffect(() => {
     if (!currentBranch || currentEvent || isEnd) return;
     if (lastBranchIdRef.current === currentBranch.id) return;
@@ -212,13 +240,21 @@ function AdventureReader({ params }: Props) {
             texte={currentBranch?.texte ?? ""}
           />
 
-          {isEnd && (
-            <AdventureEndScreen
-              historyLength={history.length}
-              characterNiveau={character?.niveau}
-              onRestart={restart}
-            />
-          )}
+           {isEnd && character && initialStats && (
+             <AdventureEndScreen
+               historyLength={history.length}
+               characterNiveau={character?.niveau}
+               xpGained={Math.max(0, (character.experience ?? 0) - initialStats.xp)}
+               statsGained={{
+                 force: Math.max(0, (character.stats?.force ?? 0) - initialStats.force),
+                 agility: Math.max(0, (character.stats?.agility ?? 0) - initialStats.agility),
+                 magie: Math.max(0, (character.stats?.magie ?? 0) - initialStats.magie),
+                 endurance: Math.max(0, (character.stats?.endurance ?? 0) - initialStats.endurance),
+               }}
+               combatStats={combatStats}
+               onRestart={restart}
+             />
+           )}
 
           {currentEvent && (
             <RandomEventCard

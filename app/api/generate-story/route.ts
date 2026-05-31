@@ -65,6 +65,13 @@ const KEYWORDS: Record<string, string[]> = {
     'mine', 'tresor', 'expedition', 'temple', 'jungle', 'ruine', 'voyage',
     'carte', 'pirate', 'ile', 'exploration',
   ],
+  "science-fiction": [
+    'vaisseau', 'alien', 'mars', 'espace', 'station', 'robot', 'ia',
+    'federation', 'galaxie', 'planete', 'orbite', 'nebuleuse', 'quantique',
+    'cyborg', 'laser', 'fusion', 'colonie', 'cosmique', 'technologie',
+    'satellite', 'sonde', 'compte a rebours', 'signal', 'extraterrestre',
+    'station spatiale', 'vaisseau spatial', 'trou de ver',
+  ],
 }
 
 const DESCRIPTION_TEMPLATES: Record<string, string> = {
@@ -76,6 +83,8 @@ const DESCRIPTION_TEMPLATES: Record<string, string> = {
     '${titre} — les rumeurs parlent de richesses cachées et de pièges mortels. À toi de découvrir la vérité.',
   mystere:
     '${titre} — des secrets millénaires enfermés dans la pierre. Chaque réponse soulève une nouvelle question.',
+  "science-fiction":
+    '${titre} — un voyage au-delà des étoiles. La technologie et l\'inconnu vous attendent dans les confins de l\'univers.',
 }
 
 const GENRE_CONFIG: Record<string, Omit<GenreDetectionResult, 'description'>> = {
@@ -98,10 +107,16 @@ const GENRE_CONFIG: Record<string, Omit<GenreDetectionResult, 'description'>> = 
     duree_estimee: 30,
   },
   aventure: {
-    genreMoteur: 'romance',
+    genreMoteur: 'fantasy',
     genreBDD: 'aventure',
     difficulty: 'facile',
     duree_estimee: 15,
+  },
+  "science-fiction": {
+    genreMoteur: 'scifi',
+    genreBDD: 'science-fiction',
+    difficulty: 'normal',
+    duree_estimee: 25,
   },
 }
 
@@ -120,13 +135,13 @@ function detectGenreFromTitle(titre: string): GenreDetectionResult {
     }
   }
 
-  // Fallback : aventure par défaut
+  // Fallback : fantasy par défaut
   return {
-    genreMoteur: 'romance',
-    genreBDD: 'aventure',
+    genreMoteur: 'fantasy',
+    genreBDD: 'fantaisy',
     difficulty: 'normal',
     duree_estimee: 20,
-    description: `${titre} — les rumeurs parlent de richesses cachées et de pièges mortels. À toi de découvrir la vérité.`,
+    description: `${titre} — un lieu chargé de magie et de dangers oubliés. Seuls les plus courageux y trouveront gloire ou trépas.`,
   }
 }
 

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { MessageCircle } from "lucide-react";
 
 interface StorySectionProps {
   progression: number;
@@ -8,12 +9,51 @@ interface StorySectionProps {
   texte: string;
 }
 
+function formatParagraph(paragraph: string, index: number) {
+  const trimmed = paragraph.trim();
+  if (!trimmed) return null;
+
+  // Dialogue line: starts with — or contains "..." pattern
+  const hasDialogue = /[""][^""]+[""]/.test(trimmed);
+  const dialoguePrefix = trimmed.startsWith("—") || trimmed.startsWith("- ");
+
+  if (dialoguePrefix || hasDialogue) {
+    return (
+      <div
+        key={index}
+        className="flex gap-3 items-start py-2"
+      >
+        <MessageCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+        <div className="flex-1">
+          <p className="text-cyan-200 italic leading-relaxed text-base">
+            {trimmed}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Narrative paragraph (default)
+  return (
+    <p
+      key={index}
+      className="text-gray-300 leading-relaxed text-base"
+    >
+      {trimmed}
+    </p>
+  );
+}
+
 export default function StorySection({
   progression,
   image,
   adventureTitle,
   texte,
 }: StorySectionProps) {
+  const paragraphs = texte
+    ? texte.split("\n\n").filter(Boolean)
+    : [];
+
   return (
     <>
       <div>
@@ -48,9 +88,15 @@ export default function StorySection({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6"
+          className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 space-y-4"
         >
-          <p className="text-gray-300 leading-relaxed text-base">{texte}</p>
+          {paragraphs.length > 1 ? (
+            paragraphs.map((p, i) => formatParagraph(p, i))
+          ) : (
+            <p className="text-gray-300 leading-relaxed text-base">
+              {texte}
+            </p>
+          )}
         </motion.div>
       )}
     </>

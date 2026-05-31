@@ -3,12 +3,13 @@ import { supabase } from '@/lib/supabaseClient';
 import type { Adventure, Branch } from '@/types/adventure';
 
 interface UseAdventureState {
- adventure: Adventure | null;
- currentBranch: Branch | null;
- loading: boolean;
- error: string | null;
- isEnd: boolean;
- history: Branch[];
+  adventure: Adventure | null;
+  currentBranch: Branch | null;
+  loading: boolean;
+  error: string | null;
+  isEnd: boolean;
+  history: Branch[];
+  totalBranches: number;
 }
 
 export function useAdventure(
@@ -16,14 +17,15 @@ export function useAdventure(
  userId: number | null = null,
  onChoice?: (branchId: number, currentHistory: Branch[]) => void,
 ) {
- const [state, setState] = useState<UseAdventureState>({
- adventure: null,
- currentBranch: null,
- loading: true,
- error: null,
- isEnd: false,
- history: [],
- });
+  const [state, setState] = useState<UseAdventureState>({
+    adventure: null,
+    currentBranch: null,
+    loading: true,
+    error: null,
+    isEnd: false,
+    history: [],
+    totalBranches: 0,
+  });
 
  const userIdRef = useRef(userId);
  userIdRef.current = userId;
@@ -45,13 +47,19 @@ export function useAdventure(
  .eq('id', adventureId)
  .single();
 
- if (advError || !adventure) {
- setState((s) => ({ ...s, loading: false, error: "Aventure introuvable." }));
- return;
- }
+  if (advError || !adventure) {
+    setState((s) => ({ ...s, loading: false, error: "Aventure introuvable." }));
+    return;
+  }
 
- // Trouver le nœud de départ (le plus ancien = plus petit id)
- const { data: firstBranch } = await supabase
+  // Compter le nombre total d'embranchements
+  const { count: totalBranches } = await supabase
+    .from('embranchement')
+    .select('*', { count: 'exact', head: true })
+    .eq('id_aventure', adventureId);
+
+  // Trouver le nœud de départ (le plus ancien = plus petit id)
+  const { data: firstBranch } = await supabase
  .from('embranchement')
  .select('id')
  .eq('id_aventure', adventureId)
@@ -95,17 +103,17 @@ export function useAdventure(
  .eq('id', firstBranch.id)
  .single();
  
- if (fallbackBranch) {
- const isEnd = !fallbackBranch.choix1_lien && !fallbackBranch.choix2_lien;
- setState({ adventure, currentBranch: fallbackBranch, loading: false, error: null, isEnd, history: [fallbackBranch] });
- } else {
- setState((s) => ({ ...s, adventure, loading: false, error: "Impossible de charger l'histoire." }));
- }
- return;
- }
+  if (fallbackBranch) {
+    const isEnd = !fallbackBranch.choix1_lien && !fallbackBranch.choix2_lien;
+    setState({ adventure, currentBranch: fallbackBranch, loading: false, error: null, isEnd, history: [fallbackBranch], totalBranches: totalBranches ?? 0 });
+  } else {
+    setState((s) => ({ ...s, adventure, loading: false, error: "Impossible de charger l'histoire." }));
+  }
+  return;
+    }
 
- const isEnd = !branch.choix1_lien && !branch.choix2_lien;
- setState({ adventure, currentBranch: branch, loading: false, error: null, isEnd, history: [branch] });
+  const isEnd = !branch.choix1_lien && !branch.choix2_lien;
+  setState({ adventure, currentBranch: branch, loading: false, error: null, isEnd, history: [branch], totalBranches: totalBranches ?? 0 });
   } catch (err) {
     console.error('[useAdventure] loadAdventure failed:', err, 'adventureId:', adventureId)
     setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));
