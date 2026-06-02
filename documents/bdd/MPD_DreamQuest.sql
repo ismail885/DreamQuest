@@ -85,15 +85,8 @@ CREATE TABLE vote (
     UNIQUE(id_utilisateur, id_aventure)
 );
 
--- TABLE 7 : parametre_utilisateur
-CREATE TABLE parametre_utilisateur (
-    id SERIAL PRIMARY KEY,
-    id_utilisateur INT NOT NULL UNIQUE REFERENCES utilisateur(id) ON DELETE CASCADE,
-    notifications BOOLEAN DEFAULT TRUE,
-    langue VARCHAR(5) DEFAULT 'fr'
-);
 
--- TABLE 8 : quete_quotidienne
+-- TABLE 7 : quete_quotidienne
 CREATE TABLE quete_quotidienne (
     id SERIAL PRIMARY KEY,
     id_utilisateur INT NOT NULL REFERENCES utilisateur(id) ON DELETE CASCADE,
@@ -102,13 +95,4 @@ CREATE TABLE quete_quotidienne (
     complet BOOLEAN DEFAULT FALSE,
     date_jour DATE NOT NULL DEFAULT CURRENT_DATE,
     UNIQUE(id_utilisateur, quest_id, date_jour)
-);
-
--- TABLE 9 : participation_evenement
-CREATE TABLE participation_evenement (
-    id SERIAL PRIMARY KEY,
-    id_utilisateur INT NOT NULL REFERENCES utilisateur(id) ON DELETE CASCADE,
-    evenement_id VARCHAR(50) NOT NULL,
-    participe BOOLEAN DEFAULT FALSE,
-    UNIQUE(id_utilisateur, evenement_id)
 );
