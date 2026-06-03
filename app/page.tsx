@@ -47,7 +47,7 @@ export default function Home() {
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               style={{
                 background:
-                  "linear-gradient(90deg,primary 0%,#3b82f6 50%,#6366f1 100%)",
+                  "linear-gradient(90deg,#00d4ff 0%,#3b82f6 50%,#6366f1 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
