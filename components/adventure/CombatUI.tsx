@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Swords, Shield, Trophy, Zap, Skull, Crosshair, ShieldHalf, Gem } from "lucide-react";
+import { Swords, Shield, Trophy, Zap, Crosshair, ShieldHalf, Gem } from "lucide-react";
 import { getAbilitiesForClass, type CombatState, type CombatAbility } from "@/lib/combat";
 import type { Character } from "@/types";
 
@@ -73,10 +73,8 @@ export default function CombatUI({
   onEnd,
 }: CombatUIProps) {
   const enemy = combatState.enemy;
-  if (!enemy) return null;
-
   const playerPvRatio = combatState.playerPv / combatState.playerPvMax;
-  const enemyPvRatio = enemy.pv / enemy.pvMax;
+  const enemyPvRatio = enemy ? enemy.pv / enemy.pvMax : 0;
   const playerManaRatio = combatState.playerMana / combatState.playerManaMax;
   const logEndRef = useRef<HTMLDivElement>(null);
   const [floatingDmgs, setFloatingDmgs] = useState<FloatingDmg[]>([]);
@@ -125,7 +123,7 @@ export default function CombatUI({
       }
     }
     prevLogLengthRef.current = combatState.log.length;
-  }, [combatState.log.length]);
+  }, [combatState.log, combatState.log.length]);
 
   const removeFloatingDmg = useCallback((id: number) => {
     setFloatingDmgs(prev => prev.filter(d => d.id !== id));
@@ -135,6 +133,8 @@ export default function CombatUI({
     setAbilityPulse(prev => prev + 1);
     onAbility(ability);
   }, [onAbility]);
+
+  if (!enemy) return null;
 
   return (
     <motion.div

@@ -1,17 +1,13 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
 import PageBackground from "@/components/shared/PageBackground";
 import PageTransition from "@/components/shared/PageTransition";
-import AdventureCard from "@/components/adventure/AdventureCard";
-import { SkeletonAdventureList } from "@/components/shared/Skeleton";
-import { Search, X, User, Frown } from "lucide-react";
-import { useAdventureList, FILTER_OPTIONS } from "@/hooks/useAdventureList";
-import AdventurePagination from "@/components/adventure/AdventurePagination";
+import { User } from "lucide-react";
 
 export default function AdventurePage() {
   return (
@@ -22,23 +18,8 @@ export default function AdventurePage() {
 }
 
 function AdventurePageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const personnageId = searchParams.get("personnage");
-  const [showCharacterModal, setShowCharacterModal] = useState(false);
-  const {
-    adventures: filteredAdventures,
-    loading,
-    error,
-    currentPage,
-    totalCount,
-    totalPages,
-    activeFilter,
-    searchQuery,
-    setCurrentPage,
-    setActiveFilter,
-    setSearchQuery,
-  } = useAdventureList();
 
   return (
     <div className="min-h-screen flex flex-col">

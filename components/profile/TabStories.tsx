@@ -10,7 +10,6 @@ import {
   Wind,
   User,
   BookOpen,
-  ChevronRight,
 } from "lucide-react";
 import type { UserSave } from "@/types/save";
 

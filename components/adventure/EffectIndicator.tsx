@@ -83,7 +83,6 @@ export default function EffectIndicator({
 
   const isPositive = changes.length > 0 && changes.every((c) => c.value > 0);
   const isNegative = changes.length > 0 && changes.every((c) => c.value < 0);
-  const isMixed = changes.length > 0 && !isPositive && !isNegative;
 
   const borderColor = isNegative
     ? "border-red-500/40"
