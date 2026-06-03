@@ -18,29 +18,55 @@ export const SEASONS: Record<number, SeasonConfig> = {
     xpMultiplier: 1.0,
     questPool: ["finish_2", "finish_1", "vote_3", "create_char", "play_story"],
     startDate: "2026-01-01",
+    endDate: "2026-03-31",
+  },
+  2: {
+    id: 2,
+    name: "La Flamme des Légendes",
+    description: "Les braises du passé ravivent les héros d'antan.",
+    xpMultiplier: 1.2,
+    questPool: ["finish_2", "finish_1", "vote_3", "play_story"],
+    startDate: "2026-04-01",
+    endDate: "2026-06-30",
+  },
+  3: {
+    id: 3,
+    name: "L'Ombre du Néant",
+    description: "Une brume maléfique s'abat sur le royaume… seuls les plus courageux résisteront.",
+    xpMultiplier: 1.0,
+    questPool: ["finish_2", "finish_1", "create_char", "play_story"],
+    startDate: "2026-07-01",
+    endDate: "2026-09-30",
+  },
+  4: {
+    id: 4,
+    name: "L'Apogée des Dieux",
+    description: "Les dieux eux-mêmes descendent sur le plan mortel. La bataille finale commence.",
+    xpMultiplier: 1.5,
+    questPool: ["finish_2", "finish_1", "vote_3", "create_char", "play_story"],
+    startDate: "2026-10-01",
     endDate: "2026-12-31",
   },
 };
 
 export function getCurrentSeason(): SeasonConfig {
-  return SEASONS[1];
+  const now = new Date();
+  const allSeasons = Object.values(SEASONS);
+
+  for (const season of allSeasons) {
+    const start = new Date(season.startDate);
+    const end = new Date(season.endDate);
+    if (now >= start && now <= end) {
+      return season;
+    }
+  }
+
+  // Fallback : retourne la dernière saison si hors calendrier
+  return allSeasons[allSeasons.length - 1] ?? allSeasons[0];
 }
 
 export function getSeasonById(id: number): SeasonConfig | null {
   return SEASONS[id] ?? null;
 }
 
-export function isValidLevel(level: number): boolean {
-  return level >= 1 && level <= MAX_LEVEL;
-}
 
-export function getPrestigeTitle(bestLevel: number): string {
-  if (bestLevel >= 100) return "Légende Vivante";
-  if (bestLevel >= 85) return "Seigneur Suprême";
-  if (bestLevel >= 70) return "Maître Absolu";
-  if (bestLevel >= 55) return "Élite Légendaire";
-  if (bestLevel >= 40) return "Vétéran Aguerri";
-  if (bestLevel >= 25) return "Aventurier Confirmé";
-  if (bestLevel >= 15) return "Guerrier Prometteur";
-  return "Apprenti Aventurier";
-}

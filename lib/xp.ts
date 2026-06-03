@@ -2,6 +2,7 @@ import { supabase } from './supabaseClient'
 import { calculateRequiredXP } from './characters/classDefinitions'
 import { addExperience } from './leveling'
 import { LEVEL_BONUS } from './levelBonus'
+import { MAX_LEVEL } from './seasons'
 
 export interface LevelUpResult {
   leveledUp: boolean
@@ -10,8 +11,6 @@ export interface LevelUpResult {
   statBonuses: Record<string, number>
   newMaxPv: number
 }
-
-export const MAX_LEVEL = 100;
 
 /**
  * Applique le gain d'XP à un personnage et gère la montée de niveau.

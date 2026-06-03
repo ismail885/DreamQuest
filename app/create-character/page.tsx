@@ -2,6 +2,7 @@
 
 import { useAuthContext } from "@/context/AuthContext";
 import CreateCharacterForm from "@/components/character/CreateCharacterForm";
+import PageTransition from "@/components/shared/PageTransition";
 import BottomNav from "@/components/shared/BottomNav";
 import { useRouter } from "next/navigation";
 import type { Character } from "@/types";
@@ -36,10 +37,12 @@ export default function CreateCharacterPage() {
 
   return (
     <div className="min-h-screen bg-deep pb-24 md:pb-0">
-      <CreateCharacterForm
-        userId={user.id}
-        onCharacterCreated={handleCharacterCreated}
-      />
+      <PageTransition>
+        <CreateCharacterForm
+          userId={user.id}
+          onCharacterCreated={handleCharacterCreated}
+        />
+      </PageTransition>
       <BottomNav />
     </div>
   );

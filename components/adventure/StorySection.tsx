@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { MessageCircle } from "lucide-react";
@@ -44,7 +45,7 @@ function formatParagraph(paragraph: string, index: number) {
   );
 }
 
-export default function StorySection({
+const StorySection = memo(function StorySection({
   progression,
   image,
   adventureTitle,
@@ -101,4 +102,6 @@ export default function StorySection({
       )}
     </>
   );
-}
+});
+
+export default StorySection;

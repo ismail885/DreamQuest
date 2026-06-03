@@ -18,8 +18,15 @@ export const BASE_MONSTERS: Monster[] = [
   { id: 'loup', name: 'Loup affamé', level: 1, hp: 30, attack: 5, defense: 2, reward: 20, type: 'beast' },
   { id: 'gobelin', name: 'Gobelin', level: 1, hp: 25, attack: 4, defense: 1, reward: 15, type: 'human' },
   { id: 'rat_geant', name: 'Rat géant', level: 1, hp: 20, attack: 3, defense: 1, reward: 10, type: 'beast' },
-  { id: ' chauve_souris', name: 'Chauve-souris vampire', level: 1, hp: 15, attack: 4, defense: 0, reward: 12, type: 'beast' },
+  { id: 'chauve_souris', name: 'Chauve-souris vampire', level: 1, hp: 15, attack: 4, defense: 0, reward: 12, type: 'beast' },
   { id: 'spider', name: 'Araignée géante', level: 2, hp: 35, attack: 6, defense: 2, reward: 25, type: 'beast' },
+  { id: 'serpent', name: 'Serpent venimeux', level: 2, hp: 28, attack: 5, defense: 1, reward: 18, type: 'beast' },
+  { id: 'zombie', name: 'Zombie errant', level: 2, hp: 40, attack: 4, defense: 2, reward: 16, type: 'undead' },
+
+  // Niveau 3
+  { id: 'gobelin_archer', name: 'Gobelin archer', level: 3, hp: 35, attack: 7, defense: 2, reward: 28, type: 'human' },
+  { id: 'loup_alpha', name: 'Loup alpha', level: 3, hp: 48, attack: 8, defense: 3, reward: 32, type: 'beast' },
+  { id: 'spectre', name: 'Spectre', level: 3, hp: 30, attack: 6, defense: 1, reward: 24, type: 'undead' },
 
   // Niveau 4-6 (intermédiaire)
   { id: 'orque', name: 'Orque guerrier', level: 4, hp: 60, attack: 10, defense: 4, reward: 45, type: 'human' },
@@ -37,7 +44,7 @@ export const BASE_MONSTERS: Monster[] = [
 
   // Niveau 10+ (boss)
   { id: 'dragon_juvénile', name: 'Dragon juvénile', level: 10, hp: 200, attack: 25, defense: 10, reward: 200, type: 'beast' },
-  { id: 'demon Greater', name: 'Démon supérieur', level: 12, hp: 180, attack: 28, defense: 8, reward: 250, type: 'demon' },
+  { id: 'demon_superieur', name: 'Démon supérieur', level: 12, hp: 180, attack: 28, defense: 8, reward: 250, type: 'demon' },
   { id: 'liche', name: 'Liche', level: 11, hp: 150, attack: 22, defense: 6, reward: 180, type: 'undead' },
   { id: 'golem_fer', name: 'Golem de fer', level: 10, hp: 250, attack: 20, defense: 15, reward: 220, type: 'elemental' },
 ];

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { canCreateStory, isAdmin, type UserRole } from "@/types";
 import { useAuthContext } from "@/context/AuthContext";
 import Loader from "@/components/shared/Loader";
+import PageTransition from "@/components/shared/PageTransition";
 import AdventureEditor from "@/components/editor/AdventureEditor";
 
 function EditorContent() {
@@ -36,7 +37,11 @@ function EditorContent() {
     );
   }
 
-  return <AdventureEditor />;
+  return (
+    <PageTransition>
+      <AdventureEditor />
+    </PageTransition>
+  );
 }
 
 export default function CreateAdventurePage() {

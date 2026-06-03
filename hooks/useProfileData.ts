@@ -23,6 +23,18 @@ interface RawCharacter {
   id_utilisateur: number;
 }
 
+interface RawSave {
+  id: number;
+  id_utilisateur: number;
+  id_aventure: number;
+  id_personnage: number;
+  id_embranchement_actuel: number | null;
+  progression: number | null;
+  date_sauvegarde: string;
+  aventure: { titre: string } | null;
+  personnage: { nom_personnage: string; classe: string } | null;
+}
+
 interface UseProfileDataProps {
   userId: number | null;
   enabled?: boolean;
@@ -106,13 +118,12 @@ export function useProfileData({
       const { data: savesData } = await supabase
         .from("sauvegarde")
         .select(
-          `id, id_utilisateur, id_aventure, id_personnage, id_embranchement_actuel, progression, date_sauvegarde, aventure:id_aventure (titre)`,
+          `id, id_utilisateur, id_aventure, id_personnage, id_embranchement_actuel, progression, date_sauvegarde, aventure:id_aventure (titre), personnage:id_personnage (nom_personnage, classe)`,
         )
         .eq("id_utilisateur", uid);
 
       if (savesData && savesData.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const formattedSaves: UserSave[] = savesData.map((save: any) => ({
+        const formattedSaves: UserSave[] = savesData.map((save: RawSave) => ({
           id: save.id,
           id_utilisateur: save.id_utilisateur,
           id_aventure: save.id_aventure,
@@ -121,6 +132,8 @@ export function useProfileData({
           progression: save.progression ?? 0,
           date_sauvegarde: save.date_sauvegarde,
           aventure_titre: save.aventure?.titre || "Aventure inconnue",
+          personnage_nom: save.personnage?.nom_personnage,
+          personnage_classe: save.personnage?.classe,
           status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,
         }));
         setUserSaves(formattedSaves);

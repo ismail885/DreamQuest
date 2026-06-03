@@ -11,6 +11,7 @@ import {
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
 import PageBackground from "@/components/shared/PageBackground";
+import PageTransition from "@/components/shared/PageTransition";
 import Loader from "@/components/shared/Loader";
 import { useAuthContext } from "@/context/AuthContext";
 import { useClassementData } from "@/hooks/useClassementData";
@@ -66,7 +67,7 @@ export default function ClassementPage() {
           </div>
         )}
 
-        <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
+        <PageTransition className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8 md:mb-10">
               <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
@@ -180,7 +181,7 @@ export default function ClassementPage() {
               </div>
             )}
           </div>
-        </div>
+        </PageTransition>
       </main>
 
       <BottomNav />

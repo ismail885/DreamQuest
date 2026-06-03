@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import type { UserAchievements } from "@/lib/achievements";
 
@@ -7,11 +8,33 @@ interface TabAchievementsProps {
   achievements: UserAchievements | null;
 }
 
-const KNOWN_ICONS = [
-  "BookOpen", "Medal", "Award", "UserPlus", "Users",
-  "ThumbsUp", "MessageSquare", "Edit3", "Star", "TrendingUp",
-  "Zap", "Moon", "Compass",
+const CATEGORIES = [
+  { key: "history", label: "Histoire", ids: ["first_story", "five_stories", "ten_stories"] },
+  { key: "character", label: "Personnages", ids: ["first_character", "five_characters"] },
+  { key: "votes", label: "Votes", ids: ["first_vote", "ten_votes"] },
+  { key: "creation", label: "Créations", ids: ["first_creation", "popular_creator"] },
+  { key: "level", label: "Niveau", ids: ["level_5", "level_10"] },
+  { key: "misc", label: "Divers", ids: ["night_owl", "explorer"] },
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.06 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.8, y: 10, rotate: -3 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    rotate: 0,
+    transition: { type: "spring", stiffness: 200, damping: 16 },
+  },
+};
 
 export default function TabAchievements({ achievements }: TabAchievementsProps) {
   if (!achievements) {
@@ -28,51 +51,116 @@ export default function TabAchievements({ achievements }: TabAchievementsProps) 
     );
   }
 
+  const total = achievements.achievements.length;
+  const iconRegistry = LucideIcons as Record<string, React.ComponentType<{ className?: string }>>;
+
   return (
-    <div className="space-y-4">
-      <div className="text-center mb-6">
-        <div className="text-3xl font-bold text-cyan-400">{achievements.totalUnlocked}</div>
-        <div className="text-gray-400 text-sm">réalisations débloquées</div>
+    <div className="space-y-8">
+      <div className="text-center">
+        <div className="text-3xl font-bold text-cyan-400">
+          {achievements.totalUnlocked}
+          <span className="text-gray-500 text-2xl"> / {total}</span>
+        </div>
+        <div className="text-gray-400 text-sm">succès débloqués</div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {achievements.achievements.map((achievement) => {
-          const iconName = achievement.icon;
-          const iconClass = `w-6 h-6 ${achievement.unlocked ? "text-cyan-400" : "text-gray-500"}`;
-          return (
-            <div
-              key={achievement.id}
-              className={`p-4 rounded-xl border ${
-                achievement.unlocked
-                  ? "bg-cyan-500/10 border-cyan-500/30"
-                  : "bg-gray-800/30 border-gray-700/30 opacity-50"
-              }`}
+
+      {CATEGORIES.map((category) => {
+        const catAchievements = achievements.achievements.filter((a) =>
+          category.ids.includes(a.id)
+        );
+        if (catAchievements.length === 0) return null;
+
+        return (
+          <div key={category.key}>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 ml-1">
+              {category.label}
+            </h3>
+            <motion.div
+              className="grid grid-cols-2 md:grid-cols-3 gap-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
             >
-              <div className="mb-2">
-                {iconName === "BookOpen" && <LucideIcons.BookOpen className={iconClass} />}
-                {iconName === "Medal" && <LucideIcons.Medal className={iconClass} />}
-                {iconName === "Award" && <LucideIcons.Award className={iconClass} />}
-                {iconName === "UserPlus" && <LucideIcons.UserPlus className={iconClass} />}
-                {iconName === "Users" && <LucideIcons.Users className={iconClass} />}
-                {iconName === "ThumbsUp" && <LucideIcons.ThumbsUp className={iconClass} />}
-                {iconName === "MessageSquare" && <LucideIcons.MessageSquare className={iconClass} />}
-                {iconName === "Edit3" && <LucideIcons.Edit3 className={iconClass} />}
-                {iconName === "Star" && <LucideIcons.Star className={iconClass} />}
-                {iconName === "TrendingUp" && <LucideIcons.TrendingUp className={iconClass} />}
-                {iconName === "Zap" && <LucideIcons.Zap className={iconClass} />}
-                {iconName === "Moon" && <LucideIcons.Moon className={iconClass} />}
-                {iconName === "Compass" && <LucideIcons.Compass className={iconClass} />}
-                {!KNOWN_ICONS.includes(iconName) && <LucideIcons.HelpCircle className={iconClass} />}
-              </div>
-              <h4 className={`font-semibold ${achievement.unlocked ? "text-white" : "text-gray-500"}`}>
-                {achievement.title}
-              </h4>
-              <p className={`text-xs ${achievement.unlocked ? "text-gray-400" : "text-gray-600"}`}>
-                {achievement.description}
-              </p>
-            </div>
-          );
-        })}
-      </div>
+              <AnimatePresence mode="popLayout">
+                {catAchievements.map((achievement) => {
+                  const isUnlocked = achievement.unlocked;
+                  const Icon = iconRegistry[achievement.icon] ?? LucideIcons.HelpCircle;
+
+                  return (
+                    <motion.div
+                      key={achievement.id}
+                      variants={cardVariants}
+                      layout
+                      className={`group relative flex flex-col items-center p-5 rounded-xl border transition-colors duration-300 ${
+                        isUnlocked
+                          ? "bg-gradient-to-b from-cyan-500/15 to-cyan-500/5 border-cyan-500/30"
+                          : "bg-gray-800/20 border-gray-700/20 opacity-60"
+                      }`}
+                    >
+                      <div
+                        className={`relative w-16 h-16 rounded-full flex items-center justify-center mb-3 transition-all duration-300 ${
+                          isUnlocked
+                            ? "bg-gradient-to-br from-cyan-400/20 to-emerald-400/10 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
+                            : "bg-gray-700/30"
+                        }`}
+                      >
+                        <Icon
+                          className={`w-8 h-8 ${
+                            isUnlocked ? "text-cyan-400" : "text-gray-600"
+                          }`}
+                        />
+
+                        {isUnlocked && (
+                          <motion.div
+                            className="absolute inset-0 rounded-full border border-cyan-400/40"
+                            animate={{
+                              scale: [1, 1.08, 1],
+                              opacity: [0.4, 0.8, 0.4],
+                            }}
+                            transition={{
+                              duration: 2.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                          />
+                        )}
+                      </div>
+
+                      <h4
+                        className={`text-sm font-semibold text-center ${
+                          isUnlocked ? "text-white" : "text-gray-600"
+                        }`}
+                      >
+                        {achievement.title}
+                      </h4>
+                      <p
+                        className={`text-xs text-center mt-1 ${
+                          isUnlocked ? "text-gray-400" : "text-gray-700"
+                        }`}
+                      >
+                        {achievement.description}
+                      </p>
+
+                      {isUnlocked && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 0, y: 0 }}
+                          whileHover={{ opacity: 1 }}
+                          className="absolute -top-2 left-1/2 -translate-x-1/2 pointer-events-none"
+                        >
+                          <span className="text-[10px] bg-cyan-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap shadow-lg">
+                            Débloqué
+                          </span>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+        );
+      })}
     </div>
   );
 }

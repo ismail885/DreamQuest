@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Heart, Swords, Wand2, Wind, Shield, Zap, User } from "lucide-react";
 import type { Character } from "@/types";
 import { calculateRequiredXP } from "@/lib/characters/classDefinitions";
@@ -15,7 +16,7 @@ function classLabel(classe: string): string {
   return labels[classe?.toLowerCase()] || classe;
 }
 
-export default function CharacterHUD({ character }: CharacterHUDProps) {
+function CharacterHUD({ character }: CharacterHUDProps) {
   const xpCurrent = character.experience ?? 0;
   const xpNeeded = calculateRequiredXP(character.niveau);
   const xpRatio = Math.min(xpCurrent / Math.max(xpNeeded, 1), 1);
@@ -87,3 +88,16 @@ export default function CharacterHUD({ character }: CharacterHUDProps) {
     </div>
   );
 }
+
+export default memo(CharacterHUD, (prev, next) => {
+  return (
+    prev.character.points_vie === next.character.points_vie &&
+    prev.character.points_vie_max === next.character.points_vie_max &&
+    prev.character.experience === next.character.experience &&
+    prev.character.niveau === next.character.niveau &&
+    prev.character.stats?.force === next.character.stats?.force &&
+    prev.character.stats?.agility === next.character.stats?.agility &&
+    prev.character.stats?.magie === next.character.stats?.magie &&
+    prev.character.stats?.endurance === next.character.stats?.endurance
+  );
+});

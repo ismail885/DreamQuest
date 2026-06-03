@@ -69,9 +69,9 @@ describe('Unitaires - Personnages', () => {
       expect(hp).toBe(180) // 100 + 8*10
     })
 
-    it('devrait calculer les PV pour Nécromancien (endurance 3)', () => {
+    it('devrait calculer les PV pour Nécromancien (endurance 5)', () => {
       const hp = calculateInitialHP('Nécromancien')
-      expect(hp).toBe(130) // 100 + 3*10
+      expect(hp).toBe(150) // 100 + 5*10
     })
   })
 

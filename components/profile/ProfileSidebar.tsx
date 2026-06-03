@@ -63,6 +63,11 @@ export default function ProfileSidebar({
           <p className="text-sm font-semibold text-white">
             {season?.name ?? "Inconnue"}
           </p>
+          {season && season.xpMultiplier !== 1.0 && (
+            <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold text-green-300 bg-green-500/20 border border-green-500/30 rounded-full">
+              +{Math.round((season.xpMultiplier - 1) * 100)}% XP
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col items-center mb-4 md:mb-6">

@@ -10,6 +10,7 @@ import { Plus, ChevronDown } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
+import PageTransition from "@/components/shared/PageTransition";
 import Loader from "@/components/shared/Loader";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import DashboardSuggestions from "@/components/dashboard/DashboardSuggestions";
@@ -77,7 +78,7 @@ export default function DashboardPage() {
  </div>
  )}
 
-  <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
+  <PageTransition className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
   <div className="max-w-7xl mx-auto">
   {/* En-tete */}
  <div className="mb-8 md:mb-10">
@@ -113,8 +114,9 @@ export default function DashboardPage() {
 
   <DashboardSuggestions suggestions={suggestions} loading={loadingSuggestions} />
  </div>
- </div>
- </main>
+  </div>
+  </PageTransition>
+  </main>
 
   <BottomNav />
   <Footer />

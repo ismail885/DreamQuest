@@ -63,14 +63,16 @@ export function useCombat({
   );
 
   // Démarrer un combat contre un ennemi aléatoire
+  // Le niveau ennemi s'adapte à celui du personnage par défaut
   const startCombat = useCallback(
-    (enemyLevel: number = 1) => {
+    (enemyLevel?: number) => {
       if (!character) return;
-      const manaMax = 50 + (character.niveau || 1) * 5;
+      const level = enemyLevel ?? (character.niveau || 1);
+      const manaMax = 50 + level * 5;
       const newCombat = createCombatState(
         character.points_vie_max || 100,
         manaMax,
-        enemyLevel,
+        level,
       );
       setCombatState(newCombat);
       setInCombat(true);

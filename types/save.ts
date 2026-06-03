@@ -22,5 +22,7 @@ export interface UserSave {
   progression: number
   date_sauvegarde: string
   aventure_titre: string
+  personnage_nom?: string
+  personnage_classe?: string
   status: "completed" | "in-progress"
 }

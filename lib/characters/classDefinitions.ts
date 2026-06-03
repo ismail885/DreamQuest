@@ -448,7 +448,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
   Nécromancien: {
     name: 'Nécromancien',
     description: 'Maître des ténèbres et des âmes perdues. Il contrôle les morts pour combattre à ses côtés.',
-    baseStats: { force: 2, agility: 4, magie: 9, endurance: 3 },
+    baseStats: { force: 3, agility: 4, magie: 9, endurance: 5 },
     abilities: ['Drain de Vie', 'Armée de Morts', 'Malédiction'],
     image: '/illustrations_personnage/necromancien.jpg',
     role: 'Invocateur',
@@ -514,7 +514,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
   Barbare: {
     name: 'Barbare',
     description: 'Guerrier barbare maîtrisant la rage primitive. Sa force brute intimide ses adversaires.',
-    baseStats: { force: 10, agility: 6, magie: 2, endurance: 8 },
+    baseStats: { force: 9, agility: 6, magie: 2, endurance: 8 },
     abilities: ['Cri de Guerre', 'Frappe Brutale', 'Furie Bestiale'],
     image: '/illustrations_personnage/barbare.jpeg',
     role: 'Berserker',
@@ -542,7 +542,7 @@ export const CLASS_PASSIVES: Record<CharacterClass, { name: string; description:
 
 /** Calcul de l'XP nécessaire pour atteindre un niveau */
 export const calculateRequiredXP = (level: number): number => {
-  return Math.floor(100 * Math.pow(1.5, level - 1));
+  return Math.floor(80 * Math.pow(1.35, level - 1));
 };
 
 /** XP totale cumulée pour un niveau donné */

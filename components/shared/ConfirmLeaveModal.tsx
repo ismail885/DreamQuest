@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { AlertTriangle } from "lucide-react";
 
 interface ConfirmLeaveModalProps {
@@ -10,7 +11,7 @@ interface ConfirmLeaveModalProps {
   message?: string;
 }
 
-export default function ConfirmLeaveModal({
+const ConfirmLeaveModal = memo(function ConfirmLeaveModal({
   isOpen,
   onConfirm,
   onCancel,
@@ -50,4 +51,6 @@ export default function ConfirmLeaveModal({
       </div>
     </div>
   );
-}
+});
+
+export default ConfirmLeaveModal;
