@@ -42,24 +42,31 @@ export default function ChoiceButton({
     return labels[stat] || stat;
   };
 
+  const getBorderClass = () => {
+    if (hasNegative) {
+      return "border-[rgba(6,182,212,0.2)] hover:border-red-500/50 hover:bg-red-500/5";
+    }
+    if (hasPositive) {
+      return "border-[rgba(6,182,212,0.2)] hover:border-green-500/50 hover:bg-green-500/5";
+    }
+    return "border-[rgba(6,182,212,0.2)] hover:border-[rgba(6,182,212,0.5)] hover:bg-[rgba(6,182,212,0.05)]";
+  };
+
   return (
     <motion.button
-      whileHover={{ scale: 1.01 }}
+      whileHover={{
+        y: -2,
+        transition: { duration: 0.25, ease: [0.25, 1, 0.5, 1] as const },
+      }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`w-full text-left px-6 py-4 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border rounded-[10px] transition-all duration-200 flex flex-col gap-3 min-h-[80px] group ${
-        hasNegative
-          ? "hover:border-red-500/60 hover:bg-red-500/5 border-[rgba(6,182,212,0.2)] hover:border-red-500/40"
-          : hasPositive
-            ? "hover:border-green-500/60 hover:bg-green-500/5 border-[rgba(6,182,212,0.2)] hover:border-green-500/40"
-            : "hover:border-[rgba(6,182,212,0.4)] hover:bg-[rgba(6,182,212,0.05)] border-[rgba(6,182,212,0.2)] hover:border-[rgba(6,182,212,0.4)]"
-      }`}
+      className={`w-full text-left px-6 py-4 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border ${getBorderClass()} rounded-[10px] transition-all duration-300 ease-out flex flex-col gap-3 min-h-[80px] group shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20`}
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="text-gray-300 text-sm leading-relaxed flex-1 group-hover:text-white transition-colors">
+        <span className="text-gray-300 text-sm leading-relaxed flex-1 group-hover:text-white transition-colors duration-300">
           {text}
         </span>
-        <ChevronRight className="w-5 h-5 text-gray-600 flex-shrink-0 group-hover:text-gray-400 transition-colors" />
+        <ChevronRight className="w-5 h-5 text-gray-600 flex-shrink-0 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all duration-300 ease-out" />
       </div>
 
       {/* Stat consequence tags */}

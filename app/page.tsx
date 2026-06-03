@@ -9,14 +9,24 @@ import { motion } from "framer-motion";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1] as const, // easeOutExpo — sensation premium
+    },
+  },
 };
 
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
+    },
   },
 };
 
@@ -58,7 +68,7 @@ export default function Home() {
 
             <motion.p
               variants={fadeInUp}
-              className="text-base md:text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed px-4"
+              className="text-base md:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed px-4"
             >
               Créez votre personnage unique, explorez des mondes fantastiques et
               prenez des décisions qui façonneront votre destin. Chaque choix
@@ -72,7 +82,7 @@ export default function Home() {
               <Link
                 href="/create-character"
                 prefetch
-                className="h-[58px] w-[250px] rounded-[10px] bg-gradient-to-r from-primary to-[#3b82f6] text-white text-[18px] font-semibold flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(6,182,212,0.5)] hover:opacity-90 transition-opacity"
+                className="h-[58px] w-[250px] rounded-[10px] bg-gradient-to-r from-primary to-[#3b82f6] text-white text-[18px] font-semibold flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(6,182,212,0.5)] hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out hover:shadow-[0px_15px_25px_-3px_rgba(6,182,212,0.6)]"
               >
                 Créer un Personnage
               </Link>
@@ -80,7 +90,7 @@ export default function Home() {
               <Link
                 href="/adventure"
                 prefetch
-                className="h-[58px] w-[222px] rounded-[10px] border border-[rgba(6,182,212,0.2)] text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 transition-colors"
+                className="h-[58px] w-[222px] rounded-[10px] border border-[rgba(6,182,212,0.2)] text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out"
               >
                 Explorer les Quêtes
               </Link>
@@ -100,7 +110,13 @@ export default function Home() {
           >
             <motion.div
               variants={fadeInUp}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              whileHover={{
+                y: -6,
+                transition: {
+                  duration: 0.35,
+                  ease: [0.25, 1, 0.5, 1] as const, // easeOutQuart — plus doux
+                },
+              }}
               className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
@@ -119,7 +135,13 @@ export default function Home() {
 
             <motion.div
               variants={fadeInUp}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              whileHover={{
+                y: -6,
+                transition: {
+                  duration: 0.35,
+                  ease: [0.25, 1, 0.5, 1] as const, // easeOutQuart — plus doux
+                },
+              }}
               className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
@@ -138,7 +160,13 @@ export default function Home() {
 
             <motion.div
               variants={fadeInUp}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              whileHover={{
+                y: -6,
+                transition: {
+                  duration: 0.35,
+                  ease: [0.25, 1, 0.5, 1] as const, // easeOutQuart — plus doux
+                },
+              }}
               className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">

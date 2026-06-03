@@ -13,7 +13,8 @@ import { useAuthContext } from "@/context/AuthContext";
 import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomEvents";
 import { getAdventureImage } from "@/data/adventureImages";
 import { updateQuestProgress } from "@/lib/dailyQuests";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from "@/hooks/useToast";
 import ConfirmLeaveModal from "@/components/shared/ConfirmLeaveModal";
 import CharacterHUD from "@/components/adventure/CharacterHUD";
 import EffectIndicator from "@/components/adventure/EffectIndicator";
@@ -25,6 +26,32 @@ import AdventureHeader from "@/components/adventure/AdventureHeader";
 import AdventureEndScreen from "@/components/adventure/AdventureEndScreen";
 
 const MAX_STEPS = 8;
+
+const pageVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1] as const,
+      staggerChildren: 0.08,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -44,6 +71,7 @@ function AdventureReader({ params }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuthContext();
+  const toast = useToast();
 
   const [currentEvent, setCurrentEvent] = useState<
     (typeof RANDOM_EVENTS)[0] | null
@@ -198,15 +226,20 @@ function AdventureReader({ params }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-deep flex flex-col items-center justify-center gap-4">
-        <p className="text-red-400 text-lg">{error}</p>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
+        className="min-h-screen bg-deep flex flex-col items-center justify-center gap-4 px-4"
+      >
+        <p className="text-red-400 text-lg text-center">{error}</p>
         <button
           onClick={() => router.push("/adventure")}
-          className="px-6 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white rounded-[10px] font-medium hover:opacity-90 transition-opacity"
+          className="px-6 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white rounded-[10px] font-medium transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)]"
         >
           Retour aux aventures
         </button>
-      </div>
+      </motion.div>
     );
   }
 
@@ -232,117 +265,147 @@ function AdventureReader({ params }: Props) {
       {character && <CharacterHUD character={character} />}
 
       <main className="flex-1 flex flex-col items-center px-4 py-6">
-        <div className="w-full max-w-3xl space-y-5">
+        <motion.div
+          variants={pageVariants}
+          initial="hidden"
+          animate="visible"
+          className="w-full max-w-3xl space-y-5"
+        >
           <StorySection
             progression={progression}
             image={image}
             adventureTitle={adventure?.titre ?? "Aventure"}
             texte={currentBranch?.texte ?? ""}
+            branchKey={currentBranch?.id}
           />
 
-           {isEnd && character && initialStats && (
-             <AdventureEndScreen
-               historyLength={history.length}
-               characterNiveau={character?.niveau}
-               xpGained={Math.max(0, (character.experience ?? 0) - initialStats.xp)}
-               statsGained={{
-                 force: Math.max(0, (character.stats?.force ?? 0) - initialStats.force),
-                 agility: Math.max(0, (character.stats?.agility ?? 0) - initialStats.agility),
-                 magie: Math.max(0, (character.stats?.magie ?? 0) - initialStats.magie),
-                 endurance: Math.max(0, (character.stats?.endurance ?? 0) - initialStats.endurance),
-               }}
-               combatStats={combatStats}
-               onRestart={restart}
-             />
-           )}
+          <AnimatePresence mode="wait">
+            {isEnd && character && initialStats && (
+              <motion.div
+                key="end-screen"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
+              >
+                <AdventureEndScreen
+                  historyLength={history.length}
+                  characterNiveau={character?.niveau}
+                  xpGained={Math.max(0, (character.experience ?? 0) - initialStats.xp)}
+                  statsGained={{
+                    force: Math.max(0, (character.stats?.force ?? 0) - initialStats.force),
+                    agility: Math.max(0, (character.stats?.agility ?? 0) - initialStats.agility),
+                    magie: Math.max(0, (character.stats?.magie ?? 0) - initialStats.magie),
+                    endurance: Math.max(0, (character.stats?.endurance ?? 0) - initialStats.endurance),
+                  }}
+                  combatStats={combatStats}
+                  onRestart={restart}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {currentEvent && (
-            <RandomEventCard
-              event={currentEvent}
-              onChoice={(consequence, choiceIndex) => {
-                if (currentEvent.type === "combat" && choiceIndex === 0) {
-                  import("@/lib/monsters").then(({ getMonsterById }) => {
-                    const monsterId = currentEvent.monsterId;
-                    if (monsterId) {
-                      const monster = getMonsterById(monsterId);
-                      if (monster) {
-                        startCombat(monster.level);
+          <AnimatePresence>
+            {currentEvent && (
+              <motion.div
+                key="random-event"
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }}
+              >
+                <RandomEventCard
+                  event={currentEvent}
+                  onChoice={(consequence, choiceIndex) => {
+                    if (currentEvent.type === "combat" && choiceIndex === 0) {
+                      import("@/lib/monsters").then(({ getMonsterById }) => {
+                        const monsterId = currentEvent.monsterId;
+                        if (monsterId) {
+                          const monster = getMonsterById(monsterId);
+                          if (monster) {
+                            startCombat(monster.level);
+                          }
+                        }
+                      });
+                      setCurrentEvent(null);
+                      return;
+                    }
+
+                    applyConsequence(1, JSON.stringify(consequence));
+                    setCurrentEvent(null);
+                    if (currentBranch?.choix1_lien) {
+                      chooseOption(currentBranch.choix1_lien);
+                    }
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence mode="wait">
+            {!isEnd && currentBranch && (
+              <motion.div
+                key={`choices-${currentBranch.id}`}
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-3"
+              >
+                {currentBranch.choix1 && (
+                  <ChoiceButton
+                    text={currentBranch.choix1}
+                    statChanges={parseStatChanges(
+                      currentBranch.choix1_consequences,
+                    )}
+                    onClick={async () => {
+                      if (!currentBranch.choix1_lien) {
+                        toast.error("Lien manquant pour ce choix");
+                        return;
                       }
-                    }
-                  });
-                  setCurrentEvent(null);
-                  return;
-                }
+                      const isCombat = await applyConsequence(
+                        1,
+                        currentBranch?.choix1_consequences,
+                      );
+                      if (!isCombat) chooseOption(currentBranch.choix1_lien);
+                    }}
+                  />
+                )}
+                {currentBranch.choix2 && (
+                  <ChoiceButton
+                    text={currentBranch.choix2}
+                    statChanges={parseStatChanges(
+                      currentBranch.choix2_consequences,
+                    )}
+                    onClick={async () => {
+                      if (!currentBranch.choix2_lien) {
+                        toast.error("Lien manquant pour ce choix");
+                        return;
+                      }
+                      const isCombat = await applyConsequence(
+                        2,
+                        currentBranch?.choix2_consequences,
+                      );
+                      if (!isCombat) chooseOption(currentBranch.choix2_lien);
+                    }}
+                  />
+                )}
 
-                applyConsequence(1, JSON.stringify(consequence));
-                setCurrentEvent(null);
-                if (currentBranch?.choix1_lien) {
-                  chooseOption(currentBranch.choix1_lien);
-                }
-              }}
-            />
-          )}
-
-          {!isEnd && currentBranch && (
-            <motion.div
-              className="space-y-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {currentBranch.choix1 && (
-                <ChoiceButton
-                  text={currentBranch.choix1}
-                  statChanges={parseStatChanges(
-                    currentBranch.choix1_consequences,
-                  )}
-                  onClick={async () => {
-                    if (!currentBranch.choix1_lien) {
-                      console.error("Choix 1 lien manquant");
-                      return;
-                    }
-                    const isCombat = await applyConsequence(
-                      1,
-                      currentBranch?.choix1_consequences,
-                    );
-                    if (!isCombat) chooseOption(currentBranch.choix1_lien);
-                  }}
-                />
-              )}
-              {currentBranch.choix2 && (
-                <ChoiceButton
-                  text={currentBranch.choix2}
-                  statChanges={parseStatChanges(
-                    currentBranch.choix2_consequences,
-                  )}
-                  onClick={async () => {
-                    if (!currentBranch.choix2_lien) {
-                      console.error("Choix 2 lien manquant");
-                      return;
-                    }
-                    const isCombat = await applyConsequence(
-                      2,
-                      currentBranch?.choix2_consequences,
-                    );
-                    if (!isCombat) chooseOption(currentBranch.choix2_lien);
-                  }}
-                />
-              )}
-
-              {inCombat && combatState && character && (
-                <CombatUI
-                  combatState={combatState}
-                  character={character}
-                  onAttack={handleCombatAttack}
-                  onDefend={handleCombatDefend}
-                  onFlee={handleCombatFlee}
-                  onAbility={handleCombatAbility}
-                  onEnd={handleCombatEnd}
-                />
-              )}
-            </motion.div>
-          )}
-        </div>
+                {inCombat && combatState && character && (
+                  <CombatUI
+                    combatState={combatState}
+                    character={character}
+                    onAttack={handleCombatAttack}
+                    onDefend={handleCombatDefend}
+                    onFlee={handleCombatFlee}
+                    onAbility={handleCombatAbility}
+                    onEnd={handleCombatEnd}
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </main>
 
       <ConfirmLeaveModal

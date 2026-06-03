@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { MessageCircle } from "lucide-react";
 
@@ -8,6 +8,8 @@ interface StorySectionProps {
   image: string;
   adventureTitle: string;
   texte: string;
+  // Clé unique pour déclencher la transition d'embranchement
+  branchKey?: string | number;
 }
 
 function formatParagraph(paragraph: string, index: number) {
@@ -50,6 +52,7 @@ const StorySection = memo(function StorySection({
   image,
   adventureTitle,
   texte,
+  branchKey,
 }: StorySectionProps) {
   const paragraphs = texte
     ? texte.split("\n\n").filter(Boolean)
@@ -59,14 +62,14 @@ const StorySection = memo(function StorySection({
     <>
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-gray-400 text-sm">
+          <span className="text-gray-300 text-sm">
             Progression de l&apos;histoire
           </span>
-          <span className="text-gray-400 text-sm">{progression}%</span>
+          <span className="text-gray-300 text-sm font-medium">{progression}%</span>
         </div>
         <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-primary to-[#3b82f6] rounded-full transition-all duration-700"
+            className="h-full bg-gradient-to-r from-primary to-[#3b82f6] rounded-full transition-all duration-700 ease-out"
             style={{ width: `${progression}%` }}
           />
         </div>
@@ -84,22 +87,29 @@ const StorySection = memo(function StorySection({
         <div className="absolute inset-0 bg-gradient-to-t from-deep/50 to-transparent" />
       </div>
 
-      {texte && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 space-y-4"
-        >
-          {paragraphs.length > 1 ? (
-            paragraphs.map((p, i) => formatParagraph(p, i))
-          ) : (
-            <p className="text-gray-300 leading-relaxed text-base">
-              {texte}
-            </p>
-          )}
-        </motion.div>
-      )}
+      <AnimatePresence mode="wait">
+        {texte && (
+          <motion.div
+            key={branchKey ?? "story"}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.16, 1, 0.3, 1] as const,
+            }}
+            className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 space-y-4"
+          >
+            {paragraphs.length > 1 ? (
+              paragraphs.map((p, i) => formatParagraph(p, i))
+            ) : (
+              <p className="text-gray-300 leading-relaxed text-base">
+                {texte}
+              </p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 });

@@ -7,6 +7,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Plus, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
@@ -14,6 +15,29 @@ import PageTransition from "@/components/shared/PageTransition";
 import Loader from "@/components/shared/Loader";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import DashboardSuggestions from "@/components/dashboard/DashboardSuggestions";
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
 
 const CharacterList = dynamic(() => import("@/components/character/CharacterList"), {
  ssr: false,
@@ -53,7 +77,7 @@ export default function DashboardPage() {
 
  if (!user) return null;
 
- return (
+  return (
  <div className="min-h-screen bg-deep text-white flex flex-col">
  <Header />
 
@@ -81,38 +105,72 @@ export default function DashboardPage() {
   <PageTransition className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
   <div className="max-w-7xl mx-auto">
   {/* En-tete */}
- <div className="mb-8 md:mb-10">
- <h1 className="text-2xl md:text-4xl font-bold mb-2">
+ <motion.div
+  variants={staggerContainer}
+  initial="hidden"
+  animate="visible"
+  className="mb-8 md:mb-10"
+ >
+ <motion.h1
+  variants={fadeInUp}
+  className="text-2xl md:text-4xl font-bold mb-2"
+ >
  Bienvenue,{" "}
  <span className="text-cyan-400">
  {user?.username || "Aventurier"}
  </span>
- </h1>
- <p className="text-gray-400 text-sm md:text-base">
+ </motion.h1>
+ <motion.p
+  variants={fadeInUp}
+  className="text-gray-300 text-sm md:text-base"
+ >
  Prêt à vivre de nouvelles aventures ?
- </p>
- </div>
+ </motion.p>
+ </motion.div>
 
- {/* Section personnages */}
- <div className="mb-8 md:mb-12">
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
+  {/* Section personnages */}
+ <motion.div
+  variants={staggerContainer}
+  initial="hidden"
+  animate="visible"
+  className="mb-8 md:mb-12"
+ >
+ <motion.div
+  variants={fadeInUp}
+  className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6"
+ >
  <h2 className="text-xl md:text-2xl font-bold text-white ">
  Mes Personnages
  </h2>
  <button
  onClick={() => router.push("/create-character")}
- className="w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+ className="group w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
  >
- <Plus className="w-5 h-5" />
+ <Plus className="w-5 h-5 transition-transform duration-300 ease-out group-hover:rotate-90" />
  Créer un Personnage
  </button>
- </div>
+ </motion.div>
+ <motion.div variants={fadeInUp}>
  <CharacterList userId={user.id} />
- </div>
+ </motion.div>
+ </motion.div>
 
-  <DashboardStats stats={stats} loading={statsLoading} error={statsError} />
+  <motion.div
+  variants={fadeInUp}
+  initial="hidden"
+  animate="visible"
+ >
+ <DashboardStats stats={stats} loading={statsLoading} error={statsError} />
+ </motion.div>
 
-  <DashboardSuggestions suggestions={suggestions} loading={loadingSuggestions} />
+  <motion.div
+  variants={fadeInUp}
+  initial="hidden"
+  animate="visible"
+  transition={{ delay: 0.2 }}
+ >
+ <DashboardSuggestions suggestions={suggestions} loading={loadingSuggestions} />
+ </motion.div>
   </div>
   </PageTransition>
   </main>

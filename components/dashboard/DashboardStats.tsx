@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { UserStats } from "@/hooks/useDashboardData";
 
 interface DashboardStatsProps {
@@ -7,6 +8,72 @@ interface DashboardStatsProps {
   loading: boolean;
   error: string | null;
 }
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const statCards = [
+  {
+    key: "charactersCount",
+    label: "Personnages",
+    gradient: "from-cyan-500/10 to-blue-500/10",
+    border: "border-cyan-500/20 hover:border-cyan-400/50",
+    text: "text-cyan-400",
+    suffix: "",
+  },
+  {
+    key: "completedQuests",
+    label: "Quetes",
+    gradient: "from-purple-500/10 to-pink-500/10",
+    border: "border-purple-500/20 hover:border-purple-400/50",
+    text: "text-purple-400",
+    suffix: "",
+  },
+  {
+    key: "totalXp",
+    label: "Points XP",
+    gradient: "from-yellow-500/10 to-orange-500/10",
+    border: "border-yellow-500/20 hover:border-yellow-400/50",
+    text: "text-yellow-400",
+    suffix: "",
+  },
+  {
+    key: "maxLevel",
+    label: "Niveau max perso",
+    gradient: "from-green-500/10 to-emerald-500/10",
+    border: "border-green-500/20 hover:border-green-400/50",
+    text: "text-green-400",
+    suffix: "",
+  },
+  {
+    key: "userLevel",
+    label: "Niveau utilisateur",
+    gradient: "from-violet-500/10 to-fuchsia-500/10",
+    border: "border-violet-500/20 hover:border-violet-400/50",
+    text: "text-violet-400",
+    suffix: "",
+  },
+] as const;
 
 export default function DashboardStats({ stats, loading, error }: DashboardStatsProps) {
   return (
@@ -34,38 +101,36 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
-          <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-            <div className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1 md:mb-2">
-              {stats.charactersCount}
-            </div>
-            <div className="text-gray-400 text-xs md:text-sm">Personnages</div>
-          </div>
-          <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-            <div className="text-2xl md:text-3xl font-bold text-purple-400 mb-1 md:mb-2">
-              {stats.completedQuests}
-            </div>
-            <div className="text-gray-400 text-xs md:text-sm">Quetes</div>
-          </div>
-          <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-            <div className="text-2xl md:text-3xl font-bold text-yellow-400 mb-1 md:mb-2">
-              {stats.totalXp}
-            </div>
-            <div className="text-gray-400 text-xs md:text-sm">Points XP</div>
-          </div>
-          <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-            <div className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">
-              {stats.maxLevel > 0 ? stats.maxLevel : "—"}
-            </div>
-            <div className="text-gray-400 text-xs md:text-sm">Niveau max perso</div>
-          </div>
-          <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-            <div className="text-2xl md:text-3xl font-bold text-violet-400 mb-1 md:mb-2">
-              {stats.userLevel}
-            </div>
-            <div className="text-gray-400 text-xs md:text-sm">Niveau utilisateur</div>
-          </div>
-        </div>
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {statCards.map((card) => {
+            const value = stats[card.key as keyof UserStats];
+            const display = card.key === "maxLevel" && (value as number) <= 0 ? "—" : value;
+            return (
+              <motion.div
+                key={card.key}
+                variants={cardVariants}
+                whileHover={{
+                  y: -4,
+                  transition: {
+                    duration: 0.3,
+                    ease: [0.25, 1, 0.5, 1] as const,
+                  },
+                }}
+                className={`bg-gradient-to-br ${card.gradient} border ${card.border} rounded-xl md:rounded-2xl p-4 md:p-6 transition-colors duration-300 cursor-default`}
+              >
+                <div className={`text-2xl md:text-3xl font-bold ${card.text} mb-1 md:mb-2`}>
+                  {display}
+                </div>
+                <div className="text-gray-300 text-xs md:text-sm">{card.label}</div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       )}
     </div>
   );

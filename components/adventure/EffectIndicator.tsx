@@ -27,20 +27,24 @@ export default function EffectIndicator({
   lastConsequence,
   showEffect,
 }: EffectIndicatorProps) {
-  if (!showEffect || !lastConsequence) return null;
+  // BUG FIX : on ne return plus null ici, sinon AnimatePresence ne peut pas
+  // déclencher l'animation de sortie. On gère la condition à l'intérieur.
 
-  const allZero =
-    (lastConsequence.pv_change ?? 0) === 0 &&
-    (lastConsequence.force_change ?? 0) === 0 &&
-    (lastConsequence.agility_change ?? 0) === 0 &&
-    (lastConsequence.magie_change ?? 0) === 0 &&
-    (lastConsequence.endurance_change ?? 0) === 0;
+  const shouldShow = showEffect && !!lastConsequence;
 
-  if (allZero && !lastConsequence.text) return null;
+  const allZero = lastConsequence
+    ? (lastConsequence.pv_change ?? 0) === 0 &&
+      (lastConsequence.force_change ?? 0) === 0 &&
+      (lastConsequence.agility_change ?? 0) === 0 &&
+      (lastConsequence.magie_change ?? 0) === 0 &&
+      (lastConsequence.endurance_change ?? 0) === 0
+    : true;
+
+  const shouldRenderContent = shouldShow && (!allZero || !!lastConsequence?.text);
 
   const changes: ChangeItem[] = [];
 
-  if (lastConsequence.pv_change !== undefined && lastConsequence.pv_change !== 0) {
+  if (lastConsequence?.pv_change !== undefined && lastConsequence.pv_change !== 0) {
     changes.push({
       label: "PV",
       value: lastConsequence.pv_change,
@@ -48,7 +52,7 @@ export default function EffectIndicator({
       color: lastConsequence.pv_change > 0 ? "text-green-400" : "text-red-400",
     });
   }
-  if (lastConsequence.force_change !== undefined && lastConsequence.force_change !== 0) {
+  if (lastConsequence?.force_change !== undefined && lastConsequence.force_change !== 0) {
     changes.push({
       label: "Force",
       value: lastConsequence.force_change,
@@ -56,7 +60,7 @@ export default function EffectIndicator({
       color: lastConsequence.force_change > 0 ? "text-green-400" : "text-red-400",
     });
   }
-  if (lastConsequence.agility_change !== undefined && lastConsequence.agility_change !== 0) {
+  if (lastConsequence?.agility_change !== undefined && lastConsequence.agility_change !== 0) {
     changes.push({
       label: "Agilité",
       value: lastConsequence.agility_change,
@@ -64,7 +68,7 @@ export default function EffectIndicator({
       color: lastConsequence.agility_change > 0 ? "text-green-400" : "text-red-400",
     });
   }
-  if (lastConsequence.magie_change !== undefined && lastConsequence.magie_change !== 0) {
+  if (lastConsequence?.magie_change !== undefined && lastConsequence.magie_change !== 0) {
     changes.push({
       label: "Magie",
       value: lastConsequence.magie_change,
@@ -72,7 +76,7 @@ export default function EffectIndicator({
       color: lastConsequence.magie_change > 0 ? "text-green-400" : "text-red-400",
     });
   }
-  if (lastConsequence.endurance_change !== undefined && lastConsequence.endurance_change !== 0) {
+  if (lastConsequence?.endurance_change !== undefined && lastConsequence.endurance_change !== 0) {
     changes.push({
       label: "Endurance",
       value: lastConsequence.endurance_change,
@@ -97,73 +101,75 @@ export default function EffectIndicator({
 
   return (
     <AnimatePresence>
-      <motion.div
-        key={lastConsequence.text || "effect"}
-        initial={{ opacity: 0, y: -20, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -10, scale: 0.9 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
-      >
-        <div
-          className={`backdrop-blur-[10px] bg-[rgba(15,23,42,0.92)] border ${borderColor} rounded-xl px-6 py-4 shadow-xl ${shadowColor} min-w-[240px] max-w-[420px]`}
+      {shouldRenderContent && (
+        <motion.div
+          key={lastConsequence?.text || "effect"}
+          initial={{ opacity: 0, y: -20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.9 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
         >
-          {/* Header dynamique */}
-          <div className="flex items-center justify-center gap-2 mb-3">
-            {isNegative ? (
-              <ArrowDownCircle className="w-4 h-4 text-red-400" />
-            ) : isPositive ? (
-              <ArrowUpCircle className="w-4 h-4 text-green-400" />
-            ) : (
-              <Sparkles className="w-4 h-4 text-amber-400" />
-            )}
-            <span
-              className={`text-xs font-semibold uppercase tracking-wider ${
-                isNegative
-                  ? "text-red-400"
+          <div
+            className={`backdrop-blur-[10px] bg-[rgba(15,23,42,0.92)] border ${borderColor} rounded-xl px-6 py-4 shadow-xl ${shadowColor} min-w-[240px] max-w-[420px]`}
+          >
+            {/* Header dynamique */}
+            <div className="flex items-center justify-center gap-2 mb-3">
+              {isNegative ? (
+                <ArrowDownCircle className="w-4 h-4 text-red-400" />
+              ) : isPositive ? (
+                <ArrowUpCircle className="w-4 h-4 text-green-400" />
+              ) : (
+                <Sparkles className="w-4 h-4 text-amber-400" />
+              )}
+              <span
+                className={`text-xs font-semibold uppercase tracking-wider ${
+                  isNegative
+                    ? "text-red-400"
+                    : isPositive
+                      ? "text-green-400"
+                      : "text-amber-400"
+                }`}
+              >
+                {isNegative
+                  ? "Perte"
                   : isPositive
-                    ? "text-green-400"
-                    : "text-amber-400"
-              }`}
-            >
-              {isNegative
-                ? "Perte"
-                : isPositive
-                  ? "Gain"
-                  : "Conséquence"}
-            </span>
-          </div>
-
-          {/* Stats changes */}
-          {changes.length > 0 && (
-            <div className="flex items-center justify-center gap-4">
-              {changes.map((change) => (
-                <div
-                  key={change.label}
-                  className="flex items-center gap-1.5"
-                >
-                  <span className={change.color}>{change.icon}</span>
-                  <span className={`text-sm font-bold ${change.color}`}>
-                    {change.value > 0 ? "+" : ""}
-                    {change.value}
-                  </span>
-                </div>
-              ))}
+                    ? "Gain"
+                    : "Conséquence"}
+              </span>
             </div>
-          )}
 
-          {/* Texte narratif — plus visible */}
-          {lastConsequence.text && (
-            <p
-              className={`text-center mt-3 leading-relaxed ${
-                changes.length > 0 ? "text-gray-400 text-xs" : "text-gray-300 text-sm"
-              }`}
-            >
-              {lastConsequence.text}
-            </p>
-          )}
-        </div>
-      </motion.div>
+            {/* Stats changes */}
+            {changes.length > 0 && (
+              <div className="flex items-center justify-center gap-4">
+                {changes.map((change) => (
+                  <div
+                    key={change.label}
+                    className="flex items-center gap-1.5"
+                  >
+                    <span className={change.color}>{change.icon}</span>
+                    <span className={`text-sm font-bold ${change.color}`}>
+                      {change.value > 0 ? "+" : ""}
+                      {change.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Texte narratif — plus visible */}
+            {lastConsequence?.text && (
+              <p
+                className={`text-center mt-3 leading-relaxed ${
+                  changes.length > 0 ? "text-gray-300 text-xs" : "text-gray-300 text-sm"
+                }`}
+              >
+                {lastConsequence.text}
+              </p>
+            )}
+          </div>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }

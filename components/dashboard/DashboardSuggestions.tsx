@@ -1,12 +1,36 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { Sparkles, Compass } from "lucide-react";
 
 interface DashboardSuggestionsProps {
   suggestions: { id: number; titre: string; description: string | null }[];
   loading: boolean;
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
 
 export default function DashboardSuggestions({
   suggestions,
@@ -14,7 +38,8 @@ export default function DashboardSuggestions({
 }: DashboardSuggestionsProps) {
   const router = useRouter();
 
-  if (loading || suggestions.length === 0) return null;
+  // Ne rien afficher pendant le chargement initial
+  if (loading) return null;
 
   return (
     <div className="mb-8 md:mb-12">
@@ -22,30 +47,70 @@ export default function DashboardSuggestions({
         <Sparkles className="w-5 h-5 text-yellow-400" />
         Pour Vous
       </h2>
-      <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-        {suggestions.map((adventure) => (
-          <div
-            key={adventure.id}
-            onClick={() => router.push(`/adventure/${adventure.id}`)}
-            className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-5 hover:border-yellow-500/50 transition-all cursor-pointer group"
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-yellow-400" />
-              </div>
-              <span className="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
-                Recommande
-              </span>
-            </div>
-            <h3 className="text-white font-semibold mb-2 line-clamp-1">
-              {adventure.titre}
-            </h3>
-            <p className="text-gray-400 text-sm line-clamp-2">
-              {adventure.description || "Une aventure palpitante vous attend..."}
-            </p>
+
+      {suggestions.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
+          className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 rounded-xl p-8 text-center"
+        >
+          <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+            <Compass className="w-6 h-6 text-yellow-400" />
           </div>
-        ))}
-      </div>
+          <p className="text-white font-medium mb-1">
+            Vous avez tout exploré !
+          </p>
+          <p className="text-gray-400 text-sm mb-4">
+            Aucune nouvelle suggestion pour l&apos;instant. Découvrez toutes les aventures disponibles.
+          </p>
+          <button
+            onClick={() => router.push("/adventure")}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <Compass className="w-4 h-4" />
+            Explorer les aventures
+          </button>
+        </motion.div>
+      ) : (
+        <motion.div
+          className="grid md:grid-cols-3 gap-4 md:gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {suggestions.map((adventure) => (
+            <motion.div
+              key={adventure.id}
+              variants={cardVariants}
+              whileHover={{
+                y: -6,
+                transition: {
+                  duration: 0.3,
+                  ease: [0.25, 1, 0.5, 1] as const,
+                },
+              }}
+              onClick={() => router.push(`/adventure/${adventure.id}`)}
+              className="bg-gradient-to-br from-[#0d1526] to-[#131929] border border-yellow-500/20 hover:border-yellow-500/50 rounded-xl p-5 transition-colors duration-300 cursor-pointer group"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-yellow-400" />
+                </div>
+                <span className="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
+                  Recommande
+                </span>
+              </div>
+              <h3 className="text-white font-semibold mb-2 line-clamp-1 group-hover:text-yellow-100 transition-colors">
+                {adventure.titre}
+              </h3>
+              <p className="text-gray-300 text-sm line-clamp-2">
+                {adventure.description || "Une aventure palpitante vous attend..."}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </div>
   );
 }
