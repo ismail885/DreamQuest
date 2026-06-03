@@ -32,7 +32,7 @@ const cardVariants = {
     scale: 1,
     y: 0,
     rotate: 0,
-    transition: { type: "spring", stiffness: 200, damping: 16 },
+    transition: { type: "spring" as const, stiffness: 200, damping: 16 },
   },
 };
 
@@ -52,7 +52,7 @@ export default function TabAchievements({ achievements }: TabAchievementsProps) 
   }
 
   const total = achievements.achievements.length;
-  const iconRegistry = LucideIcons as Record<string, React.ComponentType<{ className?: string }>>;
+  const iconRegistry = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>;
 
   return (
     <div className="space-y-8">

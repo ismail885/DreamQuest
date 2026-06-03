@@ -67,7 +67,9 @@ function AdventurePageContent() {
                   Personnage sélectionné — choisissez une aventure pour
                   commencer !
                 </p>
-          </div>
+              </div>
+            </div>
+          )}
         </PageTransition>
       </main>
 

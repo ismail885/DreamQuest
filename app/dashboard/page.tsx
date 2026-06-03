@@ -113,7 +113,6 @@ export default function DashboardPage() {
   <DashboardStats stats={stats} loading={statsLoading} error={statsError} />
 
   <DashboardSuggestions suggestions={suggestions} loading={loadingSuggestions} />
- </div>
   </div>
   </PageTransition>
   </main>

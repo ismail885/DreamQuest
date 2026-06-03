@@ -31,8 +31,8 @@ interface RawSave {
   id_embranchement_actuel: number | null;
   progression: number | null;
   date_sauvegarde: string;
-  aventure: { titre: string } | null;
-  personnage: { nom_personnage: string; classe: string } | null;
+  aventure: { titre: string }[];
+  personnage: { nom_personnage: string; classe: string }[];
 }
 
 interface UseProfileDataProps {
@@ -131,9 +131,9 @@ export function useProfileData({
           id_embranchement_actuel: save.id_embranchement_actuel,
           progression: save.progression ?? 0,
           date_sauvegarde: save.date_sauvegarde,
-          aventure_titre: save.aventure?.titre || "Aventure inconnue",
-          personnage_nom: save.personnage?.nom_personnage,
-          personnage_classe: save.personnage?.classe,
+          aventure_titre: save.aventure[0]?.titre || "Aventure inconnue",
+          personnage_nom: save.personnage[0]?.nom_personnage,
+          personnage_classe: save.personnage[0]?.classe,
           status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,
         }));
         setUserSaves(formattedSaves);
