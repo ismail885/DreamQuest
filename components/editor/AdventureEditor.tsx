@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import {
@@ -10,6 +11,25 @@ import {
   Rocket, Ghost, Search, Swords
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+
+const easeOutExpo = [0.16, 1, 0.3, 1] as const;
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -8 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: easeOutExpo },
+  },
+};
 
 /* ── Types ── */
 interface Choice {
@@ -369,48 +389,67 @@ export default function AdventureEditor() {
 
   /* ── Rendu principal ── */
   return (
-    <div className="h-screen bg-[#0D1117] text-[#F0F6FC] flex flex-col overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: easeOutExpo }}
+      className="h-screen bg-deep text-white flex flex-col overflow-hidden"
+    >
       {/* ── Header global ── */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-[#30363D] flex-shrink-0">
+      <motion.header
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: easeOutExpo }}
+        className="flex items-center justify-between px-6 py-3 border-b border-gray-800 flex-shrink-0"
+      >
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/dashboard")}
-            className="inline-flex items-center gap-1.5 text-[#8B949E] hover:text-[#F0F6FC] transition-all duration-200 text-sm group"
+            className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition-all duration-200 text-sm group"
           >
             <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             Retour
           </button>
-          <div className="w-px h-5 bg-[#30363D]" />
-          <h1 className="text-xl font-bold text-[#22D3EE]">Création d&apos;Aventure</h1>
+          <div className="w-px h-5 bg-gray-800" />
+          <h1 className="text-xl font-bold text-primary">Création d&apos;Aventure</h1>
         </div>
-        <div className="flex items-center gap-3 text-xs text-[#8B949E]">
-          <BookOpen className="w-4 h-4 text-[#22D3EE]" />
+        <div className="flex items-center gap-3 text-xs text-gray-400">
+          <BookOpen className="w-4 h-4 text-primary" />
           <span>{nodes.length} nœud{nodes.length > 1 ? "s" : ""}</span>
         </div>
-      </header>
+      </motion.header>
 
       {/* ── Corps 3 colonnes ── */}
       <div className="flex-1 flex overflow-hidden">
         {/* ══════ COLONNE A — Configuration (33%) ══════ */}
-        <aside className="w-[33%] min-w-[320px] border-r border-[#30363D] flex flex-col overflow-hidden">
+        <aside className="w-[33%] min-w-[320px] border-r border-gray-800 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-5 space-y-5 editor-scroll">
             {/* Carrousel de genre */}
             <section>
-              <h2 className="text-sm font-bold text-[#8B949E] uppercase tracking-wider mb-3">Genre</h2>
+              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Genre</h2>
               <div className="relative">
                   {/* Carte genre */}
-                <div className="genre-card-gradient rounded-xl h-[90px] flex flex-col items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/20" />
-                  <GenreIcon className="w-7 h-7 relative z-10 text-white" />
-                  <p className="text-white font-bold text-base relative z-10">{currentGenre.name}</p>
-                  <p className="text-white/70 text-xs relative z-10">{currentGenre.desc}</p>
-                </div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={genreIndex}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3, ease: easeOutExpo }}
+                    className="genre-card-gradient rounded-xl h-[90px] flex flex-col items-center justify-center relative overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-black/20" />
+                    <GenreIcon className="w-7 h-7 relative z-10 text-white" />
+                    <p className="text-white font-bold text-base relative z-10">{currentGenre.name}</p>
+                    <p className="text-white/70 text-xs relative z-10">{currentGenre.desc}</p>
+                  </motion.div>
+                </AnimatePresence>
 
                 {/* Flèche gauche */}
                 {genreIndex > 0 && (
                   <button
                     onClick={() => setGenreIndex((i) => i - 1)}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#1C2128] border border-[#30363D] flex items-center justify-center hover:bg-[#30363D] transition-all duration-200 text-[#8B949E] hover:text-white"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-gray-800/80 border border-gray-800 flex items-center justify-center hover:bg-gray-800 transition-all duration-300 ease-out hover:scale-110 text-gray-400 hover:text-white z-20"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
@@ -420,7 +459,7 @@ export default function AdventureEditor() {
                 {genreIndex < GENRES.length - 1 && (
                   <button
                     onClick={() => setGenreIndex((i) => i + 1)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#1C2128] border border-[#30363D] flex items-center justify-center hover:bg-[#30363D] transition-all duration-200 text-[#8B949E] hover:text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-gray-800/80 border border-gray-800 flex items-center justify-center hover:bg-gray-800 transition-all duration-300 ease-out hover:scale-110 text-gray-400 hover:text-white z-20"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -435,8 +474,8 @@ export default function AdventureEditor() {
                     onClick={() => setGenreIndex(i)}
                     className={`transition-all duration-200 rounded-full ${
                       i === genreIndex
-                        ? "w-6 h-2 bg-[#22D3EE]"
-                        : "w-2 h-2 bg-[#30363D] hover:bg-[#8B949E]"
+                        ? "w-6 h-2 bg-primary"
+                        : "w-2 h-2 bg-gray-800 hover:bg-gray-400"
                     }`}
                   />
                 ))}
@@ -444,7 +483,7 @@ export default function AdventureEditor() {
             </section>
 
             {/* Séparateur */}
-            <div className="border-t border-[#30363D]" />
+            <div className="border-t border-gray-800" />
 
             {/* Formulaire */}
             <section>
@@ -453,8 +492,8 @@ export default function AdventureEditor() {
                 {/* Titre */}
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <label htmlFor="title" className="text-xs text-[#8B949E]">Titre de l&apos;aventure</label>
-                    <span className={`text-[10px] ${title.length >= 75 ? "text-[#F0883E]" : "text-[#8B949E]"}`}>
+                    <label htmlFor="title" className="text-xs text-gray-400">Titre de l&apos;aventure</label>
+                    <span className={`text-[10px] ${title.length >= 75 ? "text-orange-400" : "text-gray-400"}`}>
                       {title.length}/80
                     </span>
                   </div>
@@ -464,32 +503,32 @@ export default function AdventureEditor() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value.slice(0, 80))}
                     placeholder="Titre de votre aventure..."
-                    className="w-full bg-[#0D1117] border border-[#30363D] rounded-md px-3 py-2.5 text-sm text-[#F0F6FC] placeholder-[#8B949E] focus:outline-none focus:border-[#22D3EE] transition-all duration-200"
+                    className="w-full bg-deep border border-gray-800 rounded-md px-3 py-2.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label htmlFor="desc" className="text-xs text-[#8B949E] block mb-1">Description</label>
+                  <label htmlFor="desc" className="text-xs text-gray-400 block mb-1">Description</label>
                   <textarea
                     id="desc"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Une courte description..."
                     rows={3}
-                    className="w-full bg-[#0D1117] border border-[#30363D] rounded-md px-3 py-2.5 text-sm text-[#F0F6FC] placeholder-[#8B949E] focus:outline-none focus:border-[#22D3EE] transition-all duration-200 resize-none"
+                    className="w-full bg-deep border border-gray-800 rounded-md px-3 py-2.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200 resize-none"
                   />
                 </div>
 
                 {/* Difficulté + Durée */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label htmlFor="diff" className="text-xs text-[#8B949E] block mb-1">Difficulté</label>
+                    <label htmlFor="diff" className="text-xs text-gray-400 block mb-1">Difficulté</label>
                     <select
                       id="diff"
                       value={difficulty}
                       onChange={(e) => setDifficulty(e.target.value)}
-                      className="w-full bg-[#0D1117] border border-[#30363D] rounded-md px-3 py-2.5 text-sm text-[#F0F6FC] focus:outline-none focus:border-[#22D3EE] transition-all duration-200"
+                      className="w-full bg-deep border border-gray-800 rounded-md px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary transition-all duration-200"
                     >
                       <option value="Facile">Facile</option>
                       <option value="Normal">Normal</option>
@@ -498,14 +537,14 @@ export default function AdventureEditor() {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="dur" className="text-xs text-[#8B949E] block mb-1">Durée (min)</label>
+                    <label htmlFor="dur" className="text-xs text-gray-400 block mb-1">Durée (min)</label>
                     <input
                       id="dur"
                       type="number"
                       value={duration}
                       onChange={(e) => setDuration(parseInt(e.target.value) || 0)}
                       min={0}
-                      className="w-full bg-[#0D1117] border border-[#30363D] rounded-md px-3 py-2.5 text-sm text-[#F0F6FC] focus:outline-none focus:border-[#22D3EE] transition-all duration-200"
+                      className="w-full bg-deep border border-gray-800 rounded-md px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -513,25 +552,39 @@ export default function AdventureEditor() {
             </section>
 
             {/* Messages */}
-            {error && (
-              <div className="flex items-center gap-2 p-3 bg-[#F85149]/10 border border-[#F85149]/30 rounded-lg text-[#F85149] text-sm">
-                <span className="w-1 h-1 rounded-full bg-[#F85149] flex-shrink-0" />
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="flex items-center gap-2 p-3 bg-[#238636]/10 border border-[#238636]/30 rounded-lg text-[#238636] text-sm">
-                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                {success}
-              </div>
-            )}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3, ease: easeOutExpo }}
+                  className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"
+                >
+                  <span className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0" />
+                  {error}
+                </motion.div>
+              )}
+              {success && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3, ease: easeOutExpo }}
+                  className="flex items-center gap-2 p-3 bg-green-600/10 border border-green-500/30 rounded-lg text-green-500 text-sm"
+                >
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  {success}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Boutons d'action */}
             <div className="space-y-2">
               <button
                 onClick={startGeneration}
                 disabled={!title.trim() || generating}
-                className="w-full py-2.5 bg-[#22D3EE] hover:bg-[#22D3EE]/90 disabled:bg-[#30363D] disabled:text-[#8B949E] disabled:cursor-not-allowed text-[#0D1117] font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+                className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-deep font-bold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 text-sm"
               >
                 {generating ? (
                   <>
@@ -548,7 +601,7 @@ export default function AdventureEditor() {
               <button
                 onClick={handleSave}
                 disabled={!title.trim() || saving}
-                className="w-full py-2.5 bg-[#7C3AED] hover:bg-[#7C3AED]/90 disabled:bg-[#30363D] disabled:text-[#8B949E] disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+                className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(124,58,237,0.5)] flex items-center justify-center gap-2 text-sm"
               >
                 {saving ? (
                   <>
@@ -570,24 +623,34 @@ export default function AdventureEditor() {
         <main className="flex-1 flex flex-col overflow-hidden min-w-0">
           {generating ? (
             /* Loader centré */
-            <div className="flex-1 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, ease: easeOutExpo }}
+              className="flex-1 flex items-center justify-center"
+            >
               <div className="text-center space-y-4">
-                <Loader2 className="w-10 h-10 text-[#22D3EE] animate-spin mx-auto" />
-                <p className="text-[#8B949E] text-sm">Génération en cours...</p>
-                <p className="text-[#30363D] text-xs">Création des nœuds narratifs</p>
+                <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto" />
+                <p className="text-gray-400 text-sm">Génération en cours...</p>
+                <p className="text-gray-600 text-xs">Création des nœuds narratifs</p>
               </div>
-            </div>
+            </motion.div>
           ) : (
-            <div className="flex-1 flex flex-col overflow-hidden fade-slide-in">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, ease: easeOutExpo }}
+              className="flex-1 flex flex-col overflow-hidden"
+            >
               {/* Header nœud */}
-              <div className="flex items-center justify-between px-6 py-3 border-b border-[#30363D] flex-shrink-0">
+              <div className="flex items-center justify-between px-6 py-3 border-b border-gray-800 flex-shrink-0">
                 <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-[#22D3EE]" />
-                  <span className="text-sm font-bold text-[#22D3EE]">
+                  <Target className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-bold text-primary">
                     Nœud: {activeNode.label}
                   </span>
                   {activeNode.isEnd && (
-                    <span className="text-[10px] bg-[#238636]/20 text-[#238636] px-1.5 py-0.5 rounded font-medium">
+                    <span className="text-[10px] bg-green-600/20 text-green-500 px-1.5 py-0.5 rounded font-medium">
                       FIN
                     </span>
                   )}
@@ -595,10 +658,10 @@ export default function AdventureEditor() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setPreviewMode(!previewMode)}
-                    className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                    className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all duration-300 ease-out hover:scale-105 flex items-center gap-1.5 ${
                       previewMode
-                        ? "bg-[#7C3AED] text-white"
-                        : "bg-[#7C3AED]/20 text-[#7C3AED] hover:bg-[#7C3AED]/30"
+                        ? "bg-violet-600 text-white"
+                        : "bg-violet-600/20 text-violet-500 hover:bg-violet-600/30"
                     }`}
                   >
                     {previewMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -606,10 +669,10 @@ export default function AdventureEditor() {
                   </button>
                   <button
                     onClick={toggleEnd}
-                    className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all duration-200 ${
+                    className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all duration-300 ease-out hover:scale-105 ${
                       activeNode.isEnd
-                        ? "bg-[#238636] text-white"
-                        : "bg-[#F0883E]/20 text-[#F0883E] hover:bg-[#F0883E]/30"
+                        ? "bg-green-600 text-white"
+                        : "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
                     }`}
                   >
                     {activeNode.isEnd ? "Nœud final ✓" : "Marquer comme fin"}
@@ -619,24 +682,32 @@ export default function AdventureEditor() {
 
               {/* Contenu éditeur / Aperçu */}
               <div className="flex-1 overflow-y-auto p-5 space-y-5 editor-scroll">
-                {previewMode ? (
-                  /* ═══ MODE APERÇU ═══ */
-                  <div className="fade-slide-in space-y-6">
-                    <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-[10px] uppercase tracking-wider text-[#8B949E]">NŒUD</span>
-                        <span className="text-xs font-bold text-[#22D3EE]">{activeNode.label}</span>
+                <AnimatePresence mode="wait">
+                  {previewMode ? (
+                    /* ═══ MODE APERÇU ═══ */
+                    <motion.div
+                      key="preview"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3, ease: easeOutExpo }}
+                      className="space-y-6"
+                    >
+                      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[10px] uppercase tracking-wider text-gray-400">NŒUD</span>
+                          <span className="text-xs font-bold text-primary">{activeNode.label}</span>
+                        </div>
+                        <div className="text-sm text-white leading-relaxed whitespace-pre-line">
+                          {activeNode.text || <span className="italic text-gray-400">(texte vide)</span>}
+                        </div>
                       </div>
-                      <div className="text-sm text-[#F0F6FC] leading-relaxed whitespace-pre-line">
-                        {activeNode.text || <span className="italic text-[#8B949E]">(texte vide)</span>}
-                      </div>
-                    </div>
 
                     {!activeNode.isEnd && (
                       <div className="space-y-2">
-                        <p className="text-[10px] uppercase tracking-wider text-[#8B949E]">CHOIX DISPONIBLES</p>
+                        <p className="text-[10px] uppercase tracking-wider text-gray-400">CHOIX DISPONIBLES</p>
                         {activeNode.choices.length === 0 ? (
-                          <p className="text-xs text-[#F0883E] italic">Aucun choix — le joueur sera bloqué ici.</p>
+                          <p className="text-xs text-orange-400 italic">Aucun choix — le joueur sera bloqué ici.</p>
                         ) : (
                           activeNode.choices.map((choice, idx) => {
                             const linked = choice.target && nodes.find((n) => n.id === choice.target);
@@ -645,8 +716,8 @@ export default function AdventureEditor() {
                                 key={idx}
                                 className={`border rounded-lg px-4 py-3 text-sm ${
                                   linked
-                                    ? "bg-[#238636]/10 border-[#238636]/30 text-[#F0F6FC]"
-                                    : "bg-[#F0883E]/10 border-[#F0883E]/30 text-[#F0883E]"
+                                    ? "bg-green-600/10 border-green-500/30 text-white"
+                                    : "bg-orange-500/10 border-orange-500/30 text-orange-400"
                                 }`}
                               >
                                 <div className="flex items-center gap-2">
@@ -654,7 +725,7 @@ export default function AdventureEditor() {
                                   <span>{choice.label || <span className="italic">(choix vide)</span>}</span>
                                 </div>
                                 {!linked && (
-                                  <p className="text-xs mt-1 text-[#F0883E] flex items-center gap-1">
+                                  <p className="text-xs mt-1 text-orange-400 flex items-center gap-1">
                                     <AlertTriangle className="w-3 h-3" />
                                     Ce choix n&apos;est lié à aucun nœud
                                   </p>
@@ -667,24 +738,30 @@ export default function AdventureEditor() {
                     )}
 
                     {activeNode.isEnd && (
-                      <div className="bg-[#238636]/10 border border-[#238636]/30 rounded-lg px-4 py-3">
-                        <p className="text-sm text-[#238636] font-medium flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5" /> Nœud terminal — l&apos;aventure s&apos;arrête ici.</p>
+                      <div className="bg-green-600/10 border border-green-500/30 rounded-lg px-4 py-3">
+                        <p className="text-sm text-green-500 font-medium flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5" /> Nœud terminal — l&apos;aventure s&apos;arrête ici.</p>
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 ) : (
                   /* ═══ MODE ÉDITION ═══ */
-                  <>
+                  <motion.div
+                    key="edit"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: easeOutExpo }}
+                  >
                     {/* Texte narratif */}
                     <section>
-                      <label className="text-xs text-[#8B949E] block mb-2 uppercase tracking-wider">
+                      <label className="text-xs text-gray-400 block mb-2 uppercase tracking-wider">
                         Texte narratif
                       </label>
                       <textarea
                         value={activeNode.text}
                         onChange={(e) => updateNodeText(e.target.value)}
                         placeholder="Décrivez la scène, les événements, l'atmosphère..."
-                        className="w-full bg-[#0D1117] border border-[#30363D] rounded-md p-3 text-sm text-[#F0F6FC] placeholder-[#8B949E] focus:outline-none focus:border-[#22D3EE] transition-all duration-200 resize-none"
+                        className="w-full bg-deep border border-gray-800 rounded-md p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200 resize-none"
                         style={{ minHeight: "150px" }}
                       />
                     </section>
@@ -696,7 +773,7 @@ export default function AdventureEditor() {
                           <h3 className="text-sm font-bold text-white">Choix disponibles</h3>
                           <button
                             onClick={addChoice}
-                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-[#7C3AED] hover:bg-[#7C3AED]/80 text-white rounded-md transition-all duration-200"
+                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-violet-600 hover:bg-violet-600/80 text-white rounded-md transition-all duration-300 ease-out hover:scale-105"
                           >
                             <Plus className="w-3 h-3" />
                             Ajouter
@@ -705,15 +782,15 @@ export default function AdventureEditor() {
 
                         <div className="space-y-3">
                           {activeNode.choices.length === 0 && (
-                            <p className="text-[#8B949E] text-xs italic">Aucun choix — les joueurs arriveront à une impasse.</p>
+                            <p className="text-gray-400 text-xs italic">Aucun choix — les joueurs arriveront à une impasse.</p>
                           )}
                           {activeNode.choices.map((choice, idx) => (
                             <div
                               key={idx}
                               className={`rounded-lg p-3 space-y-2 border ${
                                 !choice.target
-                                  ? "bg-[#F0883E]/5 border-[#F0883E]/40"
-                                  : "bg-[#161B22] border-[#30363D]"
+                                  ? "bg-orange-500/5 border-orange-500/40"
+                                  : "bg-gray-900 border-gray-800"
                               }`}
                             >
                               {/* Label du choix */}
@@ -722,7 +799,7 @@ export default function AdventureEditor() {
                                 value={choice.label}
                                 onChange={(e) => updateChoiceLabel(idx, e.target.value)}
                                 placeholder={`Choix ${idx + 1} — action du joueur...`}
-                                className="w-full bg-[#0D1117] border border-[#30363D] rounded px-3 py-2 text-sm text-[#F0F6FC] placeholder-[#8B949E] focus:outline-none focus:border-[#22D3EE] transition-all duration-200"
+                                className="w-full bg-deep border border-gray-800 rounded px-3 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
                               />
 
                               {/* Sélecteur de nœud cible */}
@@ -730,10 +807,10 @@ export default function AdventureEditor() {
                                 <select
                                   value={choice.target}
                                   onChange={(e) => updateChoiceTarget(idx, e.target.value)}
-                                  className={`flex-1 bg-[#0D1117] border rounded px-3 py-2 text-sm text-[#F0F6FC] focus:outline-none transition-all duration-200 ${
+                                  className={`flex-1 bg-deep border rounded px-3 py-2 text-sm text-white focus:outline-none transition-all duration-200 ${
                                     !choice.target
-                                      ? "border-[#F0883E]/50 focus:border-[#F0883E]"
-                                      : "border-[#30363D] focus:border-[#22D3EE]"
+                                      ? "border-orange-500/50 focus:border-orange-500"
+                                      : "border-gray-800 focus:border-primary"
                                   }`}
                                 >
                                   <option value="">Sélectionner un nœud...</option>
@@ -747,7 +824,7 @@ export default function AdventureEditor() {
                                 </select>
                                 <button
                                   onClick={() => selectNodeFromChoice(idx)}
-                                  className="text-xs px-2.5 py-2 border border-[#7C3AED] text-[#7C3AED] hover:bg-[#7C3AED]/10 rounded-md transition-all duration-200 whitespace-nowrap"
+                                  className="text-xs px-2.5 py-2 border border-violet-500 text-violet-500 hover:bg-violet-600/10 rounded-md transition-all duration-200 whitespace-nowrap"
                                 >
                                   + Nouveau nœud
                                 </button>
@@ -755,7 +832,7 @@ export default function AdventureEditor() {
 
                               {/* Alerte si pas de cible */}
                               {!choice.target && (
-                                <div className="flex items-center gap-1.5 text-xs text-[#F0883E]">
+                                <div className="flex items-center gap-1.5 text-xs text-orange-400">
                                   <AlertTriangle className="w-3 h-3" />
                                   <span>Ce choix n&apos;est lié à aucun nœud — le joueur ne pourra pas avancer.</span>
                                 </div>
@@ -765,7 +842,7 @@ export default function AdventureEditor() {
                               {activeNode.choices.length > 1 && (
                                 <button
                                   onClick={() => removeChoice(idx)}
-                                  className="w-full text-xs text-[#F85149] hover:underline text-center py-1 transition-all duration-200 flex items-center justify-center gap-1"
+                                  className="w-full text-xs text-red-400 hover:underline text-center py-1 transition-all duration-200 flex items-center justify-center gap-1"
                                 >
                                   <Trash2 className="w-3 h-3" />
                                   Supprimer ce choix
@@ -776,59 +853,66 @@ export default function AdventureEditor() {
                         </div>
                       </section>
                     )}
-                  </>
+                  </motion.div>
                 )}
+                </AnimatePresence>
               </div>
-            </div>
+            </motion.div>
           )}
         </main>
 
         {/* ══════ COLONNE C — Liste des nœuds (20%) ══════ */}
-        <aside className="w-[20%] min-w-[200px] max-w-[260px] border-l border-[#30363D] flex flex-col overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#30363D] flex-shrink-0">
-            <h2 className="text-sm font-bold text-[#22D3EE]">
+        <aside className="w-[20%] min-w-[200px] max-w-[260px] border-l border-gray-800 flex flex-col overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-800 flex-shrink-0">
+            <h2 className="text-sm font-bold text-primary">
               Nœuds ({nodes.length})
             </h2>
           </div>
           <div ref={nodesListRef} className="flex-1 overflow-y-auto py-2 editor-scroll">
-            <div className="space-y-0.5 px-2">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="space-y-0.5 px-2"
+            >
               {nodes.map((node) => {
                 const isActive = node.id === activeNodeId;
                 return (
-                  <button
+                  <motion.button
                     key={node.id}
                     data-node-id={node.id}
                     onClick={() => setActiveNodeId(node.id)}
-                    className={`w-full text-left px-3 py-2.5 rounded-md transition-all duration-200 ${
+                    variants={itemVariants}
+                    className={`w-full text-left px-3 py-2.5 rounded-md transition-all duration-300 ease-out ${
                       isActive
-                        ? "bg-[#1C2128] border-l-[3px] border-[#22D3EE]"
-                        : "hover:bg-[#1C2128] border-l-[3px] border-transparent"
+                        ? "bg-gray-800/80 border-l-[3px] border-primary"
+                        : "hover:bg-gray-800/80 border-l-[3px] border-transparent"
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[11px] font-bold text-[#22D3EE] font-mono">
+                      <span className="text-[11px] font-bold text-primary font-mono">
                         {node.id === "debut" ? "···" : node.label}
                       </span>
                       {node.isEnd && (
-                        <span className="text-[9px] bg-[#238636]/20 text-[#238636] px-1 rounded font-medium">FIN</span>
+                        <span className="text-[9px] bg-green-600/20 text-green-500 px-1 rounded font-medium">FIN</span>
                       )}
                       {!isNodeReferenced(node.id) && node.id !== "debut" && (
-                        <span className="text-[9px] text-[#F0883E] ml-auto">orphelin</span>
+                        <span className="text-[9px] text-orange-400 ml-auto">orphelin</span>
                       )}
                     </div>
-                    <p className="text-xs text-[#8B949E] truncate leading-tight">
+                    <p className="text-xs text-gray-400 truncate leading-tight">
                       {node.text ? node.text.slice(0, 60) : "(vide)"}
                     </p>
-                  </button>
+                  </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
 
             {/* Bouton ajouter un nœud */}
             <div className="px-4 pt-3">
               <button
                 onClick={addNewNode}
-                className="w-full py-2 border border-dashed border-[#30363D] rounded-md text-xs text-[#8B949E] hover:border-[#22D3EE] hover:text-[#22D3EE] transition-all duration-200 flex items-center justify-center gap-1.5"
+                className="w-full py-2 border border-dashed border-gray-800 rounded-md text-xs text-gray-400 hover:border-primary hover:text-primary transition-all duration-300 ease-out hover:scale-[1.02] flex items-center justify-center gap-1.5"
               >
                 <Plus className="w-3 h-3" />
                 Nouveau nœud
@@ -837,6 +921,6 @@ export default function AdventureEditor() {
           </div>
         </aside>
       </div>
-    </div>
+    </motion.div>
   );
 }
