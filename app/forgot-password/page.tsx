@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import PageBackground from "@/components/shared/PageBackground";
 import { Mail, Lock, ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 export default function ForgotPasswordPage() {
@@ -104,43 +105,8 @@ export default function ForgotPasswordPage() {
   };
 
   const PageLayout = ({ children }: { children: ReactNode }) => (
-    <main className="min-h-screen flex items-center justify-center p-4 relative bg-[#070b15]">
-      <div className="fixed inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(6,182,212,0.10)",
-            left: "25%",
-            top: 0,
-            opacity: 0.83,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(59,130,246,0.10)",
-            right: "25%",
-            top: "696px",
-            opacity: 0.51,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(99,102,241,0.10)",
-            left: "51.54%",
-            top: "505px",
-            opacity: 0.93,
-          }}
-        />
-      </div>
+    <main className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
+      <PageBackground />
       <div className="w-full max-w-sm relative z-10">
         <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] rounded-[10px] border border-[rgba(6,182,212,0.2)] p-8">
           {children}
@@ -153,8 +119,8 @@ export default function ForgotPasswordPage() {
     return (
       <PageLayout>
         <div className="flex items-center gap-3 mb-2">
-          <Lock className="w-6 h-6 text-[#06b6d4]" />
-          <h1 className="text-2xl font-bold text-[#06b6d4]">
+          <Lock className="w-6 h-6 text-primary" />
+          <h1 className="text-2xl font-bold text-primary">
             Nouveau mot de passe
           </h1>
         </div>
@@ -179,7 +145,7 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 minLength={8}
-                className="w-full pl-10 pr-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-[#06b6d4] rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[#06b6d4] transition-all"
+                className="w-full pl-10 pr-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="Minimum 8 caractères"
               />
               <button
@@ -214,7 +180,7 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={8}
-                className="w-full pl-10 pr-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-[#06b6d4] rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[#06b6d4] transition-all"
+                className="w-full pl-10 pr-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="Confirmez votre mot de passe"
               />
               <button
@@ -247,7 +213,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={resetLoading}
-            className="w-full py-3 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
+            className="w-full py-3 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
           >
             {resetLoading && (
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -276,7 +242,7 @@ export default function ForgotPasswordPage() {
         <div className="mt-5 text-center text-sm text-gray-400">
           <Link
             href="/auth/login"
-            className="text-[#06b6d4] hover:text-[#3b82f6] transition-colors"
+            className="text-primary hover:text-[#3b82f6] transition-colors"
           >
             Retour à la connexion
           </Link>
@@ -289,11 +255,11 @@ export default function ForgotPasswordPage() {
     <PageLayout>
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-[#3b82f6] flex items-center justify-center">
             <Lock className="w-7 h-7 text-white" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-[#06b6d4]">
+        <h1 className="text-2xl font-bold text-primary">
           Mot de passe oublié
         </h1>
         <p className="text-gray-400 text-sm mt-1">
@@ -319,7 +285,7 @@ export default function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full pl-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-[#06b6d4] rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[#06b6d4] transition-all"
+              className="w-full pl-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
               placeholder="votre.email@exemple.com"
             />
           </div>
@@ -339,7 +305,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
+          className="w-full py-3 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
         >
           {loading && (
             <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -366,7 +332,7 @@ export default function ForgotPasswordPage() {
       <div className="mt-6 text-center text-sm text-gray-400">
         <Link
           href="/auth/login"
-          className="text-[#06b6d4] hover:text-[#3b82f6] transition-colors inline-flex items-center gap-1"
+          className="text-primary hover:text-[#3b82f6] transition-colors inline-flex items-center gap-1"
         >
           <ArrowLeft className="w-4 h-4" />
           Retour à la connexion

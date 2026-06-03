@@ -102,7 +102,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
           return (
             <div
               key={char.id ?? index}
-              className="bg-[#0c1322] border border-gray-700/40 rounded-xl overflow-hidden hover:border-cyan-500/40 transition-all duration-300 group"
+              className="bg-surface border border-gray-700/40 rounded-xl overflow-hidden hover:border-cyan-500/40 transition-all duration-300 group"
             >
               <div className="flex flex-col items-center pt-6 pb-4 px-4">
                 <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg mb-3 ring-2 ring-white/10`}>

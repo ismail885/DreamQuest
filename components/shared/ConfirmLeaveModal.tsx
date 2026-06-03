@@ -25,7 +25,7 @@ export default function ConfirmLeaveModal({
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onCancel}
       />
-      <div className="relative bg-[#0c1322] border border-gray-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-surface border border-gray-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl animate-in fade-in zoom-in duration-200">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
             <AlertTriangle className="w-5 h-5 text-yellow-400" />

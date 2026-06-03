@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
+import PageBackground from "@/components/shared/PageBackground";
 import { BookOpen, ArrowLeft } from "lucide-react";
 
 export const metadata = {
@@ -9,8 +11,9 @@ export const metadata = {
 
 export default function LicensesPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#070b15]">
+    <div className="min-h-screen flex flex-col bg-deep">
       <Header />
+      <PageBackground />
       <main className="flex-1 container mx-auto px-4 md:px-6 py-12 max-w-3xl">
         <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-8">
           <ArrowLeft className="w-4 h-4" />
@@ -70,6 +73,7 @@ export default function LicensesPage() {
           </section>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

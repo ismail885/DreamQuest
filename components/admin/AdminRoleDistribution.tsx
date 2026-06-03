@@ -16,7 +16,7 @@ export default function AdminRoleDistribution({
   ];
 
   return (
-    <div className="bg-[#0c1322] border border-gray-800 rounded-xl p-6">
+    <div className="bg-surface border border-gray-800 rounded-xl p-6">
       <h2 className="text-xl font-bold text-white mb-6">
         Distribution des rôles
       </h2>

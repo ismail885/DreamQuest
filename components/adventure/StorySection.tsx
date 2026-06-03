@@ -65,7 +65,7 @@ export default function StorySection({
         </div>
         <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] rounded-full transition-all duration-700"
+            className="h-full bg-gradient-to-r from-primary to-[#3b82f6] rounded-full transition-all duration-700"
             style={{ width: `${progression}%` }}
           />
         </div>
@@ -80,7 +80,7 @@ export default function StorySection({
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070b15]/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-deep/50 to-transparent" />
       </div>
 
       {texte && (

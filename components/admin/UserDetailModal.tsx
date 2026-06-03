@@ -22,8 +22,8 @@ export default function UserDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#0c1322] border border-gray-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-[#0c1322]">
+      <div className="bg-surface border border-gray-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-surface">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold text-lg">
               {user.nom_utilisateur.substring(0, 2).toUpperCase()}

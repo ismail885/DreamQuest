@@ -69,7 +69,7 @@ const Header = React.memo(function Header() {
  if (user) {
  return (
  <>
- <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#070b15]/80 sticky top-0 z-50">
+ <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-deep/80 sticky top-0 z-50">
  <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
  <div className="flex items-center justify-between">
  <Link href="/dashboard" className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
@@ -96,7 +96,7 @@ const Header = React.memo(function Header() {
  </nav>
 
  {mobileMenuOpen && (
- <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-[#070b15] ">
+ <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-deep ">
  <div className="flex flex-col p-4 space-y-4">
  <div className="flex flex-col gap-4">
  <NavLinks user={user} onNavigate={closeMobileMenu} />
@@ -113,7 +113,7 @@ const Header = React.memo(function Header() {
 
  return (
  <>
- <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-[#070b15]/80 sticky top-0 z-50">
+ <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-deep/80 sticky top-0 z-50">
  <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
  <div className="flex items-center justify-between">
  <Link href="/" className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
@@ -160,7 +160,7 @@ const Header = React.memo(function Header() {
  </nav>
 
  {mobileMenuOpen && (
- <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-[#070b15] ">
+ <div className="md:hidden fixed inset-0 top-[60px] z-40 bg-deep ">
  <div className="flex flex-col p-4 space-y-4">
  <div className="flex flex-col gap-4">
  <Link href="/" className="text-gray-400 hover:text-white transition-colors" onClick={closeMobileMenu}>

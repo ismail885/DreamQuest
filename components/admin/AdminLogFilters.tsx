@@ -28,7 +28,7 @@ export default function AdminLogFilters({ filter, onFilterChange }: AdminLogFilt
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filter === f.key
               ? `${f.activeColor || getActiveBg(f.key)} text-white`
-              : "bg-[#0c1322] border border-gray-800 text-gray-400 hover:text-white"
+              : "bg-surface border border-gray-800 text-gray-400 hover:text-white"
           }`}
         >
           {f.label}

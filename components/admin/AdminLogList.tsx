@@ -79,7 +79,7 @@ export default function AdminLogList({
   entries,
 }: AdminLogListProps) {
   return (
-    <div className="bg-[#0c1322] border border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
       {loading ? (
         <div className="p-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500 mx-auto" />

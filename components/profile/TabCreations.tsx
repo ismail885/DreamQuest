@@ -32,7 +32,7 @@ export default function TabCreations({ creations }: TabCreationsProps) {
       {creations.map((creation) => (
         <div
           key={creation.id}
-          className="bg-[#0c1322] border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
+          className="bg-surface border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
         >
           <div className="flex justify-between items-start">
             <h3 className="text-lg font-semibold text-white">{creation.titre}</h3>

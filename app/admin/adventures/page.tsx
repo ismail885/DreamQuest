@@ -71,19 +71,19 @@ export default function AdminAdventuresPage() {
 
  return (
  <div className="space-y-6">
- {/* Header */}
- <div className="flex items-center justify-between">
- <div>
- <h1 className="text-3xl font-bold text-white ">Gestion des aventures</h1>
- <p className="text-gray-400 mt-2">{totalCount} aventure{totalCount !== 1 ? "s" : ""} disponible{totalCount !== 1 ? "s" : ""}</p>
- </div>
- <a
- href="/create-adventure"
- className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
- >
- Nouvelle aventure
- </a>
- </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Gestion des aventures</h1>
+          <p className="text-gray-400 mt-2">{totalCount} aventure{totalCount !== 1 ? "s" : ""} disponible{totalCount !== 1 ? "s" : ""}</p>
+        </div>
+        <a
+          href="/create-adventure"
+          className="self-start px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors text-sm sm:text-base whitespace-nowrap"
+        >
+          + Nouvelle aventure
+        </a>
+      </div>
 
  {/* Search */}
  <div className="relative">
@@ -96,7 +96,7 @@ export default function AdminAdventuresPage() {
  setSearchTerm(e.target.value);
  setCurrentPage(1);
  }}
- className="w-full pl-12 pr-4 py-3 bg-[#0c1322] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+ className="w-full pl-12 pr-4 py-3 bg-surface border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
  />
  </div>
 
@@ -111,18 +111,18 @@ export default function AdminAdventuresPage() {
  )}
 
  {/* Table */}
- <div className="bg-[#0c1322] border border-gray-800 rounded-xl overflow-hidden">
+ <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
  <div className="overflow-x-auto">
  <table className="w-full">
- <thead className="bg-gray-900/50 ">
- <tr>
- <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Titre</th>
- <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Description</th>
- <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Popularité</th>
- <th className="px-6 py-4 text-left text-gray-400 font-medium text-sm">Création</th>
- <th className="px-6 py-4 text-right text-gray-400 font-medium text-sm">Actions</th>
- </tr>
- </thead>
+          <thead className="bg-gray-900/50">
+            <tr>
+              <th className="px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Titre</th>
+              <th className="hidden md:table-cell px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Description</th>
+              <th className="px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Popularité</th>
+              <th className="hidden sm:table-cell px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Création</th>
+              <th className="px-4 sm:px-6 py-4 text-right text-gray-400 font-medium text-sm">Actions</th>
+            </tr>
+          </thead>
  <tbody className="divide-y divide-gray-800 ">
  {loading ? (
  <tr>
@@ -137,99 +137,99 @@ export default function AdminAdventuresPage() {
  </td>
  </tr>
  ) : (
- adventures.map((adventure) => (
- <tr key={adventure.id} className="hover:bg-gray-800/30 transition-colors">
- <td className="px-6 py-4">
- <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
- <Star className="w-5 h-5 text-purple-400" />
- </div>
- <span className="text-white font-medium">{adventure.titre}</span>
- </div>
- </td>
- <td className="px-6 py-4 text-gray-400 max-w-xs truncate">
- {adventure.description || "Sans description"}
- </td>
- <td className="px-6 py-4">
- <div className="flex items-center gap-2">
- <ThumbsUp className="w-4 h-4 text-amber-400" />
- <span className="text-white font-medium">{adventure.popularite}</span>
- </div>
- </td>
- <td className="px-6 py-4 text-gray-400 ">
- {new Date(adventure.date_creation).toLocaleDateString("fr-FR")}
- </td>
- <td className="px-6 py-4">
- <div className="flex items-center justify-end gap-2">
- <button
- onClick={() => setViewAdventure(adventure)}
- className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
- title="Voir"
- >
- <Eye className="w-4 h-4" />
- </button>
- <button
- onClick={() => setDeleteConfirm(adventure.id)}
- className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
- title="Supprimer"
- >
- <Trash2 className="w-4 h-4" />
- </button>
- </div>
- </td>
- </tr>
- ))
+              adventures.map((adventure) => (
+                <tr key={adventure.id} className="hover:bg-gray-800/30 transition-colors">
+                  <td className="px-4 sm:px-6 py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                      </div>
+                      <span className="text-white font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">{adventure.titre}</span>
+                    </div>
+                  </td>
+                  <td className="hidden md:table-cell px-4 sm:px-6 py-4 text-gray-400 max-w-xs truncate text-sm">
+                    {adventure.description || "Sans description"}
+                  </td>
+                  <td className="px-4 sm:px-6 py-4">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <ThumbsUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
+                      <span className="text-white font-medium text-sm sm:text-base">{adventure.popularite}</span>
+                    </div>
+                  </td>
+                  <td className="hidden sm:table-cell px-4 sm:px-6 py-4 text-gray-400 text-sm">
+                    {new Date(adventure.date_creation).toLocaleDateString("fr-FR")}
+                  </td>
+                  <td className="px-4 sm:px-6 py-4">
+                    <div className="flex items-center justify-end gap-1 sm:gap-2">
+                      <button
+                        onClick={() => setViewAdventure(adventure)}
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        title="Voir"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(adventure.id)}
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
  )}
  </tbody>
  </table>
  </div>
 
- {/* Pagination */}
- {totalPages > 1 && (
- <div className="px-6 py-4 border-t border-gray-800 flex items-center justify-between">
- <p className="text-gray-400 text-sm">
- Affichage {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
- </p>
- <div className="flex items-center gap-2">
- <button
- onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
- disabled={currentPage === 1}
- className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
- >
- <ChevronLeft className="w-5 h-5" />
- </button>
- {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
- const page = i + 1;
- return (
- <button
- key={page}
- onClick={() => setCurrentPage(page)}
- className={`px-3 py-1 rounded-lg text-sm ${
- currentPage === page
- ? "bg-cyan-500 text-white"
- : "text-gray-400 hover:text-white hover:bg-gray-800"
- }`}
- >
- {page}
- </button>
- );
- })}
- <button
- onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
- disabled={currentPage === totalPages}
- className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
- >
- <ChevronRight className="w-5 h-5" />
- </button>
- </div>
- </div>
- )}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-gray-800">
+          <p className="text-gray-400 text-xs sm:text-sm">
+            {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
+          </p>
+          <div className="flex items-center justify-center gap-1 sm:gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const page = i + 1;
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm ${
+                    currentPage === page
+                      ? "bg-cyan-500 text-white"
+                      : "text-gray-400 hover:text-white hover:bg-gray-800"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
+        </div>
+      )}
  </div>
 
  {/* View Modal */}
  {viewAdventure && (
  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <div className="bg-[#0c1322] border border-gray-800 rounded-xl w-full max-w-lg">
+ <div className="bg-surface border border-gray-800 rounded-xl w-full max-w-lg">
  <div className="flex items-center justify-between p-6 border-b border-gray-800 ">
  <h2 className="text-xl font-bold text-white ">{viewAdventure.titre}</h2>
  <button onClick={() => setViewAdventure(null)} className="text-gray-400 hover:text-white">
@@ -279,7 +279,7 @@ export default function AdminAdventuresPage() {
  {/* Delete Confirmation Modal */}
  {deleteConfirm && (
  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <div className="bg-[#0c1322] border border-gray-800 rounded-xl w-full max-w-sm">
+ <div className="bg-surface border border-gray-800 rounded-xl w-full max-w-sm">
  <div className="p-6 text-center">
  <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
  <Trash2 className="w-8 h-8 text-red-400" />

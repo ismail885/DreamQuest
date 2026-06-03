@@ -35,7 +35,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
       {saves.map((save) => (
         <div
           key={save.id}
-          className="bg-[#0c1322] border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
+          className="bg-surface border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
         >
           <div className="flex justify-between items-start mb-3">
             <h3 className="text-lg font-semibold text-white">{save.aventure_titre}</h3>

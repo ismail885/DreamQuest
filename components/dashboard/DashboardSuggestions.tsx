@@ -18,7 +18,7 @@ export default function DashboardSuggestions({
 
   return (
     <div className="mb-8 md:mb-12">
-      <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-[#070b15]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
+      <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
         <Sparkles className="w-5 h-5 text-yellow-400" />
         Pour Vous
       </h2>

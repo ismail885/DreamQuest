@@ -190,7 +190,7 @@ function AdventureReader({ params }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#070b15] flex items-center justify-center">
+      <div className="min-h-screen bg-deep flex items-center justify-center">
         <Loader />
       </div>
     );
@@ -198,11 +198,11 @@ function AdventureReader({ params }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#070b15] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-deep flex flex-col items-center justify-center gap-4">
         <p className="text-red-400 text-lg">{error}</p>
         <button
           onClick={() => router.push("/adventure")}
-          className="px-6 py-3 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white rounded-[10px] font-medium hover:opacity-90 transition-opacity"
+          className="px-6 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white rounded-[10px] font-medium hover:opacity-90 transition-opacity"
         >
           Retour aux aventures
         </button>
@@ -211,7 +211,7 @@ function AdventureReader({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#070b15] text-white flex flex-col">
+    <div className="min-h-screen bg-deep text-white flex flex-col">
       <AdventureHeader
         onBack={() => {
           if (history.length > 0 && !isEnd) {

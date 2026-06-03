@@ -12,7 +12,7 @@ export default function TabQuests({ quests, loading }: TabQuestsProps) {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#06b6d4] mx-auto mb-4"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
         <p className="text-gray-400">Chargement des quêtes...</p>
       </div>
     );
@@ -44,7 +44,7 @@ export default function TabQuests({ quests, loading }: TabQuestsProps) {
             className={`p-4 rounded-xl border ${
               quest.completed
                 ? "bg-green-500/10 border-green-500/30"
-                : "bg-[#0c1322] border-gray-700/30"
+                : "bg-surface border-gray-700/30"
             }`}
           >
             <div className="flex justify-between items-start mb-2">

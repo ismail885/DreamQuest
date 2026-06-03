@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -61,7 +61,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative bg-[#070b15]">
+    <div className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
       <div className="fixed inset-0 pointer-events-none">
         <div
           className="absolute inset-0"
@@ -112,7 +112,7 @@ export default function LoginForm() {
                 priority
               />
             </div>
-            <h1 className="text-2xl font-bold text-[#06b6d4]">DreamQuest</h1>
+            <h1 className="text-2xl font-bold text-primary">DreamQuest</h1>
             <p className="text-gray-400 text-sm mt-1">
               Connectez-vous à votre aventure
             </p>
@@ -196,7 +196,7 @@ export default function LoginForm() {
                 <input
                   type="text"
                   id="emailOrUsername"
-                  className="w-full pl-10 pr-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-[#06b6d4] rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[#06b6d4] transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                   placeholder="votre.email@exemple.com"
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
@@ -231,7 +231,7 @@ export default function LoginForm() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  className="w-full pl-10 pr-12 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-[#06b6d4] rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[#06b6d4] transition-all text-sm"
+                  className="w-full pl-10 pr-12 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -286,7 +286,7 @@ export default function LoginForm() {
             <div className="flex justify-end">
               <Link
                 href="/forgot-password"
-                className="text-sm text-[#06b6d4] hover:text-[#3b82f6] transition-colors"
+                className="text-sm text-primary hover:text-[#3b82f6] transition-colors"
               >
                 Mot de passe oublié ?
               </Link>
@@ -301,7 +301,7 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
             >
               {isLoading && (
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -328,7 +328,7 @@ export default function LoginForm() {
               Pas encore de compte ?{" "}
               <Link
                 href="/auth/register"
-                className="text-[#06b6d4] hover:text-[#3b82f6] font-semibold transition-colors"
+                className="text-primary hover:text-[#3b82f6] font-semibold transition-colors"
               >
                 S&apos;inscrire
               </Link>

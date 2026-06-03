@@ -120,7 +120,7 @@ export default function AdventureEndScreen({
 
       <button
         onClick={onRestart}
-        className="w-full px-8 py-3 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white rounded-[10px] font-semibold hover:opacity-90 transition-opacity mt-4"
+        className="w-full px-8 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white rounded-[10px] font-semibold hover:opacity-90 transition-opacity mt-4"
       >
         Recommencer
       </button>

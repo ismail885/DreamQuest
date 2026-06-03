@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 import {
@@ -224,7 +224,7 @@ export default function CreateCharacterForm({
     .filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-[#070b15] flex flex-col">
+    <div className="min-h-screen bg-deep flex flex-col">
       <div className="px-8 pt-8 pb-4 max-w-5xl mx-auto w-full">
         <button
           onClick={() => window.history.back()}
@@ -233,7 +233,7 @@ export default function CreateCharacterForm({
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Retour
         </button>
-        <h1 className="text-2xl md:text-3xl font-bold text-[#06b6d4] mt-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-primary mt-2">
           Creation de Personnage
         </h1>
       </div>
@@ -254,7 +254,7 @@ export default function CreateCharacterForm({
                 </span>
               </div>
 
-              <span className="text-[#06b6d4] text-sm font-medium mb-3 block">
+              <span className="text-primary text-sm font-medium mb-3 block">
                 {classInfo.role}
               </span>
 
@@ -378,7 +378,7 @@ export default function CreateCharacterForm({
                       ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/30"
                       : characterName.length >= 3
                         ? "border-green-500/50 focus:border-green-500 focus:ring-green-500/30"
-                        : "border-[rgba(6,182,212,0.2)] focus:border-[#06b6d4] focus:ring-[#06b6d4]"
+                        : "border-[rgba(6,182,212,0.2)] focus:border-primary focus:ring-primary"
                   }`}
                 />
                 {characterName.length > 0 && (
@@ -427,7 +427,7 @@ export default function CreateCharacterForm({
             <button
               type="submit"
               disabled={isLoading || !characterName.trim() || !!nameError}
-              className="w-full py-3.5 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm"
+              className="w-full py-3.5 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">

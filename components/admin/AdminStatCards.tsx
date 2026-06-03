@@ -21,7 +21,7 @@ export default function AdminStatCards({ stats }: AdminStatCardsProps) {
       {cards.map((card, i) => {
         const Icon = card.icon;
         return (
-          <div key={i} className="bg-[#0c1322] border border-gray-800 rounded-xl p-6 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/5 transition-all duration-300">
+          <div key={i} className="bg-surface border border-gray-800 rounded-xl p-6 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/5 transition-all duration-300">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-gray-400 text-sm">{card.title}</p>

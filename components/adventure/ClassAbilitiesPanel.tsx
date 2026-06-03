@@ -35,7 +35,7 @@ export default function ClassAbilitiesPanel({
             className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all ${
               usedAbilities.includes(ability)
                 ? "bg-gray-800/50 border border-gray-700 text-gray-400 opacity-50 cursor-not-allowed"
-                : "bg-transparent border border-[rgba(6,182,212,0.2)] hover:border-[#06b6d4]/50 text-gray-400 hover:text-white"
+                : "bg-transparent border border-[rgba(6,182,212,0.2)] hover:border-primary/50 text-gray-400 hover:text-white"
             }`}
           >
             <span className="font-medium">{ability}</span>

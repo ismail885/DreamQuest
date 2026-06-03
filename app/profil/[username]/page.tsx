@@ -62,7 +62,7 @@ export default function PublicProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen text-white bg-[#070b15]">
+    <div className="min-h-screen text-white bg-deep">
       <div className="fixed inset-0 pointer-events-none">
         <div
           className="absolute inset-0"
@@ -110,7 +110,7 @@ export default function PublicProfilePage() {
         </Link>
 
         <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 mb-6 text-center">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-lg shadow-[rgba(6,182,212,0.3)]">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-[#3b82f6] flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-lg shadow-[rgba(6,182,212,0.3)]">
             {username.substring(0, 2).toUpperCase()}
           </div>
           <h1 className="text-2xl font-bold text-white">
@@ -123,7 +123,7 @@ export default function PublicProfilePage() {
         </div>
 
         <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 mb-6">
-          <h2 className="text-lg font-bold text-[#06b6d4] mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
             <Users className="w-5 h-5" />
             Personnages
           </h2>
@@ -140,7 +140,7 @@ export default function PublicProfilePage() {
                     </p>
                     <p className="text-gray-400 text-sm">{c.classe}</p>
                   </div>
-                  <span className="text-[#06b6d4] font-bold">
+                  <span className="text-primary font-bold">
                     Niv {c.niveau}
                   </span>
                 </div>
@@ -152,7 +152,7 @@ export default function PublicProfilePage() {
         </div>
 
         <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6">
-          <h2 className="text-lg font-bold text-[#06b6d4] mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
             <BookOpen className="w-5 h-5" />
             Aventures
           </h2>

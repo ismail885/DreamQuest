@@ -18,10 +18,10 @@ export default function AdminCharactersPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Gestion des personnages</h1>
-          <p className="text-gray-400 mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Gestion des personnages</h1>
+          <p className="text-gray-400 mt-1 sm:mt-2">
             {totalCount} personnage{totalCount !== 1 ? "s" : ""} créé{totalCount !== 1 ? "s" : ""}
           </p>
         </div>
@@ -38,7 +38,7 @@ export default function AdminCharactersPage() {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-12 pr-4 py-3 bg-[#0c1322] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+          className="w-full pl-12 pr-4 py-3 bg-surface border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
         />
       </div>
 

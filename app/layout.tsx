@@ -38,11 +38,11 @@ export default function RootLayout({
  <meta name="theme-color" content="#00d4ff" />
  <meta name="viewport" content="width=device-width, initial-scale=1" />
  </head>
-  <body className={`${plusJakartaSans.variable} bg-[#070b15] text-white antialiased`}>
+  <body className={`${plusJakartaSans.variable} bg-deep text-white antialiased`}>
    <AuthProvider>
    <div className="relative min-h-screen flex flex-col">
   <div className="fixed inset-0 -z-10 overflow-hidden">
-  <div className="absolute inset-0 bg-gradient-to-br from-[#070b15] via-[#111827] to-[#070b15]"></div>
+  <div className="absolute inset-0 bg-gradient-to-br from-deep via-[#111827] to-deep"></div>
   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
 
   </div>

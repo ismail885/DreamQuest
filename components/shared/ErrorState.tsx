@@ -24,7 +24,7 @@ export default function ErrorState({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-[rgba(6,182,212,0.1)] border border-[rgba(6,182,212,0.3)] text-[#06b6d4] rounded-[10px] font-medium hover:bg-[rgba(6,182,212,0.2)] transition-colors"
+          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-[rgba(6,182,212,0.1)] border border-[rgba(6,182,212,0.3)] text-primary rounded-[10px] font-medium hover:bg-[rgba(6,182,212,0.2)] transition-colors"
         >
           <RotateCw className="w-4 h-4" />
           {retryLabel}

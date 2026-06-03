@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
+import PageBackground from "@/components/shared/PageBackground";
 import Loader from "@/components/shared/Loader";
 import { useAuthContext } from "@/context/AuthContext";
 import { useProfileData } from "@/hooks/useProfileData";
@@ -247,43 +249,8 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="min-h-screen text-white flex flex-col bg-[#070b15]">
-      <div className="fixed inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(6,182,212,0.10)",
-            left: "25%",
-            top: 0,
-            opacity: 0.83,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(59,130,246,0.10)",
-            right: "25%",
-            top: "696px",
-            opacity: 0.51,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(99,102,241,0.10)",
-            left: "51.54%",
-            top: "505px",
-            opacity: 0.93,
-          }}
-        />
-      </div>
+    <div className="min-h-screen text-white flex flex-col bg-deep">
+      <PageBackground />
 
       <Header />
 
@@ -305,7 +272,7 @@ export default function ProfilPage() {
                 className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}
               >
                 <svg
-                  className="w-6 h-6 text-[#06b6d4]"
+                  className="w-6 h-6 text-primary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -345,7 +312,7 @@ export default function ProfilPage() {
                     onClick={() => setActiveTab("stories")}
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "stories"
-                        ? "text-[#06b6d4] border-b-2 border-[#06b6d4]"
+                        ? "text-primary border-b-2 border-primary"
                         : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
                     }`}
                   >
@@ -355,7 +322,7 @@ export default function ProfilPage() {
                     onClick={() => setActiveTab("achievements")}
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "achievements"
-                        ? "text-[#06b6d4] border-b-2 border-[#06b6d4]"
+                        ? "text-primary border-b-2 border-primary"
                         : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
                     }`}
                   >
@@ -365,7 +332,7 @@ export default function ProfilPage() {
                     onClick={() => setActiveTab("creations")}
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "creations"
-                        ? "text-[#06b6d4] border-b-2 border-[#06b6d4]"
+                        ? "text-primary border-b-2 border-primary"
                         : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
                     }`}
                   >
@@ -375,7 +342,7 @@ export default function ProfilPage() {
                     onClick={() => setActiveTab("quests")}
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "quests"
-                        ? "text-[#06b6d4] border-b-2 border-[#06b6d4]"
+                        ? "text-primary border-b-2 border-primary"
                         : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
                     }`}
                   >
@@ -385,7 +352,7 @@ export default function ProfilPage() {
                     onClick={() => setActiveTab("characters")}
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "characters"
-                        ? "text-[#06b6d4] border-b-2 border-[#06b6d4]"
+                        ? "text-primary border-b-2 border-primary"
                         : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
                     }`}
                   >
@@ -394,19 +361,63 @@ export default function ProfilPage() {
                 </div>
 
                 <div className="p-6">
-                  {activeTab === "stories" && <TabStories saves={userSaves} />}
-                  {activeTab === "achievements" && (
-                    <TabAchievements achievements={userAchievements} />
-                  )}
-                  {activeTab === "creations" && (
-                    <TabCreations creations={userCreations} />
-                  )}
-                  {activeTab === "quests" && (
-                    <TabQuests quests={dailyQuests} loading={loading} />
-                  )}
-                  {activeTab === "characters" && (
-                    <TabCharacters characters={userCharacters} />
-                  )}
+                  <AnimatePresence mode="wait">
+                    {activeTab === "stories" && (
+                      <motion.div
+                        key="stories"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <TabStories saves={userSaves} />
+                      </motion.div>
+                    )}
+                    {activeTab === "achievements" && (
+                      <motion.div
+                        key="achievements"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <TabAchievements achievements={userAchievements} />
+                      </motion.div>
+                    )}
+                    {activeTab === "creations" && (
+                      <motion.div
+                        key="creations"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <TabCreations creations={userCreations} />
+                      </motion.div>
+                    )}
+                    {activeTab === "quests" && (
+                      <motion.div
+                        key="quests"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <TabQuests quests={dailyQuests} loading={loading} />
+                      </motion.div>
+                    )}
+                    {activeTab === "characters" && (
+                      <motion.div
+                        key="characters"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <TabCharacters characters={userCharacters} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>

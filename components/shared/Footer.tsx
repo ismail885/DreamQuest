@@ -1,11 +1,11 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-800/50 bg-[#070b15] ">
+    <footer className="border-t border-gray-800/50 bg-deep ">
       <div className="container mx-auto px-4 md:px-6 py-10 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand - LEFT */}

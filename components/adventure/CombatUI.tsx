@@ -185,7 +185,7 @@ export default function CombatUI({
         </>
       )}
 
-      <div className="bg-[#070b15] rounded-[10px] p-3 h-32 overflow-y-auto space-y-1">
+      <div className="bg-deep rounded-[10px] p-3 h-32 overflow-y-auto space-y-1">
         {combatState.log.slice(-6).map((line, i) => (
           <p key={i} className="text-gray-400 text-sm leading-relaxed">{line}</p>
         ))}

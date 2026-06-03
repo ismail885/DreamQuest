@@ -38,7 +38,7 @@ export default function EditProfileModal({
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <svg
-              className="w-5 h-5 text-[#06b6d4]"
+              className="w-5 h-5 text-primary"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -73,7 +73,7 @@ export default function EditProfileModal({
         </div>
 
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[rgba(6,182,212,0.3)]">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-[#3b82f6] flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[rgba(6,182,212,0.3)]">
             {editUsername
               ? editUsername.substring(0, 2).toUpperCase()
               : getUserInitials()}
@@ -89,7 +89,7 @@ export default function EditProfileModal({
               type="text"
               value={editUsername}
               onChange={(e) => onEditUsernameChange(e.target.value)}
-              className="w-full px-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white placeholder:text-gray-600 focus:outline-none focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4] transition-all"
+              className="w-full px-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               placeholder="Votre nom d'utilisateur"
             />
           </div>
@@ -102,7 +102,7 @@ export default function EditProfileModal({
               type="email"
               value={editEmail}
               onChange={(e) => onEditEmailChange(e.target.value)}
-              className="w-full px-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white placeholder:text-gray-600 focus:outline-none focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4] transition-all"
+              className="w-full px-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               placeholder="Votre email"
             />
           </div>
@@ -130,7 +130,7 @@ export default function EditProfileModal({
           <button
             onClick={onSave}
             disabled={isSaving || !editUsername.trim()}
-            className="flex-1 py-3 px-4 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed rounded-[10px] text-white font-medium transition-all flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-4 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed rounded-[10px] text-white font-medium transition-all flex items-center justify-center gap-2"
           >
             {isSaving ? (
               <>

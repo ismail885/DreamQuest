@@ -11,7 +11,7 @@ interface DashboardStatsProps {
 export default function DashboardStats({ stats, loading, error }: DashboardStatsProps) {
   return (
     <div className="mb-8 md:mb-12">
-      <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-[#070b15]/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
+      <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
         Vos Statistiques
       </h2>
 
@@ -26,7 +26,7 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="bg-[#131e35] border border-gray-800/50 rounded-xl md:rounded-2xl p-4 md:p-6 animate-pulse"
+              className="bg-surface-card border border-gray-800/50 rounded-xl md:rounded-2xl p-4 md:p-6 animate-pulse"
             >
               <div className="h-8 bg-gray-700/50 rounded w-12 mb-2" />
               <div className="h-4 bg-gray-700/50 rounded w-20" />

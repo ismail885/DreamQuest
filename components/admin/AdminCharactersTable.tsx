@@ -50,17 +50,17 @@ export default function AdminCharactersTable({
   setCurrentPage,
 }: AdminCharactersTableProps) {
   return (
-    <div className="bg-[#0c1322] border border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-900/50">
             <tr>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Personnage</th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Classe</th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Niveau</th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">PV</th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">Propriétaire</th>
-              <th className="px-6 py-4 text-right text-gray-300 font-medium text-sm">Actions</th>
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Personnage</th>
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Classe</th>
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Niveau</th>
+              <th className="hidden sm:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">PV</th>
+              <th className="hidden md:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Propriétaire</th>
+              <th className="px-3 sm:px-6 py-4 text-right text-gray-300 font-medium text-xs sm:text-sm">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
@@ -79,52 +79,52 @@ export default function AdminCharactersTable({
             ) : (
               characters.map((character) => (
                 <tr key={character.id} className="hover:bg-gray-800/30 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                        <Sword className="w-5 h-5 text-cyan-400" />
+                  <td className="px-3 sm:px-6 py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                        <Sword className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
                       </div>
-                      <span className="text-white font-medium">
+                      <span className="text-white font-medium text-sm sm:text-base truncate max-w-[100px] sm:max-w-none">
                         {character.nom_personnage}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs border ${getClassColor(character.classe)}`}>
+                  <td className="px-3 sm:px-6 py-4">
+                    <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs border ${getClassColor(character.classe)}`}>
                       {character.classe}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-white font-medium">
+                  <td className="px-3 sm:px-6 py-4 text-white font-medium text-sm sm:text-base">
                     {character.niveau}
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="hidden sm:table-cell px-3 sm:px-6 py-4 text-gray-400 text-sm">
                     {character.points_vie} / {character.points_vie_max || 100}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="hidden md:table-cell px-3 sm:px-6 py-4">
                     {character.nom_utilisateur ? (
                       <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-400">{character.nom_utilisateur}</span>
+                        <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                        <span className="text-gray-400 text-sm">{character.nom_utilisateur}</span>
                       </div>
                     ) : (
-                      <span className="text-gray-500">Inconnu</span>
+                      <span className="text-gray-500 text-sm">Inconnu</span>
                     )}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-3 sm:px-6 py-4">
+                    <div className="flex items-center justify-end gap-1 sm:gap-2">
                       <button
                         onClick={() => onView(character)}
-                        className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
                         title="Voir"
                       >
-                        <Search className="w-4 h-4" />
+                        <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => character.id && onDelete(character.id)}
-                        className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Supprimer"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </td>
@@ -136,18 +136,18 @@ export default function AdminCharactersTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-800 flex items-center justify-between">
-          <p className="text-gray-400 text-sm">
-            Affichage {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-gray-800">
+          <p className="text-gray-400 text-xs sm:text-sm">
+            {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-
             {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-1 sm:gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const page = i + 1;
@@ -155,7 +155,7 @@ export default function AdminCharactersTable({
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-1 rounded-lg text-sm ${
+                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm ${
                     currentPage === page
                       ? "bg-cyan-500 text-white"
                       : "text-gray-400 hover:text-white hover:bg-gray-800"
@@ -168,9 +168,9 @@ export default function AdminCharactersTable({
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>

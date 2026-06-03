@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -89,7 +89,7 @@ const AdventureCard = React.memo(function AdventureCard({
       >
         <div className="p-4 space-y-3">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-white font-bold text-base leading-tight group-hover:text-[#06b6d4] transition-colors flex-1 ">
+            <h3 className="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors flex-1 ">
               {titre}
             </h3>
           </div>

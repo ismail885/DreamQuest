@@ -47,7 +47,7 @@ export default function AdventurePagination({
                 onClick={() => onPageChange(pageNum)}
                 className={`w-10 h-10 rounded-[10px] font-medium transition-all duration-200 ${
                   currentPage === pageNum
-                    ? "bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white"
+                    ? "bg-gradient-to-r from-primary to-[#3b82f6] text-white"
                     : "bg-transparent border border-[rgba(6,182,212,0.2)] text-gray-400 hover:text-white hover:border-[rgba(6,182,212,0.4)]"
                 }`}
               >

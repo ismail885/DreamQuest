@@ -66,7 +66,7 @@ export default function ProfileSidebar({
         </div>
 
         <div className="flex flex-col items-center mb-4 md:mb-6">
-          <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-[rgba(6,182,212,0.3)]">
+          <div className="w-16 md:w-24 h-16 md:h-24 rounded-full bg-gradient-to-br from-primary to-[#3b82f6] flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-3 md:mb-4 shadow-lg shadow-[rgba(6,182,212,0.3)]">
             {getUserInitials()}
           </div>
           <h2 className="text-lg md:text-xl font-bold text-white">
@@ -83,7 +83,7 @@ export default function ProfileSidebar({
           </p>
           <a
             href={`/profil/${userProfile?.nom_utilisateur}`}
-            className="text-[#06b6d4] text-sm hover:underline mt-2"
+            className="text-primary text-sm hover:underline mt-2"
           >
             Voir profil public
           </a>
@@ -103,7 +103,7 @@ export default function ProfileSidebar({
               className={`h-full rounded-full transition-all duration-500 ${
                 isMaxLevel
                   ? "bg-gradient-to-r from-yellow-500 to-orange-500"
-                  : "bg-gradient-to-r from-red-500 to-[#06b6d4]"
+                  : "bg-gradient-to-r from-red-500 to-primary"
               }`}
               style={{ width: `${experiencePercentage}%` }}
             />
@@ -117,25 +117,25 @@ export default function ProfileSidebar({
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="text-center p-2 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px]">
-            <div className="text-2xl font-bold text-[#06b6d4]">
+            <div className="text-2xl font-bold text-primary">
               {stats.storiesPlayed}
             </div>
             <div className="text-xs text-gray-400">Histoires</div>
           </div>
           <div className="text-center p-2 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px]">
-            <div className="text-2xl font-bold text-[#06b6d4]">
+            <div className="text-2xl font-bold text-primary">
               {stats.storiesCreated}
             </div>
             <div className="text-xs text-gray-400">Créées</div>
           </div>
           <div className="text-center p-2 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px]">
-            <div className="text-2xl font-bold text-[#06b6d4]">
+            <div className="text-2xl font-bold text-primary">
               {stats.likes}
             </div>
             <div className="text-xs text-gray-400">Likes</div>
           </div>
           <div className="text-center p-2 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px]">
-            <div className="text-2xl font-bold text-[#06b6d4]">
+            <div className="text-2xl font-bold text-primary">
               {stats.trophies}
             </div>
             <div className="text-xs text-gray-400">Trophées</div>

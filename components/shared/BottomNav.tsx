@@ -21,7 +21,7 @@ const BottomNav = React.memo(function BottomNav() {
  const isCreator = user && (userRole === "createur" || userRole === "admin");
 
  return (
- <nav className="fixed bottom-0 left-0 right-0 bg-[#070b15]/95 backdrop-blur-md border-t border-gray-800/50 md:hidden z-50 safe-area-bottom">
+ <nav className="fixed bottom-0 left-0 right-0 bg-deep/95 backdrop-blur-md border-t border-gray-800/50 md:hidden z-50 safe-area-bottom">
  <div className="flex items-center justify-around py-2 px-4">
  {navItems.map((item) => {
  const isActive = pathname.startsWith(item.href);

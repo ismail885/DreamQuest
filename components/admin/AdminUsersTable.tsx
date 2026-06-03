@@ -65,36 +65,36 @@ export default function AdminUsersTable({
   setCurrentPage,
 }: AdminUsersTableProps) {
   return (
-    <div className="bg-[#0c1322] border border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-900/50">
             <tr>
-              <th className="px-4 py-4 text-left text-gray-300 font-medium text-sm w-12">
+              <th className="px-2 sm:px-4 py-4 w-10 sm:w-12">
                 <button
                   onClick={toggleSelectAll}
                   className="text-gray-400 hover:text-white"
                 >
                   {selectedUsers.size === users.length && users.length > 0 ? (
-                    <CheckSquare className="w-5 h-5" />
+                    <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5" />
                   ) : (
-                    <Square className="w-5 h-5" />
+                    <Square className="w-4 h-4 sm:w-5 sm:h-5" />
                   )}
                 </button>
               </th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
                 Utilisateur
               </th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
+              <th className="hidden lg:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
                 Email
               </th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
                 Rôle
               </th>
-              <th className="px-6 py-4 text-left text-gray-300 font-medium text-sm">
+              <th className="hidden md:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
                 Inscription
               </th>
-              <th className="px-6 py-4 text-right text-gray-300 font-medium text-sm">
+              <th className="px-3 sm:px-6 py-4 text-right text-gray-300 font-medium text-xs sm:text-sm">
                 Actions
               </th>
             </tr>
@@ -124,7 +124,7 @@ export default function AdminUsersTable({
                   key={user.id}
                   className="hover:bg-gray-800/30 transition-colors"
                 >
-                  <td className="px-4 py-4">
+                  <td className="px-2 sm:px-4 py-4">
                     <button
                       onClick={() =>
                         user.id && toggleSelectUser(user.id)
@@ -132,57 +132,57 @@ export default function AdminUsersTable({
                       className="text-gray-400 hover:text-white"
                     >
                       {selectedUsers.has(user.id!) ? (
-                        <CheckSquare className="w-5 h-5 text-cyan-400" />
+                        <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
                       ) : (
-                        <Square className="w-5 h-5" />
+                        <Square className="w-4 h-4 sm:w-5 sm:h-5" />
                       )}
                     </button>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold">
+                  <td className="px-3 sm:px-6 py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold text-xs sm:text-base flex-shrink-0">
                         {user.nom_utilisateur
                           .substring(0, 2)
                           .toUpperCase()}
                       </div>
-                      <span className="text-white font-medium">
+                      <span className="text-white font-medium text-sm sm:text-base truncate max-w-[100px] sm:max-w-none">
                         {user.nom_utilisateur}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="hidden lg:table-cell px-3 sm:px-6 py-4 text-gray-400 text-sm">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-4">
                     {getRoleBadge(user.role)}
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="hidden md:table-cell px-3 sm:px-6 py-4 text-gray-400 text-sm">
                     {new Date(
                       user.date_creation,
                     ).toLocaleDateString("fr-FR")}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-3 sm:px-6 py-4">
+                    <div className="flex items-center justify-end gap-1 sm:gap-2">
                       <button
                         onClick={() => openModal(user)}
-                        className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
                         title="Modifier"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => loadUserDetails(user)}
-                        className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
                         title="Voir details"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(user.id)}
-                        className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Supprimer"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </td>
@@ -194,55 +194,41 @@ export default function AdminUsersTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-800 flex items-center justify-between">
-          <p className="text-gray-400 text-sm">
-            Affichage{" "}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-gray-800">
+          <p className="text-gray-400 text-xs sm:text-sm">
             {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-
-            {Math.min(
-              currentPage * ITEMS_PER_PAGE,
-              totalCount,
-            )}{" "}
-            sur {totalCount}
+            {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-1 sm:gap-2">
             <button
-              onClick={() =>
-                setCurrentPage((p) => Math.max(1, p - 1))
-              }
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-            {Array.from(
-              { length: Math.min(5, totalPages) },
-              (_, i) => {
-                const page = i + 1;
-                return (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 rounded-lg text-sm ${
-                      currentPage === page
-                        ? "bg-cyan-500 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-gray-800"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                );
-              },
-            )}
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const page = i + 1;
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm ${
+                    currentPage === page
+                      ? "bg-cyan-500 text-white"
+                      : "text-gray-400 hover:text-white hover:bg-gray-800"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
             <button
-              onClick={() =>
-                setCurrentPage((p) =>
-                  Math.min(totalPages, p + 1),
-                )
-              }
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>

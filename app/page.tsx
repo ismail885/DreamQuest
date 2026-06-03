@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
+import PageBackground from "@/components/shared/PageBackground";
 import { Zap, Users, BookOpen, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -21,43 +22,8 @@ const staggerContainer = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#070b15]">
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(6,182,212,0.10)",
-            left: "25%",
-            top: 0,
-            opacity: 0.83,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(59,130,246,0.10)",
-            right: "25%",
-            top: "696px",
-            opacity: 0.51,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(99,102,241,0.10)",
-            left: "51.54%",
-            top: "505px",
-            opacity: 0.93,
-          }}
-        />
-      </div>
+    <div className="min-h-screen flex flex-col bg-deep">
+      <PageBackground />
 
       <Header />
       <section className="relative py-16 md:py-24 px-4 md:px-6 overflow-hidden">
@@ -70,7 +36,7 @@ export default function Home() {
           <div className="text-center space-y-6 md:space-y-8">
             <motion.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-4 h-[37px] bg-[rgba(6,182,212,0.10)] border border-[rgba(6,182,212,0.3)] rounded-full text-[#06b6d4] text-[14px]"
+              className="inline-flex items-center gap-2 px-4 h-[37px] bg-[rgba(6,182,212,0.10)] border border-[rgba(6,182,212,0.3)] rounded-full text-primary text-[14px]"
             >
               <Zap size={16} />
               RPG Textuel Interactif
@@ -81,7 +47,7 @@ export default function Home() {
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               style={{
                 background:
-                  "linear-gradient(90deg,#06b6d4 0%,#3b82f6 50%,#6366f1 100%)",
+                  "linear-gradient(90deg,primary 0%,#3b82f6 50%,#6366f1 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -106,7 +72,7 @@ export default function Home() {
               <Link
                 href="/create-character"
                 prefetch
-                className="h-[58px] w-[250px] rounded-[10px] bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white text-[18px] font-semibold flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(6,182,212,0.5)] hover:opacity-90 transition-opacity"
+                className="h-[58px] w-[250px] rounded-[10px] bg-gradient-to-r from-primary to-[#3b82f6] text-white text-[18px] font-semibold flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(6,182,212,0.5)] hover:opacity-90 transition-opacity"
               >
                 Créer un Personnage
               </Link>
@@ -138,7 +104,7 @@ export default function Home() {
               className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-[#3b82f6] rounded-[12px] flex items-center justify-center">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
@@ -157,7 +123,7 @@ export default function Home() {
               className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-[#3b82f6] rounded-[12px] flex items-center justify-center">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
@@ -176,7 +142,7 @@ export default function Home() {
               className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-[#3b82f6] rounded-[12px] flex items-center justify-center">
                   <Trophy className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">Classements</h3>

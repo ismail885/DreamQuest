@@ -129,57 +129,58 @@ export default function AdminLayout({
 
  if (loading || !isAuthorized) {
  return (
- <div className="min-h-screen bg-[#070b15] flex items-center justify-center">
+ <div className="min-h-screen bg-deep flex items-center justify-center">
  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
  </div>
  );
  }
 
  return (
- <div className="min-h-screen bg-[#070b15] ">
- {/* Mobile header with hamburger */}
- <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#070b15]/95 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between">
- <Link href="/dashboard" className="flex items-center gap-2">
- <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center">
- <span className="text-white font-bold text-sm">D</span>
- </div>
- <span className="text-sm font-bold text-cyan-400">Admin</span>
- </Link>
- <button
- onClick={() => setSidebarOpen(!sidebarOpen)}
- className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
- >
- {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
- </button>
- </div>
+  <div className="min-h-screen bg-deep">
+  {/* Mobile header with hamburger */}
+  <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-deep/95 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+  <Link href="/dashboard" className="flex items-center gap-2">
+  <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center">
+  <span className="text-white font-bold text-sm">D</span>
+  </div>
+  <span className="text-sm font-bold text-cyan-400">Admin</span>
+  </Link>
+  <button
+  onClick={() => setSidebarOpen(!sidebarOpen)}
+  className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+  aria-label={sidebarOpen ? "Fermer le menu" : "Ouvrir le menu"}
+  >
+  {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+  </button>
+  </div>
 
- {/* Desktop sidebar */}
- <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-[#0c1322] border-r border-gray-800 flex-col z-30">
- <Sidebar />
- </aside>
+  {/* Desktop sidebar */}
+  <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-card border-r border-gray-800 flex-col z-30">
+  <Sidebar />
+  </aside>
 
- {/* Mobile sidebar overlay */}
- {sidebarOpen && (
- <div className="lg:hidden fixed inset-0 z-50">
- {/* Backdrop */}
- <div
- className="absolute inset-0 bg-black/60 backdrop-blur-sm"
- onClick={() => setSidebarOpen(false)}
- />
- {/* Drawer */}
- <div className="absolute left-0 top-0 h-full w-64 bg-[#0c1322] border-r border-gray-800 shadow-2xl">
- <Sidebar onNavigate={() => setSidebarOpen(false)} />
- </div>
- </div>
- )}
+  {/* Mobile sidebar overlay */}
+  {sidebarOpen && (
+  <div className="lg:hidden fixed inset-0 z-50">
+  {/* Backdrop */}
+  <div
+  className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+  onClick={() => setSidebarOpen(false)}
+  />
+  {/* Drawer */}
+  <div className="absolute left-0 top-0 h-full w-72 bg-card border-r border-gray-800 shadow-2xl">
+  <Sidebar onNavigate={() => setSidebarOpen(false)} />
+  </div>
+  </div>
+  )}
 
- {/* Main content */}
- <main className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
- <div className="p-4 md:p-8">
- {children}
- </div>
- </main>
- </div>
+  {/* Main content */}
+  <main className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
+  <div className="p-3 sm:p-4 md:p-8">
+  {children}
+  </div>
+  </main>
+  </div>
  );
 }
 

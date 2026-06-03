@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import BottomNav from "@/components/shared/BottomNav";
+import PageBackground from "@/components/shared/PageBackground";
 import AdventureCard from "@/components/adventure/AdventureCard";
 import { SkeletonAdventureList } from "@/components/shared/Skeleton";
 import { Search, X, User, Frown } from "lucide-react";
@@ -43,46 +44,11 @@ function AdventurePageContent() {
       <Header />
 
       <main className="flex-1 relative pb-24 md:pb-0">
-        <div className="fixed inset-0 pointer-events-none">
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
-            }}
-          />
-          <div
-            className="absolute w-96 h-96 rounded-full blur-[40px]"
-            style={{
-              background: "rgba(6,182,212,0.10)",
-              left: "25%",
-              top: 0,
-              opacity: 0.83,
-            }}
-          />
-          <div
-            className="absolute w-96 h-96 rounded-full blur-[40px]"
-            style={{
-              background: "rgba(59,130,246,0.10)",
-              right: "25%",
-              top: "696px",
-              opacity: 0.51,
-            }}
-          />
-          <div
-            className="absolute w-96 h-96 rounded-full blur-[40px]"
-            style={{
-              background: "rgba(99,102,241,0.10)",
-              left: "51.54%",
-              top: "505px",
-              opacity: 0.93,
-            }}
-          />
-        </div>
+        <PageBackground />
 
         <div className="container mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
           <div className="text-center space-y-3 md:space-y-4 mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#06b6d4]">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary">
               Explorez les Aventures
             </h1>
             <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto ">
@@ -94,7 +60,7 @@ function AdventurePageContent() {
             <div className="max-w-4xl mx-auto mb-6 md:mb-8">
               <div className="flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 bg-[rgba(6,182,212,0.1)] border border-[rgba(6,182,212,0.3)] rounded-[10px]">
                 <div className="w-8 h-8 rounded-full bg-[rgba(6,182,212,0.2)] flex items-center justify-center flex-shrink-0">
-                  <User className="w-4 h-4 text-[#06b6d4]" />
+                  <User className="w-4 h-4 text-primary" />
                 </div>
                 <p className="text-[#5eead4] text-sm">
                   Personnage sélectionné — choisissez une aventure pour
@@ -107,7 +73,7 @@ function AdventurePageContent() {
           <div className="max-w-4xl mx-auto mb-8 md:mb-12">
             <div className="relative group">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center border border-[rgba(6,182,212,0.2)] rounded-xl bg-transparent focus-within:border-[#06b6d4] focus-within:ring-2 focus-within:ring-[#06b6d4]/20 transition-all duration-300">
+              <div className="relative flex items-center border border-[rgba(6,182,212,0.2)] rounded-xl bg-transparent focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300">
                 <Search className="ml-4 w-5 h-5 text-gray-500 flex-shrink-0" />
                 <input
                   type="text"
@@ -142,7 +108,7 @@ function AdventurePageContent() {
                     onClick={() => setActiveFilter(option.value)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       activeFilter === option.value
-                        ? "bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white shadow-lg shadow-[rgba(6,182,212,0.3)]"
+                        ? "bg-gradient-to-r from-primary to-[#3b82f6] text-white shadow-lg shadow-[rgba(6,182,212,0.3)]"
                         : "bg-transparent border border-[rgba(6,182,212,0.2)] text-gray-400 hover:text-white hover:border-[rgba(6,182,212,0.4)]"
                     }`}
                   >
@@ -151,7 +117,7 @@ function AdventurePageContent() {
                 ))}
               </div>
               <div className="text-gray-500 text-sm">
-                <span className="font-semibold text-[#06b6d4]">
+                <span className="font-semibold text-primary">
                   {filteredAdventures.length}
                 </span>{" "}
                 aventure{filteredAdventures.length !== 1 ? "s" : ""} trouvée
@@ -220,7 +186,7 @@ function AdventurePageContent() {
 
               <div className="text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(6,182,212,0.2)] flex items-center justify-center">
-                  <User className="w-8 h-8 text-[#06b6d4]" />
+                  <User className="w-8 h-8 text-primary" />
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2 ">
@@ -237,7 +203,7 @@ function AdventurePageContent() {
                       setShowCharacterModal(false);
                       router.push("/profil?tab=characters");
                     }}
-                    className="w-full px-6 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] text-[#06b6d4] font-semibold rounded-[10px] hover:bg-[rgba(6,182,212,0.05)] transition-colors "
+                    className="w-full px-6 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] text-primary font-semibold rounded-[10px] hover:bg-[rgba(6,182,212,0.05)] transition-colors "
                   >
                     Mes personnages
                   </button>
@@ -246,7 +212,7 @@ function AdventurePageContent() {
                       setShowCharacterModal(false);
                       router.push("/create-character");
                     }}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white font-semibold rounded-[10px] hover:opacity-90 transition-opacity"
+                    className="w-full px-6 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white font-semibold rounded-[10px] hover:opacity-90 transition-opacity"
                   >
                     Créer un personnage
                   </button>

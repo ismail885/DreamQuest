@@ -19,7 +19,7 @@ const CharacterList = dynamic(() => import("@/components/character/CharacterList
  loading: () => (
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
  {[1, 2, 3].map((i) => (
- <div key={i} className="bg-[#131e35] border border-gray-800/50 rounded-xl animate-pulse h-48" />
+ <div key={i} className="bg-surface-card border border-gray-800/50 rounded-xl animate-pulse h-48" />
  ))}
  </div>
  ),
@@ -53,7 +53,7 @@ export default function DashboardPage() {
  if (!user) return null;
 
  return (
- <div className="min-h-screen bg-[#070b15] text-white flex flex-col">
+ <div className="min-h-screen bg-deep text-white flex flex-col">
  <Header />
 
  <main

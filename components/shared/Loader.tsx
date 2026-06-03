@@ -41,7 +41,7 @@ export default function Loader({
  </div>
 
  <div className="absolute inset-0 flex items-center justify-center">
- <div className={`${logoSizeClasses[size]} relative rounded-full bg-[#070b15] p-2 flex items-center justify-center shadow-2xl border-2 border-cyan-500/20`}>
+ <div className={`${logoSizeClasses[size]} relative rounded-full bg-deep p-2 flex items-center justify-center shadow-2xl border-2 border-cyan-500/20`}>
  <Image src="/Logo_DreamQuest.png" alt="DreamQuest" width={100} height={100} className="object-contain animate-float" priority />
  </div>
  </div>
@@ -64,7 +64,7 @@ export default function Loader({
 
  if (fullScreen) {
  return (
- <div className="min-h-screen flex items-center justify-center bg-[#070b15]">
+ <div className="min-h-screen flex items-center justify-center bg-deep">
  <div className="absolute inset-0 overflow-hidden">
  <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>

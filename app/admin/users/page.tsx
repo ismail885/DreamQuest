@@ -23,13 +23,13 @@ export default function AdminUsersPage() {
 
  return (
  <div className="space-y-6">
- {/* Header */}
- <div className="flex items-center justify-between">
- <div>
- <h1 className="text-3xl font-bold text-white ">Gestion des utilisateurs</h1>
- <p className="text-gray-400 mt-2">{totalCount} utilisateur{totalCount !== 1 ? "s" : ""} enregistré{totalCount !== 1 ? "s" : ""}</p>
- </div>
- </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Gestion des utilisateurs</h1>
+          <p className="text-gray-400 mt-1 sm:mt-2">{totalCount} utilisateur{totalCount !== 1 ? "s" : ""} enregistré{totalCount !== 1 ? "s" : ""}</p>
+        </div>
+      </div>
 
  {/* Search */}
  <div className="relative">
@@ -42,7 +42,7 @@ export default function AdminUsersPage() {
  setSearchTerm(e.target.value);
  setCurrentPage(1);
  }}
- className="w-full pl-12 pr-10 py-3 bg-[#0c1322] border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+ className="w-full pl-12 pr-10 py-3 bg-surface border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
  />
  {searchTerm && (
  <button
@@ -68,41 +68,41 @@ export default function AdminUsersPage() {
  </div>
  )}
 
- {/* Bulk Actions Bar */}
- {selectedUsers.size > 0 && (
- <div className="flex items-center gap-4 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg mb-4">
- <span className="text-white font-medium">{selectedUsers.size} sélectionné{selectedUsers.size > 1 ? "s" : ""}</span>
- <div className="flex items-center gap-2">
- <button
- onClick={() => handleBulkRoleChange("joueur")}
- className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 text-sm"
- >
- Passer en Joueur
- </button>
- <button
- onClick={() => handleBulkRoleChange("createur")}
- className="px-3 py-1.5 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 text-sm"
- >
- Passer en Créateur
- </button>
- <button
- onClick={() => handleBulkRoleChange("admin")}
- className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-sm"
- >
- Passer en Admin
- </button>
- <button
- onClick={handleBulkDelete}
- className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-sm"
- >
- Supprimer
- </button>
- </div>
- <button onClick={() => clearSelection()} className="ml-auto text-gray-400 hover:text-white">
- <X className="w-4 h-4" />
- </button>
- </div>
- )}
+      {/* Bulk Actions Bar */}
+      {selectedUsers.size > 0 && (
+        <div className="flex flex-wrap items-center gap-3 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+          <span className="text-white font-medium whitespace-nowrap">{selectedUsers.size} sélectionné{selectedUsers.size > 1 ? "s" : ""}</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              onClick={() => handleBulkRoleChange("joueur")}
+              className="px-2.5 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 text-xs sm:text-sm"
+            >
+              Joueur
+            </button>
+            <button
+              onClick={() => handleBulkRoleChange("createur")}
+              className="px-2.5 py-1.5 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 text-xs sm:text-sm"
+            >
+              Créateur
+            </button>
+            <button
+              onClick={() => handleBulkRoleChange("admin")}
+              className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-xs sm:text-sm"
+            >
+              Admin
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-xs sm:text-sm"
+            >
+              Supprimer
+            </button>
+          </div>
+          <button onClick={() => clearSelection()} className="text-gray-400 hover:text-white">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
  {/* Table */}
  <AdminUsersTable

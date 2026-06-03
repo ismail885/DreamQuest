@@ -41,20 +41,20 @@ export function SkeletonPage({ title = true }: { title?: boolean }) {
     <div className="space-y-6 animate-pulse">
       {title && (
         <div className="space-y-2">
-          <Skeleton width="40%" height={32} className="bg-[#0c1322]/30 " />
-          <Skeleton width="60%" height={20} className="bg-[#0c1322]/30 " />
+          <Skeleton width="40%" height={32} className="bg-surface/30 " />
+          <Skeleton width="60%" height={20} className="bg-surface/30 " />
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="bg-[#0c1322]/30 border border-gray-800/30 rounded-xl p-4 space-y-3"
+            className="bg-surface/30 border border-gray-800/30 rounded-xl p-4 space-y-3"
           >
-            <Skeleton height={120} className="rounded-lg bg-[#0c1322]/30 " />
-            <Skeleton width="70%" height={20} className="bg-[#0c1322]/30 " />
-            <Skeleton width="90%" height={14} className="bg-[#0c1322]/30 " />
-            <Skeleton width="40%" height={14} className="bg-[#0c1322]/30 " />
+            <Skeleton height={120} className="rounded-lg bg-surface/30 " />
+            <Skeleton width="70%" height={20} className="bg-surface/30 " />
+            <Skeleton width="90%" height={14} className="bg-surface/30 " />
+            <Skeleton width="40%" height={14} className="bg-surface/30 " />
           </div>
         ))}
       </div>
@@ -64,7 +64,7 @@ export function SkeletonPage({ title = true }: { title?: boolean }) {
 
 export function SkeletonCard() {
   return (
-    <div className="bg-[#0c1322] border border-gray-700/50 rounded-2xl p-6 space-y-4">
+    <div className="bg-surface border border-gray-700/50 rounded-2xl p-6 space-y-4">
       <div className="flex items-center gap-4">
         <Skeleton variant="circular" width={48} height={48} />
         <div className="flex-1 space-y-2">
@@ -132,7 +132,7 @@ export function SkeletonSaveList({ count = 5 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-4 p-4 bg-[#0c1322] border border-gray-700/50 rounded-xl"
+          className="flex items-center gap-4 p-4 bg-surface border border-gray-700/50 rounded-xl"
         >
           <Skeleton variant="circular" width={40} height={40} />
           <div className="flex-1 space-y-2">
@@ -150,7 +150,7 @@ export function SkeletonProfile() {
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       <div className="lg:w-80 space-y-6">
-        <div className="bg-[#0c1322] border border-gray-700/50 rounded-2xl p-6 space-y-4">
+        <div className="bg-surface border border-gray-700/50 rounded-2xl p-6 space-y-4">
           <div className="flex flex-col items-center">
             <Skeleton variant="circular" width={96} height={96} />
             <Skeleton width="50%" height={24} className="mt-4" />
@@ -160,7 +160,7 @@ export function SkeletonProfile() {
         </div>
       </div>
       <div className="flex-1 space-y-6">
-        <div className="bg-[#0c1322] border border-gray-700/50 rounded-2xl p-6 space-y-4">
+        <div className="bg-surface border border-gray-700/50 rounded-2xl p-6 space-y-4">
           <Skeleton width="30%" height={24} />
           <SkeletonSaveList count={3} />
         </div>
