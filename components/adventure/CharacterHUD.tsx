@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Heart, Swords, Wand2, Wind, Shield, Zap, User } from "lucide-react";
+import { Heart, Swords, Wind, Wand2, Shield, Zap, User } from "lucide-react";
 import type { Character } from "@/types";
 import { calculateRequiredXP } from "@/lib/characters/classDefinitions";
 
@@ -21,67 +21,66 @@ function CharacterHUD({ character }: CharacterHUDProps) {
   const xpNeeded = calculateRequiredXP(character.niveau);
   const xpRatio = Math.min(xpCurrent / Math.max(xpNeeded, 1), 1);
   const pvRatio = Math.min(character.points_vie / Math.max(character.points_vie_max ?? 100, 1), 1);
+  const pvColor = pvRatio > 0.5 ? "from-red-500 to-red-400" : pvRatio > 0.25 ? "from-orange-500 to-orange-400" : "from-red-600 to-red-500";
 
   return (
-    <div className="px-4 md:px-6 py-4 space-y-3">
-      <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-white font-bold text-sm">{character.nom_personnage}</span>
-            <span className="text-xs text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-md">{classLabel(character.classe)}</span>
-            <span className="text-xs text-gray-400">Niv. {character.niveau}</span>
+    <div className="container mx-auto px-4 md:px-6 py-3">
+      <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.15)] rounded-[10px]">
+        {/* Row 1: Identity */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+              <User className="w-4 h-4 text-white" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-white font-bold text-sm block truncate">{character.nom_personnage}</span>
+              <span className="text-[10px] text-cyan-400">{classLabel(character.classe)} · Niv.{character.niveau}</span>
+            </div>
           </div>
-          <User className="w-5 h-5 text-cyan-400" />
+
+          {/* Stats row */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className="flex items-center gap-1 text-xs text-orange-400 bg-orange-500/10 px-2 py-1 rounded-md">
+              <Swords className="w-3 h-3" />{character.stats?.force ?? 0}
+            </span>
+            <span className="flex items-center gap-1 text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-md">
+              <Wind className="w-3 h-3" />{character.stats?.agility ?? 0}
+            </span>
+            <span className="flex items-center gap-1 text-xs text-purple-400 bg-purple-500/10 px-2 py-1 rounded-md">
+              <Wand2 className="w-3 h-3" />{character.stats?.magie ?? 0}
+            </span>
+            <span className="flex items-center gap-1 text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded-md">
+              <Shield className="w-3 h-3" />{character.stats?.endurance ?? 0}
+            </span>
+          </div>
         </div>
 
-        <div className="space-y-2">
+        {/* Row 2: PV + XP bars */}
+        <div className="grid grid-cols-2 gap-3 px-4 pb-3">
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1">
-                <Heart className="w-4 h-4 text-red-400" />
-                <span className="text-gray-400 text-xs">PV</span>
+                <Heart className="w-3 h-3 text-red-400" />
+                <span className="text-gray-500 text-[10px] font-medium">PV</span>
               </div>
-              <span className="text-white text-xs font-bold">{character.points_vie}/{character.points_vie_max ?? 100}</span>
+              <span className="text-white text-[11px] font-bold">{character.points_vie}/{character.points_vie_max ?? 100}</span>
             </div>
-            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-300" style={{ width: `${pvRatio * 100}%` }} />
+            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+              <div className={`h-full bg-gradient-to-r ${pvColor} rounded-full transition-all duration-300`} style={{ width: `${pvRatio * 100}%` }} />
             </div>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1">
-                <Zap className="w-4 h-4 text-yellow-400" />
-                <span className="text-gray-400 text-xs">XP</span>
+                <Zap className="w-3 h-3 text-yellow-400" />
+                <span className="text-gray-500 text-[10px] font-medium">XP</span>
               </div>
-              <span className="text-white text-xs font-bold">{xpCurrent}/{xpNeeded}</span>
+              <span className="text-white text-[11px] font-bold">{xpCurrent}/{xpNeeded}</span>
             </div>
-            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-300" style={{ width: `${xpRatio * 100}%` }} />
             </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2 mt-3">
-          <div className="text-center">
-            <Swords className="w-4 h-4 text-orange-400 mx-auto mb-1" />
-            <p className="text-gray-400 text-xs">Force</p>
-            <p className="text-white font-bold text-sm">{character.stats?.force ?? 0}</p>
-          </div>
-          <div className="text-center">
-            <Wind className="w-4 h-4 text-green-400 mx-auto mb-1" />
-            <p className="text-gray-400 text-xs">Agilité</p>
-            <p className="text-white font-bold text-sm">{character.stats?.agility ?? 0}</p>
-          </div>
-          <div className="text-center">
-            <Wand2 className="w-4 h-4 text-purple-400 mx-auto mb-1" />
-            <p className="text-gray-400 text-xs">Magie</p>
-            <p className="text-white font-bold text-sm">{character.stats?.magie ?? 0}</p>
-          </div>
-          <div className="text-center">
-            <Shield className="w-4 h-4 text-blue-400 mx-auto mb-1" />
-            <p className="text-gray-400 text-xs">Endurance</p>
-            <p className="text-white font-bold text-sm">{character.stats?.endurance ?? 0}</p>
           </div>
         </div>
       </div>

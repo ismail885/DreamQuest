@@ -4,6 +4,8 @@ import { use, Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import Loader from "@/components/shared/Loader";
+import Footer from "@/components/shared/Footer";
+import PageBackground from "@/components/shared/PageBackground";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useSave } from "@/hooks/useSave";
 import { useCombat } from "@/hooks/useCombat";
@@ -245,6 +247,7 @@ function AdventureReader({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-deep text-white flex flex-col">
+      <PageBackground />
       <AdventureHeader
         onBack={() => {
           if (history.length > 0 && !isEnd) {
@@ -419,6 +422,8 @@ function AdventureReader({ params }: Props) {
         title="Quitter l'aventure ?"
         message="Votre progression a été sauvegardée automatiquement."
       />
+
+      <Footer />
     </div>
   );
 }
