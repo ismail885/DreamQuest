@@ -72,7 +72,6 @@ export function useAdventure(
  return;
  }
 
- // Vérifier s'il y a une sauvegarde existante en BDD
  let branchIdToLoad = firstBranch.id;
  
  if (userIdRef.current) {

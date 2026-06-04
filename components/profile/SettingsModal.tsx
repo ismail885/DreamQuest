@@ -32,7 +32,7 @@ export default function SettingsModal({
         onClick={onClose}
       />
 
-      <div className="relative backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-t-2xl md:rounded-[10px] p-6 w-full max-w-md mx-4 shadow-2xl max-h-[85vh] overflow-y-auto md:max-h-none">
+      <div className="relative backdrop-blur-card bg-slate-900/60 border border-cyan-500/20 rounded-t-2xl md:rounded-card p-6 w-full max-w-md mx-4 shadow-2xl max-h-[85vh] overflow-y-auto md:max-h-none">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <svg
@@ -58,7 +58,7 @@ export default function SettingsModal({
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[rgba(6,182,212,0.1)] rounded-[10px] transition-colors"
+            className="p-2 hover:bg-cyan-500/10 rounded-card transition-colors"
           >
             <svg
               className="w-5 h-5 text-gray-400"
@@ -77,7 +77,7 @@ export default function SettingsModal({
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px]">
+          <div className="flex items-center justify-between p-4 bg-transparent border border-cyan-500/20 rounded-card">
             <div className="flex items-center gap-3">
               <svg
                 className="w-5 h-5 text-primary"
@@ -104,7 +104,7 @@ export default function SettingsModal({
             </button>
           </div>
 
-          <div className="p-4 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px]">
+          <div className="p-4 bg-transparent border border-cyan-500/20 rounded-card">
             <div className="flex items-center gap-3 mb-3">
               <svg
                 className="w-5 h-5 text-primary"
@@ -124,7 +124,7 @@ export default function SettingsModal({
             <select
               value={language}
               onChange={(e) => onLanguageChange(e.target.value)}
-              className="w-full px-4 py-2 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white focus:outline-none focus:border-primary transition-all"
+              className="w-full px-4 py-2 bg-transparent border border-cyan-500/20 rounded-card text-white focus:outline-none focus:border-primary transition-all"
             >
               <option value="fr">Français</option>
             </select>
@@ -132,7 +132,7 @@ export default function SettingsModal({
 
           {settingsMessage && (
             <div
-              className={`p-3 rounded-[10px] text-sm ${
+              className={`p-3 rounded-card text-sm ${
                 settingsMessage.type === "success"
                   ? "bg-[#238636]/10 border border-[#238636]/40 text-[#238636]"
                   : "bg-[#F85149]/10 border border-[#F85149]/40 text-[#F85149]"
@@ -146,14 +146,14 @@ export default function SettingsModal({
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 py-3 px-4 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white font-medium hover:bg-[rgba(6,182,212,0.05)] transition-all"
+            className="flex-1 py-3 px-4 bg-transparent border border-cyan-500/20 rounded-card text-white font-medium hover:bg-cyan-500/5 transition-all"
           >
             Annuler
           </button>
           <button
             onClick={onSave}
             disabled={isSavingSettings}
-            className="flex-1 py-3 px-4 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed rounded-[10px] text-white font-medium transition-all flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-4 bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed rounded-card text-white font-medium transition-all flex items-center justify-center gap-2"
           >
             {isSavingSettings ? (
               <>
@@ -202,3 +202,8 @@ export default function SettingsModal({
     </div>
   );
 }
+
+
+
+
+

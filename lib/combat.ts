@@ -128,7 +128,6 @@ export function executeAbility(
     return { success: false, log: "Pas assez de mana", manaUsed: 0 };
   }
   
-  // Vérifier le cooldown
   if (ability.cooldown > 0 && (currentCooldowns[abilityId] || 0) > 0) {
     return { success: false, log: `${ability.name} est en recharge (${currentCooldowns[abilityId]} tours restants)`, manaUsed: 0 };
   }
@@ -144,7 +143,6 @@ export function executeAbility(
 
   const result = handler({ stats, enemy, currentStatus, playerPv, playerMana });
 
-  // Appliquer les modifications à l'ennemi (ex: glace réduit l'agilité)
   if (result.enemyModifications) {
     Object.assign(enemy, result.enemyModifications);
   }
@@ -160,7 +158,6 @@ export function executeAbility(
   const newStatus = result.newStatus ?? { ...currentStatus };
   const newEnemyStatus = result.newEnemyStatus ?? [];
   
-  // Appliquer le cooldown si la compétence en a un
   const newCooldowns = ability.cooldown > 0
     ? { ...currentCooldowns, [abilityId]: ability.cooldown }
     : currentCooldowns;

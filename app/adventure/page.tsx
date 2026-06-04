@@ -92,7 +92,7 @@ function AdventurePageContent() {
               transition={{ duration: 0.5, ease: easeOutExpo }}
               className="max-w-4xl mx-auto mb-6 md:mb-8"
             >
-              <div className="flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 bg-cyan-500/10 border border-cyan-500/30 rounded-[10px]">
+              <div className="flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 bg-cyan-500/10 border border-cyan-500/30 rounded-card">
                 <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
                   <User className="w-4 h-4 text-primary" />
                 </div>
@@ -249,7 +249,7 @@ function AdventurePageContent() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 50, scale: 0.95 }}
                 transition={{ duration: 0.3, ease: easeOutExpo }}
-                className="relative backdrop-blur-[10px] bg-deep border border-cyan-500/20 rounded-t-2xl md:rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto md:max-h-none"
+                className="relative backdrop-blur-card bg-deep border border-cyan-500/20 rounded-t-2xl md:rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto md:max-h-none"
               >
                 <button
                   onClick={() => setShowCharacterModal(false)}
@@ -277,7 +277,7 @@ function AdventurePageContent() {
                         setShowCharacterModal(false);
                         router.push("/profil?tab=characters");
                       }}
-                      className="w-full px-6 py-3 bg-transparent border border-cyan-500/20 text-primary font-semibold rounded-[10px] hover:bg-cyan-500/5 transition-colors duration-200"
+                      className="w-full px-6 py-3 bg-transparent border border-cyan-500/20 text-primary font-semibold rounded-card hover:bg-cyan-500/5 transition-colors duration-200"
                     >
                       Mes personnages
                     </button>
@@ -286,7 +286,7 @@ function AdventurePageContent() {
                         setShowCharacterModal(false);
                         router.push("/create-character");
                       }}
-                      className="w-full px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-white font-semibold rounded-[10px] hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] transition-all duration-300 ease-out"
+                      className="w-full px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-white font-semibold rounded-card hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] transition-all duration-300 ease-out"
                     >
                       Créer un personnage
                     </button>
@@ -303,3 +303,5 @@ function AdventurePageContent() {
     </div>
   );
 }
+
+

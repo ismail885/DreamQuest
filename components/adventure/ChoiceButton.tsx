@@ -44,12 +44,12 @@ export default function ChoiceButton({
 
   const getBorderClass = () => {
     if (hasNegative) {
-      return "border-[rgba(6,182,212,0.2)] hover:border-red-500/50 hover:bg-red-500/5";
+      return "border-cyan-500/20 hover:border-red-500/50 hover:bg-red-500/5";
     }
     if (hasPositive) {
-      return "border-[rgba(6,182,212,0.2)] hover:border-green-500/50 hover:bg-green-500/5";
+      return "border-cyan-500/20 hover:border-green-500/50 hover:bg-green-500/5";
     }
-    return "border-[rgba(6,182,212,0.2)] hover:border-[rgba(6,182,212,0.5)] hover:bg-[rgba(6,182,212,0.05)]";
+    return "border-cyan-500/20 hover:border-cyan-500/50 hover:bg-cyan-500/5";
   };
 
   return (
@@ -60,7 +60,7 @@ export default function ChoiceButton({
       }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`w-full text-left px-6 py-4 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border ${getBorderClass()} rounded-[10px] transition-all duration-300 ease-out flex flex-col gap-3 min-h-[80px] group shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20`}
+      className={`w-full text-left px-6 py-4 backdrop-blur-card bg-slate-900/60 border ${getBorderClass()} rounded-card transition-all duration-300 ease-out flex flex-col gap-3 min-h-[80px] group shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20`}
     >
       <div className="flex items-start justify-between gap-3">
         <span className="text-gray-300 text-sm leading-relaxed flex-1 group-hover:text-white transition-colors duration-300">
@@ -90,3 +90,7 @@ export default function ChoiceButton({
     </motion.button>
   );
 }
+
+
+
+

@@ -34,7 +34,7 @@ function EditorContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] as const }}
             href="/auth/login?redirect=/create-adventure"
-            className="px-6 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white font-semibold rounded-[10px] transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)]"
+            className="px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-white font-semibold rounded-card transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)]"
           >
             Se connecter
           </motion.a>
@@ -97,3 +97,5 @@ export default function CreateAdventurePage() {
     </Suspense>
   );
 }
+
+

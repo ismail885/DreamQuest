@@ -111,7 +111,7 @@ export default function EffectIndicator({
           className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
         >
           <div
-            className={`backdrop-blur-[10px] bg-[rgba(15,23,42,0.92)] border ${borderColor} rounded-xl px-6 py-4 shadow-xl ${shadowColor} min-w-[240px] max-w-[420px]`}
+            className={`backdrop-blur-card bg-slate-900/90 border ${borderColor} rounded-xl px-6 py-4 shadow-xl ${shadowColor} min-w-[240px] max-w-[420px]`}
           >
             {/* Header dynamique */}
             <div className="flex items-center justify-center gap-2 mb-3">
@@ -173,3 +173,5 @@ export default function EffectIndicator({
     </AnimatePresence>
   );
 }
+
+

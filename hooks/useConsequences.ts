@@ -4,9 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Character, ConsequenceEffect } from "@/types";
 
-// ============================================================
 // useConsequences — Parse et applique les conséquences des choix
-// ============================================================
 
 export interface ConsequenceImpact {
   hasImpact: boolean;
@@ -70,7 +68,6 @@ export function useConsequences({
   // Référence pour nettoyer le setTimeout si le composant est démonté
   const effectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Nettoyage du timer au démontage
   useEffect(() => {
     return () => {
       if (effectTimerRef.current) {
@@ -176,7 +173,6 @@ export function useConsequences({
     [],
   );
 
-  // Appliquer une conséquence : combat, stats, ou les deux
   const applyConsequence = useCallback(
     async (
       _choixNum: 1 | 2,
@@ -239,7 +235,6 @@ export function useConsequences({
           return true; // Indique que le combat doit remplacer la navigation
         }
 
-        // Appliquer les changements de stats (JSON ou format texte)
         const statDelta = effect
           ? {
               force: effect.force ?? 0,
@@ -266,7 +261,6 @@ export function useConsequences({
           (character.points_vie ?? 0) + (effect?.pv ?? 0),
         );
 
-        // Mise à jour rapide des PV en BDD
         if (character.id) {
           await supabase
             .from("personnage")
@@ -274,7 +268,6 @@ export function useConsequences({
             .eq("id", character.id);
         }
 
-        // Mettre à jour le state local
         setCharacter((prev) => {
           if (!prev) return prev;
           return {
@@ -358,3 +351,4 @@ export function useConsequences({
     },
   };
 }
+

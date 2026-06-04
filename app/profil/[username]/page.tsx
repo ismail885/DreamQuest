@@ -109,8 +109,8 @@ export default function PublicProfilePage() {
           Retour
         </Link>
 
-        <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 mb-6 text-center">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-[#3b82f6] flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-lg shadow-[rgba(6,182,212,0.3)]">
+        <div className="card-base p-6 mb-6 text-center">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-lg shadow-cyan-500/30">
             {username.substring(0, 2).toUpperCase()}
           </div>
           <h1 className="text-2xl font-bold text-white">
@@ -122,7 +122,7 @@ export default function PublicProfilePage() {
           </p>
         </div>
 
-        <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 mb-6">
+        <div className="card-base p-6 mb-6">
           <h2 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
             <Users className="w-5 h-5" />
             Personnages
@@ -132,7 +132,7 @@ export default function PublicProfilePage() {
               {characters.map((c, i) => (
                 <div
                   key={i}
-                  className="flex justify-between items-center p-3 bg-transparent border border-[rgba(6,182,212,0.15)] rounded-[10px]"
+                  className="flex justify-between items-center p-3 bg-transparent border border-cyan-500/15 rounded-card"
                 >
                   <div>
                     <p className="font-semibold text-white">
@@ -151,7 +151,7 @@ export default function PublicProfilePage() {
           )}
         </div>
 
-        <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6">
+        <div className="card-base p-6">
           <h2 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
             <BookOpen className="w-5 h-5" />
             Aventures
@@ -161,7 +161,7 @@ export default function PublicProfilePage() {
               {adventures.map((a, i) => (
                 <div
                   key={i}
-                  className="flex justify-between items-center p-3 bg-transparent border border-[rgba(6,182,212,0.15)] rounded-[10px]"
+                  className="flex justify-between items-center p-3 bg-transparent border border-cyan-500/15 rounded-card"
                 >
                   <p className="font-semibold text-white">{a.titre}</p>
                   <span className="text-yellow-400 font-medium">

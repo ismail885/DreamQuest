@@ -24,7 +24,7 @@ async function fetchWithTimeout(
 }
 
 // Client ANON (publique) - Initialisation lazy pour eviter le crash au build
-// ==============================================================
+
 let _supabase: SupabaseClient | null = null
 
 export function getSupabaseClient(): SupabaseClient {
@@ -58,9 +58,8 @@ export const supabase = new Proxy({} as SupabaseClient, {
   },
 })
 
-// ==============================================================
 // Client ADMIN / SERVER-SIDE (4.2)
-// ==============================================================
+
 let adminClient: SupabaseClient | null = null
 
 /**

@@ -115,7 +115,7 @@ export default function RegisterForm() {
       </div>
 
       <div className="w-full max-w-sm relative z-10">
-        <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] rounded-[10px] border border-[rgba(6,182,212,0.2)] p-8">
+        <div className="card-base p-8">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <Image
@@ -161,7 +161,7 @@ export default function RegisterForm() {
                   type="text"
                   id="username"
                   name="username"
-                  className="w-full pl-10 pr-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                   placeholder="Entrez votre nom..."
                   value={formData.username}
                   onChange={handleChange}
@@ -197,7 +197,7 @@ export default function RegisterForm() {
                   type="email"
                   id="email"
                   name="email"
-                  className="w-full pl-10 pr-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                   placeholder="votre.email@exemple.com"
                   value={formData.email}
                   onChange={handleChange}
@@ -233,7 +233,7 @@ export default function RegisterForm() {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
-                  className="w-full pl-10 pr-12 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
+                  className="w-full pl-10 pr-12 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
@@ -312,7 +312,7 @@ export default function RegisterForm() {
                   type={showConfirm ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
-                  className="w-full pl-10 pr-12 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
+                  className="w-full pl-10 pr-12 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                   placeholder="Confirmez votre mot de passe"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -367,7 +367,7 @@ export default function RegisterForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2 mt-6"
+              className="w-full py-3 bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-card transition-all duration-200 text-sm flex items-center justify-center gap-2 mt-6"
             >
               {isLoading && (
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -410,3 +410,6 @@ export default function RegisterForm() {
     </div>
   );
 }
+
+
+

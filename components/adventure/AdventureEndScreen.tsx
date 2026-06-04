@@ -55,7 +55,7 @@ export default function AdventureEndScreen({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 space-y-4"
+      className="card-base p-6 space-y-4"
     >
       <motion.div variants={itemVariants} className="text-center space-y-2">
         <motion.div
@@ -78,11 +78,11 @@ export default function AdventureEndScreen({
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 text-center text-sm">
-        <div className="backdrop-blur-[8px] bg-[rgba(15,23,42,0.4)] border border-[rgba(6,182,212,0.1)] rounded-lg p-2">
+        <div className="backdrop-blur-sm bg-slate-900/40 border border-cyan-500/10 rounded-lg p-2">
           <p className="text-gray-300 text-xs">Combats gagnés</p>
           <p className="text-green-400 font-bold text-lg">{combatStats.wins}</p>
         </div>
-        <div className="backdrop-blur-[8px] bg-[rgba(15,23,42,0.4)] border border-[rgba(6,182,212,0.1)] rounded-lg p-2">
+        <div className="backdrop-blur-sm bg-slate-900/40 border border-cyan-500/10 rounded-lg p-2">
           <p className="text-gray-300 text-xs">Combats perdus</p>
           <p className="text-red-400 font-bold text-lg">{combatStats.losses}</p>
         </div>
@@ -91,7 +91,7 @@ export default function AdventureEndScreen({
       {xpGained > 0 && (
         <motion.div
           variants={itemVariants}
-          className="backdrop-blur-[8px] bg-[rgba(15,23,42,0.4)] border border-yellow-500/20 rounded-lg p-3 flex items-center gap-2"
+          className="backdrop-blur-sm bg-slate-900/40 border border-yellow-500/20 rounded-lg p-3 flex items-center gap-2"
         >
           <Zap className="w-4 h-4 text-yellow-400 flex-shrink-0" />
           <span className="text-sm text-gray-300">
@@ -105,28 +105,28 @@ export default function AdventureEndScreen({
           <p className="text-gray-300 text-xs font-semibold px-1">Stats acquises :</p>
           <div className="grid grid-cols-4 gap-2">
             {statsGained.force > 0 && (
-              <div className="backdrop-blur-[8px] bg-orange-500/10 border border-orange-500/30 rounded-lg p-2 text-center text-xs">
+              <div className="backdrop-blur-sm bg-orange-500/10 border border-orange-500/30 rounded-lg p-2 text-center text-xs">
                 <Swords className="w-3 h-3 text-orange-400 mx-auto mb-1" />
                 <p className="text-gray-300">Force</p>
                 <p className="text-orange-400 font-bold">+{statsGained.force}</p>
               </div>
             )}
             {statsGained.agility > 0 && (
-              <div className="backdrop-blur-[8px] bg-green-500/10 border border-green-500/30 rounded-lg p-2 text-center text-xs">
+              <div className="backdrop-blur-sm bg-green-500/10 border border-green-500/30 rounded-lg p-2 text-center text-xs">
                 <Wind className="w-3 h-3 text-green-400 mx-auto mb-1" />
                 <p className="text-gray-300">Agilité</p>
                 <p className="text-green-400 font-bold">+{statsGained.agility}</p>
               </div>
             )}
             {statsGained.magie > 0 && (
-              <div className="backdrop-blur-[8px] bg-purple-500/10 border border-purple-500/30 rounded-lg p-2 text-center text-xs">
+              <div className="backdrop-blur-sm bg-purple-500/10 border border-purple-500/30 rounded-lg p-2 text-center text-xs">
                 <Wand2 className="w-3 h-3 text-purple-400 mx-auto mb-1" />
                 <p className="text-gray-300">Magie</p>
                 <p className="text-purple-400 font-bold">+{statsGained.magie}</p>
               </div>
             )}
             {statsGained.endurance > 0 && (
-              <div className="backdrop-blur-[8px] bg-blue-500/10 border border-blue-500/30 rounded-lg p-2 text-center text-xs">
+              <div className="backdrop-blur-sm bg-blue-500/10 border border-blue-500/30 rounded-lg p-2 text-center text-xs">
                 <Shield className="w-3 h-3 text-blue-400 mx-auto mb-1" />
                 <p className="text-gray-300">Endurance</p>
                 <p className="text-blue-400 font-bold">+{statsGained.endurance}</p>
@@ -149,7 +149,7 @@ export default function AdventureEndScreen({
       <motion.button
         variants={itemVariants}
         onClick={onRestart}
-        className="group w-full px-8 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white rounded-[10px] font-semibold transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] mt-4 flex items-center justify-center gap-2"
+        className="group w-full px-8 py-3 bg-gradient-to-r from-primary to-blue-500 text-white rounded-card font-semibold transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] mt-4 flex items-center justify-center gap-2"
       >
         <RotateCw className="w-4 h-4 transition-transform duration-300 ease-out group-hover:rotate-180" />
         Recommencer
@@ -157,3 +157,10 @@ export default function AdventureEndScreen({
     </motion.div>
   );
 }
+
+
+
+
+
+
+

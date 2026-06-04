@@ -1,15 +1,10 @@
-// ============================================================
 // GESTIONNAIRES D'EFFETS DE CAPACITÉS DE COMBAT
-// DreamQuest - RPG Textuel Interactif
-//
+
 // Chaque effet est une fonction pure, isolée et testable.
 // Le switch géant de combat.ts est remplacé par un Record lookup.
-// ============================================================
 
 import type { Enemy, StatusEffect } from '@/data/enemies';
 import type { PlayerStatus } from './combat';
-
-// ===== TYPES =====
 
 export interface AbilityEffectInput {
   stats: { force: number; agility: number; magie: number; endurance: number };
@@ -32,8 +27,6 @@ export interface AbilityEffectResult {
 }
 
 export type AbilityHandler = (input: AbilityEffectInput) => AbilityEffectResult;
-
-// ===== GESTIONNAIRES INDIVIDUELS =====
 
 const coupViolent: AbilityHandler = ({ stats }) => {
   const damage = Math.floor(stats.force * 1.5);
@@ -206,8 +199,6 @@ const furia: AbilityHandler = ({ currentStatus }) => ({
   log: 'Furie du Barbare! Force et Agilité augmentées pour 2 tours!',
 });
 
-// ===== REGISTRY : Map ID → Handler =====
-
 export const ABILITY_HANDLERS: Record<string, AbilityHandler> = {
   coup_violent: coupViolent,
   parade,
@@ -240,3 +231,4 @@ export const ABILITY_HANDLERS: Record<string, AbilityHandler> = {
   rugissement,
   furia,
 };
+

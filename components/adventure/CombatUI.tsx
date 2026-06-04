@@ -140,7 +140,7 @@ export default function CombatUI({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-red-500/30 rounded-[10px] p-5 space-y-5"
+      className="backdrop-blur-card bg-slate-900/60 border border-red-500/30 rounded-card p-5 space-y-5"
     >
       <div className="flex items-center gap-3 mb-1">
         <Swords className="w-5 h-5 text-red-400" />
@@ -198,7 +198,7 @@ export default function CombatUI({
               initial={{ opacity: 0.6 }}
               animate={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-0 bg-yellow-400/30 rounded-[10px] pointer-events-none"
+              className="absolute inset-0 bg-yellow-400/30 rounded-card pointer-events-none"
               style={{ zIndex: 40 }}
             />
           )}
@@ -257,7 +257,7 @@ export default function CombatUI({
               whileTap={{ scale: 0.98 }}
               onClick={onAttack}
               disabled={combatState.turn !== "player"}
-              className="flex items-center justify-center gap-2 py-3 bg-red-500/10 border border-red-500/40 text-red-400 rounded-[10px] hover:bg-red-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
+              className="flex items-center justify-center gap-2 py-3 bg-red-500/10 border border-red-500/40 text-red-400 rounded-card hover:bg-red-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
               <Swords className="w-4 h-4" />
               Attaquer
@@ -267,7 +267,7 @@ export default function CombatUI({
               whileTap={{ scale: 0.98 }}
               onClick={onDefend}
               disabled={combatState.turn !== "player"}
-              className="flex items-center justify-center gap-2 py-3 bg-blue-500/10 border border-blue-500/40 text-blue-400 rounded-[10px] hover:bg-blue-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
+              className="flex items-center justify-center gap-2 py-3 bg-blue-500/10 border border-blue-500/40 text-blue-400 rounded-card hover:bg-blue-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
               <Shield className="w-4 h-4" />
               Défense
@@ -277,7 +277,7 @@ export default function CombatUI({
               whileTap={{ scale: 0.98 }}
               onClick={onFlee}
               disabled={combatState.turn !== "player"}
-              className="flex items-center justify-center gap-2 py-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 rounded-[10px] hover:bg-yellow-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
+              className="flex items-center justify-center gap-2 py-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 rounded-card hover:bg-yellow-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
               <Trophy className="w-4 h-4" />
               Fuir
@@ -306,7 +306,7 @@ export default function CombatUI({
                     onClick={() => handleAbility(ability)}
                     disabled={disabled}
                     title={ability.description}
-                    className={`text-left px-3 py-2.5 rounded-[10px] border text-sm transition-all ${
+                    className={`text-left px-3 py-2.5 rounded-card border text-sm transition-all ${
                       inCooldown
                         ? "bg-gray-800/30 border-gray-700/50 text-gray-600 cursor-not-allowed"
                         : !enoughMana
@@ -333,7 +333,7 @@ export default function CombatUI({
         </>
       )}
 
-      <div className="bg-deep rounded-[10px] p-3 h-32 overflow-y-auto space-y-1 scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700">
+      <div className="bg-deep rounded-card p-3 h-32 overflow-y-auto space-y-1 scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700">
         {combatState.log.slice(-6).map((line, i) => (
           <p key={i} className={`${logColor(line)} text-sm leading-relaxed`}>{line}</p>
         ))}
@@ -347,7 +347,7 @@ export default function CombatUI({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onEnd}
-          className={`w-full py-3 rounded-[10px] font-bold text-white transition-all ${
+          className={`w-full py-3 rounded-card font-bold text-white transition-all ${
             combatState.won
               ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400"
               : "bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400"
@@ -370,3 +370,5 @@ export default function CombatUI({
     </motion.div>
   );
 }
+
+

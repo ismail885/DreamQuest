@@ -69,13 +69,13 @@ const StorySection = memo(function StorySection({
         </div>
         <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-primary to-[#3b82f6] rounded-full transition-all duration-700 ease-out"
+            className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full transition-all duration-700 ease-out"
             style={{ width: `${progression}%` }}
           />
         </div>
       </div>
 
-      <div className="relative w-full h-96 rounded-[10px] overflow-hidden">
+      <div className="relative w-full h-96 rounded-card overflow-hidden">
         <Image
           src={image}
           alt={adventureTitle}
@@ -98,7 +98,7 @@ const StorySection = memo(function StorySection({
               duration: 0.5,
               ease: [0.16, 1, 0.3, 1] as const,
             }}
-            className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] p-6 space-y-4"
+            className="card-base p-6 space-y-4"
           >
             {paragraphs.length > 1 ? (
               paragraphs.map((p, i) => formatParagraph(p, i))
@@ -115,3 +115,6 @@ const StorySection = memo(function StorySection({
 });
 
 export default StorySection;
+
+
+

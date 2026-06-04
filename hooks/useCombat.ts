@@ -19,10 +19,8 @@ import {
 import { applyXpGain, saveCharacterProgress, updateUserXp } from "@/lib/xp";
 import type { Character } from "@/types";
 
-// ============================================================
 // useCombat — Gère l'état du combat, les actions joueur,
 //             le timer ennemi, et la gestion de l'XP.
-// ============================================================
 
 interface UseCombatProps {
   character: Character | null;
@@ -392,7 +390,6 @@ export function useCombat({
           }
         }
 
-        // Vérifier si l'ennemi est étourdi
         if (prev.enemyStatus.includes("stunned")) {
           const newStatus = updateEnemyStatus(prev.enemyStatus);
           return {
@@ -422,14 +419,12 @@ export function useCombat({
         currentPlayerPv = Math.max(0, currentPlayerPv - finalDmg);
         logMessages.push(result.log);
 
-        // Mettre à jour les PV du personnage
         if (currentPlayerPv !== prev.playerPv) {
           setCharacter(
             (c) => (c ? { ...c, points_vie: currentPlayerPv } : null),
           );
         }
 
-        // Vérifier si le joueur est mort
         if (currentPlayerPv <= 0) {
           return {
             ...prev,
@@ -478,3 +473,4 @@ export function useCombat({
     handleCombatEnd,
   };
 }
+

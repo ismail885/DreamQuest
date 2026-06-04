@@ -1,10 +1,7 @@
-// ============================================================
-// TYPES DES PERSONNAGES - DreamQuest
-// 
+
 // Les définitions de classes sont centralisées dans
 // lib/characters/classDefinitions.ts et ré-exportées ici
 // pour la compatibilité descendante.
-// ============================================================
 
 // Ré-exporter toutes les définitions depuis le fichier centralisé
 // Note: 'export type' requis par isolatedModules
@@ -30,15 +27,12 @@ export {
   CLASS_DIFFICULTIES,
   DIFFICULTY_LABELS,
   
-  // Fonctions
   calculateRequiredXP,
   getTotalXPForLevel,
   getClassAbilitiesWithInfo,
   getFormattedStats,
   validateCharacterName,
 } from '@/lib/characters/classDefinitions';
-
-// ===== TYPES SPÉCIFIQUES À L'UI / BASE DE DONNÉES =====
 
 export interface Character {
   id?: number;
@@ -58,3 +52,4 @@ export interface CreateCharacterPayload {
   classe: import('@/lib/characters/classDefinitions').CharacterClass;
   id_utilisateur: number;
 }
+

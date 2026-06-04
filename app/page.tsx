@@ -46,7 +46,7 @@ export default function Home() {
           <div className="text-center space-y-6 md:space-y-8">
             <motion.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-4 h-[37px] bg-[rgba(6,182,212,0.10)] border border-[rgba(6,182,212,0.3)] rounded-full text-primary text-[14px]"
+              className="inline-flex items-center gap-2 px-4 h-[37px] bg-cyan-500/10 border border-cyan-500/30 rounded-full text-primary text-[14px]"
             >
               <Zap size={16} />
               RPG Textuel Interactif
@@ -82,7 +82,7 @@ export default function Home() {
               <Link
                 href="/create-character"
                 prefetch
-                className="h-[58px] w-[250px] rounded-[10px] bg-gradient-to-r from-primary to-[#3b82f6] text-white text-[18px] font-semibold flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(6,182,212,0.5)] hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out hover:shadow-[0px_15px_25px_-3px_rgba(6,182,212,0.6)]"
+                className="h-[58px] w-[250px] rounded-card bg-gradient-to-r from-primary to-blue-500 text-white text-[18px] font-semibold flex items-center justify-center shadow-glow hover:opacity-90 hover:scale-102 active:scale-98 transition-all duration-300 ease-out hover:shadow-glow-lg"
               >
                 Créer un Personnage
               </Link>
@@ -90,7 +90,7 @@ export default function Home() {
               <Link
                 href="/adventure"
                 prefetch
-                className="h-[58px] w-[222px] rounded-[10px] border border-[rgba(6,182,212,0.2)] text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out"
+                className="h-[58px] w-[222px] rounded-card border border-cyan-500/20 text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 hover:scale-102 active:scale-98 transition-all duration-300 ease-out"
               >
                 Explorer les Quêtes
               </Link>
@@ -117,10 +117,10 @@ export default function Home() {
                   ease: [0.25, 1, 0.5, 1] as const, // easeOutQuart — plus doux
                 },
               }}
-              className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
+              className="group p-6 md:p-8 backdrop-blur-card bg-slate-900/60 border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-500 rounded-[12px] flex items-center justify-center">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
@@ -142,10 +142,10 @@ export default function Home() {
                   ease: [0.25, 1, 0.5, 1] as const, // easeOutQuart — plus doux
                 },
               }}
-              className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
+              className="group p-6 md:p-8 backdrop-blur-card bg-slate-900/60 border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-500 rounded-[12px] flex items-center justify-center">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
@@ -167,10 +167,10 @@ export default function Home() {
                   ease: [0.25, 1, 0.5, 1] as const, // easeOutQuart — plus doux
                 },
               }}
-              className="group p-6 md:p-8 backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
+              className="group p-6 md:p-8 backdrop-blur-card bg-slate-900/60 border border-cyan-500/20 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-[#3b82f6] rounded-[12px] flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-500 rounded-[12px] flex items-center justify-center">
                   <Trophy className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">Classements</h3>
@@ -188,3 +188,10 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+
+
+

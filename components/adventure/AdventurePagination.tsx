@@ -23,7 +23,7 @@ export default function AdventurePagination({
         <button
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-transparent border border-cyan-500/20 rounded-[10px] text-gray-300 hover:text-white hover:border-cyan-500/40 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-300 ease-out"
+          className="px-4 py-2 bg-transparent border border-cyan-500/20 rounded-card text-gray-300 hover:text-white hover:border-cyan-500/40 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-300 ease-out"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -45,7 +45,7 @@ export default function AdventurePagination({
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`w-10 h-10 rounded-[10px] font-medium transition-all duration-300 ease-out hover:scale-105 ${
+                className={`w-10 h-10 rounded-card font-medium transition-all duration-300 ease-out hover:scale-105 ${
                   currentPage === pageNum
                     ? "bg-gradient-to-r from-primary to-blue-500 text-white shadow-lg shadow-cyan-500/30"
                     : "bg-transparent border border-cyan-500/20 text-gray-300 hover:text-white hover:border-cyan-500/40"
@@ -60,7 +60,7 @@ export default function AdventurePagination({
         <button
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-transparent border border-cyan-500/20 rounded-[10px] text-gray-300 hover:text-white hover:border-cyan-500/40 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-300 ease-out"
+          className="px-4 py-2 bg-transparent border border-cyan-500/20 rounded-card text-gray-300 hover:text-white hover:border-cyan-500/40 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-300 ease-out"
         >
           <ChevronRight className="w-5 h-5" />
         </button>

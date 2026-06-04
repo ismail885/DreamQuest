@@ -1,9 +1,5 @@
 import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 
-// ============================================
-// Configuration JWT
-// ============================================
-
 export function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -36,10 +32,6 @@ export function parseDuration(value: string | undefined): number {
 
 const MAX_AGE_SECONDS = parseDuration(process.env.JWT_EXPIRES_IN);
 
-// ============================================
-// Types
-// ============================================
-
 export interface UserJWTPayload extends JWTPayload {
   userId: string;
   email: string;
@@ -49,16 +41,11 @@ export interface UserJWTPayload extends JWTPayload {
 
 export type TokenPayload = Omit<UserJWTPayload, 'iat' | 'exp'>;
 
-// ============================================
-// Fonctions JWT
-// ============================================
-
 /**
  * Signe un token JWT avec les données utilisateur.
  * Expire après 1h (aligné sur Supabase Auth).
  */
 export async function signToken(payload: TokenPayload): Promise<string> {
-  // Validation du payload
   if (!payload.userId || !payload.email) {
     throw new Error('Invalid token payload: userId and email are required');
   }
@@ -90,10 +77,6 @@ export async function verifyToken(token: string): Promise<UserJWTPayload | null>
     return null;
   }
 }
-
-// ============================================
-// Gestion des cookies HttpOnly
-// ============================================
 
 /** Sécurité du cookie : Secure uniquement en production (HTTPS) */
 const COOKIE_OPTIONS = `Path=/; HttpOnly${process.env.NODE_ENV === 'production' ? '; Secure' : ''}; SameSite=Strict`;
@@ -138,4 +121,5 @@ export function getTokenFromCookies(cookieHeader: string | null): string | null 
 // Backup des anciennes signatures pour compatibilité
 /** @deprecated Utiliser signToken */
 export const createToken = signToken;
+
 

@@ -25,7 +25,7 @@ function CharacterHUD({ character }: CharacterHUDProps) {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-3">
-      <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.15)] rounded-[10px]">
+      <div className="backdrop-blur-card bg-slate-900/60 border border-cyan-500/15 rounded-card">
         {/* Row 1: Identity */}
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
           <div className="flex items-center gap-2 min-w-0">
@@ -100,3 +100,6 @@ export default memo(CharacterHUD, (prev, next) => {
     prev.character.stats?.endurance === next.character.stats?.endurance
   );
 });
+
+
+

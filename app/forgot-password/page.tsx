@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
     <main className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
       <PageBackground />
       <div className="w-full max-w-sm relative z-10">
-        <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] rounded-[10px] border border-[rgba(6,182,212,0.2)] p-8">
+        <div className="card-base p-8">
           {children}
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 minLength={8}
-                className="w-full pl-10 pr-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                className="w-full pl-10 pr-10 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="Minimum 8 caractères"
               />
               <button
@@ -180,7 +180,7 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={8}
-                className="w-full pl-10 pr-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                className="w-full pl-10 pr-10 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="Confirmez votre mot de passe"
               />
               <button
@@ -200,12 +200,12 @@ export default function ForgotPasswordPage() {
           </div>
 
           {message && (
-            <div className="p-3 border border-[#238636]/50 bg-[#238636]/10 rounded-[10px]">
+            <div className="p-3 border border-[#238636]/50 bg-[#238636]/10 rounded-card">
               <p className="text-sm text-[#238636]">{message}</p>
             </div>
           )}
           {error && (
-            <div className="p-3 border border-[#F85149]/40 bg-[#F85149]/10 rounded-[10px]">
+            <div className="p-3 border border-[#F85149]/40 bg-[#F85149]/10 rounded-card">
               <p className="text-sm text-[#F85149]">{error}</p>
             </div>
           )}
@@ -213,7 +213,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={resetLoading}
-            className="w-full py-3 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
+            className="w-full py-3 bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-card transition-all duration-200 text-sm flex items-center justify-center gap-2"
           >
             {resetLoading && (
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -255,7 +255,7 @@ export default function ForgotPasswordPage() {
     <PageLayout>
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-[#3b82f6] flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center">
             <Lock className="w-7 h-7 text-white" />
           </div>
         </div>
@@ -285,19 +285,19 @@ export default function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full pl-10 bg-transparent border border-[rgba(6,182,212,0.2)] focus:border-primary rounded-[10px] px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              className="w-full pl-10 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
               placeholder="votre.email@exemple.com"
             />
           </div>
         </div>
 
         {message && (
-          <div className="p-3 border border-[#238636]/40 bg-[#238636]/10 rounded-[10px]">
+          <div className="p-3 border border-[#238636]/40 bg-[#238636]/10 rounded-card">
             <p className="text-sm text-[#238636]">{message}</p>
           </div>
         )}
         {error && (
-          <div className="p-3 border border-[#F85149]/40 bg-[#F85149]/10 rounded-[10px]">
+          <div className="p-3 border border-[#F85149]/40 bg-[#F85149]/10 rounded-card">
             <p className="text-sm text-[#F85149]">{error}</p>
           </div>
         )}
@@ -305,7 +305,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm flex items-center justify-center gap-2"
+          className="w-full py-3 bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-card transition-all duration-200 text-sm flex items-center justify-center gap-2"
         >
           {loading && (
             <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -341,3 +341,6 @@ export default function ForgotPasswordPage() {
     </PageLayout>
   );
 }
+
+
+

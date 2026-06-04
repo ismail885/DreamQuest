@@ -22,7 +22,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   18: { endurance: 5, force: 2 },
   19: { force: 5, agility: 2 },
   20: { agility: 5, magie: 2 },
-  // ===== Niveaux 21-30 : +1 dans 2 stats (cycle) =====
   21: { force: 1, endurance: 1 },
   22: { agility: 1, magie: 1 },
   23: { force: 1, agility: 1 },
@@ -33,7 +32,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   28: { magie: 1, force: 1 },
   29: { endurance: 1, agility: 1 },
   30: { force: 1, agility: 1 },
-  // ===== Niveaux 31-40 : +2 dans 1 stat =====
   31: { force: 2 },
   32: { agility: 2 },
   33: { magie: 2 },
@@ -44,7 +42,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   38: { endurance: 2 },
   39: { force: 2 },
   40: { agility: 2 },
-  // ===== Niveaux 41-50 : +2 dans 2 stats =====
   41: { force: 2, magie: 2 },
   42: { agility: 2, endurance: 2 },
   43: { force: 2, endurance: 2 },
@@ -55,7 +52,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   48: { magie: 2, endurance: 2 },
   49: { endurance: 2, agility: 2 },
   50: { force: 2, magie: 2 },
-  // ===== Niveaux 51-60 : +3 dans 1 stat =====
   51: { force: 3 },
   52: { agility: 3 },
   53: { magie: 3 },
@@ -66,7 +62,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   58: { endurance: 3 },
   59: { force: 3 },
   60: { agility: 3 },
-  // ===== Niveaux 61-70 : +3 dans 2 stats =====
   61: { force: 3, agility: 3 },
   62: { magie: 3, endurance: 3 },
   63: { force: 3, magie: 3 },
@@ -77,7 +72,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   68: { magie: 3, agility: 3 },
   69: { endurance: 3, agility: 3 },
   70: { force: 3, magie: 3 },
-  // ===== Niveaux 71-80 : +4 dans 1 stat, +2 dans une autre =====
   71: { force: 4, agility: 2 },
   72: { magie: 4, endurance: 2 },
   73: { force: 4, magie: 2 },
@@ -88,7 +82,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   78: { magie: 4, agility: 2 },
   79: { endurance: 4, agility: 2 },
   80: { force: 4, magie: 2 },
-  // ===== Niveaux 81-90 : +4 dans 2 stats =====
   81: { force: 4, agility: 4 },
   82: { magie: 4, endurance: 4 },
   83: { force: 4, magie: 4 },
@@ -99,7 +92,6 @@ export const LEVEL_BONUS: Record<number, Partial<CharacterStats>> = {
   88: { magie: 4, agility: 4 },
   89: { endurance: 4, agility: 4 },
   90: { force: 4, magie: 4 },
-  // ===== Niveaux 91-100 : +5 dans 2 stats =====
   91: { force: 5, agility: 5 },
   92: { magie: 5, endurance: 5 },
   93: { force: 5, magie: 5 },

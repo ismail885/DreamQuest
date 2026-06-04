@@ -59,7 +59,7 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
  onClick={onSelect}
  className={`relative bg-surface/80 border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
  isSelected 
- ? 'border-cyan-400 shadow-lg shadow-cyan-400/20 scale-[1.02]' 
+ ? 'border-cyan-400 shadow-lg shadow-cyan-400/20 scale-102' 
  : 'border-gray-800/50 hover:border-cyan-500/50'
  }`}
  >
@@ -175,3 +175,4 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
 });
 
 export default ClassCard;
+

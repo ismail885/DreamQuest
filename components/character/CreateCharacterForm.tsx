@@ -239,7 +239,7 @@ export default function CreateCharacterForm({
       </div>
 
       <div className="flex-1 px-4 pb-8 max-w-4xl mx-auto w-full">
-        <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] rounded-[10px] p-6 md:p-10 border border-[rgba(6,182,212,0.2)]">
+        <div className="card-base p-6 md:p-10">
           <div className="flex flex-col md:flex-row gap-6 mb-8">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
@@ -373,12 +373,12 @@ export default function CreateCharacterForm({
                   onChange={(e) => validateName(e.target.value)}
                   placeholder="Entrez le nom de votre personnage..."
                   maxLength={20}
-                  className={`w-full px-4 py-3 bg-transparent border rounded-[10px] text-white placeholder-gray-600 focus:outline-none focus:ring-1 transition-all text-sm ${
+                  className={`w-full px-4 py-3 bg-transparent border rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 transition-all text-sm ${
                     nameError
                       ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/30"
                       : characterName.length >= 3
                         ? "border-green-500/50 focus:border-green-500 focus:ring-green-500/30"
-                        : "border-[rgba(6,182,212,0.2)] focus:border-primary focus:ring-primary"
+                        : "border-cyan-500/20 focus:border-primary focus:ring-primary"
                   }`}
                 />
                 {characterName.length > 0 && (
@@ -427,7 +427,7 @@ export default function CreateCharacterForm({
             <button
               type="submit"
               disabled={isLoading || !characterName.trim() || !!nameError}
-              className="w-full py-3.5 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-[10px] transition-all duration-200 text-sm"
+              className="w-full py-3.5 bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-card transition-all duration-200 text-sm"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -476,3 +476,6 @@ export default function CreateCharacterForm({
     </div>
   );
 }
+
+
+

@@ -1,19 +1,14 @@
-// ============================================================
 // FICHIER CENTRALISÉ : Définitions des classes de personnages
-// DreamQuest - RPG Textuel Interactif
-// 
+
 // Ce fichier est la source unique de vérité pour toutes les
 // données liées aux classes de personnages.
 // Importer via '@/lib/characters/classDefinitions' ou
 // ré-exporter depuis '@/types' (backward compatible).
-// ============================================================
 
 import { 
   Swords, Sparkles, Wind, Skull, Shield, Cross, 
   Target, Leaf, User, Flame, Sword, Zap, Heart, LucideIcon 
 } from 'lucide-react';
-
-// ===== TYPES =====
 
 export type CharacterClass = 
   | 'Guerrier' | 'Mage' | 'Assassin' | 'Prêtre' | 'Paladin' 
@@ -41,8 +36,6 @@ export type AbilityType = 'OFFENSIVE' | 'DEFENSIVE' | 'PASSIVE' | 'SUPPORT' | 'U
 
 /** Niveaux de difficulté pour chaque classe */
 export type Difficulty = 'DEBUTANT' | 'INTERMEDIAIRE' | 'EXPERT';
-
-// ===== INTERFACES =====
 
 export interface CharacterStats {
   force: number;
@@ -73,8 +66,6 @@ export interface ClassInfo {
   difficulty: Difficulty;
   difficultyOrder: number; // 1=Débutant, 2=Intermédiaire, 3=Expert
 }
-
-// ===== CONSTANTES =====
 
 /** Icônes pour chaque classe */
 export const CLASS_ICONS: Record<CharacterClass, LucideIcon> = {
@@ -409,8 +400,6 @@ export const CLASS_DIFFICULTIES: Record<CharacterClass, { level: Difficulty; ord
   Barbare: { level: 'DEBUTANT', order: 1, reason: 'Tout en offensive, mécaniques directes' },
 };
 
-// ===== DÉFINITIONS COMPLÈTES DES 10 CLASSES =====
-
 export const CHARACTER_CLASSES: Record<CharacterClass, ClassInfo> = {
   Guerrier: {
     name: 'Guerrier',
@@ -538,8 +527,6 @@ export const CLASS_PASSIVES: Record<CharacterClass, { name: string; description:
   Barbare: { name: "Furie Sauvage", description: "+10% force brute" },
 };
 
-// ===== FONCTIONS UTILITAIRES =====
-
 /** Calcul de l'XP nécessaire pour atteindre un niveau */
 export const calculateRequiredXP = (level: number): number => {
   return Math.floor(80 * Math.pow(1.35, level - 1));
@@ -598,3 +585,4 @@ export const DIFFICULTY_LABELS: Record<Difficulty, { label: string; color: strin
   INTERMEDIAIRE: { label: 'Intermédiaire', color: 'text-yellow-400', level: 2 },
   EXPERT: { label: 'Expert', color: 'text-red-400', level: 3 },
 };
+

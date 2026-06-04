@@ -306,14 +306,14 @@ export default function ProfilPage() {
             />
 
             <div className="flex-1">
-              <div className="backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-[10px] overflow-hidden">
-                <div className="flex overflow-x-auto flex-nowrap border-b border-[rgba(6,182,212,0.15)] bg-[rgba(6,182,212,0.03)] scrollbar-thin">
+              <div className="card-base overflow-hidden">
+                <div className="flex overflow-x-auto flex-nowrap border-b border-cyan-500/15 bg-cyan-500/5 scrollbar-thin">
                   <button
                     onClick={() => setActiveTab("stories")}
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "stories"
                         ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
+                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
                     }`}
                   >
                     Mes Histoires
@@ -323,7 +323,7 @@ export default function ProfilPage() {
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "achievements"
                         ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
+                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
                     }`}
                   >
                     Réalisations
@@ -333,7 +333,7 @@ export default function ProfilPage() {
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "creations"
                         ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
+                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
                     }`}
                   >
                     Mes Créations
@@ -343,7 +343,7 @@ export default function ProfilPage() {
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "quests"
                         ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
+                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
                     }`}
                   >
                     Quêtes
@@ -353,7 +353,7 @@ export default function ProfilPage() {
                     className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
                       activeTab === "characters"
                         ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-[rgba(6,182,212,0.05)]"
+                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
                     }`}
                   >
                     Mes Persos
@@ -453,3 +453,7 @@ export default function ProfilPage() {
     </div>
   );
 }
+
+
+
+

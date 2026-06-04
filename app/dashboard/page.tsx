@@ -144,7 +144,7 @@ export default function DashboardPage() {
  </h2>
  <button
  onClick={() => router.push("/create-character")}
- className="group w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
+ className="group w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
  >
  <Plus className="w-5 h-5 transition-transform duration-300 ease-out group-hover:rotate-90" />
  Créer un Personnage
@@ -180,3 +180,4 @@ export default function DashboardPage() {
   </div>
   );
 }
+

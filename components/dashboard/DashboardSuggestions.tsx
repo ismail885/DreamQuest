@@ -66,7 +66,7 @@ export default function DashboardSuggestions({
           </p>
           <button
             onClick={() => router.push("/adventure")}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98"
           >
             <Compass className="w-4 h-4" />
             Explorer les aventures
@@ -114,3 +114,4 @@ export default function DashboardSuggestions({
     </div>
   );
 }
+

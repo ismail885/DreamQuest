@@ -34,7 +34,7 @@ export default function EditProfileModal({
         onClick={onClose}
       />
 
-      <div className="relative backdrop-blur-[10px] bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-t-2xl md:rounded-[10px] p-6 w-full max-w-md mx-4 shadow-2xl max-h-[85vh] overflow-y-auto md:max-h-none">
+      <div className="relative backdrop-blur-card bg-slate-900/60 border border-cyan-500/20 rounded-t-2xl md:rounded-card p-6 w-full max-w-md mx-4 shadow-2xl max-h-[85vh] overflow-y-auto md:max-h-none">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <svg
@@ -54,7 +54,7 @@ export default function EditProfileModal({
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[rgba(6,182,212,0.1)] rounded-[10px] transition-colors"
+            className="p-2 hover:bg-cyan-500/10 rounded-card transition-colors"
           >
             <svg
               className="w-5 h-5 text-gray-400"
@@ -73,7 +73,7 @@ export default function EditProfileModal({
         </div>
 
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-[#3b82f6] flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[rgba(6,182,212,0.3)]">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-cyan-500/30">
             {editUsername
               ? editUsername.substring(0, 2).toUpperCase()
               : getUserInitials()}
@@ -89,7 +89,7 @@ export default function EditProfileModal({
               type="text"
               value={editUsername}
               onChange={(e) => onEditUsernameChange(e.target.value)}
-              className="w-full px-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-3 bg-transparent border border-cyan-500/20 rounded-card text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               placeholder="Votre nom d'utilisateur"
             />
           </div>
@@ -102,14 +102,14 @@ export default function EditProfileModal({
               type="email"
               value={editEmail}
               onChange={(e) => onEditEmailChange(e.target.value)}
-              className="w-full px-4 py-3 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-3 bg-transparent border border-cyan-500/20 rounded-card text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               placeholder="Votre email"
             />
           </div>
 
           {saveMessage && (
             <div
-              className={`p-3 rounded-[10px] text-sm ${
+              className={`p-3 rounded-card text-sm ${
                 saveMessage.type === "success"
                   ? "bg-[#238636]/10 border border-[#238636]/40 text-[#238636]"
                   : "bg-[#F85149]/10 border border-[#F85149]/40 text-[#F85149]"
@@ -123,14 +123,14 @@ export default function EditProfileModal({
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 py-3 px-4 bg-transparent border border-[rgba(6,182,212,0.2)] rounded-[10px] text-white font-medium hover:bg-[rgba(6,182,212,0.05)] transition-all"
+            className="flex-1 py-3 px-4 bg-transparent border border-cyan-500/20 rounded-card text-white font-medium hover:bg-cyan-500/5 transition-all"
           >
             Annuler
           </button>
           <button
             onClick={onSave}
             disabled={isSaving || !editUsername.trim()}
-            className="flex-1 py-3 px-4 bg-gradient-to-r from-primary to-[#3b82f6] hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed rounded-[10px] text-white font-medium transition-all flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-4 bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed rounded-card text-white font-medium transition-all flex items-center justify-center gap-2"
           >
             {isSaving ? (
               <>
@@ -179,3 +179,8 @@ export default function EditProfileModal({
     </div>
   );
 }
+
+
+
+
+

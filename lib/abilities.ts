@@ -1,16 +1,8 @@
-// ============================================================
-// SOURCE UNIQUE DE VÉRITÉ — Toutes les capacités du jeu
-// DreamQuest - RPG Textuel Interactif
-//
-// Fusionne :
 //   - combat.ts → ABILITIES (capacités de combat)
 //   - randomGenerator.ts → ABILITIES_POOL (capacités niveau)
 //   - classDefinitions.ts → ABILITIES_DATA (affichage)
-// ============================================================
 
 import type { CharacterClass } from '@/types/character';
-
-// ===== TYPES UNIFIÉS =====
 
 export type CombatAbilityType = "attack" | "defense" | "special";
 export type DisplayAbilityType = "OFFENSIVE" | "DEFENSIVE" | "PASSIVE" | "SUPPORT" | "UTILITY";
@@ -35,10 +27,7 @@ export interface UnifiedAbility {
   source: "combat" | "pool" | "both";
 }
 
-// ===== CATALOGUE UNIFIÉ =====
-
 export const ALL_ABILITIES: UnifiedAbility[] = [
-  // ── GUERRIER ──────────────────────────────────────────
   { id: "coup_violent", name: "Coup Violent", description: "Attaque puissante qui ignore partiellement la défense", class: "Guerrier", combat: { manaCost: 15, combatType: "attack", cooldown: 0 }, source: "combat" },
   { id: "parade", name: "Parade", description: "Réduit les dommages du prochain attack", class: "Guerrier", combat: { manaCost: 10, combatType: "defense", cooldown: 0 }, source: "combat" },
   { id: "cri_guerre", name: "Cri de Guerre", description: "Augmente votre force pour 3 tours", class: "Guerrier", combat: { manaCost: 20, combatType: "special", cooldown: 3 }, display: { displayType: "UTILITY", detailedDescription: "Un cri terrifiant qui réduit la défense de tous les ennemis de 30% pour 3 tours." }, source: "both" },
@@ -52,7 +41,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "charge_heroique", name: "Charge Héroïque", description: "Chargez vos ennemis.", class: "Guerrier", source: "pool" },
   { id: "eventration", name: "Éventration", description: "Une attaque dévastatrice.", class: "Guerrier", source: "pool" },
 
-  // ── MAGE ──────────────────────────────────────────────
   { id: "boule_feu", name: "Boule de Feu", description: "Attaque magique puissante", class: "Mage", combat: { manaCost: 20, combatType: "attack", cooldown: 0 }, display: { displayType: "OFFENSIVE", detailedDescription: "Projette une boule de feu infligeant 250% de dégâts de magie à tous les ennemis." }, source: "both" },
   { id: "bouclier_magique", name: "Bouclier Magique", description: "Barrière protectrice pendant 2 tours", class: "Mage", combat: { manaCost: 15, combatType: "defense", cooldown: 2 }, display: { displayType: "DEFENSIVE", detailedDescription: "Crée un bouclier absorbant les dégâts magiques pendant 3 tours." }, source: "both" },
   { id: "glace", name: "Champ de Glace", description: "Ralentit l'ennemi et réduit son agilité", class: "Mage", combat: { manaCost: 25, combatType: "special", cooldown: 3 }, source: "combat" },
@@ -65,7 +53,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "invocation_familier", name: "Invocation de Familier", description: "Invoque un familier.", class: "Mage", source: "pool" },
   { id: "mur_force", name: "Mur de Force", description: "Crée un mur protecteur.", class: "Mage", source: "pool" },
 
-  // ── ASSASSIN ──────────────────────────────────────────
   { id: "attaque_sournoise", name: "Attaque Sournoise", description: "Coup critique garanti si caché", class: "Assassin", combat: { manaCost: 15, combatType: "attack", cooldown: 0 }, display: { displayType: "OFFENSIVE", detailedDescription: "Une attaque furtive infligeant 300% de dégâts d'agilité. Critique si invisible." }, source: "both" },
   { id: "empoisonnement", name: "Empoisonnement", description: "Empoisonne l'ennemi pour 3 tours", class: "Assassin", combat: { manaCost: 20, combatType: "special", cooldown: 2 }, source: "combat" },
   { id: "cachette", name: "Cachette", description: "Deviens difficile à toucher pendant 2 tours", class: "Assassin", combat: { manaCost: 10, combatType: "defense", cooldown: 2 }, source: "combat" },
@@ -78,7 +65,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "coup_critique", name: "Coup Critique", description: "Tente un coup critique.", class: "Assassin", source: "pool" },
   { id: "fuite_tactique", name: "Fuite Tactique", description: "Fuite calculée.", class: "Assassin", source: "pool" },
 
-  // ── NÉCROMANCIEN ─────────────────────────────────────
   { id: "drain_vie", name: "Drain de Vie", description: "Vole des PV à l'ennemi", class: "Nécromancien", combat: { manaCost: 15, combatType: "attack", cooldown: 0 }, display: { displayType: "OFFENSIVE", detailedDescription: "Aspire la force vitale d'un ennemi, infligeant 120% de dégâts et vous soignant de 50%." }, source: "both" },
   { id: "invocation_squelette", name: "Invocation", description: "Invoque un squelette qui attaque l'ennemi", class: "Nécromancien", combat: { manaCost: 30, combatType: "special", cooldown: 4 }, source: "combat" },
   { id: "malediction", name: "Malédiction", description: "Réduit les stats de l'ennemi", class: "Nécromancien", combat: { manaCost: 25, combatType: "special", cooldown: 3 }, display: { displayType: "UTILITY", detailedDescription: "Maudit un ennemi, réduisant ses statistiques de 25% pendant 4 tours." }, source: "both" },
@@ -90,7 +76,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "voile_mort", name: "Voile de la Mort", description: "Protection mortelle.", class: "Nécromancien", source: "pool" },
   { id: "ame_parcheminee", name: "Âme Parcheminée", description: "Invoque une âme.", class: "Nécromancien", source: "pool" },
 
-  // ── PALADIN ───────────────────────────────────────────
   { id: "frappe_sainte", name: "Frappe Sainte", description: "Attaque sacrée contre les morts-vivants", class: "Paladin", combat: { manaCost: 20, combatType: "attack", cooldown: 0 }, source: "combat" },
   { id: "bouclier_faith", name: "Bouclier de Foi", description: "Invulnérable pendant 1 tour", class: "Paladin", combat: { manaCost: 25, combatType: "defense", cooldown: 3 }, display: { displayType: "DEFENSIVE", detailedDescription: "Un bouclier sacré qui absorbe les dégâts et soigne de 10% par tour." }, source: "both" },
   { id: "benediction", name: "Bénédiction", description: "Restaure des PV et augmente la défense", class: "Paladin", combat: { manaCost: 20, combatType: "special", cooldown: 2 }, display: { displayType: "SUPPORT", detailedDescription: "Bénit le groupe, augmentant toutes les statistiques de 15% pour 3 tours." }, source: "both" },
@@ -105,7 +90,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "croisade", name: "Croisade", description: "Marche sacrée.", class: "Paladin", source: "pool" },
   { id: "foi_inebranlable", name: "Foi Inébranlable", description: "Défense suprême.", class: "Paladin", source: "pool" },
 
-  // ── PRÊTRE ────────────────────────────────────────────
   { id: "rayon_lumiere", name: "Rayon de Lumière", description: "Attaque sacrée", class: "Prêtre", combat: { manaCost: 15, combatType: "attack", cooldown: 0 }, source: "combat" },
   { id: "soin", name: "Soin", description: "Restaure des PV", class: "Prêtre", combat: { manaCost: 20, combatType: "special", cooldown: 0 }, display: { displayType: "SUPPORT", detailedDescription: "Invoque la lumière pour restaurer 40% des PV maximum d'un allié." }, source: "both" },
   { id: "purification", name: "Purification", description: "Soigne tous les effets de statut", class: "Prêtre", combat: { manaCost: 15, combatType: "special", cooldown: 2 }, source: "combat" },
@@ -120,7 +104,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "rayon_soleil", name: "Rayon de Soleil", description: "Rayon céleste.", class: "Prêtre", source: "pool" },
   { id: "don_vie", name: "Don de Vie", description: "Donne de la vie.", class: "Prêtre", source: "pool" },
 
-  // ── ARCHER ────────────────────────────────────────────
   { id: "tir_precis", name: "Tir Précis", description: "Attaque à distance précise", class: "Archer", combat: { manaCost: 10, combatType: "attack", cooldown: 0 }, display: { displayType: "OFFENSIVE", detailedDescription: "Un tir parfaitement ajusté infligeant 280% de dégâts d'agilité. Critique garanti." }, source: "both" },
   { id: "piege", name: "Piège", description: "Immobilise l'ennemi pendant 1 tour", class: "Archer", combat: { manaCost: 15, combatType: "special", cooldown: 2 }, source: "combat" },
   { id: "visee", name: "Visée", description: "Augmente les chances de critique", class: "Archer", combat: { manaCost: 20, combatType: "special", cooldown: 3 }, source: "combat" },
@@ -133,7 +116,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "tir_fusant", name: "Tir Fusant", description: "Tir enflammé.", class: "Archer", source: "pool" },
   { id: "coup_precision", name: "Coup de Précision", description: "Précision absolue.", class: "Archer", source: "pool" },
 
-  // ── DRUIDE ────────────────────────────────────────────
   { id: "griffes_nature", name: "Griffes de Nature", description: "Attaque naturelle", class: "Druide", combat: { manaCost: 10, combatType: "attack", cooldown: 0 }, source: "combat" },
   { id: "epines", name: "Épines", description: "L'ennemi prend des dégâts en attaquant", class: "Druide", combat: { manaCost: 15, combatType: "defense", cooldown: 2 }, source: "combat" },
   { id: "guerison", name: "Guérison", description: "Restaure des PV et du mana", class: "Druide", combat: { manaCost: 25, combatType: "special", cooldown: 3 }, source: "combat" },
@@ -149,7 +131,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "puissance_primordiale", name: "Puissance Primordiale", description: "Force originelle.", class: "Druide", source: "pool" },
   { id: "guerison_totale", name: "Guérison Totale", description: "Soin intégral.", class: "Druide", source: "pool" },
 
-  // ── VOLEUR ────────────────────────────────────────────
   { id: "coup_dague", name: "Coup de Dague", description: "Attaque rapide", class: "Voleur", combat: { manaCost: 10, combatType: "attack", cooldown: 0 }, source: "combat" },
   { id: "fumigene", name: "Fumigène", description: "Fuite garantie", class: "Voleur", combat: { manaCost: 5, combatType: "special", cooldown: 3 }, source: "combat" },
   { id: "jet_de_sable", name: "Jet de Sable", description: "Étourdit l'ennemi", class: "Voleur", combat: { manaCost: 15, combatType: "special", cooldown: 2 }, source: "combat" },
@@ -161,7 +142,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "fuite_agile", name: "Fuite Agile", description: "Tente de fuir le combat avec 85% de chance de succès.", class: "Voleur", display: { displayType: "UTILITY", detailedDescription: "Tente de fuir le combat avec 85% de chance de succès." }, source: "pool" },
   { id: "ombre_fugitive", name: "Ombre Fugitive", description: "Disparition dans l'ombre.", class: "Voleur", source: "pool" },
 
-  // ── BARBARE ───────────────────────────────────────────
   { id: "frenesie", name: "Frénésie", description: "Attaque double pour ce tour", class: "Barbare", combat: { manaCost: 20, combatType: "attack", cooldown: 0 }, source: "combat" },
   { id: "rugissement", name: "Rugissement", description: "Terrifie l'ennemi, annule son prochain attack", class: "Barbare", combat: { manaCost: 15, combatType: "defense", cooldown: 2 }, source: "combat" },
   { id: "furia", name: "Furie du Barbare", description: "Multiples attacks pendant 2 tours", class: "Barbare", combat: { manaCost: 30, combatType: "special", cooldown: 4 }, source: "combat" },
@@ -174,8 +154,6 @@ export const ALL_ABILITIES: UnifiedAbility[] = [
   { id: "massacre", name: "Massacre", description: "Dévastation totale.", class: "Barbare", source: "pool" },
   { id: "tempete_coups", name: "Tempête de Coups", description: "Rafale de coups.", class: "Barbare", source: "pool" },
 ];
-
-// ===== HELPERS : Reconstruction des anciens formats =====
 
 /** Map classe → capacités de combat (pour combat.ts) */
 export function getCombatAbilitiesByClass(className: string): UnifiedAbility[] {
@@ -207,3 +185,4 @@ export function getAbilityById(id: string): UnifiedAbility | undefined {
 export function getAbilityByName(name: string): UnifiedAbility | undefined {
   return ALL_ABILITIES.find(a => a.name.localeCompare(name, undefined, { sensitivity: 'base' }) === 0);
 }
+

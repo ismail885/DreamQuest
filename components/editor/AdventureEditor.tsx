@@ -584,7 +584,7 @@ export default function AdventureEditor() {
               <button
                 onClick={startGeneration}
                 disabled={!title.trim() || generating}
-                className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-deep font-bold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 text-sm"
+                className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-deep font-bold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 text-sm"
               >
                 {generating ? (
                   <>
@@ -601,7 +601,7 @@ export default function AdventureEditor() {
               <button
                 onClick={handleSave}
                 disabled={!title.trim() || saving}
-                className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0px_10px_25px_-3px_rgba(124,58,237,0.5)] flex items-center justify-center gap-2 text-sm"
+                className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(124,58,237,0.5)] flex items-center justify-center gap-2 text-sm"
               >
                 {saving ? (
                   <>
@@ -912,7 +912,7 @@ export default function AdventureEditor() {
             <div className="px-4 pt-3">
               <button
                 onClick={addNewNode}
-                className="w-full py-2 border border-dashed border-gray-800 rounded-md text-xs text-gray-400 hover:border-primary hover:text-primary transition-all duration-300 ease-out hover:scale-[1.02] flex items-center justify-center gap-1.5"
+                className="w-full py-2 border border-dashed border-gray-800 rounded-md text-xs text-gray-400 hover:border-primary hover:text-primary transition-all duration-300 ease-out hover:scale-102 flex items-center justify-center gap-1.5"
               >
                 <Plus className="w-3 h-3" />
                 Nouveau nœud
@@ -924,3 +924,4 @@ export default function AdventureEditor() {
     </motion.div>
   );
 }
+

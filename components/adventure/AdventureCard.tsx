@@ -94,7 +94,7 @@ const AdventureCard = React.memo(function AdventureCard({
       <Link
         href={personnageId ? href : "#"}
         onClick={!personnageId ? handleCardClick : undefined}
-        className="group relative backdrop-blur-[10px] bg-deep rounded-[10px] overflow-hidden border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 block "
+        className="group relative backdrop-blur-card bg-deep rounded-card overflow-hidden border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 block "
       >
         <div className="p-4 space-y-3">
           <div className="flex items-start justify-between gap-2">
@@ -135,3 +135,4 @@ const AdventureCard = React.memo(function AdventureCard({
 });
 
 export default AdventureCard;
+

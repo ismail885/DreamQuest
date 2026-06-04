@@ -103,10 +103,10 @@ export default function TabStories({ saves }: TabStoriesProps) {
               `/adventure/${save.id_aventure}?personnage=${save.id_personnage}&save=${save.id}`,
             )
           }
-          className={`group backdrop-blur-[10px] bg-[rgba(15,23,42,0.5)] border border-gray-700/30 rounded-xl p-4 transition-all duration-200 ${
+          className={`group backdrop-blur-card bg-slate-900/50 border border-gray-700/30 rounded-xl p-4 transition-all duration-200 ${
             save.status === "completed"
               ? "opacity-75 cursor-default"
-              : "hover:border-cyan-500/30 hover:bg-[rgba(6,182,212,0.04)] cursor-pointer"
+              : "hover:border-cyan-500/30 hover:bg-cyan-500/5 cursor-pointer"
           }`}
         >
           <div className="flex items-start justify-between gap-4">
@@ -176,3 +176,6 @@ export default function TabStories({ saves }: TabStoriesProps) {
     </div>
   );
 }
+
+
+

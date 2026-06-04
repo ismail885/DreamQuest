@@ -112,7 +112,7 @@ export default function ClassementPage() {
                 {user && (
                   <Link
                     href="/create-character"
-                    className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-primary to-[#3b82f6] text-white font-semibold rounded-[10px] hover:opacity-90 transition-opacity"
+                    className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-white font-semibold rounded-card hover:opacity-90 transition-opacity"
                   >
                     Créer une aventure
                   </Link>
@@ -188,3 +188,4 @@ export default function ClassementPage() {
     </div>
   );
 }
+

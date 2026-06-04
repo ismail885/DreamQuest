@@ -3,6 +3,38 @@
 @tailwind utilities;
 
 /* =============================================
+   DESIGN TOKENS — Classes composites
+   ============================================= */
+
+@layer components {
+  /* Carte de base — bannit les valeurs arbitraires répétées */
+  .card-base {
+    @apply backdrop-blur-card bg-[rgba(15,23,42,0.6)] border border-[rgba(6,182,212,0.2)] rounded-card;
+  }
+
+  /* Variante hover de la carte */
+  .card-base-hover {
+    @apply card-base hover:border-[rgba(6,182,212,0.5)] hover:bg-[rgba(6,182,212,0.05)] transition-all duration-300 ease-out;
+  }
+
+  /* Bouton gradient primaire */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-primary to-blue-500 text-white font-semibold rounded-card transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-glow-lg;
+  }
+
+  /* Badge stat */
+  .badge-stat {
+    @apply text-xs font-medium px-2.5 py-1 rounded-md whitespace-nowrap;
+  }
+  .badge-stat-positive {
+    @apply badge-stat bg-green-500/20 text-green-400;
+  }
+  .badge-stat-negative {
+    @apply badge-stat bg-red-500/20 text-red-400;
+  }
+}
+
+/* =============================================
    THÈME — Animations fluides
    ============================================= */
 
