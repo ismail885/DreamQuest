@@ -1,8 +1,10 @@
-import type { Adventure, Branch, AdventureWithAuthor } from '@/types/adventure'
+import type { Adventure, Branch, AdventureWithAuthor, AdventureListItem } from '@/types/adventure'
+import type { Save, SaveWithDetails, UserSave } from '@/types/save'
+import type { Character, CreateCharacterPayload } from '@/types/character'
 
-describe('Types - Adventure', () => {
+describe('Types - Contrats de structure', () => {
   describe('Adventure', () => {
-    it('devrait créer un objet Adventure valide', () => {
+    it('devrait exposer les champs obligatoires (id, titre, auteur_id, date_creation, popularite)', () => {
       const adventure: Adventure = {
         id: 1,
         titre: 'Ma Super Aventure',
@@ -17,7 +19,9 @@ describe('Types - Adventure', () => {
       expect(adventure.titre).toBe('Ma Super Aventure')
       expect(adventure.description).toBe('Une aventure incroyable')
       expect(adventure.auteur_id).toBe(1)
+      expect(adventure.date_creation).toBe('2026-01-01')
       expect(adventure.popularite).toBe(10)
+      expect(adventure.embranchement_initial_id).toBe(1)
     })
 
     it('devrait accepter des valeurs nulles pour les champs optionnels', () => {
@@ -38,7 +42,7 @@ describe('Types - Adventure', () => {
   })
 
   describe('Branch', () => {
-    it('devrait créer un objet Branch valide', () => {
+    it('devrait exposer les 2 choix et leurs liens', () => {
       const branch: Branch = {
         id: 1,
         texte: 'Vous trouvez une épée brillante.',
@@ -51,13 +55,13 @@ describe('Types - Adventure', () => {
         id_aventure: 1,
       }
 
-      expect(branch.id).toBe(1)
       expect(branch.choix1).toBe('Prendre l\'épée')
       expect(branch.choix1_lien).toBe(2)
+      expect(branch.choix2).toBe('Ignorer l\'épée')
       expect(branch.choix2_lien).toBe(3)
     })
 
-    it('devrait détecter une fin de branche (pas de choix)', () => {
+    it('devrait représenter une fin de branche via choixX_lien null', () => {
       const endBranch: Branch = {
         id: 99,
         texte: 'Fin de l\'aventure.',
@@ -76,7 +80,7 @@ describe('Types - Adventure', () => {
   })
 
   describe('AdventureWithAuthor', () => {
-    it('devrait étendre Adventure avec auteur_nom', () => {
+    it('devrait étendre Adventure avec auteur_nom optionnel', () => {
       const adventureWithAuthor: AdventureWithAuthor = {
         id: 1,
         titre: 'Aventure avec auteur',
@@ -92,7 +96,7 @@ describe('Types - Adventure', () => {
       expect(adventureWithAuthor.popularite).toBe(5)
     })
 
-    it('devrait fonctionner sans auteur_nom', () => {
+    it('devrait permettre auteur_nom indéfini', () => {
       const adventure: AdventureWithAuthor = {
         id: 1,
         titre: 'Aventure',
@@ -107,66 +111,114 @@ describe('Types - Adventure', () => {
     })
   })
 
-  describe('Validation functions', () => {
-    // Helper functions simulées pour les tests
-    const isValidAdventure = (adventure: Partial<Adventure>): boolean => {
-      return !!(adventure.id && adventure.titre && adventure.date_creation)
-    }
-
-    const isEndBranch = (branch: Branch): boolean => {
-      return !branch.choix1_lien && !branch.choix2_lien
-    }
-
-    it('devrait valider une aventure complète', () => {
-      const adventure = {
+  describe('AdventureListItem', () => {
+    it('devrait exposer id, titre, description, popularite et options', () => {
+      const item: AdventureListItem = {
         id: 1,
-        titre: 'Test',
-        date_creation: '2026-01-01',
+        titre: 'Aventure',
+        description: null,
+        popularite: 10,
+        difficulte: 'normal',
+        duree: 'moyenne',
+        genre: 'fantasy',
       }
 
-      expect(isValidAdventure(adventure)).toBe(true)
+      expect(item.difficulte).toBe('normal')
+      expect(item.duree).toBe('moyenne')
+      expect(item.genre).toBe('fantasy')
     })
+  })
 
-    it('devrait rejeter une aventure invalide', () => {
-      const adventure = {
+  describe('Save', () => {
+    it('devrait exposer les champs d\'une sauvegarde de base', () => {
+      const save: Save = {
         id: 1,
-        titre: '',
-        date_creation: '2026-01-01',
-      }
-
-      expect(isValidAdventure(adventure)).toBe(false)
-    })
-
-    it('devrait détecter une fin de branche', () => {
-      const endBranch: Branch = {
-        id: 1,
-        texte: 'Fin',
-        choix1: '',
-        choix1_lien: null,
-        choix1_consequences: null,
-        choix2: '',
-        choix2_lien: null,
-        choix2_consequences: null,
+        id_utilisateur: 1,
         id_aventure: 1,
+        id_personnage: 1,
+        id_embranchement_actuel: 5,
+        progression: 50,
+        date_sauvegarde: '2026-03-29T10:00:00Z',
       }
 
-      expect(isEndBranch(endBranch)).toBe(true)
+      expect(save.id).toBe(1)
+      expect(save.progression).toBe(50)
+      expect(save.id_embranchement_actuel).toBe(5)
     })
+  })
 
-    it('devrait détecter une branche non-terminée', () => {
-      const continueBranch: Branch = {
+  describe('SaveWithDetails', () => {
+    it('devrait étendre Save avec aventure_titre et personnage_nom optionnels', () => {
+      const save: SaveWithDetails = {
         id: 1,
-        texte: 'Suite',
-        choix1: 'Continuer',
-        choix1_lien: 2,
-        choix1_consequences: null,
-        choix2: 'Retourner',
-        choix2_lien: 3,
-        choix2_consequences: null,
+        id_utilisateur: 1,
         id_aventure: 1,
+        id_personnage: 1,
+        id_embranchement_actuel: 5,
+        progression: 50,
+        date_sauvegarde: '2026-03-29T10:00:00Z',
+        aventure_titre: 'La Quête du Dragon',
+        personnage_nom: 'MonHéros',
       }
 
-      expect(isEndBranch(continueBranch)).toBe(false)
+      expect(save.aventure_titre).toBe('La Quête du Dragon')
+      expect(save.personnage_nom).toBe('MonHéros')
+    })
+  })
+
+  describe('UserSave', () => {
+    it('devrait inclure status completed/in-progress', () => {
+      const inProgress: UserSave = {
+        id: 1,
+        id_utilisateur: 1,
+        id_aventure: 1,
+        id_personnage: 1,
+        id_embranchement_actuel: 5,
+        progression: 50,
+        date_sauvegarde: '2026-03-29T10:00:00Z',
+        aventure_titre: 'Aventure',
+        status: 'in-progress',
+      }
+
+      const completed: UserSave = { ...inProgress, status: 'completed', progression: 100 }
+
+      expect(inProgress.status).toBe('in-progress')
+      expect(completed.status).toBe('completed')
+    })
+  })
+
+  describe('Character', () => {
+    it('devrait exposer les attributs principaux d\'un personnage', () => {
+      const character: Character = {
+        id: 1,
+        nom_personnage: 'Héros',
+        classe: 'Guerrier',
+        niveau: 1,
+        points_vie: 170,
+        points_vie_max: 170,
+        stats: { force: 8, agility: 5, magie: 3, endurance: 7 },
+        id_utilisateur: 1,
+        date_creation: '2026-03-29T10:00:00Z',
+        experience: 0,
+      }
+
+      expect(character.nom_personnage).toBe('Héros')
+      expect(character.classe).toBe('Guerrier')
+      expect(character.niveau).toBe(1)
+      expect(character.stats.endurance).toBe(7)
+    })
+  })
+
+  describe('CreateCharacterPayload', () => {
+    it('devrait exposer nom, classe et id_utilisateur', () => {
+      const payload: CreateCharacterPayload = {
+        nom_personnage: 'Merlin',
+        classe: 'Mage',
+        id_utilisateur: 42,
+      }
+
+      expect(payload.classe).toBe('Mage')
+      expect(payload.id_utilisateur).toBe(42)
     })
   })
 })

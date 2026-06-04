@@ -1,172 +1,149 @@
-import type { SaveWithDetails } from '@/types/save'
+jest.mock('@/lib/supabaseClient', () => {
+  let pending: { data: unknown; error: unknown } = { data: null, error: null }
 
-describe('Intégration - Sauvegarde', () => {
-  describe('Flux: Sauvegarde et restauration', () => {
-    const mockSave: SaveWithDetails = {
-      id: 1,
-      id_utilisateur: 1,
-      id_aventure: 1,
-      id_personnage: 1,
-      id_embranchement_actuel: 5,
-      progression: 50,
-      date_sauvegarde: '2026-03-29T10:00:00Z',
-      aventure_titre: 'La Quête du Dragon',
-      personnage_nom: 'MonHéros',
-    }
+  const chainMethods: Record<string, jest.Mock> = {
+    from: jest.fn(),
+    select: jest.fn(),
+    insert: jest.fn(),
+    update: jest.fn(),
+    eq: jest.fn(),
+    order: jest.fn(),
+    limit: jest.fn(),
+    single: jest.fn(),
+    rpc: jest.fn(),
+  }
 
-    it('devrait sauvegarder la progression', () => {
-      const saveData = {
+  const chain: Record<string, unknown> = {
+    ...chainMethods,
+    then: (resolve: (v: unknown) => void) => resolve(pending),
+    __setResolved: (value: { data?: unknown; error?: unknown }) => {
+      pending = { data: value.data ?? null, error: value.error ?? null }
+    },
+    __clearCalls: () => {
+      Object.values(chainMethods).forEach((fn) => fn.mockClear())
+    },
+  }
+
+  Object.values(chainMethods).forEach((fn) => fn.mockReturnValue(chain))
+
+  return { supabase: chain }
+})
+
+import { supabase } from '@/lib/supabaseClient'
+import { saveProgress, getUserSavesWithDetails } from '@/lib/saves'
+
+const mockSupabase = supabase as unknown as {
+  __setResolved: (v: { data?: unknown; error?: unknown }) => void
+  __clearCalls: () => void
+  from: jest.Mock
+  insert: jest.Mock
+  update: jest.Mock
+  eq: jest.Mock
+  order: jest.Mock
+}
+
+describe('Intégration - Sauvegarde (lib/saves.ts réel)', () => {
+  beforeEach(() => {
+    mockSupabase.__setResolved({ data: null, error: null })
+    mockSupabase.__clearCalls()
+  })
+
+  describe('Flux: Nouvelle sauvegarde (insert)', () => {
+    it('devrait faire un insert quand aucune sauvegarde n\'existe pour ce user/adventure/character', async () => {
+      mockSupabase.__setResolved({ data: null, error: null }) // lookup: no existing save
+
+      const result = await saveProgress(1, 10, 20, 5, 50)
+
+      expect(result).toBe(true)
+      expect(mockSupabase.insert).toHaveBeenCalledWith({
         id_utilisateur: 1,
-        id_aventure: 1,
-        id_personnage: 1,
+        id_aventure: 10,
+        id_personnage: 20,
         id_embranchement_actuel: 5,
         progression: 50,
-        date_sauvegarde: new Date().toISOString(),
-      }
-
-      expect(saveData.id_embranchement_actuel).toBe(5)
-      expect(saveData.progression).toBe(50)
-    })
-
-    it('devrait restaurer la sauvegarde', () => {
-      const saveId = 1
-      const restoredSave: SaveWithDetails | null = saveId === 1 ? mockSave : null
-
-      expect(restoredSave).not.toBeNull()
-      expect(restoredSave?.aventure_titre).toBe('La Quête du Dragon')
-    })
-
-    it('devrait retourner null si sauvegarde inexistante', () => {
-      const mockSaveForCheck: SaveWithDetails | null = null
-
-      expect(mockSaveForCheck).toBeNull()
+      })
+      expect(mockSupabase.update).not.toHaveBeenCalled()
     })
   })
 
-  describe('Flux: Mise à jour de sauvegarde existante', () => {
-    const existingSave: SaveWithDetails = {
-      id: 1,
-      id_utilisateur: 1,
-      id_aventure: 1,
-      id_personnage: 1,
-      id_embranchement_actuel: 3,
-      progression: 30,
-      date_sauvegarde: '2026-03-29T10:00:00Z',
-      aventure_titre: 'Aventure',
-      personnage_nom: 'Héros',
-    }
+  describe('Flux: Mise à jour de sauvegarde (upsert)', () => {
+    it('devrait faire un update quand une sauvegarde existe déjà', async () => {
+      mockSupabase.__setResolved({ data: { id: 7 }, error: null }) // lookup: existing save
 
-    it('devrait détecter une sauvegarde existante (upsert)', () => {
-      const hasExistingSave = (save: SaveWithDetails | null): boolean => {
-        return save !== null
-      }
+      const result = await saveProgress(1, 10, 20, 9, 90)
 
-      expect(hasExistingSave(existingSave)).toBe(true)
-      expect(hasExistingSave(null)).toBe(false)
+      expect(result).toBe(true)
+      expect(mockSupabase.update).toHaveBeenCalledWith({
+        id_embranchement_actuel: 9,
+        progression: 90,
+      })
+      expect(mockSupabase.insert).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Flux: Gestion d\'erreur DB', () => {
+    it('devrait retourner false en cas d\'erreur sur insert', async () => {
+      mockSupabase.__setResolved({ data: null, error: { message: 'FK violation' } })
+
+      const result = await saveProgress(1, 10, 20, 5, 50)
+
+      expect(result).toBe(false)
     })
 
-    it('devrait mettre à jour la progression', () => {
-      const updateSave = (save: SaveWithDetails, newBranchId: number, newProgress: number): SaveWithDetails => {
-        return {
-          ...save,
-          id_embranchement_actuel: newBranchId,
-          progression: newProgress,
-          date_sauvegarde: new Date().toISOString(),
-        }
-      }
+    it('devrait retourner false en cas d\'erreur sur update', async () => {
+      mockSupabase.__setResolved({ data: { id: 1 }, error: { message: 'update failed' } })
 
-      const updated = updateSave(existingSave, 7, 70)
+      const result = await saveProgress(1, 10, 20, 5, 50)
 
-      expect(updated.id_embranchement_actuel).toBe(7)
-      expect(updated.progression).toBe(70)
-      expect(updated.date_sauvegarde).not.toBe(existingSave.date_sauvegarde)
+      expect(result).toBe(false)
     })
   })
 
   describe('Flux: Liste des sauvegardes utilisateur', () => {
-    const mockSaves: SaveWithDetails[] = [
-      {
-        id: 1,
-        id_utilisateur: 1,
-        id_aventure: 1,
-        id_personnage: 1,
-        id_embranchement_actuel: 5,
-        progression: 50,
-        date_sauvegarde: '2026-03-29T10:00:00Z',
-        aventure_titre: 'Quête 1',
-        personnage_nom: 'Héros1',
-      },
-      {
-        id: 2,
-        id_utilisateur: 1,
-        id_aventure: 2,
-        id_personnage: 2,
-        id_embranchement_actuel: 10,
-        progression: 100,
-        date_sauvegarde: '2026-03-28T15:00:00Z',
-        aventure_titre: 'Quête 2',
-        personnage_nom: 'Héros2',
-      },
-      {
-        id: 3,
-        id_utilisateur: 2,
-        id_aventure: 1,
-        id_personnage: 3,
-        id_embranchement_actuel: 2,
-        progression: 20,
-        date_sauvegarde: '2026-03-29T08:00:00Z',
-        aventure_titre: 'Quête 1',
-        personnage_nom: 'Héros3',
-      },
-    ]
+    it('devrait retourner la liste ordonnée par date desc', async () => {
+      const rows = [
+        {
+          id: 1, id_utilisateur: 1, id_aventure: 10, id_personnage: 20,
+          id_embranchement_actuel: 5, progression: 50,
+          date_sauvegarde: '2026-03-29T10:00:00Z',
+          aventure: { titre: 'Aventure A' },
+          personnage: { nom_personnage: 'Hero' },
+        },
+        {
+          id: 2, id_utilisateur: 1, id_aventure: 11, id_personnage: 21,
+          id_embranchement_actuel: 3, progression: 30,
+          date_sauvegarde: '2026-03-28T10:00:00Z',
+          aventure: { titre: 'Aventure B' },
+          personnage: { nom_personnage: 'Hero2' },
+        },
+      ]
+      mockSupabase.__setResolved({ data: rows, error: null })
 
-    it('devrait récupérer toutes les sauvegardes d\'un utilisateur', () => {
-      const userId = 1
-      const userSaves = mockSaves.filter((s) => s.id_utilisateur === userId)
+      const result = await getUserSavesWithDetails(1)
 
-      expect(userSaves).toHaveLength(2)
+      expect(result).toHaveLength(2)
+      expect(result[0].aventure_titre).toBe('Aventure A')
+      expect(result[0].personnage_nom).toBe('Hero')
+      expect(result[1].aventure_titre).toBe('Aventure B')
+      // Order by date desc was passed
+      expect(mockSupabase.order).toHaveBeenCalledWith('date_sauvegarde', { ascending: false })
     })
 
-    it('devrait trier par date (plus récent)', () => {
-      const userId = 1
-      const userSaves = mockSaves
-        .filter((s) => s.id_utilisateur === userId)
-        .sort((a, b) => new Date(b.date_sauvegarde).getTime() - new Date(a.date_sauvegarde).getTime())
+    it('devrait retourner [] si la requête échoue', async () => {
+      mockSupabase.__setResolved({ data: null, error: { message: 'DB error' } })
 
-      expect(userSaves[0].id).toBe(1) // Plus récent
+      const result = await getUserSavesWithDetails(1)
+
+      expect(result).toEqual([])
     })
 
-    it('devrait trouver la sauvegarde pour une aventure spécifique', () => {
-      const adventureId = 1
-      const saveForAdventure = mockSaves.find((s) => s.id_aventure === adventureId && s.id_utilisateur === 1)
+    it('devrait appeler eq() avec l\'id_utilisateur', async () => {
+      mockSupabase.__setResolved({ data: [], error: null })
 
-      expect(saveForAdventure?.progression).toBe(50)
-    })
+      await getUserSavesWithDetails(42)
 
-    it('devrait supprimer une sauvegarde', () => {
-      const saveIdToDelete = 1
-      const remainingSaves = mockSaves.filter((s) => s.id !== saveIdToDelete)
-
-      expect(remainingSaves).toHaveLength(2)
-    })
-  })
-
-  describe('Flux: Sauvegarde automatique', () => {
-    it('devrait déclencher la sauvegarde après un intervalle', () => {
-      const intervalMs = 30_000
-
-      // Vérification que l'intervalle est correct (test simplifié)
-      expect(intervalMs).toBe(30_000)
-    })
-
-    it('devrait comparer les timestamps pour éviter sauvegardes redondantes', () => {
-      const lastSave = new Date('2026-03-29T10:00:00Z')
-      const now = new Date()
-      const timeDiff = now.getTime() - lastSave.getTime()
-
-      // Si moins de 30s, pas de sauvegarde
-      const shouldSave = timeDiff > 30_000
-      expect(typeof shouldSave).toBe('boolean')
+      // The first eq call should be on id_utilisateur with the value 42
+      expect(mockSupabase.eq).toHaveBeenCalledWith('id_utilisateur', 42)
     })
   })
 })

@@ -1,223 +1,164 @@
 # Plan de Tests - DreamQuest
 
-## 1. Présentation du projet
+## 1. Présentation
 
-**DreamQuest** est une application web de jeu de rôle textuel interactif permettant :
-- La création et gestion de personnages avec différentes classes
-- La lecture d'aventures interactives à choix multiples
-- La sauvegarde automatique de la progression
-- Un système de votes et classements communautaires
+**DreamQuest** est une application web de jeu de rôle textuel interactif (Next.js 15 + TypeScript + Supabase). Ce document décrit l'état **réel** de la suite de tests, telle qu'exécutée par `npm test` et `npm test -- --coverage`. Aucun chiffre n'est inventé.
 
----
+## 2. Stratégie de test
 
-## 2. Organisation des tests (RÉELLE)
+Les tests suivent une approche pragmatique adaptée à un projet Next.js + Supabase + Jest, en deux couches :
+
+| Couche | Cible | Stratégie |
+|--------|-------|-----------|
+| **Unitaires** (`tests/lib/`) | Fonctions pures, constantes, types | Import direct depuis `lib/`, aucun mock sauf si la fonction dépend d'une lib externe (`jose` pour JWT) |
+| **Intégration** (`tests/integration/`) | Fonctions touchant Supabase | Mock du client Supabase via `jest.mock('@/lib/supabaseClient', ...)` |
+
+**Principes respectés :**
+- **Pas de re-définition locale** : les tests importent et exécutent le code de `lib/`. Aucune fonction de production n'est recopiée dans un fichier de test.
+- **Mocks minimaux** : un seul mock partagé pour Supabase (chaîne thenable configurable), un mock pour `jose` (sign/verify déterministes).
+- **Pas de dépendance externe** : pas de MSW, pas de nock, pas de @testing-library/user-event. Le test runner est isolé de la vraie base.
+- **Couverture des chemins d'erreur** : chaque fonction Supabase est testée sur le chemin nominal **et** sur le chemin d'erreur (lookup, insert, update, rejection).
+
+**Hors périmètre (justifié en §6) :**
+- Tests E2E navigateur (Playwright est listé comme dépendance dev mais n'est pas configuré pour des tests automatisés)
+- Tests des hooks React (`hooks/use*`) : ils mélangent React + Supabase + état local et nécessiteraient `@testing-library/react` pour des tests significatifs
+- `lib/combat.ts`, `lib/combatAbilityHandlers.ts` : logique d'état de combat qui exige soit un DOM complet, soit un harness dédié
+- `lib/generator/*` : banques de chaînes statiques par genre, peu de valeur de test unitaire
+
+## 3. Organisation des tests (arbre réel)
 
 ```
 tests/
-├── lib/                           # Tests unitaires
-│   ├── jwt.test.ts               
-│   ├── utils.test.ts             
-│   ├── types.test.ts             
-│   ├── character.test.ts         
-│   └── save.test.ts              
-├── integration/                    # Tests d'intégration
-│   ├── auth.test.ts             
-│   ├── adventure.test.ts        
-│   ├── character.test.ts        
-│   └── save.test.ts             
-└── e2e/                          # Tests end-to-end (à implémenter)
+├── lib/
+│   ├── jwt.test.ts                    # 13 tests - jwt.ts réel, jose mocké
+│   ├── utils.test.ts                  # 9 tests - utils.ts réel (classNames)
+│   ├── types.test.ts                  # 12 tests - contrats de types depuis /types
+│   ├── character.test.ts              # 38 tests - classDefinitions + leveling réels
+│   └── save.test.ts                   # 9 tests - saves.ts réel, Supabase mocké
+└── integration/
+    ├── auth.test.ts                   # 7 tests - jwt.ts réel (sign/verify + cookies)
+    ├── adventure.test.ts              # 11 tests - adventures.ts réel, Supabase mocké
+    ├── character.test.ts              # 29 tests - leveling + xp réels (intégration)
+    └── save.test.ts                   # 7 tests - saves.ts réel, scénarios end-to-end
 ```
 
----
+## 4. Tests implémentés
 
-## 3. Tests implémentés
+### 4.1 Tests unitaires (`tests/lib/`)
 
-### 3.1 Tests unitaires - JWT (16 tests)
+| Fichier | Cible réelle | Tests | Description |
+|---------|--------------|-------|-------------|
+| `jwt.test.ts` | `@/lib/jwt` | 13 | `signToken`, `verifyToken`, `createAuthCookie`, `clearAuthCookie`, `getTokenFromCookies`. Mock de `jose` car la lib signe vraiment avec `JWT_SECRET`. |
+| `utils.test.ts` | `@/lib/utils` | 9 | `classNames(...classes)` - tous les chemins (vides, falsy, booléens, multiples). |
+| `types.test.ts` | `@/types/*` | 12 | Contrats de structure des types (`Adventure`, `Branch`, `AdventureWithAuthor`, `Save`, `SaveWithDetails`, `UserSave`, `Character`, `CreateCharacterPayload`, `AdventureListItem`). Pas de logique, juste compilation + présence de champs. |
+| `character.test.ts` | `@/lib/characters/classDefinitions` + `@/lib/leveling` | 38 | `CHARACTER_CLASSES`, `validateCharacterName`, `calculateRequiredXP`, `getTotalXPForLevel`, `getClassAbilitiesWithInfo`, `getFormattedStats`, `STAT_LABELS/ICONS/COLORS`, `DIFFICULTY_LABELS`, `CLASS_DIFFICULTIES`, `CLASS_PASSIVES`, `ABILITIES_DATA`, `getPrestigeTitle`, `getXPInCurrentLevel`, `getXPForNextLevel`. |
+| `save.test.ts` | `@/lib/saves` | 9 | `getUserSavesWithDetails` (4 cas : erreur, data null, mapping, relations nulles), `saveProgress` (5 cas : insert, update, erreur insert, erreur update, rejection lookup). |
 
-| ID | Test | Statut |
-|----|------|--------|
-| JWT-01 | Créer un token JWT | ✅ |
-| JWT-02 | Token différent par payload | ✅ |
-| JWT-03 | Vérifier token et retourner payload | ✅ |
-| JWT-04 | Retourner null pour token vide | ✅ |
-| JWT-05 | Extraire token depuis cookies | ✅ |
-| JWT-06 | Cookies null | ✅ |
-| JWT-07 | Pas de token auth_token | ✅ |
-| JWT-08 | Gérer cookies avec espaces | ✅ |
-| JWT-09 | Gérer plusieurs cookies | ✅ |
-| JWT-10 | Créer cookie avec token | ✅ |
-| JWT-11 | Cookie a durée 7 jours | ✅ |
-| JWT-12 | Créer cookie suppression | ✅ |
-| JWT-13 | Cookie a Max-Age=0 | ✅ |
-| JWT-14 | Propriétés HttpOnly, SameSite | ✅ |
-| JWT-15 | Propriétés Path | ✅ |
-| JWT-16 | Nettoyage console.error | ✅ |
+### 4.2 Tests d'intégration (`tests/integration/`)
 
-### 3.2 Tests unitaires - Utils (9 tests)
+| Fichier | Cible réelle | Tests | Description |
+|---------|--------------|-------|-------------|
+| `auth.test.ts` | `@/lib/jwt` | 7 | Scénarios bout-en-bout : inscription → connexion → vérification → cookie → multi-utilisateurs. |
+| `adventure.test.ts` | `@/lib/adventures` | 11 | `getAdventureWithAuthor` (4), `getAllAdventuresWithAuthors` (3), `getTopAdventures` (2), `getBranchById` (2). Vérifie l'ordre (`popularite desc`), la limite, le mapping `auteur_nom`. |
+| `character.test.ts` | `@/lib/leveling` + `@/lib/xp` + `@/lib/characters/classDefinitions` | 29 | Création de personnage end-to-end, `getPrestigeTitle` (8 paliers), `getXPInCurrentLevel` (4 cas), `applyXpGain` (4 cas), `calculateLevel` (5 cas), cohérence entre les deux implémentations de courbe XP, vérifications cross-classes. |
+| `save.test.ts` | `@/lib/saves` | 7 | Scénarios upsert (insert vs update selon lookup), erreurs DB sur insert et update, listing par date desc avec `eq('id_utilisateur', ...)`. |
 
-| ID | Test | Statut |
-|----|------|--------|
-| UTIL-01 | Combiner plusieurs classes | ✅ |
-| UTIL-02 | Filtrer classes falsy | ✅ |
-| UTIL-03 | Gérer valeurs boolean | ✅ |
-| UTIL-04 | Gérer chaînes vides | ✅ |
-| UTIL-05 | Un seul argument | ✅ |
-| UTIL-06 | Aucun argument | ✅ |
-| UTIL-07 | Classes avec espaces | ✅ |
-| UTIL-08 | Classes avec tirets | ✅ |
-| UTIL-09 | Classes conditionnelles | ✅ |
+### 4.3 Total
 
-### 3.3 Tests unitaires - Types (11 tests)
+| Catégorie | Tests |
+|-----------|-------|
+| Unitaires | 81 |
+| Intégration | 54 |
+| **TOTAL** | **135** |
 
-| ID | Test | Statut |
-|----|------|--------|
-| TYPE-01 | Objet Adventure valide | ✅ |
-| TYPE-02 | Valeurs nulles optionnelles | ✅ |
-| TYPE-03 | Objet Branch valide | ✅ |
-| TYPE-04 | Détection fin de branche | ✅ |
-| TYPE-05 | AdventureWithAuthor avec auteur | ✅ |
-| TYPE-06 | Sans auteur_nom | ✅ |
-| TYPE-07 | Valider aventure complète | ✅ |
-| TYPE-08 | Rejeter aventure invalide | ✅ |
-| TYPE-09 | Détection fin de branche (helper) | ✅ |
-| TYPE-10 | Branche non-terminée | ✅ |
-| TYPE-11 | UserCreation interface | ✅ |
+## 5. Couverture réelle (`npm test -- --coverage`)
 
-### 3.4 Tests unitaires - Personnages (19 tests)
+> Généré automatiquement par `jest --coverage`. Aucune ligne n'est extrapolée.
 
-| ID | Test | Statut |
-|----|------|--------|
-| CHAR-01 | 10 classes définies | ✅ |
-| CHAR-02 | Classes principales présentes | ✅ |
-| CHAR-03 | Description pour chaque classe | ✅ |
-| CHAR-04 | Stats de base pour chaque classe | ✅ |
-| CHAR-05 | Abilities pour chaque classe | ✅ |
-| CHAR-06 | Calcul PV Guerrier | ✅ |
-| CHAR-07 | Calcul PV Mage | ✅ |
-| CHAR-08 | Calcul PV Barbare | ✅ |
-| CHAR-09 | Calcul PV Nécromancien | ✅ |
-| CHAR-10 | Accepter nom valide | ✅ |
-| CHAR-11 | Rejeter nom vide | ✅ |
-| CHAR-12 | Rejeter nom trop court | ✅ |
-| CHAR-13 | Rejeter nom trop long | ✅ |
-| CHAR-14 | Rejeter caractères spéciaux | ✅ |
-| CHAR-15 | STAT_LABELS | ✅ |
-| CHAR-16 | Character type | ✅ |
-| CHAR-17 | Calcul niveau suivant | ✅ |
-| CHAR-18 | Expérience niveau 1 | ✅ |
-| CHAR-19 | Expérience niveau 2-4 | ✅ |
+### 5.1 Totaux
 
-### 3.5 Tests unitaires - Sauvegarde (18 tests)
+| Métrique | Avant | Maintenant |
+|----------|-------|------------|
+| % Statements | 3.35 % | **12.08 %** |
+| % Branches | 0.82 % | **6.68 %** |
+| % Functions | 2.86 % | **9.45 %** |
+| % Lines | 3.28 % | **11.38 %** |
 
-| ID | Test | Statut |
-|----|------|--------|
-| SAVE-01 | Structure SaveWithDetails valide | ✅ |
-| SAVE-02 | Calcul progression 10% | ✅ |
-| SAVE-03 | Calcul progression 50% | ✅ |
-| SAVE-04 | Calcul progression 100% | ✅ |
-| SAVE-05 | Cas limite 0 branches | ✅ |
-| SAVE-06 | Détection nouvelle sauvegarde | ✅ |
-| SAVE-07 | Détection mise à jour | ✅ |
-| SAVE-08 | Params valides | ✅ |
-| SAVE-09 | Rejeter userId null | ✅ |
-| SAVE-10 | Rejeter adventureId null | ✅ |
-| SAVE-11 | Rejeter characterId null | ✅ |
-| SAVE-12 | Rejeter IDs à 0 | ✅ |
-| SAVE-13 | Intervalle par défaut 30s | ✅ |
-| SAVE-14 | Intervalle minimal 5s | ✅ |
-| SAVE-15 | Intervalle maximal 5min | ✅ |
-| SAVE-16 | Rejeter intervalle trop court | ✅ |
-| SAVE-17 | Rejeter intervalle trop long | ✅ |
-| SAVE-18 | Format date ISO | ✅ |
+### 5.2 Par fichier — fichiers les mieux couverts
 
-### 3.6 Tests d'intégration - Auth (9 tests)
+| Fichier | % Stmts | % Branches | % Funcs | % Lines | Commentaire |
+|---------|---------|------------|---------|---------|-------------|
+| `lib/utils.ts` | 100 | 100 | 100 | 100 | 9 tests couvrent tous les chemins |
+| `lib/characters/classDefinitions.ts` | 100 | 100 | 100 | 100 | 38 tests : tous les exports sont testés |
+| `lib/levelBonus.ts` | 100 | 100 | 100 | 100 | Couvert transitivement par `applyXpGain` |
+| `lib/saves.ts` | 91.66 | 100 | 100 | 90 | Tous les chemins fonctionnels + erreurs (reste : console.error dans catch) |
+| `lib/adventures.ts` | 84.21 | 88.88 | 100 | 81.25 | Tous les chemins fonctionnels + erreurs (reste : console.error dans catch) |
+| `lib/xp.ts` | 82.97 | 54.83 | 50 | 89.47 | `applyXpGain` + `calculateLevel` couverts ; `saveCharacterProgress` et `updateUserXp` non testés (voir §6) |
+| `lib/jwt.ts` | 77.35 | 46.42 | 100 | 78 | `signToken`, `verifyToken`, cookies, parser — 24 tests |
+| `lib/leveling.ts` | 54.09 | 28.33 | 66.66 | 48.07 | Fonctions pures (`getPrestigeTitle`, `getXPInCurrentLevel`, `getXPForNextLevel`) à 100 % ; `addExperience` et `resetForNewSeason` non couverts |
+| `lib/seasons.ts` | 30.76 | 0 | 0 | 30.76 | `SEASONS` constants utilisés par les tests leveling mais pas testés directement |
+| `lib/supabaseClient.ts` | 25.71 | 27.27 | 0 | 27.27 | Le mock se charge à la place, ce qui couvre le proxy et la fonction lazy |
 
-| ID | Test | Statut |
-|----|------|--------|
-| AUTH-INT-01 | Créer et vérifier token | ✅ |
-| AUTH-INT-02 | Cycle de vie cookie | ✅ |
-| AUTH-INT-03 | Session persistante | ✅ |
-| AUTH-INT-04 | Protection avec rôle | ✅ |
-| AUTH-INT-05 | Accès admin | ✅ |
-| AUTH-INT-06 | Échec sans token | ✅ |
-| AUTH-INT-07 | Plusieurs utilisateurs | ✅ |
-| AUTH-INT-08 | Flux complet inscription → connexion | ✅ |
-| AUTH-INT-09 | Nettoyage console.error | ✅ |
+### 5.3 Par fichier — à 0 % (honnêteté)
 
-### 3.7 Tests d'intégration - Aventure (8 tests)
+Ces fichiers n'ont **aucun test direct** à ce jour. Justifications au §6.
 
-| ID | Test | Statut |
-|----|------|--------|
-| ADV-INT-01 | Charger aventure + embranchement | ✅ |
-| ADV-INT-02 | Charger infos auteur | ✅ |
-| ADV-INT-03 | Aventure sans contenu | ✅ |
-| ADV-INT-04 | Suivre choix 1 | ✅ |
-| ADV-INT-05 | Suivre choix 2 | ✅ |
-| ADV-INT-06 | Construire historique | ✅ |
-| ADV-INT-07 | Détection fin d'aventure | ✅ |
-| ADV-INT-08 | Branche non-terminée | ✅ |
+| Fichier | Lignes | Justification |
+|---------|--------|---------------|
+| `lib/abilities.ts` | 30-186 | Logique d'abilities par classe, non exposée directement. Les noms et types sont testés via `ABILITIES_DATA` dans `character.test.ts`. |
+| `lib/achievements.ts` | 26-71 | Système de succès statique, valeur de test unitaire marginale. |
+| `lib/combat.ts` | 1-279 | État de combat tour par tour. Nécessite un harness React/DOM ou une ré-architecture. |
+| `lib/combatAbilityHandlers.ts` | 31-202 | Handlers d'abilities en combat. Couplés à `lib/combat.ts`. |
+| `lib/dailyQuests.ts` | 1-169 | Quêtes quotidiennes. Couplées au système de saisons et achievements. |
+| `lib/monsters.ts` | 16-118 | Définitions de monstres statiques. |
+| `lib/randomEvents.ts` | 22-560 | Événements aléatoires. Pas de logique algorithmique à tester. |
+| `lib/randomGenerator.ts` | 1-137 | Génération aléatoire. Difficile à tester sans mocker `Math.random`. |
+| `lib/votes.ts` | 1-39 | Vote unique. La logique de duplicate-key (PostgreSQL `23505`) demande un mock précis. À ajouter en priorité P1. |
+| `lib/generator/engine.ts` | 2-178 | Moteur d'assemblage procédural. |
+| `lib/generator/fantasy.ts` / `horror.ts` / `romance.ts` / `scifi.ts` | (banques statiques) | Texte statique par genre. |
+| `hooks/*` | — | Tous les hooks React sont à 0 %. Tester des hooks nécessite `@testing-library/react` avec `renderHook` (non configuré ici). |
 
-### 3.8 Tests d'intégration - Personnages (10 tests)
+## 6. Limites et perspectives
 
-| ID | Test | Statut |
-|----|------|--------|
-| CHAR-INT-01 | Créer personnage complet | ✅ |
-| CHAR-INT-02 | Personnage Mage avec stats | ✅ |
-| CHAR-INT-03 | PV différents par classe | ✅ |
-| CHAR-INT-04 | Liste personnages utilisateur | ✅ |
-| CHAR-INT-05 | Trouver personnage par ID | ✅ |
-| CHAR-INT-06 | Supprimer personnage | ✅ |
-| CHAR-INT-07 | Exp next level | ✅ |
-| CHAR-INT-08 | Montée de niveau | ✅ |
-| CHAR-INT-09 | Calcul progression | ✅ |
-| CHAR-INT-10 | Votes et popularité | ✅ |
+### 6.1 Limites actuelles assumées
 
-### 3.9 Tests d'intégration - Sauvegarde (18 tests)
+1. **Pas de tests E2E** : le projet a `@playwright/test` dans le backlog mais aucune suite n'est définie. Les flux utilisateur (création de personnage, lecture d'aventure, vote) ne sont pas testés bout-en-bout.
+2. **Pas de tests sur les hooks** : `useAuth`, `useSave`, `useAdventure`, `useCombat` etc. sont entièrement non testés. Configurer `renderHook` + un `SupabaseProvider` mocké serait un ajout de moyenne ampleur.
+3. **`lib/combat.ts` et `lib/combatAbilityHandlers.ts` non testés** : système tour par tour avec état mutable. Nécessite soit un harness dédié soit une ré-architecture en pur functions.
+4. **`lib/votes.ts` non testé** : la gestion de l'erreur duplicate-key (code `23505`) demande un mock précis du client Supabase. À ajouter en P1.
+5. **Pas de tests pour les actions admin** (`hooks/admin/*`) : volumineux, couplés à Supabase admin client. À traiter séparément.
+6. **Le `useToast.tsx` hook casse la collecte de coverage** : le fichier est `.tsx` mais Jest est configuré sans `babel-preset-react` pour la phase de coverage. C'est un babel-config connu, pas un problème de tests. Les autres `.ts` de `hooks/` collectent à 0 % proprement.
 
-| ID | Test | Statut |
-|----|------|--------|
-| SAVE-INT-01 | Sauvegarder progression | ✅ |
-| SAVE-INT-02 | Restaurer sauvegarde | ✅ |
-| SAVE-INT-03 | null si inexistante | ✅ |
-| SAVE-INT-04 | Détection upsert | ✅ |
-| SAVE-INT-05 | Mettre à jour progression | ✅ |
-| SAVE-INT-06 | Liste sauvegardes user | ✅ |
-| SAVE-INT-07 | Trier par date | ✅ |
-| SAVE-INT-08 | Sauvegarde aventure spécifique | ✅ |
-| SAVE-INT-09 | Supprimer sauvegarde | ✅ |
-| SAVE-INT-10 | Déclencher après intervalle | ✅ |
-| SAVE-INT-11 | Comparer timestamps | ✅ |
+### 6.2 Perspectives d'amélioration (par priorité)
 
----
+| Priorité | Action | Bénéfice estimé |
+|----------|--------|-----------------|
+| P0 | Configurer le preset Babel pour supporter JSX | Permettrait la couverture des hooks |
+| P0 | Tester `lib/votes.ts` (chemin nominal + duplicate) | +1 fichier couvert |
+| P1 | Tests `renderHook` sur `useAuth`, `useSave`, `useAdventure` | Couverture des hooks critiques |
+| P1 | Tests `lib/abilities.ts` (la logique de résolution par classe) | +1 fichier couvert |
+| P1 | Tests `lib/dailyQuests.ts` (génération + complétion) | +1 fichier couvert |
+| P2 | Tests de combat : ré-architecturer en pur functions puis tester | +2 fichiers à ~80 % |
+| P2 | Tests E2E Playwright sur les flux principaux (1-2 scénarios) | Détection des régressions UI |
+| P3 | Tests `lib/generator/*` (assertion sur la grammaire de génération) | Couverture du moteur procédural |
 
-## 4. Résumé
+### 6.3 Anti-patterns éliminés
 
-### Tests implémentés
+Avant cette refonte, les fichiers de test **redéfinissaient localement** les fonctions qu'ils étaient censés tester (`calculateProgression`, `calculateInitialHP`, `isEndBranch`, etc.) puis exécutaient leur propre copie. Les tests passaient à 100 % mais ne protégeaient **rien** dans `lib/`.
 
-| Catégorie | Nombre |
-|-----------|--------|
-| Tests unitaires | 73 |
-| Tests d'intégration | 45 |
-| **TOTAL** | **118** |
+**État actuel :** tous les tests exécutent le code de `lib/` importé. Aucune fonction de production n'est recopiée dans un fichier de test. C'est vérifiable en cherchant `const calculate` ou `const isValid` dans `tests/` : le résultat est zéro.
 
-*(Note: Le plan initial indiquait 108, mais après corrections de bugs, nous avons 118 tests)*
-
-### Couverture fonctionnelle
-
-| Module | Tests | Status |
-|--------|-------|--------|
-| JWT/Auth | 25 | ✅ Complet |
-| Utils | 9 | ✅ Complet |
-| Types | 11 | ✅ Complet |
-| Personnages | 29 | ✅ Complet |
-| Sauvegarde | 29 | ✅ Complet |
-| Aventure | 15 | ✅ Complet |
-
-### Commandes
+## 7. Comment exécuter
 
 ```bash
-# Exécuter tous les tests
+# Tous les tests
 npm test
+
+# Un fichier en particulier
+npm test -- tests/lib/character.test.ts
+
+# Avec couverture
+npm test -- --coverage
 
 # Mode watch
 npm run test:watch
@@ -226,15 +167,14 @@ npm run test:watch
 npm run lint
 ```
 
----
+## 8. Résumé qualité
 
-
-## 5. Résultats qualité
-
-| Métrique | Valeur |
-|----------|--------|
-| Tests passent | 100% ✅ |
-| ESLint | 0 erreurs ✅ |
-| TypeScript | 0 erreurs ✅ |
-
----
+| Métrique | Valeur | Source |
+|----------|--------|--------|
+| Tests passants | 135 / 135 (100 %) | `npm test` |
+| ESLint | 0 erreur sur `tests/` | `npm run lint` |
+| TypeScript | 0 erreur | compilation `ts-jest` |
+| Coverage statements | 12.08 % | `npm test -- --coverage` |
+| Coverage lignes | 11.38 % | `npm test -- --coverage` |
+| Fichiers de `lib/` testés | 7 / 19 (37 %) | décompte manuel |
+| Fonctions Supabase testées | 6 / 12 (50 %) | décompte manuel |
