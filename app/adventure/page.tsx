@@ -184,7 +184,7 @@ function AdventurePageContent() {
                 animate="visible"
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto"
               >
-                {filteredAdventures.map((adventure, index) => (
+                {filteredAdventures.map((adventure) => (
                   <motion.div key={adventure.id} variants={itemVariants}>
                     <AdventureCard
                       id={adventure.id}

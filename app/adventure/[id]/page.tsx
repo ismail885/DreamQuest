@@ -88,9 +88,6 @@ function AdventureReader({ params }: Props) {
   } | null>(null);
   const [combatStats, setCombatStats] = useState({ wins: 0, losses: 0 });
   const [fatigueCount, setFatigueCount] = useState(0);
-  const maxFatigue = character ? Math.max(1, (character.stats?.endurance ?? 5) * 2) : 10;
-  const isFatigued = fatigueCount >= maxFatigue;
-  const damageMultiplier = isFatigued ? 0.7 : 1.0;
 
   const {
     character,
@@ -103,6 +100,10 @@ function AdventureReader({ params }: Props) {
     personnageId: searchParams.get("personnage"),
     userId: user?.id ?? null,
   });
+
+  const maxFatigue = character ? Math.max(1, (character.stats?.endurance ?? 5) * 2) : 10;
+  const isFatigued = fatigueCount >= maxFatigue;
+  const damageMultiplier = isFatigued ? 0.7 : 1.0;
 
   const {
     inCombat,
