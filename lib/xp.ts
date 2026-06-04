@@ -38,7 +38,7 @@ export function applyXpGain(
         if (bonus.endurance) statBonuses.endurance = (statBonuses.endurance || 0) + bonus.endurance
       }
     }
-    newMaxPv = basePvMax + (statBonuses.endurance || 0) * 10 + (newLevel - currentLevel) * 10
+    newMaxPv = basePvMax + (statBonuses.endurance || 0) * 5 + (newLevel - currentLevel) * 5
   }
 
   return {

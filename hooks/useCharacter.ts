@@ -175,8 +175,8 @@ export function useCharacter({
         experience: 0,
       };
 
-      const xpPerChoice = 30;
-      const endBonus = 100;
+      const xpPerChoice = 8;
+      const endBonus = 25;
       const xpGained = historyLength * xpPerChoice + endBonus;
 
       const basePvMax = character.points_vie_max || 100;

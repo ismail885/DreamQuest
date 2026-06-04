@@ -29,6 +29,7 @@ interface UseCombatProps {
   setCharacter: React.Dispatch<React.SetStateAction<Character | null>>;
   userId: number | null;
   onCombatEnd?: (won: boolean) => void;
+  damageMultiplier?: number;
 }
 
 interface UseCombatReturn {
@@ -47,6 +48,7 @@ export function useCombat({
   setCharacter,
   userId,
   onCombatEnd,
+  damageMultiplier = 1,
 }: UseCombatProps): UseCombatReturn {
   const [inCombat, setInCombat] = useState(false);
   const [combatState, setCombatState] = useState<CombatState | null>(null);
@@ -90,7 +92,10 @@ export function useCombat({
       combatState.enemy,
       combatState.status,
     );
-    const newEnemyPv = Math.max(0, combatState.enemy.pv - result.dmg);
+    const effectiveDmg = damageMultiplier < 1
+      ? Math.max(1, Math.floor(result.dmg * damageMultiplier))
+      : result.dmg;
+    const newEnemyPv = Math.max(0, combatState.enemy.pv - effectiveDmg);
     const newLog = [...combatState.log, result.log];
 
     if (newEnemyPv <= 0) {
@@ -112,7 +117,7 @@ export function useCombat({
         turn: "enemy",
       });
     }
-  }, [combatState, character, getPlayerStats, setCharacter]);
+  }, [combatState, character, getPlayerStats, setCharacter, damageMultiplier]);
 
   // Défense : réduit les dégâts du prochain attack ennemi
   const handleCombatDefend = useCallback(() => {
@@ -225,7 +230,10 @@ export function useCombat({
       let newEnemyStatus = combatState.enemyStatus;
 
       if (result.damage) {
-        newEnemyPv = Math.max(0, combatState.enemy.pv - result.damage);
+        const effectiveAbilityDmg = damageMultiplier < 1
+          ? Math.max(1, Math.floor(result.damage * damageMultiplier))
+          : result.damage;
+        newEnemyPv = Math.max(0, combatState.enemy.pv - effectiveAbilityDmg);
         newEnemyStatus = [
           ...newEnemyStatus,
           ...(result.newEnemyStatus || []),
@@ -263,7 +271,7 @@ export function useCombat({
         cooldowns: result.newCooldowns ?? combatState.cooldowns,
       });
     },
-    [combatState, character, getPlayerStats, setCharacter],
+    [combatState, character, getPlayerStats, setCharacter, damageMultiplier],
   );
 
   // Fin de combat : applique l'XP si victoire, sauvegarde les PV si défaite
@@ -271,7 +279,10 @@ export function useCombat({
     if (!character) return;
 
     if (combatState?.won) {
-      const xpGain = combatState.enemy?.xpReward || 0;
+      const baseXp = combatState.enemy?.xpReward || 0;
+      const enemyLevel = combatState.enemy?.level || 1;
+      const levelRatio = Math.max(1, (character.niveau || 1) / enemyLevel);
+      const xpGain = Math.floor(baseXp * levelRatio);
       const currentXp = character.experience ?? 0;
       const currentLevel = character.niveau ?? 1;
       const basePvMax = character.points_vie_max || 100;

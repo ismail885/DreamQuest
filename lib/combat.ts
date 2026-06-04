@@ -91,9 +91,10 @@ export function getEnemyById(id: string): Enemy | undefined {
 }
 
 export function playerAttack(stats: { force: number; agility: number; magie: number; endurance: number }, enemy: Enemy, status: PlayerStatus): { dmg: number; log: string; isCrit: boolean } {
-  const baseDmg = stats.force + Math.floor(stats.agility / 2) + Math.floor(stats.endurance * 0.2);
+  const baseDmg = Math.floor(stats.force * 0.8 + stats.agility * 0.3 + stats.endurance * 0.15);
   const bonusForce = status.buff_force > 0 ? Math.floor(stats.force * BUFF_FORCE_BONUS) : 0;
-  const finalDmg = baseDmg + bonusForce;
+  const enemyDefense = Math.floor((enemy.defense || 0) * 0.5);
+  const finalDmg = Math.max(1, baseDmg + bonusForce - enemyDefense);
   
   const critChance = Math.min(CRIT_CHANCE_MAX, stats.agility / 100);
   const isCrit = Math.random() < critChance;
@@ -209,7 +210,7 @@ export function enemyAttack(enemy: Enemy, playerStatus: PlayerStatus, playerAgil
     return { dmg: 0, log, dodged: true };
   }
   
-  const baseDmg = enemy.force + Math.floor(enemy.agility / 2);
+  const baseDmg = Math.floor(enemy.force * 1.2 + enemy.agility * 0.5);
   
   // Apply debuff from player status
   let reduction = 0;

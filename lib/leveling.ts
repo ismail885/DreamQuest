@@ -3,17 +3,7 @@ import {
   MAX_LEVEL,
   getCurrentSeason,
 } from "@/lib/seasons";
-
-export function calculateRequiredXP(level: number): number {
-  if (level < 1 || level >= MAX_LEVEL) return Infinity;
-
-  if (level <= 10) return 50 + (level - 1) * 10;
-  if (level <= 25) return 200 + (level - 10) * 20;
-  if (level <= 45) return 600 + (level - 25) * 40;
-  if (level <= 70) return 1600 + (level - 45) * 80;
-  if (level <= 85) return 4000 + (level - 70) * 150;
-  return 7000 + (level - 85) * 300;
-}
+import { calculateRequiredXP } from './characters/classDefinitions';
 
 function getTotalXPForLevel(level: number): number {
   if (level <= 1) return 0;

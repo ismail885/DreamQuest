@@ -170,7 +170,7 @@ export default function CreateCharacterForm({
     setError("");
 
     try {
-      const pointsVieInitiaux = 100 + classInfo.baseStats.endurance * 10;
+      const pointsVieInitiaux = 40 + classInfo.baseStats.endurance * 10;
 
       const { data, error: insertError } = await supabase
         .from("personnage")

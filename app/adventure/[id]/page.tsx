@@ -87,6 +87,10 @@ function AdventureReader({ params }: Props) {
     endurance: number;
   } | null>(null);
   const [combatStats, setCombatStats] = useState({ wins: 0, losses: 0 });
+  const [fatigueCount, setFatigueCount] = useState(0);
+  const maxFatigue = character ? Math.max(1, (character.stats?.endurance ?? 5) * 2) : 10;
+  const isFatigued = fatigueCount >= maxFatigue;
+  const damageMultiplier = isFatigued ? 0.7 : 1.0;
 
   const {
     character,
@@ -113,6 +117,7 @@ function AdventureReader({ params }: Props) {
     character,
     setCharacter,
     userId: user?.id ?? null,
+    damageMultiplier,
     onCombatEnd: (won) => {
       setCombatStats((prev) => ({
         wins: prev.wins + (won ? 1 : 0),
@@ -267,6 +272,29 @@ function AdventureReader({ params }: Props) {
 
       {character && <CharacterHUD character={character} />}
 
+      {character && (
+        <div className="flex justify-center px-4 mt-1 mb-2">
+          <div className="flex items-center gap-2 text-xs text-white/70">
+            <span className={isFatigued ? "text-red-400 font-semibold" : ""}>
+              {isFatigued ? "⚡ Épuisé" : "Endurance"}
+            </span>
+            <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-300 ${
+                  isFatigued ? "bg-red-500" : "bg-emerald-400"
+                }`}
+                style={{
+                  width: `${Math.min(100, (fatigueCount / maxFatigue) * 100)}%`,
+                }}
+              />
+            </div>
+            <span className="text-white/50">
+              {fatigueCount}/{maxFatigue}
+            </span>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 flex flex-col items-center px-4 py-6">
         <motion.div
           variants={pageVariants}
@@ -366,6 +394,7 @@ function AdventureReader({ params }: Props) {
                         toast.error("Lien manquant pour ce choix");
                         return;
                       }
+                      setFatigueCount((prev) => prev + 2);
                       const isCombat = await applyConsequence(
                         1,
                         currentBranch?.choix1_consequences,
@@ -385,6 +414,7 @@ function AdventureReader({ params }: Props) {
                         toast.error("Lien manquant pour ce choix");
                         return;
                       }
+                      setFatigueCount((prev) => prev + 2);
                       const isCombat = await applyConsequence(
                         2,
                         currentBranch?.choix2_consequences,
