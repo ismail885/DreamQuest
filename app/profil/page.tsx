@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabaseClient";
@@ -241,6 +241,7 @@ export default function ProfilPage() {
   }
 
   return (
+    <Suspense fallback={<Loader fullScreen message="Chargement de votre profil..." />}>
     <div className="min-h-screen text-white flex flex-col bg-deep">
       <PageBackground />
 
@@ -409,6 +410,7 @@ export default function ProfilPage() {
         getUserInitials={getUserInitials}
       />
     </div>
+    </Suspense>
   );
 }
 

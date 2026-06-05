@@ -93,8 +93,11 @@ describe('Combat - fonctions pures', () => {
     it('devrait augmenter les dégâts avec buff_force actif', () => {
       const enemy = createTestEnemy()
       const buffedStatus: PlayerStatus = { ...defaultStatus, buff_force: 3 }
+      // Mock Math.random pour éviter le flaky dû aux crits aléatoires
+      const spy = jest.spyOn(global.Math, 'random').mockReturnValue(0)
       const normal = playerAttack(defaultStats, enemy, defaultStatus)
       const buffed = playerAttack(defaultStats, enemy, buffedStatus)
+      spy.mockRestore()
       expect(buffed.dmg).toBeGreaterThanOrEqual(normal.dmg)
     })
 

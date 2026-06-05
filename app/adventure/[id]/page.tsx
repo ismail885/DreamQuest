@@ -254,6 +254,7 @@ function AdventureReader({ params }: Props) {
   }
 
   return (
+    <Suspense fallback={<Loader fullScreen />}>
     <div className="min-h-screen bg-deep text-white flex flex-col">
       <PageBackground />
       <AdventureHeader
@@ -458,5 +459,6 @@ function AdventureReader({ params }: Props) {
 
       <Footer />
     </div>
+    </Suspense>
   );
 }

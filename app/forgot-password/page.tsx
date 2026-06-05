@@ -1,11 +1,12 @@
 "use client";
 
-import { FormEvent, useEffect, useState, type ReactNode } from "react";
+import { Suspense, FormEvent, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import PageBackground from "@/components/shared/PageBackground";
 import { Mail, Lock, ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
+import Loader from "@/components/shared/Loader";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -105,6 +106,7 @@ export default function ForgotPasswordPage() {
   };
 
   const PageLayout = ({ children }: { children: ReactNode }) => (
+    <Suspense fallback={<Loader fullScreen />}>
     <main className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
       <PageBackground />
       <div className="w-full max-w-sm relative z-10">
@@ -113,6 +115,7 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </main>
+    </Suspense>
   );
 
   if (isResetMode) {

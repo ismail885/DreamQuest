@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
@@ -72,7 +72,8 @@ export default function DashboardPage() {
  if (!user) return null;
 
   return (
- <div className="min-h-screen bg-deep text-white flex flex-col">
+    <Suspense fallback={<Loader fullScreen />}>
+    <div className="min-h-screen bg-deep text-white flex flex-col">
  <Header />
 
       <main className="flex-1">
@@ -151,6 +152,7 @@ export default function DashboardPage() {
 
   <Footer />
   </div>
+  </Suspense>
   );
 }
 

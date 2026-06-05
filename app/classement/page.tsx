@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   Trophy,
@@ -14,6 +15,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { useClassementData } from "@/hooks/useClassementData";
 import RankingRow from "@/components/classement/RankingRow";
 import ClassementTabs from "@/components/classement/ClassementTabs";
+import Loader from "@/components/shared/Loader";
 
 export default function ClassementPage() {
   const { user } = useAuthContext();
@@ -26,6 +28,7 @@ export default function ClassementPage() {
     fetchError,
   } = useClassementData();
   return (
+    <Suspense fallback={<Loader fullScreen />}>
     <div className="min-h-screen text-white flex flex-col relative bg-deep">
       <PageBackground />
 
@@ -150,6 +153,7 @@ export default function ClassementPage() {
       </main>
 
     </div>
+    </Suspense>
   );
 }
 
