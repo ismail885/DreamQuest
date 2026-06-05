@@ -109,13 +109,14 @@ const AdventureCard = React.memo(function AdventureCard({
 
           <div className="flex items-center justify-between pt-2 border-t border-cyan-500/15 ">
             <div className="flex items-center gap-1.5 text-gray-400 text-xs ">
-              <Star className="w-3.5 h-3.5" />
+              <Star className="w-3.5 h-3.5" aria-hidden="true" />
               <span>{currentPopularite}</span>
             </div>
 
             <button
               onClick={handleVoteClick}
               disabled={isLoading}
+              aria-label={hasVoted ? "Retirer votre vote" : "Voter pour cette aventure"}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all duration-200 ${
                 hasVoted
                   ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
@@ -124,6 +125,7 @@ const AdventureCard = React.memo(function AdventureCard({
             >
               <Star
                 className={`w-3.5 h-3.5 ${hasVoted ? "fill-yellow-400" : ""}`}
+                aria-hidden="true"
               />
               <span className="text-xs font-medium">{currentPopularite}</span>
             </button>

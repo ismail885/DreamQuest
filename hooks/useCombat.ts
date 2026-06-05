@@ -218,6 +218,16 @@ export function useCombat({
         return;
       }
 
+      // Gérer les capacités spéciales (ex: fuite)
+      if (result.specialFlag === 'fled') {
+        setCombatState({
+          ...combatState,
+          log: [...combatState.log, result.log],
+          fled: true,
+        });
+        return;
+      }
+
       let newEnemyPv = combatState.enemy.pv;
       const newPlayerPv = Math.min(
         combatState.playerPvMax,

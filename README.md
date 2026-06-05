@@ -109,15 +109,23 @@ DreamQuest/
 │   ├── profil/              # Profil utilisateur
 │   ├── profil/[username]/   # Profil public
 │   ├── forgot-password/     # Récupération mot de passe
+│   ├── cookies/             # Politique cookies (RGPD)
+│   ├── privacy/             # Politique de confidentialité
+│   ├── terms/               # Conditions d'utilisation
+│   ├── licenses/            # Licences tierces
 │   └── admin/               # Administration
 │       ├── users/           # Gestion utilisateurs
 │       ├── characters/      # Gestion personnages
 │       ├── adventures/      # Gestion aventures
-│       ├── logs/            # Logs système
-│       └── settings/        # Paramètres
+│       └── logs/            # Logs système
+│       ├── users/           # Gestion utilisateurs
+│       ├── characters/      # Gestion personnages
+│       ├── adventures/      # Gestion aventures
+│       └── logs/            # Logs système
 ├── components/              # Composants React
 │   ├── auth/               # LoginForm, RegisterForm
 │   ├── character/          # CharacterCard, ClassCard, CreateCharacterForm
+│   │                       # + CharacterList
 │   ├── adventure/          # AdventureCard, AdventureHeader, AdventureEndScreen,
 │   │                       # CharacterHUD, ChoiceButton, StorySection, CombatUI,
 │   │                       # EffectIndicator, RandomEventCard, ClassAbilitiesPanel,
@@ -125,12 +133,20 @@ DreamQuest/
 │   ├── profile/            # TabStories, TabAchievements, TabCreations, TabQuests,
 │   │                       # TabCharacters, TabEvolution, ProfileSidebar,
 │   │                       # SettingsModal, EditProfileModal
+│   ├── classement/         # ClassementTabs, RankingRow
 │   ├── dashboard/          # DashboardStats, DashboardSuggestions
 │   ├── editor/             # AdventureEditor
-│   └── shared/             # Header, Footer, Loader, Skeleton, BottomNav, Breadcrumb
+│   ├── admin/              # AdminUsersTable, AdminCharactersTable, AdminLogList,
+│   │                       # AdminLogFilters, AdminLogStats, AdminStatCards,
+│   │                       # AdminRoleDistribution, UserDetailModal, UserEditModal,
+│   │                       # CharacterViewModal, DeleteConfirmModal
+│   └── shared/             # Header, Footer, Loader, Skeleton, BottomNav, Breadcrumb,
+│                           # ConfirmDeleteModal, ConfirmLeaveModal, EmptyState,
+│                           # ErrorState, PageBackground, PageTransition
 ├── context/                 # Context API
-│   ├── AuthContext.tsx     # Authentification
-│   └── ThemeContext.tsx    # Thème clair/sombre
+│   └── AuthContext.tsx     # Authentification (provider + hook useAuthContext)
+│   # Note : le thème clair/sombre est appliqué via script inline dans
+│   # app/layout.tsx (lecture du cookie dreamquest_theme)
 ├── hooks/                   # Custom hooks
 │   ├── useAuth.ts          # Hook d'authentification
 │   ├── useAdventure.ts     # Navigation embranchée avec BDD
@@ -142,13 +158,17 @@ DreamQuest/
 │   ├── useDashboardData.ts # Statistiques + suggestions dashboard
 │   ├── useAdventureList.ts # Liste aventures avec pagination
 │   ├── useClassementData.ts # Classement aventures et joueurs
-│   └── usePullToRefresh.ts  # Pull-to-refresh partagé
+│   ├── useCombat.ts        # Logique combat tour par tour (state machine)
+│   ├── useConsequences.ts  # Application des conséquences de choix
+│   ├── useNetworkStatus.ts # Détection online/offline
+│   ├── useToast.tsx        # Wrapper react-hot-toast
+│   └── usePullToRefresh.ts # Pull-to-refresh partagé
 ├── lib/                     # Utilitaires
 │   ├── supabaseClient.ts   # Client Supabase (timeout 15s)
 │   ├── jwt.ts              # Fonctions JWT
 │   ├── randomGenerator.ts  # Génération aléatoire
 │   ├── dailyQuests.ts      # Quêtes quotidiennes
-│   ├── specialEvents.ts    # Événements spéciaux
+│   ├── randomEvents.ts     # Événements aléatoires (combats, rencontres, trésors)
 │   ├── achievements.ts     # Système de succès
 │   ├── combat.ts           # Système de combat tour par tour
 │   ├── characters/         # Définitions des classes
@@ -163,11 +183,16 @@ DreamQuest/
 │   ├── adventure.ts        # Types aventure
 │   ├── user.ts             # Types utilisateur
 │   ├── save.ts             # Types sauvegarde
-│   └── story.ts            # Types histoire
+│   ├── css.d.ts            # Déclarations CSS modules
+│   └── index.ts            # Barrel d'exports
+├── data/                    # Données statiques
+│   ├── adventureImages.ts  # Images par genre d'aventure
+│   └── enemies.ts          # Définition des ennemis
 ├── app/api/                 # API Routes
-│   ├── auth/session/       # Gestion session JWT
+│   ├── auth/session/       # Gestion session JWT (POST/DELETE)
 │   ├── generator/          # Génération stats/abilities
-│   └── generate-story/     # Génération procédurale
+│   ├── generate-adventure/ # Génération d'aventure assistée
+│   └── generate-story/     # Génération procédurale d'histoires
 ├── tests/                   # Tests
 │   ├── lib/                # Tests unitaires
 │   └── integration/       # Tests d'intégration
@@ -230,11 +255,10 @@ npm run test         # Exécuter les tests
 
 | Route | Méthode | Description |
 |-------|---------|-------------|
-| `/auth/login` | GET | Page de connexion |
-| `/auth/register` | GET | Page d'inscription |
-| `/api/auth/session` | POST/DELETE | Gestion session JWT |
-| `/api/generator` | GET | Génération stats/abilities |
+| `/api/auth/session` | POST/DELETE | Gestion session JWT (cookie HttpOnly) |
+| `/api/generator` | GET | Génération stats/abilities d'un personnage |
 | `/api/generate-story` | POST | Génération procédurale d'aventures |
+| `/api/generate-adventure` | POST | Génération d'aventure assistée |
 
 ---
 

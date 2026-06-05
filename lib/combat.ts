@@ -116,7 +116,7 @@ export function executeAbility(
   playerPv: number,
   playerMana: number,
   currentCooldowns: Record<string, number> = {}
-): { success: boolean; damage?: number; heal?: number; newStatus?: PlayerStatus; newEnemyStatus?: StatusEffect[]; log: string; manaUsed: number; newCooldowns?: Record<string, number> } {
+): { success: boolean; damage?: number; heal?: number; newStatus?: PlayerStatus; newEnemyStatus?: StatusEffect[]; log: string; manaUsed: number; newCooldowns?: Record<string, number>; specialFlag?: string } {
   const abilities = ABILITIES[characterClass.toLowerCase()] || ABILITIES["guerrier"];
   const ability = abilities.find(a => a.id === abilityId);
   
@@ -149,7 +149,7 @@ export function executeAbility(
 
   // Gérer les flags spéciaux (ex: fuite)
   if (result.specialFlag === 'fled') {
-    return { success: true, log: result.log, manaUsed };
+    return { success: true, log: result.log, manaUsed, specialFlag: 'fled' };
   }
 
   const damage = result.damage ?? 0;

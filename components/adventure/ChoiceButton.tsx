@@ -66,7 +66,7 @@ export default function ChoiceButton({
         <span className="text-gray-300 text-sm leading-relaxed flex-1 group-hover:text-white transition-colors duration-300">
           {text}
         </span>
-        <ChevronRight className="w-5 h-5 text-gray-600 flex-shrink-0 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all duration-300 ease-out" />
+        <ChevronRight className="w-5 h-5 text-gray-600 flex-shrink-0 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all duration-300 ease-out" aria-hidden="true" />
       </div>
 
       {/* Stat consequence tags */}

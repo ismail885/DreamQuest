@@ -143,7 +143,7 @@ export default function CombatUI({
       className="backdrop-blur-card bg-slate-900/60 border border-red-500/30 rounded-card p-5 space-y-5"
     >
       <div className="flex items-center gap-3 mb-1">
-        <Swords className="w-5 h-5 text-red-400" />
+        <Swords className="w-5 h-5 text-red-400" aria-hidden="true" />
         <h2 className="text-red-400 font-bold text-lg">COMBAT</h2>
       </div>
 
@@ -188,7 +188,7 @@ export default function CombatUI({
         </div>
 
         <div className="text-center">
-          <div className="text-3xl mb-1">⚔️</div>
+          <div className="text-3xl mb-1" aria-hidden="true">⚔️</div>
           <div className="text-2xl font-bold text-gray-500">VS</div>
         </div>
 
@@ -257,9 +257,10 @@ export default function CombatUI({
               whileTap={{ scale: 0.98 }}
               onClick={onAttack}
               disabled={combatState.turn !== "player"}
+              aria-label="Attaquer l'ennemi"
               className="flex items-center justify-center gap-2 py-3 bg-red-500/10 border border-red-500/40 text-red-400 rounded-card hover:bg-red-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
-              <Swords className="w-4 h-4" />
+              <Swords className="w-4 h-4" aria-hidden="true" />
               Attaquer
             </motion.button>
             <motion.button
@@ -267,9 +268,10 @@ export default function CombatUI({
               whileTap={{ scale: 0.98 }}
               onClick={onDefend}
               disabled={combatState.turn !== "player"}
+              aria-label="Se défendre"
               className="flex items-center justify-center gap-2 py-3 bg-blue-500/10 border border-blue-500/40 text-blue-400 rounded-card hover:bg-blue-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
-              <Shield className="w-4 h-4" />
+              <Shield className="w-4 h-4" aria-hidden="true" />
               Défense
             </motion.button>
             <motion.button
@@ -277,9 +279,10 @@ export default function CombatUI({
               whileTap={{ scale: 0.98 }}
               onClick={onFlee}
               disabled={combatState.turn !== "player"}
+              aria-label="Fuir le combat"
               className="flex items-center justify-center gap-2 py-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 rounded-card hover:bg-yellow-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
-              <Trophy className="w-4 h-4" />
+              <Trophy className="w-4 h-4" aria-hidden="true" />
               Fuir
             </motion.button>
           </div>
@@ -290,7 +293,7 @@ export default function CombatUI({
               transition={{ duration: 0.4 }}
               className="flex items-center gap-2 mb-2"
             >
-              <Zap className="w-4 h-4 text-purple-400" />
+              <Zap className="w-4 h-4 text-purple-400" aria-hidden="true" />
               <span className="text-purple-400 text-sm font-semibold">Compétences</span>
             </motion.div>
             <div className="grid grid-cols-2 gap-2">
@@ -306,6 +309,7 @@ export default function CombatUI({
                     onClick={() => handleAbility(ability)}
                     disabled={disabled}
                     title={ability.description}
+                    aria-label={`${ability.name} : ${ability.description}`}
                     className={`text-left px-3 py-2.5 rounded-card border text-sm transition-all ${
                       inCooldown
                         ? "bg-gray-800/30 border-gray-700/50 text-gray-600 cursor-not-allowed"
@@ -340,13 +344,14 @@ export default function CombatUI({
         <div ref={logEndRef} />
       </div>
 
-      {(combatState.won || combatState.lost || combatState.fled) && (
+        {(combatState.won || combatState.lost || combatState.fled) && (
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onEnd}
+          aria-label={combatState.won ? "Victoire, continuer" : combatState.fled ? "Fuite, continuer" : "Défaite, continuer"}
           className={`w-full py-3 rounded-card font-bold text-white transition-all ${
             combatState.won
               ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400"
@@ -355,7 +360,7 @@ export default function CombatUI({
         >
           {combatState.won ? (
             <div className="flex items-center justify-center gap-2">
-              <Trophy className="w-4 h-4" />
+              <Trophy className="w-4 h-4" aria-hidden="true" />
               <span>Victoire !</span>
               <span className="text-yellow-200">+{enemy.xpReward || 0} XP</span>
               {character.niveau && (
