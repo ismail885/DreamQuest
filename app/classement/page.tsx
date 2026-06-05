@@ -24,7 +24,6 @@ export default function ClassementPage() {
     players,
     loading,
     fetchError,
-    refresh,
   } = useClassementData();
   return (
     <div className="min-h-screen text-white flex flex-col relative bg-deep">

@@ -3,7 +3,6 @@
 import { useAuthContext } from "@/context/AuthContext";
 import CreateCharacterForm from "@/components/character/CreateCharacterForm";
 import PageTransition from "@/components/shared/PageTransition";
-import BottomNav from "@/components/shared/BottomNav";
 import { useRouter } from "next/navigation";
 import type { Character } from "@/types";
 import { updateQuestProgress } from "@/lib/dailyQuests";
@@ -43,7 +42,6 @@ export default function CreateCharacterPage() {
           onCharacterCreated={handleCharacterCreated}
         />
       </PageTransition>
-      <BottomNav />
     </div>
   );
 }

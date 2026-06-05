@@ -8,7 +8,6 @@ import Loader from "@/components/shared/Loader";
 import PageTransition from "@/components/shared/PageTransition";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
-import BottomNav from "@/components/shared/BottomNav";
 import PageBackground from "@/components/shared/PageBackground";
 import AdventureEditor from "@/components/editor/AdventureEditor";
 
@@ -84,7 +83,6 @@ function EditorContent() {
         </div>
       </PageTransition>
 
-      <BottomNav />
       <Footer />
     </div>
   );

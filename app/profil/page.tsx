@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabaseClient";
 import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/shared/Header";
@@ -10,13 +11,14 @@ import Loader from "@/components/shared/Loader";
 import { useAuthContext } from "@/context/AuthContext";
 import { useProfileData } from "@/hooks/useProfileData";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
-import SettingsModal from "@/components/profile/SettingsModal";
-import EditProfileModal from "@/components/profile/EditProfileModal";
-import TabStories from "@/components/profile/TabStories";
-import TabAchievements from "@/components/profile/TabAchievements";
-import TabCreations from "@/components/profile/TabCreations";
-import TabQuests from "@/components/profile/TabQuests";
-import TabCharacters from "@/components/profile/TabCharacters";
+
+const TabStories = dynamic(() => import("@/components/profile/TabStories"), { ssr: false });
+const TabAchievements = dynamic(() => import("@/components/profile/TabAchievements"), { ssr: false });
+const TabCreations = dynamic(() => import("@/components/profile/TabCreations"), { ssr: false });
+const TabQuests = dynamic(() => import("@/components/profile/TabQuests"), { ssr: false });
+const TabCharacters = dynamic(() => import("@/components/profile/TabCharacters"), { ssr: false });
+const SettingsModal = dynamic(() => import("@/components/profile/SettingsModal"), { ssr: false });
+const EditProfileModal = dynamic(() => import("@/components/profile/EditProfileModal"), { ssr: false });
 
 function getTabFromUrl():
   | "stories"

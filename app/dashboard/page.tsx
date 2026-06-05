@@ -57,7 +57,6 @@ export default function DashboardPage() {
   statsError,
   suggestions,
   loadingSuggestions,
-  refresh,
   } = useDashboardData(user?.id ?? null);
   useEffect(() => {
   if (!loading && !user) {
