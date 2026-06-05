@@ -118,10 +118,6 @@ DreamQuest/
 │       ├── characters/      # Gestion personnages
 │       ├── adventures/      # Gestion aventures
 │       └── logs/            # Logs système
-│       ├── users/           # Gestion utilisateurs
-│       ├── characters/      # Gestion personnages
-│       ├── adventures/      # Gestion aventures
-│       └── logs/            # Logs système
 ├── components/              # Composants React
 │   ├── auth/               # LoginForm, RegisterForm
 │   ├── character/          # CharacterCard, ClassCard, CreateCharacterForm
@@ -140,7 +136,7 @@ DreamQuest/
 │   │                       # AdminLogFilters, AdminLogStats, AdminStatCards,
 │   │                       # AdminRoleDistribution, UserDetailModal, UserEditModal,
 │   │                       # CharacterViewModal, DeleteConfirmModal
-│   └── shared/             # Header, Footer, Loader, Skeleton, BottomNav, Breadcrumb,
+│   └── shared/             # Header, Footer, Loader, Skeleton, Breadcrumb,
 │                           # ConfirmDeleteModal, ConfirmLeaveModal, EmptyState,
 │                           # ErrorState, PageBackground, PageTransition
 ├── context/                 # Context API
@@ -162,7 +158,6 @@ DreamQuest/
 │   ├── useConsequences.ts  # Application des conséquences de choix
 │   ├── useNetworkStatus.ts # Détection online/offline
 │   ├── useToast.tsx        # Wrapper react-hot-toast
-│   └── usePullToRefresh.ts # Pull-to-refresh partagé
 ├── lib/                     # Utilitaires
 │   ├── supabaseClient.ts   # Client Supabase (timeout 15s)
 │   ├── jwt.ts              # Fonctions JWT

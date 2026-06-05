@@ -7,6 +7,7 @@ const withAnalyzer = withBundleAnalyzer({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: __dirname,
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
