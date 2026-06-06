@@ -86,12 +86,6 @@ export default function ProfileSidebar({
           <p className="text-gray-500 text-xs mt-0.5">
             Meilleur : Niveau {bestLevel}
           </p>
-          <a
-            href={`/profil/${userProfile?.nom_utilisateur}`}
-            className="text-primary text-sm hover:underline mt-2"
-          >
-            Voir profil public
-          </a>
         </div>
 
         <div className="mb-6">

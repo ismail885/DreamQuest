@@ -1,10 +1,15 @@
 import { memo } from "react";
-import { Heart, Swords, Wind, Wand2, Shield, Zap, User } from "lucide-react";
+import { Heart, Swords, Wind, Wand2, Shield, Zap, User, ChevronDown, ChevronUp } from "lucide-react";
 import type { Character } from "@/types";
 import { calculateRequiredXP } from "@/lib/characters/classDefinitions";
 
 interface CharacterHUDProps {
   character: Character;
+  fatigueCount?: number;
+  maxFatigue?: number;
+  isFatigued?: boolean;
+  /** Mode sidebar (desktop) ou compact (mobile) */
+  sidebar?: boolean;
 }
 
 function classLabel(classe: string): string {
@@ -16,30 +21,116 @@ function classLabel(classe: string): string {
   return labels[classe?.toLowerCase()] || classe;
 }
 
-function CharacterHUD({ character }: CharacterHUDProps) {
+function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued = false, sidebar = false }: CharacterHUDProps) {
   const xpCurrent = character.experience ?? 0;
   const xpNeeded = calculateRequiredXP(character.niveau);
   const xpRatio = Math.min(xpCurrent / Math.max(xpNeeded, 1), 1);
   const pvRatio = Math.min(character.points_vie / Math.max(character.points_vie_max ?? 100, 1), 1);
   const pvColor = pvRatio > 0.5 ? "from-red-500 to-red-400" : pvRatio > 0.25 ? "from-orange-500 to-orange-400" : "from-red-600 to-red-500";
+  const fatigueRatio = Math.min(1, fatigueCount / Math.max(maxFatigue, 1));
 
+  if (sidebar) {
+    return (
+      <div className="space-y-4">
+        {/* Identité */}
+        <div className="flex flex-col items-center text-center gap-2 pb-4 border-b border-cyan-500/15">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+            <User className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <p className="text-white font-bold text-sm">{character.nom_personnage}</p>
+            <p className="text-[11px] text-cyan-400">{classLabel(character.classe)} · Niveau {character.niveau}</p>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-1.5 text-xs text-orange-400 bg-orange-500/10 px-2.5 py-1.5 rounded-lg">
+            <Swords className="w-3.5 h-3.5" /><span>{character.stats?.force ?? 0}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 px-2.5 py-1.5 rounded-lg">
+            <Wind className="w-3.5 h-3.5" /><span>{character.stats?.agility ?? 0}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-purple-400 bg-purple-500/10 px-2.5 py-1.5 rounded-lg">
+            <Wand2 className="w-3.5 h-3.5" /><span>{character.stats?.magie ?? 0}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-blue-400 bg-blue-500/10 px-2.5 py-1.5 rounded-lg">
+            <Shield className="w-3.5 h-3.5" /><span>{character.stats?.endurance ?? 0}</span>
+          </div>
+        </div>
+
+        {/* PV */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="flex items-center gap-1 text-xs text-gray-400">
+              <Heart className="w-3 h-3 text-red-400" /> PV
+            </span>
+            <span className="text-white text-xs font-bold">{character.points_vie}/{character.points_vie_max ?? 100}</span>
+          </div>
+          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className={`h-full bg-gradient-to-r ${pvColor} rounded-full transition-all duration-300`} style={{ width: `${pvRatio * 100}%` }} />
+          </div>
+        </div>
+
+        {/* XP */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="flex items-center gap-1 text-xs text-gray-400">
+              <Zap className="w-3 h-3 text-yellow-400" /> XP
+            </span>
+            <span className="text-white text-xs font-bold">{xpCurrent}/{xpNeeded}</span>
+          </div>
+          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-300" style={{ width: `${xpRatio * 100}%` }} />
+          </div>
+        </div>
+
+        {/* Fatigue */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <span className={`flex items-center gap-1 text-xs ${isFatigued ? "text-red-400" : "text-gray-400"}`}>
+              {isFatigued ? "⚡ Épuisé" : "Endurance"}
+            </span>
+            <span className="text-white/50 text-xs">{fatigueCount}/{maxFatigue}</span>
+          </div>
+          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className={`h-full rounded-full transition-all duration-300 ${isFatigued ? "bg-red-500" : "bg-emerald-400"}`}
+              style={{ width: `${fatigueRatio * 100}%` }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Mode compact mobile : affichage minimal avec toggle
   return (
-    <div className="container mx-auto px-4 md:px-6 py-3">
-      <div className="backdrop-blur-card bg-slate-900/60 border border-cyan-500/15 rounded-card">
-        {/* Row 1: Identity */}
-        <div className="flex items-center justify-between px-4 pt-3 pb-2">
+    <div className="container mx-auto px-4">
+      <details className="group">
+        <summary className="flex items-center justify-between cursor-pointer list-none backdrop-blur-card bg-slate-900/60 border border-cyan-500/15 rounded-card px-4 py-2.5">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-              <User className="w-4 h-4 text-white" />
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+              <User className="w-3.5 h-3.5 text-white" />
             </div>
             <div className="min-w-0">
-              <span className="text-white font-bold text-sm block truncate">{character.nom_personnage}</span>
+              <span className="text-white font-semibold text-xs block truncate">{character.nom_personnage}</span>
               <span className="text-[10px] text-cyan-400">{classLabel(character.classe)} · Niv.{character.niveau}</span>
             </div>
           </div>
 
-          {/* Stats row */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 text-xs">
+              <Heart className="w-3 h-3 text-red-400" />
+              <span className="text-white font-medium">{character.points_vie}</span>
+              <span className="text-gray-500">/ {character.points_vie_max ?? 100}</span>
+            </div>
+            <ChevronDown className="w-4 h-4 text-gray-400 group-open:hidden" />
+            <ChevronUp className="w-4 h-4 text-gray-400 hidden group-open:block" />
+          </div>
+        </summary>
+
+        <div className="backdrop-blur-card bg-slate-900/60 border border-cyan-500/15 border-t-0 rounded-b-card px-4 pb-4 pt-3 space-y-3">
+          {/* Stats */}
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="flex items-center gap-1 text-xs text-orange-400 bg-orange-500/10 px-2 py-1 rounded-md">
               <Swords className="w-3 h-3" />{character.stats?.force ?? 0}
             </span>
@@ -53,37 +144,35 @@ function CharacterHUD({ character }: CharacterHUDProps) {
               <Shield className="w-3 h-3" />{character.stats?.endurance ?? 0}
             </span>
           </div>
-        </div>
 
-        {/* Row 2: PV + XP bars */}
-        <div className="grid grid-cols-2 gap-3 px-4 pb-3">
+          {/* XP */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-1">
-                <Heart className="w-3 h-3 text-red-400" />
-                <span className="text-gray-500 text-[10px] font-medium">PV</span>
-              </div>
-              <span className="text-white text-[11px] font-bold">{character.points_vie}/{character.points_vie_max ?? 100}</span>
-            </div>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-              <div className={`h-full bg-gradient-to-r ${pvColor} rounded-full transition-all duration-300`} style={{ width: `${pvRatio * 100}%` }} />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-1">
-                <Zap className="w-3 h-3 text-yellow-400" />
-                <span className="text-gray-500 text-[10px] font-medium">XP</span>
-              </div>
-              <span className="text-white text-[11px] font-bold">{xpCurrent}/{xpNeeded}</span>
+              <span className="flex items-center gap-1 text-[10px] text-gray-500">
+                <Zap className="w-2.5 h-2.5 text-yellow-400" />XP
+              </span>
+              <span className="text-white text-[10px] font-bold">{xpCurrent}/{xpNeeded}</span>
             </div>
             <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-300" style={{ width: `${xpRatio * 100}%` }} />
             </div>
           </div>
+
+          {/* Fatigue */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className={`flex items-center gap-1 text-[10px] ${isFatigued ? "text-red-400" : "text-gray-500"}`}>
+                {isFatigued ? "⚡ Épuisé" : "Endurance"}
+              </span>
+              <span className="text-white/50 text-[10px]">{fatigueCount}/{maxFatigue}</span>
+            </div>
+            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+              <div className={`h-full rounded-full transition-all duration-300 ${isFatigued ? "bg-red-500" : "bg-emerald-400"}`}
+                style={{ width: `${fatigueRatio * 100}%` }} />
+            </div>
+          </div>
         </div>
-      </div>
+      </details>
     </div>
   );
 }
@@ -97,9 +186,8 @@ export default memo(CharacterHUD, (prev, next) => {
     prev.character.stats?.force === next.character.stats?.force &&
     prev.character.stats?.agility === next.character.stats?.agility &&
     prev.character.stats?.magie === next.character.stats?.magie &&
-    prev.character.stats?.endurance === next.character.stats?.endurance
+    prev.character.stats?.endurance === next.character.stats?.endurance &&
+    prev.fatigueCount === next.fatigueCount &&
+    prev.isFatigued === next.isFatigued
   );
 });
-
-
-
