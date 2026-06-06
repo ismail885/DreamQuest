@@ -123,7 +123,7 @@ export function useProfileData({
         .eq("id_utilisateur", uid);
 
       if (savesData && savesData.length > 0) {
-        // Collecter les IDs des aventures sans titre pour les fetch en une seule requête
+        // Fallback pour les titres d'aventures manquants
         const missingAdventureIds = savesData
           .filter((save: RawSave) => !save.aventure?.[0]?.titre)
           .map((save: RawSave) => save.id_aventure)
@@ -142,19 +142,41 @@ export function useProfileData({
           }
         }
 
-        const formattedSaves: UserSave[] = savesData.map((save: RawSave) => ({
-          id: save.id,
-          id_utilisateur: save.id_utilisateur,
-          id_aventure: save.id_aventure,
-          id_personnage: save.id_personnage,
-          id_embranchement_actuel: save.id_embranchement_actuel,
-          progression: save.progression ?? 0,
-          date_sauvegarde: save.date_sauvegarde,
-          aventure_titre: save.aventure?.[0]?.titre || titleMap.get(save.id_aventure) || "Aventure inconnue",
-          personnage_nom: save.personnage[0]?.nom_personnage,
-          personnage_classe: save.personnage[0]?.classe,
-          status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,
-        }));
+        // Fallback pour les noms de personnages manquants
+        const missingPersonnageIds = savesData
+          .filter((save: RawSave) => !save.personnage?.[0]?.nom_personnage)
+          .map((save: RawSave) => save.id_personnage)
+          .filter(Boolean);
+
+        const personnageMap = new Map<number, { nom_personnage: string; classe: string }>();
+        if (missingPersonnageIds.length > 0) {
+          const { data: charFallback } = await supabase
+            .from("personnage")
+            .select("id, nom_personnage, classe")
+            .in("id", missingPersonnageIds);
+          if (charFallback) {
+            for (const c of charFallback) {
+              personnageMap.set(c.id, { nom_personnage: c.nom_personnage, classe: c.classe });
+            }
+          }
+        }
+
+        const formattedSaves: UserSave[] = savesData.map((save: RawSave) => {
+          const charData = save.personnage?.[0] || personnageMap.get(save.id_personnage);
+          return {
+            id: save.id,
+            id_utilisateur: save.id_utilisateur,
+            id_aventure: save.id_aventure,
+            id_personnage: save.id_personnage,
+            id_embranchement_actuel: save.id_embranchement_actuel,
+            progression: save.progression ?? 0,
+            date_sauvegarde: save.date_sauvegarde,
+            aventure_titre: save.aventure?.[0]?.titre || titleMap.get(save.id_aventure) || "Aventure inconnue",
+            personnage_nom: charData?.nom_personnage,
+            personnage_classe: charData?.classe,
+            status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,
+          };
+        });
         setUserSaves(formattedSaves);
       } else {
         setUserSaves([]);
