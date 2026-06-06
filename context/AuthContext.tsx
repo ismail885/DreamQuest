@@ -26,7 +26,7 @@ interface AuthContextType {
  login: (emailOrUsername: string, password: string) => Promise<{ success: boolean; error?: string }>;
  register: (username: string, email: string, password: string) => Promise<{ success: boolean; message?: string; error?: string }>;
  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
- loginWithApple: () => Promise<{ success: boolean; error?: string }>;
+  loginWithDiscord: () => Promise<{ success: boolean; error?: string }>;
  logout: () => Promise<void>;
  updateUser: (updates: Partial<User>) => void;
 }
@@ -264,9 +264,20 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  }
  };
 
- const loginWithApple = async () => {
- return { success: false, error: "Apple Sign-In non disponible sur navigateur" };
- };
+  const loginWithDiscord = async () => {
+  try {
+  const { error } = await supabase.auth.signInWithOAuth({
+  provider: "discord",
+  options: { redirectTo: `${window.location.origin}/auth/callback` },
+  });
+  if (error) {
+  return { success: false, error: "Erreur de connexion avec Discord" };
+  }
+  return { success: true };
+  } catch {
+  return { success: false, error: "Erreur de connexion avec Discord" };
+  }
+  };
 
  // ==========================================
  // Logout
@@ -301,9 +312,9 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  loading,
  login,
  register,
- loginWithGoogle,
- loginWithApple,
- logout,
+  loginWithGoogle,
+  loginWithDiscord,
+  logout,
  updateUser,
  }}
  >
