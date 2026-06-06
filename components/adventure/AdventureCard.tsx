@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Star } from "lucide-react";
 import { updateQuestProgress } from "@/lib/dailyQuests";
+import { GENRE_LABELS, GENRE_COLORS } from "@/hooks/useAdventureList";
 
 interface AdventureCardProps {
   id: number;
@@ -18,6 +19,7 @@ interface AdventureCardProps {
   personnageId?: string;
   onNavigateWithoutCharacter?: () => void;
   index?: number;
+  genre?: string | null;
 }
 
 const easeOutQuart = [0.25, 1, 0.5, 1] as const;
@@ -30,6 +32,7 @@ const AdventureCard = React.memo(function AdventureCard({
   personnageId,
   onNavigateWithoutCharacter,
   index = 0,
+  genre,
 }: AdventureCardProps) {
   const { user } = useAuthContext();
   const [initialVoted, setInitialVoted] = useState(false);
@@ -101,6 +104,15 @@ const AdventureCard = React.memo(function AdventureCard({
             <h3 className="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors flex-1 ">
               {titre}
             </h3>
+            {genre && GENRE_LABELS[genre] && (
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border shrink-0 ${
+                  GENRE_COLORS[genre] ?? "bg-gray-500/20 text-gray-300 border-gray-500/30"
+                }`}
+              >
+                {GENRE_LABELS[genre]}
+              </span>
+            )}
           </div>
 
           <p className="text-gray-300 text-sm line-clamp-2 leading-relaxed ">

@@ -29,6 +29,7 @@ export interface GeneratorInput {
   title: string;
   genre: string;
   description?: string;
+  longueur?: "court" | "normal" | "long";
 }
 
 export interface GeneratedAdventure {

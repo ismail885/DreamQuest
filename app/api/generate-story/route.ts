@@ -284,6 +284,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Longueur optionnelle (court/normal/long)
+    const longueurRaw = body.longueur
+    const longueur: "court" | "normal" | "long" | undefined =
+      longueurRaw === "court"
+        ? "court"
+        : longueurRaw === "long"
+          ? "long"
+          : undefined // default = normal
+
     // Validation auteur_id : nombre entier positif uniquement
     const auteur_idRaw = body.auteur_id
     let auteur_id: number | null = null
@@ -316,8 +325,8 @@ export async function POST(req: NextRequest) {
     const { genreMoteur, genreBDD, difficulty, duree_estimee, description } =
       genreInfo
 
-    // 3. Génération des nœuds via le moteur
-    const generated = generateAdventure({ title: titre, genre: genreMoteur })
+    // 3. Génération des nœuds via le moteur (avec longueur ajustable)
+    const generated = generateAdventure({ title: titre, genre: genreMoteur, longueur })
     const nodes = generated.nodes
 
     if (nodes.length === 0) {
@@ -341,7 +350,9 @@ export async function POST(req: NextRequest) {
         embranchement_initial_id: null,
         difficulty,
         genre: genreBDD,
-        duree_estimee,
+        duree_estimee: longueur === "court" ? Math.min(duree_estimee, 15)
+                    : longueur === "long" ? Math.max(duree_estimee * 2, 40)
+                    : duree_estimee,
         popularite: 0,
         consequences: null,
       })

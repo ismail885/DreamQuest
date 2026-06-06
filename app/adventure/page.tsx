@@ -194,6 +194,7 @@ function AdventurePageContent() {
                       onNavigateWithoutCharacter={() =>
                         setShowCharacterModal(true)
                       }
+                      genre={adventure.genre}
                     />
                   </motion.div>
                 ))}

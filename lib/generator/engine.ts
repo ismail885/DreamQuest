@@ -277,15 +277,25 @@ function generateContextualChoices(
 }
 
 export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
-  const { genre, title } = input;
+  const { genre, title, longueur } = input;
   const content = getContentForGenre(genre);
   const usedLocations = new Set<{ name: string; description: string }>();
   const usedNpcs = new Set<{ name: string; role: string; description: string }>();
   const usedTwists = new Set<string>();
   const usedArtifacts = new Set<{ name: string; description: string }>();
 
-  // 10-14 nœuds non-finaux (plus de contenu)
-  const nodeCount = 10 + Math.floor(Math.random() * 5);
+  // Nombre de nœuds selon la longueur souhaitée
+  let nodeCount: number;
+  switch (longueur) {
+    case "court":
+      nodeCount = 5 + Math.floor(Math.random() * 3); // 5-7
+      break;
+    case "long":
+      nodeCount = 15 + Math.floor(Math.random() * 8); // 15-22
+      break;
+    default:
+      nodeCount = 10 + Math.floor(Math.random() * 5); // 10-14
+  }
 
   const description = input.description || generateDescription(title, genre);
 

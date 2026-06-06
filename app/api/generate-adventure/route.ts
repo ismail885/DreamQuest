@@ -39,7 +39,7 @@ Format de réponse attendu :
 }
 
 RÈGLES NARRATIVES :
-- Génère 6 à 8 nœuds au total, dont 2 nœuds finaux (isEnd: true, choices: [])
+- La LONGUEUR est fournie (court/normal/long) : "court" = 4-5 nœuds, "normal" = 6-8 nœuds, "long" = 10-15 nœuds
 - Chaque nœud non-final a exactement 2 choix
 - Les textes sont immersifs, en français, avec 2-3 paragraphes (atmosphère, dialogues, descriptions)
 - Les IDs suivent le pattern : "debut", "n2", "n3", "n4", etc.
@@ -54,7 +54,7 @@ RÈGLES NARRATIVES :
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, genre } = body;
+    const { title, genre, longueur } = body;
 
     if (!title || typeof title !== "string" || !title.trim()) {
       return NextResponse.json(
@@ -142,8 +142,9 @@ export async function POST(req: NextRequest) {
 Détails :
 - Titre : "${title}"
 - Genre : ${genre || "aventure"}
+- Longueur : ${longueur || "normal"}
 - Style : narratif et immersif, en français
-- Structure : 6 à 8 nœuds dont 2 fins
+- Structure : ${longueur === "court" ? "4-5 nœuds dont 1 fin" : longueur === "long" ? "10-15 nœuds dont 3 fins" : "6-8 nœuds dont 2 fins"}
 - Chaque nœud non-final doit avoir 2 choix qui font avancer l'histoire
 - Les textes doivent être détaillés (2-3 paragraphes) avec une ambiance cohérente
 - Les fins doivent être satisfaisantes et en lien avec l'histoire`,
