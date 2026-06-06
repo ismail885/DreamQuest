@@ -35,24 +35,24 @@ function getContentForGenre(genre: string): GenreContent {
 function generateDescription(title: string, genre: string): string {
   const genreDescriptions: Record<string, string[]> = {
     fantasy: [
-      `Une épopée fantastique intitulée "${title}". Un voyage rempli de magie, de mystères et de créatures légendaires.`,
-      `"${title}" - Une quête épique dans un monde de fantasy peuplé de héros courageux et de royaumes lointains.`,
-      `Plongez dans "${title}", une aventure magique où chaque choix façonne votre destin.`,
+      `Une épopée fantastique intitulée "${title}". Un voyage rempli de magie, de mystères et de créatures légendaires. Forgez votre destinée dans un royaume où les choquent déterminent l'avenir.`,
+      `"${title}" - Une quête épique dans un monde de fantasy peuplé de héros courageux et de royaumes lointains. Chaque décision vous rapproche de la gloire ou du danger.`,
+      `Plongez dans "${title}", une aventure magique où chaque choix façonne votre destin. Explorez des terres oubliées et affrontez des forces anciennes.`,
     ],
     horror: [
-      `"${title}" - Une histoire d'horreur qui vous glaçera le sang. Découvrez les secrets terrifiants qui l'attendent.`,
-      `Une aventure horrifiante intitulée "${title}". Explorez les ténèbres et survivez si vous le pouvez.`,
-      `"${title}" - Un thriller sombre rempli de suspense, de frissons et de révélations dérangeantes.`,
+      `"${title}" - Une histoire d'horreur qui vous glacera le sang. Découvrez les secrets terrifiants qui l'attendent dans l'obscurité. Survivrez-vous ?`,
+      `Une aventure horrifiante intitulée "${title}". Explorez les ténèbres et survivez si vous le pouvez. Chaque ombre cache un danger mortel.`,
+      `"${title}" - Un thriller sombre rempli de suspense, de frissons et de révélations dérangeantes. La peur n'a jamais été aussi palpable.`,
     ],
     scifi: [
-      `"${title}" - Une aventure de science-fiction futuriste. Explorez des mondes technologiques et des mystères cosmiques.`,
-      `Voyagez dans "${title}", une odyssée spatiale remplie de technologie avancée et d'explorations interstellaires.`,
-      `"${title}" - Un voyage sci-fi captivant à travers l'univers, où l'impossible devient réalité.`,
+      `"${title}" - Une aventure de science-fiction futuriste. Explorez des mondes technologiques avancés, résolvez des mystères cosmiques et repoussez les limites de l'univers.`,
+      `Voyagez dans "${title}", une odyssée spatiale remplie de technologie avancée, de civilisations extraterrestres et d'explorations interstellaires périlleuses.`,
+      `"${title}" - Un voyage sci-fi captivant à travers l'univers, où l'impossible devient réalité. L'avenir de la galaxie repose entre vos mains.`,
     ],
     romance: [
-      `"${title}" - Une histoire d'amour captivante où les cœurs se nouent et les destins s'entrelacent.`,
-      `Découvrez "${title}", une romance passionnante remplie d'émotions, de rencontres inattendues et de moments magiques.`,
-      `"${title}" - Une aventure romantique où l'amour triomphe contre tous les obstacles.`,
+      `"${title}" - Une histoire d'amour captivante où les cœurs se nouent et les destins s'entrelacent. Entre passion et sacrifice, quel chemin choisirez-vous ?`,
+      `Découvrez "${title}", une romance passionnante remplie d'émotions, de rencontres inattendues, de trahisons et de moments magiques.`,
+      `"${title}" - Une aventure romantique où l'amour triomphe contre tous les obstacles. Les sentiments seront-ils plus forts que les épreuves ?`,
     ],
   };
 

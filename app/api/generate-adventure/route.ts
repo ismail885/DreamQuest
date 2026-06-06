@@ -9,6 +9,12 @@ import { NextRequest, NextResponse } from "next/server";
 const SYSTEM_PROMPT = `Tu es un générateur d'aventures interactives pour le jeu DreamQuest.
 Tu réponds UNIQUEMENT avec un objet JSON valide, sans markdown ni backticks ni texte en dehors du JSON.
 
+CONTEXTE DU JEU :
+- DreamQuest est un RPG textuel immersif où chaque choix du joueur influence l'histoire
+- Les aventures doivent être cohérentes avec le genre et le titre donnés
+- Les textes doivent être engageants, en français, avec une atmosphère soignée
+- Chaque nœud non-final propose 2 choix pertinents qui font avancer l'histoire
+
 Format de réponse attendu :
 {
   "nodes": [
@@ -32,14 +38,18 @@ Format de réponse attendu :
   ]
 }
 
-Règles :
+RÈGLES NARRATIVES :
 - Génère 6 à 8 nœuds au total, dont 2 nœuds finaux (isEnd: true, choices: [])
-- Chaque nœud non-final a 2 choix
-- Les textes narratifs sont immersifs, en français, avec 2-3 paragraphes
+- Chaque nœud non-final a exactement 2 choix
+- Les textes sont immersifs, en français, avec 2-3 paragraphes (atmosphère, dialogues, descriptions)
 - Les IDs suivent le pattern : "debut", "n2", "n3", "n4", etc.
 - Les targets des choix pointent toujours vers des IDs existants
 - Le nœud "debut" est toujours le premier
-- Les nœuds finaux ont des IDs comme "fin1", "fin2" ou "nX" avec isEnd:true`;
+- Les nœuds finaux ont des IDs comme "fin1", "fin2" ou "nX" avec isEnd:true
+- Inclure des conséquences implicites dans les choix (récompenses, danger, découvertes)
+- L'histoire doit avoir un arc narratif : introduction → développement → climax → résolution
+- Les choix doivent être nuancés (pas de bien/mal évident)
+- Chaque fin doit être satisfaisante et en lien avec le thème`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -124,10 +134,19 @@ export async function POST(req: NextRequest) {
           model: "claude-sonnet-4-20250514",
           max_tokens: 4096,
           system: SYSTEM_PROMPT,
-          messages: [
+            messages: [
             {
               role: "user",
-              content: `Génère une aventure intitulée "${title}" de genre ${genre || "aventure"}.`,
+              content: `Génère une aventure intitulée "${title}" de genre ${genre || "aventure"}.
+
+Détails :
+- Titre : "${title}"
+- Genre : ${genre || "aventure"}
+- Style : narratif et immersif, en français
+- Structure : 6 à 8 nœuds dont 2 fins
+- Chaque nœud non-final doit avoir 2 choix qui font avancer l'histoire
+- Les textes doivent être détaillés (2-3 paragraphes) avec une ambiance cohérente
+- Les fins doivent être satisfaisantes et en lien avec l'histoire`,
             },
           ],
         }),

@@ -277,7 +277,7 @@ export default function AdventureEditor() {
     return nodes.some((n) => n.choices.some((c) => c.target === nodeId));
   };
 
-  /* ── Sauvegarde ── */
+  /* ── Sauvegarde (batch optimisé) ── */
   const handleSave = async () => {
     if (!user || !title.trim() || !activeNode.text.trim()) {
       setError("Titre et contenu narratif requis");
@@ -287,6 +287,7 @@ export default function AdventureEditor() {
     setError(null);
 
     try {
+      // Étape 1 : Créer l'aventure
       const { data: adventure, error: advError } = await supabase
         .from("aventure")
         .insert({
@@ -302,39 +303,42 @@ export default function AdventureEditor() {
 
       if (advError) throw advError;
 
+      // Étape 2 : Batch insert de tous les embranchements
+      const branchesToInsert = nodes.map((node) => ({
+        texte: node.text,
+        id_aventure: adventure.id,
+        choix1: node.choices[0]?.label || null,
+        choix2: node.choices[1]?.label || null,
+        choix1_lien: null,
+        choix2_lien: null,
+        choix1_consequences: node.choices[0]?.target || null,
+        choix2_consequences: node.choices[1]?.target || null,
+      }));
+
+      const { data: insertedBranches, error: branchError } = await supabase
+        .from("embranchement")
+        .insert(branchesToInsert)
+        .select("id");
+
+      if (branchError || !insertedBranches) throw branchError;
+
+      // Étape 3 : Mapper les IDs (l'ordre est préservé dans le batch insert)
       const nodeIdMap = new Map<string, number>();
+      nodes.forEach((node, i) => {
+        nodeIdMap.set(node.id, insertedBranches[i].id);
+      });
 
-      for (const node of nodes) {
-        const isRoot = node.id === "debut";
-        const choicesText = node.choices.map((c) => c.label);
-        const choicesConsequences = node.choices.map((c) => c.target || null);
-
-        const { data: branch, error: branchError } = await supabase
-          .from("embranchement")
-          .insert({
-            texte: node.text,
-            choix1: choicesText[0] || null,
-            choix1_lien: null,
-            choix1_consequences: choicesConsequences[0] || null,
-            choix2: choicesText[1] || null,
-            choix2_lien: null,
-            choix2_consequences: choicesConsequences[1] || null,
-            id_aventure: adventure.id,
-          })
-          .select()
-          .single();
-
-        if (branchError) throw branchError;
-        nodeIdMap.set(node.id, branch.id);
-
-        if (isRoot) {
-          await supabase
-            .from("aventure")
-            .update({ embranchement_initial_id: branch.id })
-            .eq("id", adventure.id);
-        }
+      // Définir l'embranchement initial
+      const rootId = nodeIdMap.get("debut");
+      if (rootId) {
+        await supabase
+          .from("aventure")
+          .update({ embranchement_initial_id: rootId })
+          .eq("id", adventure.id);
       }
 
+      // Étape 4 : Batch update des liens en parallèle
+      const updatePromises: Promise<unknown>[] = [];
       for (const node of nodes) {
         const currentBranchId = nodeIdMap.get(node.id);
         if (!currentBranchId) continue;
@@ -349,9 +353,13 @@ export default function AdventureEditor() {
           if (targetId) updateData.choix2_lien = targetId;
         }
         if (Object.keys(updateData).length > 0) {
-          await supabase.from("embranchement").update(updateData).eq("id", currentBranchId);
+          updatePromises.push(
+            supabase.from("embranchement").update(updateData).eq("id", currentBranchId) as unknown as Promise<unknown>
+          );
         }
       }
+
+      await Promise.all(updatePromises);
 
       setSuccess("Aventure publiée ! Redirection...");
       setTimeout(() => router.push("/dashboard"), 1500);

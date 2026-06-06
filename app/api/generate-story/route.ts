@@ -306,41 +306,37 @@ export async function POST(req: NextRequest) {
 
     const aventureId: number = aventure.id
 
-    // ÉTAPE 2 : INSERT les embranchements un par un pour garantir le mapping
-    // node.id → embranchement.id (l'ordre de .insert(array).select() n'est pas garanti)
-    const nodeToDbId = new Map<string, number>()
+    // ÉTAPE 2 : Batch INSERT de tous les embranchements en une seule requête
+    const branchesData = nodes.map((node) => nodeToEmbranchement(node, aventureId))
+    const { data: insertedBranches, error: errBatch } = await supabase
+      .from('embranchement')
+      .insert(branchesData)
+      .select('id')
 
-    for (const node of nodes) {
-      const embData = nodeToEmbranchement(node, aventureId)
-      const { data: inserted, error: errInsert } = await supabase
-        .from('embranchement')
-        .insert(embData)
-        .select('id')
-        .single()
-
-      if (errInsert || !inserted) {
-        console.error('Erreur insertion embranchement:', errInsert)
-        // Rollback : supprimer l'aventure et ses embranchements déjà insérés
-        await cleanupAventure(supabase, aventureId)
-        return errorResponse(
-          'Erreur lors de la génération',
-          500,
-          errInsert?.message ?? 'Embranchement non créé'
-        )
-      }
-
-      nodeToDbId.set(node.id, inserted.id)
+    if (errBatch || !insertedBranches || insertedBranches.length !== nodes.length) {
+      console.error('Erreur batch insertion embranchements:', errBatch)
+      await cleanupAventure(supabase, aventureId)
+      return errorResponse(
+        'Erreur lors de la génération',
+        500,
+        errBatch?.message ?? 'Embranchements non créés'
+      )
     }
 
-    // ÉTAPE 3 : UPDATE embranchements pour renseigner choix1_lien et choix2_lien
-    const updateErrors: string[] = []
+    // L'ordre de retour du batch insert correspond à l'ordre d'insertion
+    const nodeToDbId = new Map<string, number>()
+    nodes.forEach((node, index) => {
+      nodeToDbId.set(node.id, insertedBranches[index].id)
+    })
+
+    // ÉTAPE 3 : UPDATE embranchements en parallèle pour renseigner choix1_lien et choix2_lien
+    const updatePromises: Promise<{ error: unknown }>[] = []
 
     for (const node of nodes) {
       const dbId = nodeToDbId.get(node.id)
       if (dbId === undefined) continue
 
-      const isEnd = node.isEnd === true
-      if (isEnd) continue // Pas de liens pour les fins
+      if (node.isEnd === true) continue // Pas de liens pour les fins
 
       const choix1Link = node.choices[0]?.link ?? null
       const choix2Link = node.choices[1]?.link ?? null
@@ -355,24 +351,23 @@ export async function POST(req: NextRequest) {
 
       // Ne faire l'UPDATE que si au moins un lien existe
       if (choix1_lien !== null || choix2_lien !== null) {
-        const { error } = await supabase
-          .from('embranchement')
-          .update({ choix1_lien, choix2_lien })
-          .eq('id', dbId)
-
-        if (error) {
-          console.error(`Erreur UPDATE embranchement ${dbId}:`, error)
-          updateErrors.push(`embranchement ${dbId}: ${error.message}`)
-        }
+        updatePromises.push(
+          supabase
+            .from('embranchement')
+            .update({ choix1_lien, choix2_lien })
+            .eq('id', dbId) as unknown as Promise<{ error: unknown }>
+        )
       }
     }
 
+    const updateResults = await Promise.all(updatePromises)
+    const updateErrors = updateResults
+      .map((r, i) => (r.error ? `embranchement ${i}: ${r.error}` : null))
+      .filter(Boolean) as string[]
+
     // Si des UPDATEs ont échoué, on rollback tout
     if (updateErrors.length > 0) {
-      console.error(
-        'Échec des UPDATEs de liens, rollback en cours...',
-        updateErrors
-      )
+      console.error('Échec des UPDATEs de liens, rollback en cours...', updateErrors)
       await cleanupAventure(supabase, aventureId)
       return errorResponse(
         'Erreur lors de la génération',

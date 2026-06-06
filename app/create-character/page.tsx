@@ -29,10 +29,9 @@ export default function CreateCharacterPage() {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleCharacterCreated = (_character: Character) => {
+  const handleCharacterCreated = (character: Character) => {
     updateQuestProgress(user.id, "create_char", 1).catch(() => {});
-    router.push("/adventure");
+    router.push(`/adventure?personnage=${character.id}`);
   };
 
   return (

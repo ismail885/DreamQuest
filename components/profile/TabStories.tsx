@@ -135,12 +135,13 @@ export default function TabStories({ saves }: TabStoriesProps) {
     <div className="space-y-3">
       {groupedSaves.map((group) => {
         const characterCount = group.saves.length;
+        const characterNames = group.saves.map((s) => s.personnage_nom).filter(Boolean).join(", ");
         return (
           <div
             key={group.adventureId}
             className="backdrop-blur-card bg-slate-900/50 border border-gray-700/30 rounded-xl overflow-hidden"
           >
-            {/* En-tête : titre de l'aventure + statut global + nombre de persos */}
+            {/* En-tête : titre de l'aventure + statut global + personnages */}
             <div className="p-4 border-b border-gray-700/30">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -158,19 +159,16 @@ export default function TabStories({ saves }: TabStoriesProps) {
                       {group.status === "completed" ? "Terminée" : "En cours"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
                     <Users className="w-3 h-3" />
-                    <span>
-                      {characterCount} personnage
-                      {characterCount > 1 ? "s" : ""}{" "}
-                      {characterCount > 1 ? "ont" : "a"} sauvegardé cette
-                      histoire
+                    <span className="truncate">
+                      {characterNames || `${characterCount} personnage${characterCount > 1 ? "s" : ""}`}
                     </span>
                   </div>
                 </div>
                 <div className="flex-shrink-0 text-right">
                   <div className="text-[10px] text-gray-500 uppercase tracking-wide">
-                    Meilleure
+                    Progression
                   </div>
                   <div className="text-base font-bold text-white">
                     {group.maxProgression}%
@@ -203,7 +201,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-sm font-medium text-white truncate max-w-[140px]">
+                      <span className="text-sm font-medium text-white truncate max-w-[160px]">
                         {save.personnage_nom ?? "Personnage"}
                       </span>
                       <ClasseBadge classe={save.personnage_classe} />
@@ -211,7 +209,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-1.5 bg-gray-700/50 rounded-full overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 ${
+                          className={`h-full rounded-full transition-all duration-300 ${
                             save.status === "completed"
                               ? "bg-gradient-to-r from-cyan-500 to-green-500"
                               : "bg-gradient-to-r from-cyan-500 to-blue-500"

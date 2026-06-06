@@ -123,6 +123,25 @@ export function useProfileData({
         .eq("id_utilisateur", uid);
 
       if (savesData && savesData.length > 0) {
+        // Collecter les IDs des aventures sans titre pour les fetch en une seule requête
+        const missingAdventureIds = savesData
+          .filter((save: RawSave) => !save.aventure?.[0]?.titre)
+          .map((save: RawSave) => save.id_aventure)
+          .filter(Boolean);
+
+        const titleMap = new Map<number, string>();
+        if (missingAdventureIds.length > 0) {
+          const { data: advFallback } = await supabase
+            .from("aventure")
+            .select("id, titre")
+            .in("id", missingAdventureIds);
+          if (advFallback) {
+            for (const a of advFallback) {
+              titleMap.set(a.id, a.titre);
+            }
+          }
+        }
+
         const formattedSaves: UserSave[] = savesData.map((save: RawSave) => ({
           id: save.id,
           id_utilisateur: save.id_utilisateur,
@@ -131,7 +150,7 @@ export function useProfileData({
           id_embranchement_actuel: save.id_embranchement_actuel,
           progression: save.progression ?? 0,
           date_sauvegarde: save.date_sauvegarde,
-          aventure_titre: save.aventure[0]?.titre || "Aventure inconnue",
+          aventure_titre: save.aventure?.[0]?.titre || titleMap.get(save.id_aventure) || "Aventure inconnue",
           personnage_nom: save.personnage[0]?.nom_personnage,
           personnage_classe: save.personnage[0]?.classe,
           status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,

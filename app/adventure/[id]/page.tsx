@@ -30,26 +30,25 @@ import AdventureEndScreen from "@/components/adventure/AdventureEndScreen";
 const MAX_STEPS = 8;
 
 const pageVariants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
+      duration: 0.25,
       ease: [0.16, 1, 0.3, 1] as const,
-      staggerChildren: 0.08,
-      delayChildren: 0.05,
+      staggerChildren: 0.04,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
+      duration: 0.25,
       ease: [0.16, 1, 0.3, 1] as const,
     },
   },

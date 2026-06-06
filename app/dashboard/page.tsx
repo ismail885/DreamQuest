@@ -17,12 +17,12 @@ import DashboardStats from "@/components/dashboard/DashboardStats";
 import DashboardSuggestions from "@/components/dashboard/DashboardSuggestions";
 
 const fadeInUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
+      duration: 0.3,
       ease: [0.16, 1, 0.3, 1] as const,
     },
   },
@@ -33,8 +33,8 @@ const staggerContainer = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
+      staggerChildren: 0.05,
+      delayChildren: 0.02,
     },
   },
 };
