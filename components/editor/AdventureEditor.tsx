@@ -8,7 +8,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import {
   ChevronLeft, ChevronRight, Wand2, Send, Plus, Trash2,
   Loader2, CheckCircle2, Target, BookOpen, AlertTriangle, Eye, EyeOff,
-  Rocket, Ghost, Search, Swords
+  Rocket, Ghost, Search, Swords, Ship, Cpu, Sun, Heart
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -57,6 +57,10 @@ const GENRES: Genre[] = [
   { icon: Ghost, name: "Horreur", desc: "Tension, mystère et frissons" },
   { icon: Search, name: "Policier", desc: "Enquêtes et rebondissements" },
   { icon: Swords, name: "Western", desc: "Désert, duels et aventure" },
+  { icon: Ship, name: "Pirate", desc: "Trésors, mers et flibustes" },
+  { icon: Cpu, name: "Cyberpunk", desc: "Néons, hackers et mégacorporations" },
+  { icon: Sun, name: "Mythologique", desc: "Dieux, héros et légendes antiques" },
+  { icon: Heart, name: "Romance", desc: "Passion, sentiments et destin" },
 ];
 
 /* ── 3 nœuds d'exemple pré-remplis — sci-fi, cohérents avec "Omniscient owner" ── */

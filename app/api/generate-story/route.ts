@@ -72,6 +72,27 @@ const KEYWORDS: Record<string, string[]> = {
     'satellite', 'sonde', 'compte a rebours', 'signal', 'extraterrestre',
     'station spatiale', 'vaisseau spatial', 'trou de ver',
   ],
+  pirate: [
+    'pirate', 'tresor', 'bateau', 'mer', 'occan', 'flibuste', 'galion',
+    'ile', 'rhum', 'carte au tresor', 'abordage', 'voile', 'sirène',
+    'kraken', 'coffre', 'or', 'canon', 'corsaire',
+  ],
+  cyberpunk: [
+    'cyberpunk', 'hack', 'neon', 'implant', 'cyborg', 'mega', 'corporation',
+    'bassefonds', 'reseau', 'technologie', 'puce', 'cybernetique', 'ia',
+    'artificiel', 'conscience', 'nuit', 'bmn',
+  ],
+  mythologique: [
+    'mythologie', 'dieux', 'olympe', 'heros', 'divin', 'titan', 'thor',
+    'odin', 'zeus', 'hadès', 'enfer', 'nordique', 'grec', 'egyptien',
+    'mythe', 'légende', 'epopee', 'valhalla', 'asgard', 'atlantide',
+    'minotaure', 'hydre', 'cerbere',
+  ],
+  western: [
+    'western', 'farwest', 'cowboy', 'desert', 'saloon', 'diligence',
+    'shérif', 'revolver', 'duel', 'caravane', 'poussiere', 'chevaux',
+    'bandit', 'bétail', 'ranch', 'prix', 'indien', 'apache',
+  ],
 }
 
 const DESCRIPTION_TEMPLATES: Record<string, string> = {
@@ -85,6 +106,14 @@ const DESCRIPTION_TEMPLATES: Record<string, string> = {
     '${titre} — des secrets millénaires enfermés dans la pierre. Chaque réponse soulève une nouvelle question.',
   "science-fiction":
     '${titre} — un voyage au-delà des étoiles. La technologie et l\'inconnu vous attendent dans les confins de l\'univers.',
+  pirate:
+    '${titre} — hissez les voiles ! Une aventure de pirates pleine de trésors, de batailles navales et de trahisons vous attend.',
+  cyberpunk:
+    '${titre} — plongez dans les bas-fonds d\'un futur dystopique où néons, implants et mégacorporations règnent en maîtres.',
+  mythologique:
+    '${titre} — une épopée antique où les dieux marchent parmi les mortels et où votre destinée dépasse l\'imagination.',
+  western:
+    '${titre} — au cœur du Far West, la poussière, la poudre et la justice se rencontrent au bout du revolver.',
 }
 
 const GENRE_CONFIG: Record<string, Omit<GenreDetectionResult, 'description'>> = {
@@ -117,6 +146,30 @@ const GENRE_CONFIG: Record<string, Omit<GenreDetectionResult, 'description'>> = 
     genreBDD: 'science-fiction',
     difficulty: 'normal',
     duree_estimee: 25,
+  },
+  pirate: {
+    genreMoteur: 'pirate',
+    genreBDD: 'aventure',
+    difficulty: 'normal',
+    duree_estimee: 20,
+  },
+  cyberpunk: {
+    genreMoteur: 'cyberpunk',
+    genreBDD: 'science-fiction',
+    difficulty: 'difficile',
+    duree_estimee: 30,
+  },
+  mythologique: {
+    genreMoteur: 'mythologique',
+    genreBDD: 'fantaisy',
+    difficulty: 'normal',
+    duree_estimee: 25,
+  },
+  western: {
+    genreMoteur: 'western',
+    genreBDD: 'aventure',
+    difficulty: 'facile',
+    duree_estimee: 15,
   },
 }
 
