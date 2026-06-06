@@ -1,24 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabaseClient";
 import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/shared/Header";
-import BottomNav from "@/components/shared/BottomNav";
 import PageBackground from "@/components/shared/PageBackground";
 import Loader from "@/components/shared/Loader";
 import { useAuthContext } from "@/context/AuthContext";
 import { useProfileData } from "@/hooks/useProfileData";
-import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
-import SettingsModal from "@/components/profile/SettingsModal";
-import EditProfileModal from "@/components/profile/EditProfileModal";
-import TabStories from "@/components/profile/TabStories";
-import TabAchievements from "@/components/profile/TabAchievements";
-import TabCreations from "@/components/profile/TabCreations";
-import TabQuests from "@/components/profile/TabQuests";
-import TabCharacters from "@/components/profile/TabCharacters";
+
+const TabStories = dynamic(() => import("@/components/profile/TabStories"), { ssr: false });
+const TabAchievements = dynamic(() => import("@/components/profile/TabAchievements"), { ssr: false });
+const TabCreations = dynamic(() => import("@/components/profile/TabCreations"), { ssr: false });
+const TabQuests = dynamic(() => import("@/components/profile/TabQuests"), { ssr: false });
+const TabCharacters = dynamic(() => import("@/components/profile/TabCharacters"), { ssr: false });
+const SettingsModal = dynamic(() => import("@/components/profile/SettingsModal"), { ssr: false });
+const EditProfileModal = dynamic(() => import("@/components/profile/EditProfileModal"), { ssr: false });
 
 function getTabFromUrl():
   | "stories"
@@ -58,14 +58,6 @@ export default function ProfilPage() {
     stats,
     refresh,
   } = useProfileData({ userId: user?.id ?? null });
-  const {
-    pullDistance,
-    pullState,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-  } = usePullToRefresh(refresh);
-
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editUsername, setEditUsername] = useState("");
   const [editEmail, setEditEmail] = useState("");
@@ -249,45 +241,13 @@ export default function ProfilPage() {
   }
 
   return (
+    <Suspense fallback={<Loader fullScreen message="Chargement de votre profil..." />}>
     <div className="min-h-screen text-white flex flex-col bg-deep">
       <PageBackground />
 
       <Header />
 
-      <main
-        className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {pullState !== "idle" && (
-          <div
-            className="absolute top-0 left-0 right-0 z-30 flex items-center justify-center overflow-hidden transition-all duration-200"
-            style={{ height: pullDistance }}
-          >
-            {pullState === "refreshing" ? (
-              <Loader size="sm" message="" />
-            ) : (
-              <div
-                className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}
-              >
-                <svg
-                  className="w-6 h-6 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                  />
-                </svg>
-              </div>
-            )}
-          </div>
-        )}
+      <main className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 relative">
         <div className="max-w-6xl mx-auto">
           {dataError && (
             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
@@ -449,8 +409,8 @@ export default function ProfilPage() {
         saveMessage={saveMessage}
         getUserInitials={getUserInitials}
       />
-      <BottomNav />
     </div>
+    </Suspense>
   );
 }
 

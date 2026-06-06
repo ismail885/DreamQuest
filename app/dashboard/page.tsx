@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { usePullToRefresh } from "@/hooks/usePullToRefresh";
-import { Plus, ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
-import BottomNav from "@/components/shared/BottomNav";
 import PageTransition from "@/components/shared/PageTransition";
 import Loader from "@/components/shared/Loader";
 import DashboardStats from "@/components/dashboard/DashboardStats";
@@ -59,11 +57,7 @@ export default function DashboardPage() {
   statsError,
   suggestions,
   loadingSuggestions,
-  refresh,
   } = useDashboardData(user?.id ?? null);
-  const { pullDistance, pullState, handleTouchStart, handleTouchMove, handleTouchEnd } =
-  usePullToRefresh(refresh);
-
   useEffect(() => {
   if (!loading && !user) {
   router.replace("/auth/login");
@@ -78,31 +72,12 @@ export default function DashboardPage() {
  if (!user) return null;
 
   return (
- <div className="min-h-screen bg-deep text-white flex flex-col">
+    <Suspense fallback={<Loader fullScreen />}>
+    <div className="min-h-screen bg-deep text-white flex flex-col">
  <Header />
 
- <main
- className="flex-1 relative pb-24 md:pb-0"
- onTouchStart={handleTouchStart}
- onTouchMove={handleTouchMove}
-  onTouchEnd={handleTouchEnd}
- >
- {pullState !== "idle" && (
- <div
- className="absolute top-0 left-0 right-0 z-30 flex items-center justify-center overflow-hidden transition-all duration-200"
- style={{ height: pullDistance }}
- >
- {pullState === "refreshing" ? (
- <Loader size="sm" message="" />
- ) : (
- <div className={`transition-transform duration-150 ${pullDistance >= 55 ? "rotate-180" : ""}`}>
- <ChevronDown className="w-6 h-6 text-cyan-400" />
- </div>
- )}
- </div>
- )}
-
-  <PageTransition className="container mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8 relative z-10">
+      <main className="flex-1">
+        <PageTransition className="container mx-auto px-4 md:px-6 py-6 md:py-8 relative z-10">
   <div className="max-w-7xl mx-auto">
   {/* En-tete */}
  <motion.div
@@ -175,9 +150,9 @@ export default function DashboardPage() {
   </PageTransition>
   </main>
 
-  <BottomNav />
   <Footer />
   </div>
+  </Suspense>
   );
 }
 

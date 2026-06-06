@@ -56,8 +56,12 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: -20 }}
  transition={{ duration: 0.3 }}
- onClick={onSelect}
- className={`relative bg-surface/80 border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
+  onClick={onSelect}
+  role="button"
+  tabIndex={0}
+  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }}
+  aria-label={`Sélectionner la classe ${classInfo.name} - ${classInfo.role}`}
+  className={`relative bg-surface/80 border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
  isSelected 
  ? 'border-cyan-400 shadow-lg shadow-cyan-400/20 scale-102' 
  : 'border-gray-800/50 hover:border-cyan-500/50'

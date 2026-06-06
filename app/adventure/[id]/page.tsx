@@ -2,6 +2,7 @@
 
 import { use, Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
 import Loader from "@/components/shared/Loader";
 import Footer from "@/components/shared/Footer";
@@ -17,15 +18,16 @@ import { getAdventureImage } from "@/data/adventureImages";
 import { updateQuestProgress } from "@/lib/dailyQuests";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/useToast";
-import ConfirmLeaveModal from "@/components/shared/ConfirmLeaveModal";
 import CharacterHUD from "@/components/adventure/CharacterHUD";
-import EffectIndicator from "@/components/adventure/EffectIndicator";
 import ChoiceButton from "@/components/adventure/ChoiceButton";
 import StorySection from "@/components/adventure/StorySection";
-import RandomEventCard from "@/components/adventure/RandomEventCard";
-import CombatUI from "@/components/adventure/CombatUI";
 import AdventureHeader from "@/components/adventure/AdventureHeader";
-import AdventureEndScreen from "@/components/adventure/AdventureEndScreen";
+
+const CombatUI = dynamic(() => import("@/components/adventure/CombatUI"), { ssr: false });
+const AdventureEndScreen = dynamic(() => import("@/components/adventure/AdventureEndScreen"), { ssr: false });
+const RandomEventCard = dynamic(() => import("@/components/adventure/RandomEventCard"), { ssr: false });
+const ConfirmLeaveModal = dynamic(() => import("@/components/shared/ConfirmLeaveModal"), { ssr: false });
+const EffectIndicator = dynamic(() => import("@/components/adventure/EffectIndicator"), { ssr: false });
 
 const MAX_STEPS = 8;
 
@@ -251,6 +253,7 @@ function AdventureReader({ params }: Props) {
   }
 
   return (
+    <Suspense fallback={<Loader fullScreen />}>
     <div className="min-h-screen bg-deep text-white flex flex-col">
       <PageBackground />
       <AdventureHeader
@@ -455,5 +458,6 @@ function AdventureReader({ params }: Props) {
 
       <Footer />
     </div>
+    </Suspense>
   );
 }

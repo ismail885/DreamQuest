@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import CreateCharacterForm from "@/components/character/CreateCharacterForm";
 import PageTransition from "@/components/shared/PageTransition";
-import BottomNav from "@/components/shared/BottomNav";
 import { useRouter } from "next/navigation";
 import type { Character } from "@/types";
 import { updateQuestProgress } from "@/lib/dailyQuests";
+import Loader from "@/components/shared/Loader";
 
 export default function CreateCharacterPage() {
   const { user, loading } = useAuthContext();
@@ -35,6 +36,7 @@ export default function CreateCharacterPage() {
   };
 
   return (
+    <Suspense fallback={<Loader fullScreen />}>
     <div className="min-h-screen bg-deep pb-24 md:pb-0">
       <PageTransition>
         <CreateCharacterForm
@@ -42,7 +44,7 @@ export default function CreateCharacterPage() {
           onCharacterCreated={handleCharacterCreated}
         />
       </PageTransition>
-      <BottomNav />
     </div>
+    </Suspense>
   );
 }

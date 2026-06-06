@@ -1,9 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
 import { RefreshCw, Wifi, WifiOff, Users, BookOpen, UserRound, Activity, TrendingUp, Calendar } from "lucide-react";
 import { useAdminDashboard } from "@/hooks/admin/useAdminDashboard";
 import AdminStatCards from "@/components/admin/AdminStatCards";
 import AdminRoleDistribution from "@/components/admin/AdminRoleDistribution";
+import Loader from "@/components/shared/Loader";
 
 export default function AdminDashboard() {
   const {
@@ -42,6 +44,7 @@ export default function AdminDashboard() {
   }
 
   return (
+    <Suspense fallback={<Loader fullScreen />}>
     <div className="space-y-8">
       {/* Header with Live Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -141,6 +144,7 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+    </Suspense>
   );
 }
 

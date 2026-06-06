@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
-import BottomNav from "@/components/shared/BottomNav";
 import PageBackground from "@/components/shared/PageBackground";
 import PageTransition from "@/components/shared/PageTransition";
 import AdventureCard from "@/components/adventure/AdventureCard";
@@ -298,7 +297,6 @@ function AdventurePageContent() {
         </AnimatePresence>
       </main>
 
-      <BottomNav />
       <Footer />
     </div>
   );
