@@ -84,7 +84,12 @@ const AdventureCard = React.memo(function AdventureCard({
       return;
     }
     await toggleVote();
-    updateQuestProgress(user.id, "vote_3", 1).catch(() => {});
+    updateQuestProgress(user.id, "vote_3", 1).then((r) => {
+      if (r.completion) {
+        toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
+      }
+      window.dispatchEvent(new CustomEvent("profile-refresh"));
+    }).catch(() => {});
   };
 
   return (

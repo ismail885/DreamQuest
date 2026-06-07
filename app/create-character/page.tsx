@@ -7,6 +7,8 @@ import PageTransition from "@/components/shared/PageTransition";
 import { useRouter } from "next/navigation";
 import type { Character } from "@/types";
 import { updateQuestProgress } from "@/lib/dailyQuests";
+import { checkAndNotifyAchievements } from "@/lib/achievements";
+import toast from "react-hot-toast";
 import Loader from "@/components/shared/Loader";
 
 export default function CreateCharacterPage() {
@@ -31,7 +33,13 @@ export default function CreateCharacterPage() {
   }
 
   const handleCharacterCreated = (character: Character) => {
-    updateQuestProgress(user.id, "create_char", 1).catch(() => {});
+    updateQuestProgress(user.id, "create_char", 1).then((r) => {
+      if (r.completion) {
+        toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
+      }
+      window.dispatchEvent(new CustomEvent("profile-refresh"));
+      checkAndNotifyAchievements(user.id, (msg) => toast.success(msg));
+    }).catch(() => {});
     router.push(`/adventure?personnage=${character.id}`);
   };
 

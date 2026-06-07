@@ -2,7 +2,7 @@ import { memo } from "react";
 import Image from "next/image";
 import { Heart, Swords, Wind, Wand2, Shield, Zap, ChevronDown, ChevronUp } from "lucide-react";
 import type { Character } from "@/types";
-import { calculateRequiredXP } from "@/lib/characters/classDefinitions";
+import { getXPInCurrentLevel, getXPForNextLevel } from "@/lib/leveling";
 
 interface CharacterHUDProps {
   character: Character;
@@ -40,8 +40,8 @@ function classLabel(classe: string): string {
 }
 
 function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued = false, sidebar = false }: CharacterHUDProps) {
-  const xpCurrent = character.experience ?? 0;
-  const xpNeeded = calculateRequiredXP(character.niveau);
+  const xpCurrent = getXPInCurrentLevel(character.niveau, character.experience ?? 0);
+  const xpNeeded = getXPForNextLevel(character.niveau);
   const xpRatio = Math.min(xpCurrent / Math.max(xpNeeded, 1), 1);
   const pvRatio = Math.min(character.points_vie / Math.max(character.points_vie_max ?? 100, 1), 1);
   const pvColor = pvRatio > 0.5 ? "from-red-500 to-red-400" : pvRatio > 0.25 ? "from-orange-500 to-orange-400" : "from-red-600 to-red-500";

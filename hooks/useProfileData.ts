@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
 import { getDailyQuests, DailyQuest } from "@/lib/dailyQuests";
 import { getCurrentSeason } from "@/lib/seasons";
+const PROFILE_REFRESH_EVENT = "profile-refresh";
 import type {
   ExtendedUserProfile,
   UserStats,
@@ -262,14 +263,25 @@ export function useProfileData({
     }
   }, []);
 
+  const refresh = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+  }, []);
+
   useEffect(() => {
     if (!userId || !enabled) return;
     loadData(userId);
   }, [userId, enabled, refreshKey, loadData]);
 
-  const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1);
-  }, []);
+  useEffect(() => {
+    if (!enabled) return;
+    const handler = () => refresh();
+    window.addEventListener(PROFILE_REFRESH_EVENT, handler);
+    window.addEventListener("focus", handler);
+    return () => {
+      window.removeEventListener(PROFILE_REFRESH_EVENT, handler);
+      window.removeEventListener("focus", handler);
+    };
+  }, [enabled, refresh]);
 
   return {
     loading,

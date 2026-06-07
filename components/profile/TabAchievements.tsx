@@ -9,12 +9,12 @@ interface TabAchievementsProps {
 }
 
 const CATEGORIES = [
-  { key: "history", label: "Histoire", ids: ["first_story", "five_stories", "ten_stories"] },
-  { key: "character", label: "Personnages", ids: ["first_character", "five_characters"] },
-  { key: "votes", label: "Votes", ids: ["first_vote", "ten_votes"] },
-  { key: "creation", label: "Créations", ids: ["first_creation", "popular_creator"] },
-  { key: "level", label: "Niveau", ids: ["level_5", "level_10"] },
-  { key: "misc", label: "Divers", ids: ["night_owl", "explorer"] },
+  { key: "history", label: "Histoire", ids: ["first_story", "five_stories", "ten_stories", "twenty_stories"] },
+  { key: "character", label: "Personnages", ids: ["first_character", "five_characters", "ten_characters"] },
+  { key: "votes", label: "Votes", ids: ["first_vote", "ten_votes", "fifty_votes"] },
+  { key: "creation", label: "Créations", ids: ["first_creation", "five_creations", "popular_creator", "star_creator"] },
+  { key: "level", label: "Niveau", ids: ["level_5", "level_10", "level_25", "level_50", "level_100"] },
+  { key: "misc", label: "Divers", ids: ["night_owl"] },
 ];
 
 const containerVariants = {

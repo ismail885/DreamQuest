@@ -16,8 +16,10 @@ import { useAuthContext } from "@/context/AuthContext";
 import { RANDOM_EVENTS, getRandomEvent } from "@/lib/randomEvents";
 import { getAdventureImage } from "@/data/adventureImages";
 import { updateQuestProgress } from "@/lib/dailyQuests";
+import { checkAndNotifyAchievements } from "@/lib/achievements";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/useToast";
+
 import CharacterHUD from "@/components/adventure/CharacterHUD";
 import ChoiceButton from "@/components/adventure/ChoiceButton";
 import StorySection from "@/components/adventure/StorySection";
@@ -185,11 +187,23 @@ function AdventureReader({ params }: Props) {
 
       completedAdventuresRef.current += 1;
       const count = completedAdventuresRef.current;
-      updateQuestProgress(user.id, "finish_1", 1).catch(() => {});
+      updateQuestProgress(user.id, "finish_1", 1).then((r) => {
+        if (r.completion) {
+          toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
+        }
+        window.dispatchEvent(new CustomEvent("profile-refresh"));
+        checkAndNotifyAchievements(user.id, (msg) => toast.success(msg));
+      }).catch(() => {});
       if (count >= 2) {
-        updateQuestProgress(user.id, "finish_2", 1).catch(() => {});
+        updateQuestProgress(user.id, "finish_2", 1).then((r) => {
+          if (r.completion) {
+            toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
+          }
+          window.dispatchEvent(new CustomEvent("profile-refresh"));
+        }).catch(() => {});
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isEnd,
     user,
@@ -204,7 +218,12 @@ function AdventureReader({ params }: Props) {
   useEffect(() => {
     if (currentBranch && user && !startedQuestRef.current) {
       startedQuestRef.current = true;
-      updateQuestProgress(user.id, "play_story", 1).catch(() => {});
+      updateQuestProgress(user.id, "play_story", 1).then((r) => {
+        if (r.completion) {
+          toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
+        }
+        window.dispatchEvent(new CustomEvent("profile-refresh"));
+      }).catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBranch?.id, user]);

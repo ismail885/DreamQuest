@@ -28,9 +28,14 @@ export interface QuestCompletionResult {
 const QUEST_POOL: Omit<DailyQuest, "progress" | "completed">[] = [
   { id: "finish_2", title: "Aventurier", description: "Terminer 2 aventures", target: 2, xpReward: 200, icon: "BookOpen" },
   { id: "finish_1", title: "Explorateur", description: "Terminer 1 aventure", target: 1, xpReward: 100, icon: "Compass" },
+  { id: "finish_5", title: "Vétéran", description: "Terminer 5 aventures", target: 5, xpReward: 400, icon: "Trophy" },
   { id: "vote_3", title: "Curieux", description: "Voter pour 3 histoires", target: 3, xpReward: 150, icon: "ThumbsUp" },
+  { id: "vote_1", title: "Participatif", description: "Voter pour 1 histoire", target: 1, xpReward: 50, icon: "ThumbsUp" },
   { id: "create_char", title: "Créateur", description: "Créer un personnage", target: 1, xpReward: 50, icon: "UserPlus" },
   { id: "play_story", title: "Lecteur", description: "Commencer une aventure", target: 1, xpReward: 25, icon: "BookMarked" },
+  { id: "combat_win", title: "Guerrier", description: "Gagner un combat", target: 1, xpReward: 100, icon: "Swords" },
+  { id: "create_story", title: "Auteur", description: "Créer une aventure", target: 1, xpReward: 150, icon: "Edit3" },
+  { id: "level_up", title: "Évolution", description: "Gagner un niveau", target: 1, xpReward: 300, icon: "TrendingUp" },
 ];
 
 function getSeasonalQuestPool(): Omit<DailyQuest, "progress" | "completed">[] {
