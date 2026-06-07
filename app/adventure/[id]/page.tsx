@@ -149,7 +149,7 @@ function AdventureReader({ params }: Props) {
     branchId: currentBranch?.id ?? null,
     progression,
     enabled: !!user && !!characterIdNum && !isEnd,
-    intervalMs: 30_000,
+    intervalMs: 60_000,
   });
 
   useEffect(() => {
@@ -486,9 +486,9 @@ function AdventureReader({ params }: Props) {
 
       <ConfirmLeaveModal
         isOpen={showLeaveModal}
-        onConfirm={() => {
+        onConfirm={async () => {
           setShowLeaveModal(false);
-          save();
+          await save();
           router.back();
         }}
         onCancel={() => setShowLeaveModal(false)}

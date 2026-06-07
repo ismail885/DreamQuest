@@ -25,7 +25,7 @@ export function useSave({
  branchId,
  progression,
  enabled = true,
- intervalMs = 30_000,
+  intervalMs = 60_000,
 }: SaveParams) {
  const [state, setState] = useState<SaveState>({
  isSaving: false,
