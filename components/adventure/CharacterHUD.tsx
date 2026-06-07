@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { Heart, Swords, Wind, Wand2, Shield, Zap, User, ChevronDown, ChevronUp } from "lucide-react";
+import Image from "next/image";
+import { Heart, Swords, Wind, Wand2, Shield, Zap, ChevronDown, ChevronUp } from "lucide-react";
 import type { Character } from "@/types";
 import { calculateRequiredXP } from "@/lib/characters/classDefinitions";
 
@@ -10,6 +11,23 @@ interface CharacterHUDProps {
   isFatigued?: boolean;
   /** Mode sidebar (desktop) ou compact (mobile) */
   sidebar?: boolean;
+}
+
+const CLASS_IMAGES: Record<string, string> = {
+  guerrier: "/illustrations_personnage/guerrier.jpg",
+  mage: "/illustrations_personnage/mage.jpg",
+  archer: "/illustrations_personnage/archer.jpg",
+  assassin: "/illustrations_personnage/assassin.jpg",
+  paladin: "/illustrations_personnage/paladin.jpeg",
+  pretre: "/illustrations_personnage/prêtre.jpeg",
+  druide: "/illustrations_personnage/druide.jpg",
+  necromancien: "/illustrations_personnage/necromancien.jpg",
+  voleur: "/illustrations_personnage/voleur.jpg",
+  barbare: "/illustrations_personnage/barbare.jpg",
+};
+
+function getCharacterImage(classe: string): string {
+  return CLASS_IMAGES[classe?.toLowerCase()] ?? "/illustrations_personnage/guerrier.jpg";
 }
 
 function classLabel(classe: string): string {
@@ -34,8 +52,14 @@ function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued
       <div className="space-y-4">
         {/* Identité */}
         <div className="flex flex-col items-center text-center gap-2 pb-4 border-b border-cyan-500/15">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-            <User className="w-7 h-7 text-white" />
+          <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-cyan-500/30 shadow-lg shadow-cyan-500/20">
+            <Image
+              src={getCharacterImage(character.classe)}
+              alt={character.classe}
+              width={56}
+              height={56}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <p className="text-white font-bold text-sm">{character.nom_personnage}</p>
@@ -108,8 +132,14 @@ function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued
       <details className="group">
         <summary className="flex items-center justify-between cursor-pointer list-none backdrop-blur-card bg-slate-900/60 border border-cyan-500/15 rounded-card px-4 py-2.5">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-              <User className="w-3.5 h-3.5 text-white" />
+            <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-cyan-500/30 flex-shrink-0">
+              <Image
+                src={getCharacterImage(character.classe)}
+                alt={character.classe}
+                width={28}
+                height={28}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="min-w-0">
               <span className="text-white font-semibold text-xs block truncate">{character.nom_personnage}</span>
