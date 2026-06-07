@@ -9,8 +9,8 @@ import PageBackground from "@/components/shared/PageBackground";
 import PageTransition from "@/components/shared/PageTransition";
 import AdventureCard from "@/components/adventure/AdventureCard";
 import { SkeletonAdventureList } from "@/components/shared/Skeleton";
-import { Search, X, User, Frown } from "lucide-react";
-import { useAdventureList, FILTER_OPTIONS } from "@/hooks/useAdventureList";
+import { Search, X, User, Frown, ChevronDown } from "lucide-react";
+import { useAdventureList, FILTER_OPTIONS, type AdventureFilter } from "@/hooks/useAdventureList";
 import AdventurePagination from "@/components/adventure/AdventurePagination";
 
 const easeOutExpo = [0.16, 1, 0.3, 1] as const;
@@ -139,20 +139,22 @@ function AdventurePageContent() {
             </div>
 
             <div className="flex items-center justify-between gap-3 mt-4">
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mb-1">
-                {FILTER_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setActiveFilter(option.value)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-out ${
-                      activeFilter === option.value
-                        ? "bg-gradient-to-r from-primary to-blue-500 text-white shadow-lg shadow-cyan-500/30"
-                        : "bg-transparent border border-cyan-500/20 text-gray-300 hover:text-white hover:border-cyan-500/40"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+              <div className="relative">
+                <select
+                  value={activeFilter}
+                  onChange={(e) => {
+                    setActiveFilter(e.target.value as AdventureFilter);
+                    setCurrentPage(1);
+                  }}
+                  className="appearance-none px-4 py-2 pr-10 rounded-lg text-sm font-medium bg-transparent border border-cyan-500/20 text-gray-300 hover:text-white hover:border-cyan-500/40 cursor-pointer transition-all duration-300 ease-out focus:outline-none focus:border-primary focus:ring-2 focus:ring-cyan-500/20 [&>option]:bg-deep [&>option]:text-white"
+                >
+                  {FILTER_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
               <div className="text-gray-400 text-sm whitespace-nowrap">
                 <span className="font-semibold text-primary">

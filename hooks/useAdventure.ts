@@ -41,7 +41,7 @@ export function useAdventure(
  try {
   const { data: adventure, error: advError } = await supabase
  .from('aventure')
- .select('id,titre,description,auteur_id,date_creation,popularite')
+ .select('id,titre,description,auteur_id,date_creation,popularite,embranchement_initial_id')
  .eq('id', adventureId)
  .single();
 
@@ -55,20 +55,14 @@ export function useAdventure(
     .select('*', { count: 'exact', head: true })
     .eq('id_aventure', adventureId);
 
-  const { data: firstBranch } = await supabase
- .from('embranchement')
- .select('id')
- .eq('id_aventure', adventureId)
- .order('id', { ascending: true })
- .limit(1)
- .single();
+  const rootId = adventure.embranchement_initial_id;
 
- if (!firstBranch) {
+  if (!rootId) {
  setState((s) => ({ ...s, adventure, loading: false, error: "Cette aventure n'a pas encore de contenu." }));
  return;
  }
 
- let branchIdToLoad = firstBranch.id;
+ let branchIdToLoad = rootId;
  
  if (userIdRef.current) {
  const { data: save } = await supabase
@@ -90,11 +84,11 @@ export function useAdventure(
  .single();
 
  if (branchError || !branch) {
- // Fallback au premier nœud si le nœud sauvegardé n'existe plus
- const { data: fallbackBranch } = await supabase
+  // Fallback au nœud racine si le nœud sauvegardé n'existe plus
+  const { data: fallbackBranch } = await supabase
  .from('embranchement')
  .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
- .eq('id', firstBranch.id)
+ .eq('id', rootId)
  .single();
  
   if (fallbackBranch) {
@@ -168,22 +162,27 @@ export function useAdventure(
     console.warn('[useAdventure] restart delete save failed:', err)
   }
 
-  const { data: firstBranch } = await supabase
+  const rootId = state.adventure.embranchement_initial_id;
+
+  if (!rootId) {
+ setState((s) => ({ ...s, loading: false, error: "Impossible de recommencer." }));
+ return;
+  }
+
+  const { data: rootBranch } = await supabase
  .from('embranchement')
  .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
- .eq('id_aventure', state.adventure.id)
- .order('id', { ascending: true })
- .limit(1)
+ .eq('id', rootId)
  .single();
 
- if (firstBranch) {
- const isEnd = !firstBranch.choix1_lien && !firstBranch.choix2_lien;
+ if (rootBranch) {
+ const isEnd = !rootBranch.choix1_lien && !rootBranch.choix2_lien;
  setState((s) => ({
  ...s,
- currentBranch: firstBranch,
+ currentBranch: rootBranch,
  loading: false,
  isEnd,
- history: [firstBranch],
+ history: [rootBranch],
  }));
  } else {
  setState((s) => ({ ...s, loading: false, error: "Impossible de recommencer." }));

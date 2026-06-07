@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useCachedQuery } from "@/hooks/useCachedQuery";
 import type { AdventureListItem } from "@/types/adventure";
 
 const ITEMS_PER_PAGE = 12;
@@ -110,67 +109,68 @@ export function useAdventureList(): UseAdventureListReturn {
   const [totalCount, setTotalCount] = useState(0);
   const [activeFilter, setActiveFilter] = useState<AdventureFilter>("tous");
 
-  // 🔹 On garde une ref de la searchQuery pour l'utiliser dans le callback
-  // sans dépendre de sa valeur réactive (sinon le cache se recrée à ogni frappe)
   const searchRef = useRef(searchQuery);
   searchRef.current = searchQuery;
   const filterRef = useRef(activeFilter);
   filterRef.current = activeFilter;
-
-  // 🔹 Clé de cache incluant la recherche ET le filtre
-  const cacheKey = `adventures_q=${searchQuery}_f=${activeFilter}_p=${currentPage}`;
-
-  const fetchAdventures = useCallback(async () => {
-    const from = (currentPage - 1) * ITEMS_PER_PAGE;
-    const to = from + ITEMS_PER_PAGE - 1;
-
-    const queryBase = supabase
-      .from("aventure")
-      .select("id, titre, description, popularite, genre", { count: "exact" });
-
-    // 🔹 Filtre par genre (avec mapping des alias BDD)
-    const dbValues = DB_GENRE_MAP[filterRef.current] ?? null;
-    if (dbValues !== null) {
-      if (dbValues.length === 1) {
-        void queryBase.eq("genre", dbValues[0]);
-      } else {
-        void queryBase.in("genre", dbValues);
-      }
-    }
-
-    // 🔹 Recherche par titre (via ILIKE côté BDD, pas côté client)
-    const q = searchRef.current.trim();
-    if (q) {
-      void queryBase.ilike("titre", `%${q}%`);
-    }
-
-    queryBase.order("popularite", { ascending: false });
-
-    const { data, error: fetchError, count } = await queryBase.range(from, to);
-
-    if (fetchError) {
-      console.error("useAdventureList fetch error:", fetchError);
-      setError("Impossible de charger les aventures.");
-      setAdventures([]);
-      setTotalCount(0);
-      return [];
-    }
-
-    setAdventures(data ?? []);
-    setTotalCount(count ?? 0);
-    setError(null);
-    return data ?? [];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, searchQuery, activeFilter]);
-
-  const { loading: cacheLoading } = useCachedQuery(cacheKey, fetchAdventures, {
-    cacheDuration: 3 * 60 * 1000,
-    refetchOnFocus: false,
-  });
+  const pageRef = useRef(currentPage);
+  pageRef.current = currentPage;
 
   useEffect(() => {
-    setLoading(cacheLoading);
-  }, [cacheLoading]);
+    let cancelled = false;
+
+    const fetchAdventures = async () => {
+      const page = pageRef.current;
+      const from = (page - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      setLoading(true);
+      setError(null);
+
+      const queryBase = supabase
+        .from("aventure")
+        .select("id, titre, description, popularite, genre", { count: "exact" });
+
+      // Filtre par genre (avec mapping des alias BDD)
+      const dbValues = DB_GENRE_MAP[filterRef.current] ?? null;
+      if (dbValues !== null) {
+        if (dbValues.length === 1) {
+          void queryBase.eq("genre", dbValues[0]);
+        } else {
+          void queryBase.in("genre", dbValues);
+        }
+      }
+
+      // Recherche par titre
+      const q = searchRef.current.trim();
+      if (q) {
+        void queryBase.ilike("titre", `%${q}%`);
+      }
+
+      queryBase.order("popularite", { ascending: false });
+
+      const { data, error: fetchError, count } = await queryBase.range(from, to);
+
+      if (cancelled) return;
+
+      if (fetchError) {
+        console.error("useAdventureList fetch error:", fetchError);
+        setError("Impossible de charger les aventures.");
+        setAdventures([]);
+        setTotalCount(0);
+      } else {
+        setAdventures(data ?? []);
+        setTotalCount(count ?? 0);
+      }
+      setLoading(false);
+    };
+
+    fetchAdventures();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentPage, searchQuery, activeFilter]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
 

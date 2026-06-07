@@ -31,7 +31,7 @@ const RandomEventCard = dynamic(() => import("@/components/adventure/RandomEvent
 const ConfirmLeaveModal = dynamic(() => import("@/components/shared/ConfirmLeaveModal"), { ssr: false });
 const EffectIndicator = dynamic(() => import("@/components/adventure/EffectIndicator"), { ssr: false });
 
-const MAX_STEPS = 8;
+const MAX_STEPS = 20;
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -64,6 +64,7 @@ function AdventureReader({ params }: Props) {
   const { user } = useAuthContext();
   const toast = useToast();
 
+  const lastBranchRef = useRef<typeof currentBranch>(null);
   const [currentEvent, setCurrentEvent] = useState<
     (typeof RANDOM_EVENTS)[0] | null
   >(null);
@@ -132,15 +133,13 @@ function AdventureReader({ params }: Props) {
     error,
     isEnd,
     history,
-    totalBranches,
     chooseOption,
     restart,
   } = useAdventure(adventureId, user?.id ?? null);
 
-  const totalNodes = totalBranches || MAX_STEPS;
-  const progression = Math.min(
-    Math.round((history.length / Math.max(totalNodes, 1)) * 100),
-    100,
+  const progression = isEnd ? 100 : Math.min(
+    Math.round((history.length / Math.max(MAX_STEPS, 1)) * 100),
+    99,
   );
 
   const { isSaving, save } = useSave({
@@ -152,6 +151,10 @@ function AdventureReader({ params }: Props) {
     enabled: !!user && !!characterIdNum && !isEnd,
     intervalMs: 30_000,
   });
+
+  useEffect(() => {
+    if (currentBranch) lastBranchRef.current = currentBranch;
+  }, [currentBranch]);
 
   const lastBranchIdRef = useRef<number | null>(null);
   useEffect(() => {
@@ -335,8 +338,8 @@ function AdventureReader({ params }: Props) {
             {/* Texte de l'histoire */}
             <StorySection
               progression={progression}
-              texte={currentBranch?.texte ?? ""}
-              branchKey={currentBranch?.id}
+              texte={currentBranch?.texte ?? lastBranchRef.current?.texte ?? ""}
+              branchKey={currentBranch?.id ?? lastBranchRef.current?.id}
             />
 
             {/* Écran de fin */}
@@ -403,6 +406,13 @@ function AdventureReader({ params }: Props) {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {loading && currentBranch === null && lastBranchRef.current && (
+              <div className="text-center py-4">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary mx-auto mb-2"></div>
+                <p className="text-gray-500 text-sm">Reconnexion...</p>
+              </div>
+            )}
 
             {/* Choix */}
             <AnimatePresence mode="wait">
