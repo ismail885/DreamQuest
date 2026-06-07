@@ -260,7 +260,6 @@ function AdventureReader({ params }: Props) {
       />
 
       <div className="flex-1 flex flex-col md:flex-row max-w-6xl mx-auto w-full px-4 md:px-6 gap-0 md:gap-6 py-4 md:py-6">
-        {/* ── SIDEBAR PERSONNAGE (desktop) / Haut de page mobile ── */}
         <aside className="md:w-64 md:flex-shrink-0">
           {character && (
             <>
@@ -290,7 +289,6 @@ function AdventureReader({ params }: Props) {
           )}
         </aside>
 
-        {/* ── CONTENU PRINCIPAL : Histoire + Choix ── */}
         <main className="flex-1 min-w-0">
           <motion.div
             initial={{ opacity: 0, y: 12 }}

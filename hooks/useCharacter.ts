@@ -7,8 +7,6 @@ import { applyXpGain, saveCharacterProgress, updateUserXp } from "@/lib/xp";
 import type { Character, CharacterClass } from "@/types";
 import { CHARACTER_CLASSES } from "@/types/character";
 
-// useCharacter — Chargement personnage, capacités, progression
-
 interface UseCharacterProps {
   personnageId: string | null;
   userId: number | null;
@@ -59,7 +57,6 @@ export function useCharacter({
     ? parseInt(personnageId, 10)
     : null;
 
-  // Chargement du personnage depuis la BDD
   useEffect(() => {
     if (!personnageId) return;
 
@@ -97,7 +94,6 @@ export function useCharacter({
     };
   }, [personnageId]);
 
-  // Chargement des capacités disponibles depuis la classe
   useEffect(() => {
     if (!character?.classe) return;
     const classAbilities = getPoolAbilityNames(
@@ -132,7 +128,6 @@ export function useCharacter({
     return null;
   }, [userId, characterIdNum]);
 
-  // Sauvegarder les stats en BDD
   const saveCharacterStats = useCallback(
     async (
       niveau: number,

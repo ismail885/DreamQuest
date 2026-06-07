@@ -12,7 +12,6 @@ const cachedShortPaths = ['/create-adventure', '/dashboard', '/create-character'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Ajouter headers cache pour pages publiques statiques (longue durée)
   if (cachedStaticPaths.includes(pathname) || cachedStaticPaths.some(path => pathname.startsWith(path))) {
     const response = NextResponse.next();
     response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
@@ -26,9 +25,6 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // ============================================
-  // VÉRIFICATION JWT — via lib/jwt
-  // ============================================
   const authToken = getTokenFromCookies(request.headers.get('cookie'));
   const payload = authToken ? await verifyToken(authToken) : null;
   

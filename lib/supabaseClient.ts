@@ -4,7 +4,7 @@ import type { UserRole } from '@/types/user'
 const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey: string = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
-const REQUEST_TIMEOUT = 15_000; // 15 secondes
+const REQUEST_TIMEOUT = 15_000;
 
 async function fetchWithTimeout(
   input: RequestInfo | URL,
@@ -57,8 +57,6 @@ export const supabase = new Proxy({} as SupabaseClient, {
     return value
   },
 })
-
-// Client ADMIN / SERVER-SIDE (4.2)
 
 let adminClient: SupabaseClient | null = null
 

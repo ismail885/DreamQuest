@@ -16,16 +16,14 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
  const difficultyInfo = CLASS_DIFFICULTIES[classInfo.name];
  const difficultyMeta = DIFFICULTY_LABELS[difficultyInfo?.level ?? 'DEBUTANT'];
  
- // Récupérer les stats formatées avec leurs couleurs
- const stats = (Object.keys(classInfo.baseStats) as Array<keyof typeof classInfo.baseStats>).map((key) => ({
+  const stats = (Object.keys(classInfo.baseStats) as Array<keyof typeof classInfo.baseStats>).map((key) => ({
  key,
  label: STAT_LABELS[key],
  value: classInfo.baseStats[key],
  color: STAT_COLORS[key],
  }));
 
- // Récupérer les infos détaillées des capacités
- const abilitiesWithInfo = classInfo.abilities
+  const abilitiesWithInfo = classInfo.abilities
  .map(name => ABILITIES_DATA[name])
  .filter(Boolean);
 

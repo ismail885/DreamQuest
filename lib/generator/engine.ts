@@ -264,7 +264,6 @@ function generateContextualChoices(
     );
   }
 
-  // Filtrer et choisir
   const valid = templates.filter((t) => t.condition());
   const selected = pick(valid.length > 0 ? valid : [{ condition: () => true, choices: ["Continuer votre route", "Prendre le temps d'observer"] as [string, string], consequence: "Chaque décision vous rapproche du dénouement." }]);
 
@@ -284,7 +283,6 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
   const usedTwists = new Set<string>();
   const usedArtifacts = new Set<{ name: string; description: string }>();
 
-  // Nombre de nœuds selon la longueur souhaitée
   let nodeCount: number;
   switch (longueur) {
     case "court":
@@ -306,9 +304,6 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
 
   const nodes: GeneratedNode[] = [];
 
-  // ==========================================
-  // NŒUD RACINE — Introduction avec le titre
-  // ==========================================
   const hook = pick(content.plotHooks);
   const startLocation = pick(content.locations);
   usedLocations.add(startLocation);
@@ -329,18 +324,12 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
     ],
   });
 
-  // ==========================================
-  // SUIVI DU CONTEXTE NARRATIF
-  // ==========================================
   let currentLocation = startLocation;
   let currentNpc: { name: string; role: string; description: string } | null = null;
   let hasArtifact = false;
   let artifactObj: { name: string; description: string } | null = null;
   let twistRevealed = false;
 
-  // ==========================================
-  // GÉNÉRATION DES NŒUDS INTERMÉDIAIRES
-  // ==========================================
   const depth = Math.floor(nodeCount / 3);
 
   for (let i = 0; i < nodeCount - 2; i++) {
@@ -439,12 +428,10 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
         eventText += `\n\nSoudain, un grondement terrifiant : ${monsterName} apparaît, bloquant votre chemin.`;
       }
 
-      // Ajouter le titre dans le climax
-      eventText += `\n\n« Ainsi se conclut "${title}"... » murmure une voix dans le vent.`;
+          eventText += `\n\n« Ainsi se conclut "${title}"... » murmure une voix dans le vent.`;
     }
 
-    // Générer les choix contextuels (2 choix maximum)
-    const { choices } = generateContextualChoices(content, phase, contextForChoices);
+      const { choices } = generateContextualChoices(content, phase, contextForChoices);
 
     const isEnd = i >= nodeCount - 3;
 
@@ -459,9 +446,6 @@ export function generateAdventure(input: GeneratorInput): GeneratedAdventure {
     });
   }
 
-  // ==========================================
-  // FINS (2-3)
-  // ==========================================
   const endingCount = 2 + Math.floor(Math.random() * 2);
   const endingSet = pickN(content.endings, endingCount);
 

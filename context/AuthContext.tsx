@@ -9,10 +9,6 @@ import React, {
 } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-// ============================================
-// Types
-// ============================================
-
 interface User {
  id: number;
  email: string;
@@ -32,10 +28,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// ============================================
-// Helpers cookies
-// ============================================
 
 const setAuthSession = async (userData: User): Promise<void> => {
  try {
@@ -62,10 +54,6 @@ const clearAuthSession = async (): Promise<void> => {
  }
 };
 
-// ============================================
-// Helper: récupérer les infos utilisateur depuis Supabase
-// ============================================
-
 const fetchUserFromAuthId = async (authId: string): Promise<User | null> => {
  try {
  const { data: userData } = await supabase
@@ -87,10 +75,6 @@ const fetchUserFromAuthId = async (authId: string): Promise<User | null> => {
  return null;
  }
 };
-
-// ============================================
-// Provider
-// ============================================
 
 export function AuthProvider({ children }: { children: ReactNode }): React.JSX.Element {
  const [user, setUser] = useState<User | null>(null);
@@ -155,10 +139,6 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  };
  }, []);
 
- // ==========================================
- // Login
- // ==========================================
-
  const login = async (emailOrUsername: string, password: string) => {
  try {
  let email = emailOrUsername;
@@ -193,13 +173,8 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  }
  };
 
- // ==========================================
- // Register
- // ==========================================
-
  const register = async (username: string, email: string, password: string) => {
  try {
- // Vérifier unicité email
  const { data: existingEmail } = await supabase
  .from("utilisateur")
  .select("id")
@@ -209,7 +184,6 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  return { success: false, error: "Cet email est déjà utilisé" };
  }
 
- // Vérifier unicité pseudo
  const { data: existingUsername } = await supabase
  .from("utilisateur")
  .select("id")
@@ -219,13 +193,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  return { success: false, error: "Ce pseudo est déjà utilisé" };
  }
 
- // Création du compte Supabase Auth
  const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
  if (authError || !authData.user) {
  return { success: false, error: authError?.message || "Erreur lors de la création du compte" };
  }
 
- // Insertion dans la table utilisateur
  const { error: insertError } = await supabase.from("utilisateur").insert({
  nom_utilisateur: username,
  email,
@@ -244,10 +216,6 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  return { success: false, error: "Erreur d'inscription" };
  }
  };
-
- // ==========================================
- // OAuth
- // ==========================================
 
  const loginWithGoogle = async () => {
  try {
@@ -279,10 +247,6 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   }
   };
 
- // ==========================================
- // Logout
- // ==========================================
-
  const logout = async () => {
  try {
  await supabase.auth.signOut();
@@ -293,19 +257,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  }
  };
 
- // ==========================================
- // updateUser
- // ==========================================
-
  const updateUser = (updates: Partial<User>) => {
  setUser((prev) => (prev ? { ...prev, ...updates } : prev));
  };
 
- // ==========================================
- // Render
- // ==========================================
-
- return (
+  return (
  <AuthContext.Provider
  value={{
  user,
@@ -322,10 +278,6 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  </AuthContext.Provider>
  );
 }
-
-// ==========================================
-// Hook personnalisé (à utiliser de préférence)
-// ==========================================
 
 export function useAuthContext() {
  const context = useContext(AuthContext);

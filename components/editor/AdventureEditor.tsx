@@ -31,7 +31,6 @@ const itemVariants = {
   },
 };
 
-/* ── Types ── */
 interface Choice {
   label: string;
   target: string;
@@ -63,7 +62,6 @@ const GENRES: Genre[] = [
   { icon: Heart, name: "Romance", desc: "Passion, sentiments et destin" },
 ];
 
-/* ── 3 nœuds d'exemple pré-remplis — sci-fi, cohérents avec "Omniscient owner" ── */
 const DEFAULT_NODES: StoryNode[] = [
   {
     id: "debut",
@@ -110,12 +108,10 @@ const DEFAULT_NODES: StoryNode[] = [
   },
 ];
 
-/* ── Composant ── */
 export default function AdventureEditor() {
   const router = useRouter();
   const { user } = useAuthContext();
 
-  /* ── États ── */
   const [genreIndex, setGenreIndex] = useState(0);
   const [title, setTitle] = useState("Omniscient owner");
   const [description, setDescription] = useState("");
@@ -134,7 +130,6 @@ export default function AdventureEditor() {
   const GenreIcon = currentGenre.icon;
   const nodesListRef = useRef<HTMLDivElement>(null);
 
-  /* ── Scroll auto dans la liste quand on change de nœud ── */
   useEffect(() => {
     if (nodesListRef.current) {
       const el = nodesListRef.current.querySelector(`[data-node-id="${activeNodeId}"]`);
@@ -142,7 +137,6 @@ export default function AdventureEditor() {
     }
   }, [activeNodeId]);
 
-  /* ── Génération IA ── */
   const generateWithAI = async () => {
     if (!title.trim()) {
       setError("Donnez d'abord un titre à l'aventure");
@@ -188,7 +182,6 @@ export default function AdventureEditor() {
     }
   };
 
-  /* ── Helpers nœuds & choix ── */
   const updateNodeText = (text: string) => {
     setNodes((prev) => prev.map((n) => (n.id === activeNodeId ? { ...n, text } : n)));
   };
@@ -261,7 +254,6 @@ export default function AdventureEditor() {
     if (choice.target && nodes.find((n) => n.id === choice.target)) {
       setActiveNodeId(choice.target);
     } else {
-      // Crée un nouveau nœud et lie le choix
       const newId = `n${Date.now()}`;
       const newNode: StoryNode = {
         id: newId,
@@ -281,7 +273,6 @@ export default function AdventureEditor() {
     return nodes.some((n) => n.choices.some((c) => c.target === nodeId));
   };
 
-  /* ── Sauvegarde (batch optimisé) ── */
   const handleSave = async () => {
     if (!user || !title.trim() || !activeNode.text.trim()) {
       setError("Titre et contenu narratif requis");
@@ -291,7 +282,6 @@ export default function AdventureEditor() {
     setError(null);
 
     try {
-      // Étape 1 : Créer l'aventure
       const { data: adventure, error: advError } = await supabase
         .from("aventure")
         .insert({
@@ -307,7 +297,6 @@ export default function AdventureEditor() {
 
       if (advError) throw advError;
 
-      // Étape 2 : Batch insert de tous les embranchements
       const branchesToInsert = nodes.map((node) => ({
         texte: node.text,
         id_aventure: adventure.id,
@@ -326,13 +315,11 @@ export default function AdventureEditor() {
 
       if (branchError || !insertedBranches) throw branchError;
 
-      // Étape 3 : Mapper les IDs (l'ordre est préservé dans le batch insert)
       const nodeIdMap = new Map<string, number>();
       nodes.forEach((node, i) => {
         nodeIdMap.set(node.id, insertedBranches[i].id);
       });
 
-      // Définir l'embranchement initial
       const rootId = nodeIdMap.get("debut");
       if (rootId) {
         await supabase
@@ -341,7 +328,6 @@ export default function AdventureEditor() {
           .eq("id", adventure.id);
       }
 
-      // Étape 4 : Batch update des liens en parallèle
       const updatePromises: Promise<unknown>[] = [];
       for (const node of nodes) {
         const currentBranchId = nodeIdMap.get(node.id);
@@ -378,7 +364,6 @@ export default function AdventureEditor() {
     generateWithAI();
   };
 
-  /* ── Styles globaux (scrollbar custom) ── */
   useEffect(() => {
     const style = document.createElement("style");
     style.textContent = `
@@ -399,7 +384,6 @@ export default function AdventureEditor() {
     return () => { document.head.removeChild(style); };
   }, []);
 
-  /* ── Rendu principal ── */
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -407,7 +391,6 @@ export default function AdventureEditor() {
       transition={{ duration: 0.4, ease: easeOutExpo }}
       className="h-screen bg-deep text-white flex flex-col overflow-hidden"
     >
-      {/* ── Header global ── */}
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -431,7 +414,6 @@ export default function AdventureEditor() {
         </div>
       </motion.header>
 
-      {/* ── Corps 3 colonnes ── */}
       <div className="flex-1 flex overflow-hidden">
         {/* ══════ COLONNE A — Configuration (33%) ══════ */}
         <aside className="w-[33%] min-w-[320px] border-r border-gray-800 flex flex-col overflow-hidden">

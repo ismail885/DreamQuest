@@ -56,7 +56,6 @@ export function getMonsters(): Monster[] {
   try {
     const stored = localStorage.getItem(LOCALSTORAGE_KEY);
     if (!stored) {
-      // Initialiser avec les monstres de base la première fois
       localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(BASE_MONSTERS));
       return BASE_MONSTERS;
     }
@@ -72,12 +71,10 @@ export function getMonsters(): Monster[] {
 export function getRandomMonster(playerLevel: number): Monster {
   const monsters = getMonsters();
 
-  // Filtrer les monstres appropriés (niveau joueur ± 3)
   const appropriateMonsters = monsters.filter(
     m => m.level >= playerLevel - 2 && m.level <= playerLevel + 3
   );
 
-  // Si pas de monstres appropriés, prendre tous les monstres de niveau inférieur ou égal
   const validMonsters = appropriateMonsters.length > 0
     ? appropriateMonsters
     : monsters.filter(m => m.level <= playerLevel + 5);

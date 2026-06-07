@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Appel réel à l'API Anthropic
     const response = await fetch(
       "https://api.anthropic.com/v1/messages",
       {

@@ -34,8 +34,7 @@ export function useCachedQuery<T>(
  const cached = queryCache.get(key) as CacheEntry<T> | undefined;
  const isCachedValid = cached && Date.now() - cached.timestamp < cacheDuration;
 
- // Utiliser le cache si valide et pas de force refresh
- if (isCachedValid && !force && cached.data) {
+  if (isCachedValid && !force && cached.data) {
  if (isMountedRef.current) {
  setData(cached.data);
  setLoading(false);
@@ -52,9 +51,8 @@ export function useCachedQuery<T>(
  const result = await fetchFn();
  
  if (isMountedRef.current) {
- setData(result);
- // Mettre en cache
- queryCache.set(key, { data: result, timestamp: Date.now() });
+  setData(result);
+  queryCache.set(key, { data: result, timestamp: Date.now() });
  }
  } catch (err) {
  if (isMountedRef.current) {
@@ -71,18 +69,16 @@ export function useCachedQuery<T>(
  }
  }, [key, fetchFn, enabled, cacheDuration]);
 
- // Initial fetch
- useEffect(() => {
- isMountedRef.current = true;
- fetchData();
+  useEffect(() => {
+  isMountedRef.current = true;
+  fetchData();
 
- return () => {
- isMountedRef.current = false;
- };
- }, [fetchData]);
+  return () => {
+  isMountedRef.current = false;
+  };
+  }, [fetchData]);
 
- // Refetch on focus (optionnel)
- useEffect(() => {
+  useEffect(() => {
  if (!refetchOnFocus) return;
 
  const handleFocus = () => {
@@ -93,10 +89,8 @@ export function useCachedQuery<T>(
  return () => window.removeEventListener("focus", handleFocus);
  }, [fetchData, refetchOnFocus]);
 
- // Fonction pour forcer le refresh
  const refetch = useCallback(() => fetchData(true), [fetchData]);
 
- // Fonction pour vider le cache
  const clearCache = useCallback(() => {
  queryCache.delete(key);
  }, [key]);
@@ -104,7 +98,6 @@ export function useCachedQuery<T>(
  return { data, loading, error, refetch, clearCache };
 }
 
-// Hook pour prefetcher des données
 export function usePrefetch(key: string, fetchFn: () => Promise<unknown>) {
  const prefetch = useCallback(() => {
  const cached = queryCache.get(key);

@@ -3,8 +3,6 @@ import { createAdminClient } from '@/lib/supabaseClient'
 import { generateAdventure } from '@/lib/generator/engine'
 import type { GeneratedNode } from '@/lib/generator/types'
 
-// ─── Types ──────────────────────────────────────────────────────────────
-
 interface GenreDetectionResult {
   genreMoteur: string
   genreBDD: string
@@ -26,18 +24,13 @@ interface EmbranchementInsert {
 
 const TITRE_MAX_LENGTH = 100 // VARCHAR(100) en BDD
 
-// ─── Nettoyage en cas d'échec partiel ───────────────────────────────────
-
 async function cleanupAventure(
   supabase: ReturnType<typeof createAdminClient>,
   aventureId: number
 ): Promise<void> {
-  // Supprimer les embranchements (CASCADE devrait suffire, mais on sécurise)
   await supabase.from('embranchement').delete().eq('id_aventure', aventureId)
   await supabase.from('aventure').delete().eq('id', aventureId)
 }
-
-// ─── Détection de genre depuis le titre ─────────────────────────────────
 
 function normalizeTitle(titre: string): string {
   return titre
@@ -198,11 +191,6 @@ function detectGenreFromTitle(titre: string): GenreDetectionResult {
   }
 }
 
-// ─── Résolution des liens GeneratedNode → node.id ───────────────────────
-// Le moteur utilise des liens "node_X_Y" (noeud X, choix Y)
-// mais les IDs réels sont "node_X", "ending_X", "root".
-// Cette fonction extrait l'ID du noeud cible depuis le lien.
-
 function resolveLinkToNodeId(link: string): string {
   // "node_3_1" → "node_3"
   const nodeMatch = link.match(/^node_(\d+)_\d+$/)
@@ -210,8 +198,6 @@ function resolveLinkToNodeId(link: string): string {
   // "ending_0" → "ending_0" (pas de transformation)
   return link
 }
-
-// ─── Mapping GeneratedNode → format embranchement BDD ───────────────────
 
 function nodeToEmbranchement(
   node: GeneratedNode,
@@ -243,15 +229,11 @@ function nodeToEmbranchement(
   }
 }
 
-// ─── Réponse d'erreur standardisée ──────────────────────────────────────
-
 function errorResponse(message: string, status: number, details?: string) {
   const body: Record<string, unknown> = { error: message }
   if (details !== undefined) body.details = details
   return NextResponse.json(body, { status })
 }
-
-// ─── Route POST ─────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   try {

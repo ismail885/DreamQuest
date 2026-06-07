@@ -114,8 +114,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
  const handleDeleteRequest = async (character: Character) => {
  setDeleteError('');
  
- // Vérifier si le personnage a des sauvegardes
- if (character.id) {
+  if (character.id) {
  const { data: saves } = await supabase
  .from('sauvegarde')
  .select('id')

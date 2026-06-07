@@ -13,7 +13,6 @@ import { calculateLevel } from '@/lib/xp';
 import { calculateRequiredXP } from '@/lib/characters/classDefinitions';
 import { CHARACTER_CLASSES, type CharacterClass } from '@/types';
 
-// Validate that a string is a valid CharacterClass
 function isValidCharacterClass(value: string | null): value is CharacterClass {
  if (!value) return false;
  return value in CHARACTER_CLASSES;

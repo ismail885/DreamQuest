@@ -51,7 +51,6 @@ export function useCombat({
   const [inCombat, setInCombat] = useState(false);
   const [combatState, setCombatState] = useState<CombatState | null>(null);
 
-  // Helper : construire l'objet stats depuis le personnage
   const getPlayerStats = useCallback(
     () => ({
       force: character?.stats?.force || 0,
@@ -62,8 +61,6 @@ export function useCombat({
     [character?.stats],
   );
 
-  // Démarrer un combat contre un ennemi aléatoire
-  // Le niveau ennemi s'adapte à celui du personnage par défaut
   const startCombat = useCallback(
     (enemyLevel?: number) => {
       if (!character) return;
@@ -80,7 +77,6 @@ export function useCombat({
     [character],
   );
 
-  // Attaque de base
   const handleCombatAttack = useCallback(() => {
     if (!combatState || !character || !combatState.enemy) return;
 
@@ -117,7 +113,6 @@ export function useCombat({
     }
   }, [combatState, character, getPlayerStats, setCharacter, damageMultiplier]);
 
-  // Défense : réduit les dégâts du prochain attack ennemi
   const handleCombatDefend = useCallback(() => {
     if (!combatState || !character) return;
 
@@ -152,7 +147,6 @@ export function useCombat({
     });
   }, [combatState, character, getPlayerStats, setCharacter]);
 
-  // Fuite : chance de succès basée sur l'agilité
   const handleCombatFlee = useCallback(() => {
     if (!combatState || !character) return;
 
@@ -183,7 +177,6 @@ export function useCombat({
     }
   }, [combatState, character, getPlayerStats, setCharacter]);
 
-  // Utiliser une capacité spéciale
   const handleCombatAbility = useCallback(
     (ability: CombatAbility) => {
       if (!combatState || !character || !combatState.enemy) return;
@@ -282,7 +275,6 @@ export function useCombat({
     [combatState, character, getPlayerStats, setCharacter, damageMultiplier],
   );
 
-  // Fin de combat : applique l'XP si victoire, sauvegarde les PV si défaite
   const handleCombatEnd = useCallback(async () => {
     if (!character) return;
 
@@ -352,8 +344,7 @@ export function useCombat({
             : null,
       );
     } else {
-      // Sauvegarder les PV après combat perdu
-      if (character.id && character.points_vie !== undefined) {
+          if (character.id && character.points_vie !== undefined) {
         await supabase
           .from("personnage")
           .update({ points_vie: character.points_vie })
@@ -366,7 +357,6 @@ export function useCombat({
     onCombatEnd?.(combatState?.won ?? false);
   }, [character, combatState, userId, setCharacter, onCombatEnd]);
 
-  // Timer du tour ennemi
   useEffect(() => {
     if (!combatState || !character || !combatState.enemy) return;
     if (combatState.turn !== "enemy" || combatState.won || combatState.fled)
@@ -380,8 +370,7 @@ export function useCombat({
         let currentPlayerPv = prev.playerPv;
         const logMessages: string[] = [];
 
-        // Dégâts de poison sur l'ennemi
-        if (prev.enemyStatus.includes("poison")) {
+              if (prev.enemyStatus.includes("poison")) {
           const poisonResult = applyPoisonDamage(prev.enemy);
           currentEnemyPv = Math.max(
             0,
@@ -419,7 +408,6 @@ export function useCombat({
           };
         }
 
-        // Attaque ennemie
         const result = enemyAttack(
           prev.enemy,
           prev.status,

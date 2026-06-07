@@ -124,7 +124,6 @@ export function useAdventureList(): UseAdventureListReturn {
     const from = (currentPage - 1) * ITEMS_PER_PAGE;
     const to = from + ITEMS_PER_PAGE - 1;
 
-    // Construction de la requête
     const queryBase = supabase
       .from("aventure")
       .select("id, titre, description, popularite, genre", { count: "exact" });
@@ -145,7 +144,6 @@ export function useAdventureList(): UseAdventureListReturn {
       void queryBase.ilike("titre", `%${q}%`);
     }
 
-    // Tri : popularité décroissante
     queryBase.order("popularite", { ascending: false });
 
     const { data, error: fetchError, count } = await queryBase.range(from, to);

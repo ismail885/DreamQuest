@@ -14,7 +14,6 @@ export default function AdminAdventuresPage() {
  const [currentPage, setCurrentPage] = useState(1);
  const [totalCount, setTotalCount] = useState(0);
  
- // Modal state
  const [viewAdventure, setViewAdventure] = useState<Adventure | null>(null);
  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
  const [actionError, setActionError] = useState<string | null>(null);

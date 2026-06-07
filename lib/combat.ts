@@ -2,7 +2,6 @@ import { getCombatAbilitiesByClass, ALL_ABILITIES } from './abilities';
 import { ABILITY_HANDLERS } from './combatAbilityHandlers';
 import { type Enemy, type StatusEffect, ENEMIES } from '@/data/enemies';
 
-// Ré-exporter pour compatibilité
 export type { Enemy, StatusEffect };
 
 export const CRIT_CHANCE_MAX = 0.5;
@@ -34,7 +33,6 @@ export interface CombatAbility {
   cooldown: number;
 }
 
-/** Construire la map combat depuis la source unique */
 function buildCombatAbilitiesMap(): Record<string, CombatAbility[]> {
   const classes = [...new Set(ALL_ABILITIES.filter(a => a.combat).map(a => a.class))];
   const map: Record<string, CombatAbility[]> = {};

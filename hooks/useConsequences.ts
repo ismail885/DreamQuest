@@ -76,7 +76,6 @@ export function useConsequences({
     };
   }, []);
 
-  // Parse le JSON de conséquence pour afficher l'impact
   const getConsequenceImpact = useCallback(
     (
       consequencesJson: string | null | undefined | Record<string, unknown>,
@@ -95,7 +94,6 @@ export function useConsequences({
           ? JSON.parse(consequencesJson) 
           : consequencesJson;
 
-        // Détecter le type combat
         if (effect.type === "combat") {
           return {
             hasImpact: true,
@@ -227,7 +225,6 @@ export function useConsequences({
         return false;
 
       try {
-        // Gérer le combat
         if (effect?.type === "combat") {
           const enemyLevel =
             effect.level || character.niveau || 1;
@@ -277,7 +274,6 @@ export function useConsequences({
           };
         });
 
-        // Sauvegarder les stats complètes en BDD
         const progress = await loadCharacterProgress();
         const currentExp =
           progress?.experience ?? character.experience ?? 0;
@@ -289,7 +285,6 @@ export function useConsequences({
           currentExp,
         );
 
-        // Afficher l'effet visuel
         setLastConsequence({
           pv_change: effect?.pv ?? 0,
           force_change: statDelta.force,
@@ -300,7 +295,6 @@ export function useConsequences({
         });
         setShowEffect(true);
 
-        // Nettoyer le timer précédent
         if (effectTimerRef.current) {
           clearTimeout(effectTimerRef.current);
         }

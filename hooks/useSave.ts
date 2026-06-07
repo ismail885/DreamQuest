@@ -88,19 +88,17 @@ export function useSave({
  }
  }, []);
 
- // Auto-save toutes les intervalMs ms
- useEffect(() => {
- if (!enabled || !userId || !adventureId || !characterId) return;
+  useEffect(() => {
+  if (!enabled || !userId || !adventureId || !characterId) return;
 
- const interval = setInterval(() => {
- save();
- }, intervalMs);
+  const interval = setInterval(() => {
+  save();
+  }, intervalMs);
 
- return () => clearInterval(interval);
- }, [enabled, userId, adventureId, characterId, intervalMs, save]);
+  return () => clearInterval(interval);
+  }, [enabled, userId, adventureId, characterId, intervalMs, save]);
 
- // Sauvegarde immédiate au démarrage
- useEffect(() => {
+  useEffect(() => {
  if (enabled && userId && adventureId && characterId) {
  save();
  }

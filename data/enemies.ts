@@ -21,7 +21,6 @@ export interface Enemy {
 
 export type StatusEffect = 'poison' | 'stunned' | 'bleeding' | 'burning' | 'buff_agility';
 
-// Convertit un Monster en Enemy pour le système de combat
 function monsterToEnemy(monster: Monster): Enemy {
   return {
     id: monster.id,

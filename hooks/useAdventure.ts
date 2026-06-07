@@ -33,15 +33,13 @@ export function useAdventure(
  onChoiceRef.current = onChoice;
  const isLoadingRef = useRef(false);
 
- // Charger l'aventure depuis la BDD
- useEffect(() => {
+  useEffect(() => {
  if (!adventureId) return;
 
  const loadAdventure = async () => {
  setState((s) => ({ ...s, loading: true, error: null }));
  try {
- // Fetch adventure
- const { data: adventure, error: advError } = await supabase
+  const { data: adventure, error: advError } = await supabase
  .from('aventure')
  .select('id,titre,description,auteur_id,date_creation,popularite')
  .eq('id', adventureId)
@@ -52,13 +50,11 @@ export function useAdventure(
     return;
   }
 
-  // Compter le nombre total d'embranchements
   const { count: totalBranches } = await supabase
     .from('embranchement')
     .select('*', { count: 'exact', head: true })
     .eq('id_aventure', adventureId);
 
-  // Trouver le nœud de départ (le plus ancien = plus petit id)
   const { data: firstBranch } = await supabase
  .from('embranchement')
  .select('id')
@@ -87,7 +83,6 @@ export function useAdventure(
  }
  }
 
- // Charger le nœud actuel
  const { data: branch, error: branchError } = await supabase
  .from('embranchement')
  .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
@@ -163,8 +158,7 @@ export function useAdventure(
  if (!state.adventure || !userIdRef.current) return;
  setState((s) => ({ ...s, loading: true }));
 
- // Supprimer la sauvegarde BDD
- try {
+  try {
  await supabase
  .from('sauvegarde')
  .delete()
@@ -174,8 +168,7 @@ export function useAdventure(
     console.warn('[useAdventure] restart delete save failed:', err)
   }
 
- // Charger le premier nœud
- const { data: firstBranch } = await supabase
+  const { data: firstBranch } = await supabase
  .from('embranchement')
  .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
  .eq('id_aventure', state.adventure.id)
