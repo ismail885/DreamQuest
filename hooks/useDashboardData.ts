@@ -16,7 +16,7 @@ interface UseDashboardDataReturn {
   stats: UserStats;
   statsLoading: boolean;
   statsError: string | null;
-  suggestions: { id: number; titre: string; description: string | null }[];
+  suggestions: { id: number; titre: string; description: string | null; genre?: string | null }[];
   loadingSuggestions: boolean;
   refresh: () => void;
 }
@@ -33,7 +33,7 @@ export function useDashboardData(userId: string | number | null): UseDashboardDa
   const [statsLoading, setStatsLoading] = useState(true);
   const [statsError, setStatsError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<
-    { id: number; titre: string; description: string | null }[]
+    { id: number; titre: string; description: string | null; genre?: string | null }[]
   >([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -88,7 +88,7 @@ export function useDashboardData(userId: string | number | null): UseDashboardDa
         const playedIds = saves.map((s) => s.id_aventure).filter(Boolean);
         const advQuery = supabase
           .from("aventure")
-          .select("id, titre, description")
+          .select("id, titre, description, genre")
           .order("popularite", { ascending: false })
           .limit(3);
 

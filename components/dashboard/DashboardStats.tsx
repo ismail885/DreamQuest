@@ -50,27 +50,11 @@ const statCards = [
     suffix: "",
   },
   {
-    key: "totalXp",
-    label: "Points XP",
-    gradient: "from-yellow-500/10 to-orange-500/10",
-    border: "border-yellow-500/20 hover:border-yellow-400/50",
-    text: "text-yellow-400",
-    suffix: "",
-  },
-  {
     key: "maxLevel",
     label: "Niveau max perso",
     gradient: "from-green-500/10 to-emerald-500/10",
     border: "border-green-500/20 hover:border-green-400/50",
     text: "text-green-400",
-    suffix: "",
-  },
-  {
-    key: "userLevel",
-    label: "Niveau utilisateur",
-    gradient: "from-violet-500/10 to-fuchsia-500/10",
-    border: "border-violet-500/20 hover:border-violet-400/50",
-    text: "text-violet-400",
     suffix: "",
   },
 ] as const;
@@ -90,7 +74,7 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
 
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className="bg-surface-card border border-gray-800/50 rounded-xl md:rounded-2xl p-4 md:p-6 animate-pulse"
@@ -130,6 +114,46 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
               </motion.div>
             );
           })}
+
+          {/* Carte Niveau utilisateur avec barre XP */}
+          <motion.div
+            key="userLevel"
+            variants={cardVariants}
+            whileHover={{
+              y: -4,
+              transition: {
+                duration: 0.3,
+                ease: [0.25, 1, 0.5, 1] as const,
+              },
+            }}
+            className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 hover:border-violet-400/50 rounded-xl md:rounded-2xl p-4 md:p-6 transition-colors duration-300 cursor-default"
+          >
+            <div className="text-2xl md:text-3xl font-bold text-violet-400 mb-1 md:mb-2">
+              {stats.userLevel}
+            </div>
+            <div className="text-gray-300 text-xs md:text-sm mb-3">Niveau utilisateur</div>
+
+            {/* Barre de progression XP */}
+            {(() => {
+              const currentXp = stats.userXp;
+              const currentLevel = stats.userLevel;
+              const xpForNext = Math.floor(80 * Math.pow(1.35, currentLevel - 1));
+              const progress = xpForNext > 0 ? Math.min((currentXp / xpForNext) * 100, 100) : 0;
+              return (
+                <div className="space-y-1">
+                  <div className="w-full h-2 bg-gray-700/50 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all duration-500 ease-out"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <div className="text-gray-400 text-[10px] md:text-xs text-right">
+                    {currentXp.toLocaleString()} / {xpForNext.toLocaleString()} XP
+                  </div>
+                </div>
+              );
+            })()}
+          </motion.div>
         </motion.div>
       )}
     </div>

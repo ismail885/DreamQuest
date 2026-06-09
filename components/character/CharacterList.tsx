@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Character, CHARACTER_CLASSES } from '@/types';
 import CharacterCard from './CharacterCard';
@@ -26,8 +26,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
  const [isDeleting, setIsDeleting] = useState(false);
  const [deleteError, setDeleteError] = useState('');
  const [sortBy, setSortBy] = useState<SortOption>('date');
- const [selectedCharacterId, setSelectedCharacterId] = useState<number | string | null>(null);
- const lastUserIdRef = useRef(userId);
+  const [selectedCharacterId, setSelectedCharacterId] = useState<number | string | null>(null);
 
  // Read initial selection from URL
  useEffect(() => {
@@ -89,20 +88,12 @@ export default function CharacterList({ userId }: CharacterListProps) {
  }
  };
 
- useEffect(() => {
- if (userId !== lastUserIdRef.current) {
- lastUserIdRef.current = userId;
- fetchCharacters();
- }
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [userId]);
+  useEffect(() => {
+    fetchCharacters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
- useEffect(() => {
- fetchCharacters();
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, []);
-
- useEffect(() => {
+  useEffect(() => {
  const handleFocus = () => {
  fetchCharacters();
  };

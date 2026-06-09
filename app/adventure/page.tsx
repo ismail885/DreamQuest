@@ -158,10 +158,10 @@ function AdventurePageContent() {
               </div>
               <div className="text-gray-400 text-sm whitespace-nowrap">
                 <span className="font-semibold text-primary">
-                  {filteredAdventures.length}
+                  {totalCount}
                 </span>{" "}
-                aventure{filteredAdventures.length !== 1 ? "s" : ""} trouvée
-                {filteredAdventures.length !== 1 ? "s" : ""}
+                aventure{totalCount !== 1 ? "s" : ""} trouvée
+                {totalCount !== 1 ? "s" : ""}
               </div>
             </div>
           </motion.div>

@@ -102,6 +102,7 @@ interface UseAdventureListReturn {
 
 export function useAdventureList(): UseAdventureListReturn {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [adventures, setAdventures] = useState<AdventureListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -109,15 +110,25 @@ export function useAdventureList(): UseAdventureListReturn {
   const [totalCount, setTotalCount] = useState(0);
   const [activeFilter, setActiveFilter] = useState<AdventureFilter>("tous");
 
-  const searchRef = useRef(searchQuery);
-  searchRef.current = searchQuery;
+  // Débounce de 300ms sur la recherche
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const searchRef = useRef(debouncedSearch);
+  searchRef.current = debouncedSearch;
   const filterRef = useRef(activeFilter);
   filterRef.current = activeFilter;
   const pageRef = useRef(currentPage);
   pageRef.current = currentPage;
+  // Compteur pour ignorer les réponses périmées
+  const fetchRef = useRef(0);
 
   useEffect(() => {
-    let cancelled = false;
+    const fetchId = ++fetchRef.current;
 
     const fetchAdventures = async () => {
       const page = pageRef.current;
@@ -151,7 +162,8 @@ export function useAdventureList(): UseAdventureListReturn {
 
       const { data, error: fetchError, count } = await queryBase.range(from, to);
 
-      if (cancelled) return;
+      // Ignorer les réponses périmées (requête plus récente déjà partie)
+      if (fetchId !== fetchRef.current) return;
 
       if (fetchError) {
         console.error("useAdventureList fetch error:", fetchError);
@@ -166,11 +178,7 @@ export function useAdventureList(): UseAdventureListReturn {
     };
 
     fetchAdventures();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [currentPage, searchQuery, activeFilter]);
+  }, [currentPage, debouncedSearch, activeFilter]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
 
