@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { motion } from "framer-motion";
-import { canCreateStory, isAdmin, type UserRole } from "@/types";
+import { canCreateStory, type UserRole } from "@/types";
 import { useAuthContext } from "@/context/AuthContext";
 import Loader from "@/components/shared/Loader";
 import PageTransition from "@/components/shared/PageTransition";
@@ -43,8 +43,7 @@ function EditorContent() {
     );
   }
 
-  const canCreate =
-    canCreateStory(user.role as UserRole) || isAdmin(user.role as UserRole);
+  const canCreate = canCreateStory(user.role as UserRole);
 
   if (!canCreate) {
     return (

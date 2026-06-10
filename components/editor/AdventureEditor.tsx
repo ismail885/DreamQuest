@@ -129,6 +129,7 @@ export default function AdventureEditor() {
   const currentGenre = GENRES[genreIndex];
   const GenreIcon = currentGenre.icon;
   const nodesListRef = useRef<HTMLDivElement>(null);
+  const savedChoicesRef = useRef<Choice[]>([]);
 
   useEffect(() => {
     if (nodesListRef.current) {
@@ -207,6 +208,7 @@ export default function AdventureEditor() {
   };
 
   const addChoice = () => {
+    if (activeNode.choices.length >= 2) return;
     setNodes((prev) =>
       prev.map((n) =>
         n.id === activeNodeId
@@ -240,10 +242,16 @@ export default function AdventureEditor() {
   };
 
   const toggleEnd = () => {
+    const node = nodes.find((n) => n.id === activeNodeId);
+    if (!node) return;
+    const becomingEnd = !node.isEnd;
+    if (becomingEnd) {
+      savedChoicesRef.current = node.choices;
+    }
     setNodes((prev) =>
       prev.map((n) =>
         n.id === activeNodeId
-          ? { ...n, isEnd: !n.isEnd, choices: !n.isEnd ? [] : n.choices }
+          ? { ...n, isEnd: becomingEnd, choices: becomingEnd ? [] : savedChoicesRef.current }
           : n,
       ),
     );
@@ -364,9 +372,9 @@ export default function AdventureEditor() {
     generateWithAI();
   };
 
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.textContent = `
+  return (
+    <>
+    <style>{`
       .editor-scroll::-webkit-scrollbar { width: 4px; }
       .editor-scroll::-webkit-scrollbar-track { background: transparent; }
       .editor-scroll::-webkit-scrollbar-thumb { background: #22D3EE; border-radius: 4px; }
@@ -379,12 +387,7 @@ export default function AdventureEditor() {
       .genre-card-gradient {
         background: linear-gradient(135deg, #7C3AED, #22D3EE);
       }
-    `;
-    document.head.appendChild(style);
-    return () => { document.head.removeChild(style); };
-  }, []);
-
-  return (
+    `}</style>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -767,7 +770,8 @@ export default function AdventureEditor() {
                           <h3 className="text-sm font-bold text-white">Choix disponibles</h3>
                           <button
                             onClick={addChoice}
-                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-violet-600 hover:bg-violet-600/80 text-white rounded-md transition-all duration-300 ease-out hover:scale-105"
+                            disabled={activeNode.choices.length >= 2}
+                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-violet-600 hover:bg-violet-600/80 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white rounded-md transition-all duration-300 ease-out hover:scale-105"
                           >
                             <Plus className="w-3 h-3" />
                             Ajouter
@@ -916,6 +920,7 @@ export default function AdventureEditor() {
         </aside>
       </div>
     </motion.div>
+    </>
   );
 }
 

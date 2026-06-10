@@ -63,7 +63,7 @@ export default function ProfilPage() {
     () =>
       (
         userRole === "joueur"
-          ? ["stories", "creations", "characters"]
+          ? ["stories", "characters"]
           : ["stories", "achievements", "creations", "quests", "characters"]
       ) as Array<"stories" | "achievements" | "creations" | "quests" | "characters">,
     [userRole],
