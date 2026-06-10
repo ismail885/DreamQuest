@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState, useCallback } from "react";
+import { Suspense, useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabaseClient";
@@ -59,16 +59,21 @@ export default function ProfilPage() {
     refresh,
   } = useProfileData({ userId: user?.id ?? null });
   const userRole = userProfile?.role ?? "joueur";
-  const visibleTabs = (
-    userRole === "joueur"
-      ? ["stories", "creations", "characters"]
-      : ["stories", "achievements", "creations", "quests", "characters"]
-  ) as Array<"stories" | "achievements" | "creations" | "quests" | "characters">;
+  const visibleTabs = useMemo(
+    () =>
+      (
+        userRole === "joueur"
+          ? ["stories", "creations", "characters"]
+          : ["stories", "achievements", "creations", "quests", "characters"]
+      ) as Array<"stories" | "achievements" | "creations" | "quests" | "characters">,
+    [userRole],
+  );
 
   useEffect(() => {
     if (!visibleTabs.includes(activeTab)) {
       setActiveTab(visibleTabs[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRole]);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

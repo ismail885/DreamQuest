@@ -75,7 +75,7 @@ export function useProfileData({
   const [refreshKey, setRefreshKey] = useState(0);
 
   const loadData = useCallback(async (uid: number) => {
-    let cancelled = false;
+    const cancelled = false;
     setLoading(true);
     setDataError(null);
 
