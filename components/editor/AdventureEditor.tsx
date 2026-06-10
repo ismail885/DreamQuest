@@ -154,6 +154,7 @@ export default function AdventureEditor() {
         body: JSON.stringify({
           title,
           genre: currentGenre.name,
+          longueur: "long",
         }),
       });
 
@@ -163,7 +164,7 @@ export default function AdventureEditor() {
       const raw = data.content[0].text;
       const parsed = JSON.parse(raw);
 
-      if (!parsed.nodes || !Array.isArray(parsed.nodes) || parsed.nodes.length < 2) {
+      if (!parsed.nodes || !Array.isArray(parsed.nodes) || parsed.nodes.length < 5) {
         throw new Error("Format invalide");
       }
 
@@ -171,13 +172,7 @@ export default function AdventureEditor() {
       setActiveNodeId("debut");
       setSuccess("Aventure générée avec succès !");
     } catch {
-      // Fallback local : simulation réaliste
-      setError(null);
-      await new Promise((r) => setTimeout(r, 600));
-      setNodes(DEFAULT_NODES);
-      setActiveNodeId("debut");
-      setSuccess("Aventure générée ! (mode hors-ligne)");
-      setTimeout(() => setSuccess(null), 3000);
+      setError("Erreur lors de la génération");
     } finally {
       setGenerating(false);
     }
@@ -366,10 +361,6 @@ export default function AdventureEditor() {
     } finally {
       setSaving(false);
     }
-  };
-
-  const startGeneration = () => {
-    generateWithAI();
   };
 
   return (
@@ -579,7 +570,7 @@ export default function AdventureEditor() {
             {/* Boutons d'action */}
             <div className="space-y-2">
               <button
-                onClick={startGeneration}
+                onClick={generateWithAI}
                 disabled={!title.trim() || generating}
                 className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-deep font-bold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 text-sm"
               >
@@ -591,7 +582,7 @@ export default function AdventureEditor() {
                 ) : (
                   <>
                     <Wand2 className="w-4 h-4" />
-                    Générer avec IA
+                    Générer
                   </>
                 )}
               </button>
@@ -619,7 +610,6 @@ export default function AdventureEditor() {
         {/* ══════ COLONNE B — Éditeur de nœud (47%) ══════ */}
         <main className="flex-1 flex flex-col overflow-hidden min-w-0">
           {generating ? (
-            /* Loader centré */
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
