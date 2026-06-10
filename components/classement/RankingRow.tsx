@@ -39,7 +39,7 @@ export default function RankingRow({ rank, href, children }: RankingRowProps) {
 
   const row = (
     <div className="flex items-center gap-4 p-4 card-base hover:border-cyan-500/40 transition-all">
-      <div className={`font-bold w-12 ${medalColor}`}>{medalIcon}</div>
+      <div className={`font-bold w-12 shrink-0 ${medalColor}`}>{medalIcon}</div>
       {children}
     </div>
   );

@@ -79,7 +79,7 @@ export default function ClassementPage() {
                 </p>
                 {user && (
                   <Link
-                    href="/create-character"
+                    href="/create-adventure"
                     className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-white font-semibold rounded-card hover:opacity-90 transition-opacity"
                   >
                     Créer une aventure

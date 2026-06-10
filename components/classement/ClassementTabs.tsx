@@ -12,8 +12,13 @@ export default function ClassementTabs({
   setActiveTab,
 }: ClassementTabsProps) {
   return (
-    <div className="flex justify-center gap-2 mb-8 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
+    <div
+      className="flex justify-center gap-2 mb-8 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4"
+      role="tablist"
+    >
       <button
+        role="tab"
+        aria-selected={activeTab === "adventures"}
         onClick={() => setActiveTab("adventures")}
         className={`px-4 py-2 rounded-card font-medium transition-all ${
           activeTab === "adventures"
@@ -25,6 +30,8 @@ export default function ClassementTabs({
         Aventures
       </button>
       <button
+        role="tab"
+        aria-selected={activeTab === "players"}
         onClick={() => setActiveTab("players")}
         className={`px-4 py-2 rounded-card font-medium transition-all ${
           activeTab === "players"
