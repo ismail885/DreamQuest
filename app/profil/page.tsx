@@ -58,6 +58,19 @@ export default function ProfilPage() {
     stats,
     refresh,
   } = useProfileData({ userId: user?.id ?? null });
+  const userRole = userProfile?.role ?? "joueur";
+  const visibleTabs = (
+    userRole === "joueur"
+      ? ["stories", "creations", "characters"]
+      : ["stories", "achievements", "creations", "quests", "characters"]
+  ) as Array<"stories" | "achievements" | "creations" | "quests" | "characters">;
+
+  useEffect(() => {
+    if (!visibleTabs.includes(activeTab)) {
+      setActiveTab(visibleTabs[0]);
+    }
+  }, [userRole]);
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editUsername, setEditUsername] = useState("");
   const [editEmail, setEditEmail] = useState("");
@@ -94,6 +107,7 @@ export default function ProfilPage() {
 
   const toggleNotifications = () => {
     const newVal = !notifications;
+    const prev = notifications;
     setNotifications(newVal);
     if (user) {
       supabase
@@ -102,7 +116,9 @@ export default function ProfilPage() {
           { id_utilisateur: user.id, notifications: newVal },
           { onConflict: "id_utilisateur" },
         )
-        .then();
+        .then(() => {}, () => {
+          setNotifications(prev);
+        });
     }
   };
 
@@ -202,9 +218,12 @@ export default function ProfilPage() {
           updateError.message?.includes("duplicate") ||
           updateError.message?.includes("unique")
         ) {
+          const isEmail = updateError.message?.toLowerCase().includes("email");
           setSaveMessage({
             type: "error",
-            text: "Cet email est déjà utilisé par un autre compte.",
+            text: isEmail
+              ? "Cet email est déjà utilisé par un autre compte."
+              : "Ce nom d'utilisateur est déjà pris.",
           });
         } else {
           setSaveMessage({
@@ -268,56 +287,23 @@ export default function ProfilPage() {
             <div className="flex-1">
               <div className="card-base overflow-hidden">
                 <div className="flex overflow-x-auto flex-nowrap border-b border-cyan-500/15 bg-cyan-500/5 scrollbar-thin">
-                  <button
-                    onClick={() => setActiveTab("stories")}
-                    className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
-                      activeTab === "stories"
-                        ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
-                    }`}
-                  >
-                    Mes Histoires
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("achievements")}
-                    className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
-                      activeTab === "achievements"
-                        ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
-                    }`}
-                  >
-                    Réalisations
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("creations")}
-                    className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
-                      activeTab === "creations"
-                        ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
-                    }`}
-                  >
-                    Mes Créations
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("quests")}
-                    className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
-                      activeTab === "quests"
-                        ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
-                    }`}
-                  >
-                    Quêtes
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("characters")}
-                    className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
-                      activeTab === "characters"
-                        ? "text-primary border-b-2 border-primary"
-                        : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
-                    }`}
-                  >
-                    Mes Persos
-                  </button>
+                  {visibleTabs.map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`flex-shrink-0 py-4 px-6 text-sm font-medium transition-all ${
+                        activeTab === tab
+                          ? "text-primary border-b-2 border-primary"
+                          : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
+                      }`}
+                    >
+                      {tab === "stories" && "Mes Histoires"}
+                      {tab === "achievements" && "Réalisations"}
+                      {tab === "creations" && "Mes Créations"}
+                      {tab === "quests" && "Quêtes"}
+                      {tab === "characters" && "Mes Persos"}
+                    </button>
+                  ))}
                 </div>
 
                 <div className="p-6">

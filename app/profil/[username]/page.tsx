@@ -24,37 +24,53 @@ export default function PublicProfilePage() {
   >([]);
 
   useEffect(() => {
-    const load = async () => {
-      const { data: user } = await supabase
-        .from("utilisateur")
-        .select("id, nom_utilisateur, date_creation")
-        .eq("nom_utilisateur", username)
-        .single();
+    let cancelled = false;
 
-      if (!user) {
-        router.push("/");
+    const load = async () => {
+      try {
+        const { data: user } = await supabase
+          .from("utilisateur")
+          .select("id, nom_utilisateur, date_creation")
+          .eq("nom_utilisateur", username)
+          .maybeSingle();
+
+        if (cancelled) return;
+
+        if (!user) {
+          router.push("/");
+          return;
+        }
+
+        setProfile(user);
+
+        const { data: chars } = await supabase
+          .from("personnage")
+          .select("nom_personnage, classe, niveau")
+          .eq("id_utilisateur", user.id);
+
+        if (cancelled) return;
+        setCharacters(chars || []);
+
+        const { data: adv } = await supabase
+          .from("aventure")
+          .select("titre, popularite")
+          .eq("auteur_id", user.id);
+
+        if (cancelled) return;
+        setAdventures(adv || []);
+      } catch {
+        if (!cancelled) router.push("/");
         return;
       }
 
-      setProfile(user);
-
-      const { data: chars } = await supabase
-        .from("personnage")
-        .select("nom_personnage, classe, niveau")
-        .eq("id_utilisateur", (user as { id: number }).id);
-
-      setCharacters(chars || []);
-
-      const { data: adv } = await supabase
-        .from("aventure")
-        .select("titre, popularite")
-        .eq("auteur_id", (user as { id: number }).id);
-
-      setAdventures(adv || []);
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     };
 
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [username, router]);
 
   if (loading) return <Loader fullScreen />;

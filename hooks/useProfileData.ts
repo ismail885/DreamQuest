@@ -75,11 +75,13 @@ export function useProfileData({
   const [refreshKey, setRefreshKey] = useState(0);
 
   const loadData = useCallback(async (uid: number) => {
+    let cancelled = false;
     setLoading(true);
     setDataError(null);
 
     try {
       const questData = await getDailyQuests(uid);
+      if (cancelled) return;
       setDailyQuests(questData.quests);
 
       const { data: profileData } = await supabase
@@ -90,6 +92,7 @@ export function useProfileData({
 
       const season = getCurrentSeason();
 
+      if (cancelled) return;
       if (profileData) {
         setUserProfile({
           id: profileData.id,
@@ -178,6 +181,7 @@ export function useProfileData({
             status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,
           };
         });
+        if (cancelled) return;
         setUserSaves(formattedSaves);
       } else {
         setUserSaves([]);
@@ -192,6 +196,7 @@ export function useProfileData({
         console.error("Erreur chargement créations:", creationsError);
       }
 
+      if (cancelled) return;
       if (creationsData && creationsData.length > 0) {
         setUserCreations(
           creationsData.map(
@@ -211,16 +216,12 @@ export function useProfileData({
         .select("id_vote", { count: "exact" })
         .eq("id_utilisateur", uid);
 
-      const { count: charactersCount } = await supabase
-        .from("personnage")
-        .select("id", { count: "exact" })
-        .eq("id_utilisateur", uid);
-
       const { data: charactersData } = await supabase
         .from("personnage")
         .select("*")
         .eq("id_utilisateur", uid);
 
+      if (cancelled) return;
       if (charactersData && charactersData.length > 0) {
         const formattedCharacters: Character[] = charactersData.map(
           (c: RawCharacter) => ({
@@ -239,6 +240,7 @@ export function useProfileData({
         setUserCharacters([]);
       }
 
+      if (cancelled) return;
       setStats({
         storiesPlayed: savesData?.length || 0,
         storiesCreated: creationsData?.length || 0,
@@ -248,18 +250,18 @@ export function useProfileData({
 
       const achievements = calculateAchievements({
         storiesPlayed: savesData?.length || 0,
-        charactersCreated: charactersCount || 0,
+        charactersCreated: charactersData?.length ?? 0,
         votes: votesCount || 0,
         storiesCreated: creationsData?.length || 0,
         totalLikes:
           creationsData?.reduce((sum, c) => sum + (c.popularite || 0), 0) || 0,
         level: profileData?.niveau || 1,
       });
-      setUserAchievements(achievements);
+      if (!cancelled) setUserAchievements(achievements);
     } catch {
-      setDataError("Impossible de charger vos données. Réessayez plus tard.");
+      if (!cancelled) setDataError("Impossible de charger vos données. Réessayez plus tard.");
     } finally {
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     }
   }, []);
 
