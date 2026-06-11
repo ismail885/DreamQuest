@@ -1,52 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signToken, createAuthCookie, clearAuthCookie, UserJWTPayload } from '@/lib/jwt';
-
-type SessionPayload = {
- userId: string;
- email: string;
- username: string;
- role: string;
-};
+import { signToken, createAuthCookie, clearAuthCookie } from '@/lib/jwt';
+import { createAdminClient } from '@/lib/supabaseClient';
 
 export async function POST(request: NextRequest) {
- try {
- const body = (await request.json()) as SessionPayload;
- const { userId, email, username, role } = body || {};
+  try {
+    const body = (await request.json()) as { accessToken?: string };
+    const accessToken = body?.accessToken;
+    if (!accessToken) {
+      return NextResponse.json({ error: 'Missing access token' }, { status: 400 });
+    }
 
- if (!userId || !email || !username || !role) {
- return new NextResponse(JSON.stringify({ error: 'Invalid payload' }), {
- status: 400,
- headers: { 'Content-Type': 'application/json' },
- });
- }
+    const admin = createAdminClient();
 
- const token = await signToken({ userId, email, username, role } as Omit<UserJWTPayload, 'iat' | 'exp'>);
- const cookie = createAuthCookie(token);
+    // 1. Vérifie le token Supabase côté serveur (signature + expiration)
+    const { data: authData, error: authError } = await admin.auth.getUser(accessToken);
+    if (authError || !authData.user) {
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+    }
 
- return new NextResponse(JSON.stringify({ ok: true }), {
- status: 200,
- headers: {
- 'Content-Type': 'application/json',
- 'Set-Cookie': cookie,
- },
- });
- } catch {
- return new NextResponse(JSON.stringify({ error: 'Server error' }), {
- status: 500,
- headers: { 'Content-Type': 'application/json' },
- });
- }
+    // 2. Relit l'utilisateur réel en BDD — le rôle vient de la base, jamais du client
+    const { data: dbUser, error: dbError } = await admin
+      .from('utilisateur')
+      .select('id, email, nom_utilisateur, role')
+      .eq('auth_id', authData.user.id)
+      .maybeSingle();
+    if (dbError || !dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // 3. Signe le JWT avec des valeurs serveur non falsifiables
+    const token = await signToken({
+      userId: String(dbUser.id),
+      email: dbUser.email,
+      username: dbUser.nom_utilisateur,
+      role: dbUser.role,
+    });
+
+    return NextResponse.json(
+      { ok: true },
+      { status: 200, headers: { 'Set-Cookie': createAuthCookie(token) } }
+    );
+  } catch {
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
 }
 
 export async function DELETE() {
- const cookie = clearAuthCookie();
- return new NextResponse(JSON.stringify({ ok: true }), {
- status: 200,
- headers: {
- 'Content-Type': 'application/json',
- 'Set-Cookie': cookie,
- },
- });
+  return NextResponse.json(
+    { ok: true },
+    { status: 200, headers: { 'Set-Cookie': clearAuthCookie() } }
+  );
 }
 
 export const runtime = 'nodejs';

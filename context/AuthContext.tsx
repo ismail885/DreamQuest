@@ -29,17 +29,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const setAuthSession = async (userData: User): Promise<void> => {
+const setAuthSession = async (): Promise<void> => {
  try {
+ const { data: { session } } = await supabase.auth.getSession();
+ if (!session?.access_token) return;
  await fetch('/api/auth/session', {
  method: 'POST',
  headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify({
- userId: String(userData.id),
- email: userData.email,
- username: userData.username,
- role: userData.role,
- }),
+ body: JSON.stringify({ accessToken: session.access_token }),
  });
  } catch (err) {
  console.error("[Auth] Erreur setAuthSession:", err);
@@ -92,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  const loggedUser = await fetchUserFromAuthId(session.user.id);
  if (!mounted) return;
  if (loggedUser) {
- await setAuthSession(loggedUser);
+ await setAuthSession();
  setUser(loggedUser);
  } else {
  setUser(null);
@@ -118,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  if (session?.user) {
  const loggedUser = await fetchUserFromAuthId(session.user.id);
  if (loggedUser) {
- await setAuthSession(loggedUser);
+ await setAuthSession();
  setUser(loggedUser);
  }
  }
@@ -164,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  return { success: false, error: "Utilisateur introuvable" };
  }
 
- await setAuthSession(loggedUser);
+ await setAuthSession();
  setUser(loggedUser);
  return { success: true };
  } catch (error) {
