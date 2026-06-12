@@ -34,6 +34,11 @@ const itemVariants = {
 interface Choice {
   label: string;
   target: string;
+  consequence?: {
+    texte: string;
+    combat?: { enemyId: string };
+    evenement?: { type: string };
+  };
 }
 
 interface StoryNode {
@@ -147,28 +152,62 @@ export default function AdventureEditor() {
     setError(null);
     setSuccess(null);
 
+    const diffMap: Record<string, string> = {
+      Facile: "facile", Normal: "normal", Difficile: "difficile", Expert: "legendaire",
+    };
+
     try {
-      const res = await fetch("/api/generate-adventure", {
+      const res = await fetch("/api/generate-story", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title,
+          titre: title,
           genre: currentGenre.name,
-          longueur: "long",
+          difficulte: diffMap[difficulty] ?? "normal",
         }),
       });
 
       if (!res.ok) throw new Error("Erreur API");
 
-      const data = await res.json();
-      const raw = data.content[0].text;
-      const parsed = JSON.parse(raw);
-
-      if (!parsed.nodes || !Array.isArray(parsed.nodes) || parsed.nodes.length < 5) {
+      const a = await res.json();
+      if (!a.embranchements || a.embranchements.length !== 3) {
         throw new Error("Format invalide");
       }
 
-      setNodes(parsed.nodes);
+      const [e1, e2, e3] = a.embranchements;
+      type GenChoix = { libelle: string; consequence: Choice["consequence"] };
+      const toChoice = (c: GenChoix, target: string): Choice => ({
+        label: c.libelle,
+        target,
+        consequence: c.consequence,
+      });
+
+      const newNodes: StoryNode[] = [
+        {
+          id: "debut", label: "Début", text: e1.texte, isEnd: false,
+          choices: [toChoice(e1.choix[0], "n2"), toChoice(e1.choix[1], "n3")],
+        },
+        {
+          id: "n2", label: "N2", text: e2.texte, isEnd: false,
+          choices: [toChoice(e2.choix[0], "fin1"), toChoice(e2.choix[1], "fin2")],
+        },
+        {
+          id: "n3", label: "N3", text: e3.texte, isEnd: false,
+          choices: [toChoice(e3.choix[0], "fin1"), toChoice(e3.choix[1], "fin2")],
+        },
+        {
+          id: "fin1", label: "Fin — Triomphe", isEnd: true, choices: [],
+          text: "Votre périple s'achève sur une victoire chèrement acquise. Le souvenir de cette aventure vous suivra longtemps.",
+        },
+        {
+          id: "fin2", label: "Fin — Amertume", isEnd: true, choices: [],
+          text: "Le destin en a décidé autrement. Vous repartez marqué, mais vivant — certaines histoires ne se terminent jamais comme prévu.",
+        },
+      ];
+
+      setTitle(String(a.titre).slice(0, 80));
+      setDescription(a.description);
+      setNodes(newNodes);
       setActiveNodeId("debut");
       setSuccess("Aventure générée avec succès !");
     } catch {
@@ -307,8 +346,8 @@ export default function AdventureEditor() {
         choix2: node.choices[1]?.label || null,
         choix1_lien: null,
         choix2_lien: null,
-        choix1_consequences: node.choices[0]?.target || null,
-        choix2_consequences: node.choices[1]?.target || null,
+        choix1_consequences: node.choices[0]?.consequence ?? null,
+        choix2_consequences: node.choices[1]?.consequence ?? null,
       }));
 
       const { data: insertedBranches, error: branchError } = await supabase

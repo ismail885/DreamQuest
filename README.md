@@ -167,12 +167,11 @@ DreamQuest/
 │   ├── achievements.ts     # Système de succès
 │   ├── combat.ts           # Système de combat tour par tour
 │   ├── characters/         # Définitions des classes
-│   └── generator/          # Moteur de génération procédurale
-│       ├── engine.ts       # Assembleur de séquences narratives
-│       ├── fantasy.ts      # Banque fantasy
-│       ├── horror.ts       # Banque horreur
-│       ├── scifi.ts        # Banque sci-fi
-│       └── romance.ts      # Banque romance
+│   └── generator/composition/ # Moteur de génération thème × genre × difficulté
+│       ├── composer.ts     # Assemblage (détection de thème, gabarits, combats)
+│       ├── themes.ts       # 10 thèmes (décors, lieux, mots-clés)
+│       ├── genres.ts       # 9 genres (ambiances, antagonistes, conséquences)
+│       └── types.ts        # Types du moteur
 ├── types/                   # Définitions TypeScript
 │   ├── character.ts        # Types personnage
 │   ├── adventure.ts        # Types aventure
@@ -186,8 +185,7 @@ DreamQuest/
 ├── app/api/                 # API Routes
 │   ├── auth/session/       # Gestion session JWT (POST/DELETE)
 │   ├── generator/          # Génération stats/abilities
-│   ├── generate-adventure/ # Génération d'aventure assistée
-│   └── generate-story/     # Génération procédurale d'histoires
+│   └── generate-story/     # Génération procédurale d'aventures (thème × genre × difficulté)
 ├── tests/                   # Tests
 │   ├── lib/                # Tests unitaires
 │   └── integration/       # Tests d'intégration
@@ -252,8 +250,7 @@ npm run test         # Exécuter les tests
 |-------|---------|-------------|
 | `/api/auth/session` | POST/DELETE | Gestion session JWT (cookie HttpOnly) |
 | `/api/generator` | GET | Génération stats/abilities d'un personnage |
-| `/api/generate-story` | POST | Génération procédurale d'aventures |
-| `/api/generate-adventure` | POST | Génération d'aventure assistée |
+| `/api/generate-story` | POST | Génération procédurale d'aventures (titre + genre + difficulté) |
 
 ---
 
