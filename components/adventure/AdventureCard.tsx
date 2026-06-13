@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { Star } from "lucide-react";
 import { updateQuestProgress } from "@/lib/dailyQuests";
 import { GENRE_LABELS, GENRE_COLORS } from "@/hooks/useAdventureList";
+import { getGenreImage, getFallbackImage } from "@/data/adventureImages";
 
 interface AdventureCardProps {
   id: number;
@@ -104,6 +105,27 @@ const AdventureCard = React.memo(function AdventureCard({
         onClick={!personnageId ? handleCardClick : undefined}
         className="group relative backdrop-blur-card bg-deep rounded-card overflow-hidden border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 block "
       >
+        {/* Image thematique par genre (LoremFlickr, gratuit) */}
+        <div className="relative w-full h-32 overflow-hidden bg-slate-900/60">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={getGenreImage(genre, id)}
+            alt=""
+            loading="lazy"
+            onError={(e) => {
+              const img = e.currentTarget;
+              if (img.dataset.fallback) {
+                img.style.visibility = "hidden";
+                return;
+              }
+              img.dataset.fallback = "1";
+              img.src = getFallbackImage(id);
+            }}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/40 to-transparent" />
+        </div>
+
         <div className="p-4 space-y-3">
           <div className="flex items-start justify-between gap-2">
             <h3 className="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors flex-1 ">
@@ -154,4 +176,3 @@ const AdventureCard = React.memo(function AdventureCard({
 });
 
 export default AdventureCard;
-

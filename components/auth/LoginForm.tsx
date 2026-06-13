@@ -208,7 +208,7 @@ export default function LoginForm() {
                   </svg>
                 </div>
                 <input
-                  type="text"
+                  type="email"
                   id="emailOrUsername"
                   className="w-full pl-10 pr-4 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                   placeholder="votre.email@exemple.com"
@@ -358,7 +358,3 @@ export default function LoginForm() {
     </div>
   );
 }
-
-
-
-

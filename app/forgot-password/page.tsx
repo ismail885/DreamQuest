@@ -8,6 +8,19 @@ import PageBackground from "@/components/shared/PageBackground";
 import { Mail, Lock, ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
 import Loader from "@/components/shared/Loader";
 
+function PageLayout({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<Loader fullScreen />}>
+      <main className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
+        <PageBackground />
+        <div className="w-full max-w-sm relative z-10">
+          <div className="card-base p-8">{children}</div>
+        </div>
+      </main>
+    </Suspense>
+  );
+}
+
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -104,19 +117,6 @@ export default function ForgotPasswordPage() {
       setResetLoading(false);
     }
   };
-
-  const PageLayout = ({ children }: { children: ReactNode }) => (
-    <Suspense fallback={<Loader fullScreen />}>
-    <main className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
-      <PageBackground />
-      <div className="w-full max-w-sm relative z-10">
-        <div className="card-base p-8">
-          {children}
-        </div>
-      </div>
-    </main>
-    </Suspense>
-  );
 
   if (isResetMode) {
     return (
@@ -344,6 +344,3 @@ export default function ForgotPasswordPage() {
     </PageLayout>
   );
 }
-
-
-

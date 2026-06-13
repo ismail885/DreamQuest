@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import CreateCharacterForm from "@/components/character/CreateCharacterForm";
 import PageTransition from "@/components/shared/PageTransition";
@@ -15,16 +15,13 @@ export default function CreateCharacterPage() {
   const { user, loading } = useAuthContext();
   const router = useRouter();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-deep flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/auth/login");
+    }
+  }, [loading, user, router]);
 
-  if (!user) {
-    router.replace("/auth/login");
+  if (loading || !user) {
     return (
       <div className="min-h-screen bg-deep flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>

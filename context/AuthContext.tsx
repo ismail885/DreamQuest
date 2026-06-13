@@ -19,7 +19,7 @@ interface User {
 interface AuthContextType {
  user: User | null;
  loading: boolean;
- login: (emailOrUsername: string, password: string) => Promise<{ success: boolean; error?: string }>;
+ login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
  register: (username: string, email: string, password: string) => Promise<{ success: boolean; message?: string; error?: string }>;
  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   loginWithDiscord: () => Promise<{ success: boolean; error?: string }>;
@@ -89,20 +89,25 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  const loggedUser = await fetchUserFromAuthId(session.user.id);
  if (!mounted) return;
  if (loggedUser) {
- await setAuthSession();
+ // Affiche la page immédiatement ; synchro du cookie en arrière-plan
  setUser(loggedUser);
+ setLoading(false);
+ setAuthSession();
  } else {
  setUser(null);
+ setLoading(false);
  }
  } else {
- await clearAuthSession();
  setUser(null);
+ setLoading(false);
+ clearAuthSession();
  }
  } catch (err) {
  console.error("[Auth] Erreur init:", err);
- if (mounted) setUser(null);
- } finally {
- if (mounted) setLoading(false);
+ if (mounted) {
+ setUser(null);
+ setLoading(false);
+ }
  }
  };
  init();
@@ -115,17 +120,17 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  if (session?.user) {
  const loggedUser = await fetchUserFromAuthId(session.user.id);
  if (loggedUser) {
- await setAuthSession();
  setUser(loggedUser);
+ setAuthSession();
  }
  }
  setLoading(false);
  break;
 
  case "SIGNED_OUT":
- await clearAuthSession();
  setUser(null);
  setLoading(false);
+ clearAuthSession();
  break;
  }
  });
@@ -136,21 +141,8 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  };
  }, []);
 
- const login = async (emailOrUsername: string, password: string) => {
+ const login = async (email: string, password: string) => {
  try {
- let email = emailOrUsername;
- if (!emailOrUsername.includes("@")) {
- const { data: found } = await supabase
- .from("utilisateur")
- .select("email")
- .eq("nom_utilisateur", emailOrUsername)
- .maybeSingle();
- if (!found) {
- return { success: false, error: "Identifiant ou mot de passe incorrect" };
- }
- email = found.email;
- }
-
  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
  if (authError || !authData.user) {
  return { success: false, error: "Identifiant ou mot de passe incorrect" };
@@ -283,4 +275,3 @@ export function useAuthContext() {
  }
  return context;
 }
-

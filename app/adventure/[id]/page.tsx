@@ -133,12 +133,16 @@ function AdventureReader({ params }: Props) {
     error,
     isEnd,
     history,
+    totalBranches,
     chooseOption,
     restart,
   } = useAdventure(adventureId, user?.id ?? null);
 
+  // Dénominateur adaptatif : borné par la taille réelle de l'aventure
+  // (évite une barre bloquée bas sur les aventures courtes, ex. générées)
+  const progressionMax = Math.max(1, Math.min(MAX_STEPS, totalBranches || MAX_STEPS));
   const progression = isEnd ? 100 : Math.min(
-    Math.round((history.length / Math.max(MAX_STEPS, 1)) * 100),
+    Math.round((history.length / progressionMax) * 100),
     99,
   );
 
