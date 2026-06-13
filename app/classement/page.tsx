@@ -68,7 +68,7 @@ export default function ClassementPage() {
                   Chargement du classement...
                 </p>
               </div>
-            ) : adventures.length === 0 ? (
+            ) : activeTab === "adventures" && adventures.length === 0 ? (
               <div className="text-center py-20">
                 <BookOpen className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                 <h2 className="text-xl font-bold text-white mb-2">

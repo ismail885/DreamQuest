@@ -186,9 +186,16 @@ function AdventureReader({ params }: Props) {
   }, [currentBranch?.id, currentEvent, isEnd]);
 
   const completedAdventuresRef = useRef(0);
+  const hasAwardedRef = useRef(false);
 
   useEffect(() => {
-    if (isEnd && user && characterIdNum && character) {
+    if (!isEnd) {
+      hasAwardedRef.current = false;
+      return;
+    }
+    if (hasAwardedRef.current) return;
+    if (user && characterIdNum && character) {
+      hasAwardedRef.current = true;
       save();
       completeAdventure(history.length, user.id);
 
@@ -374,43 +381,6 @@ function AdventureReader({ params }: Props) {
             </AnimatePresence>
 
             {/* Événement aléatoire */}
-            <AnimatePresence>
-              {currentEvent && (
-                <motion.div
-                  key="random-event"
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  transition={{ duration: 0.4, ease: easeOut }}
-                >
-                  <RandomEventCard
-                    event={currentEvent}
-                    onChoice={(consequence, choiceIndex) => {
-                      if (currentEvent.type === "combat" && choiceIndex === 0) {
-                        import("@/lib/monsters").then(({ getMonsterById }) => {
-                          const monsterId = currentEvent.monsterId;
-                          if (monsterId) {
-                            const monster = getMonsterById(monsterId);
-                            if (monster) {
-                              startCombat(monster.level);
-                            }
-                          }
-                        });
-                        setCurrentEvent(null);
-                        return;
-                      }
-
-                      applyConsequence(1, JSON.stringify(consequence));
-                      setCurrentEvent(null);
-                      if (currentBranch?.choix1_lien) {
-                        chooseOption(currentBranch.choix1_lien);
-                      }
-                    }}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {loading && currentBranch === null && lastBranchRef.current && (
               <div className="text-center py-4">
                 <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary mx-auto mb-2"></div>
@@ -418,7 +388,8 @@ function AdventureReader({ params }: Props) {
               </div>
             )}
 
-            {/* Choix */}
+            <div className="relative">
+            {/* Choix + overlay evenement/combat */}
             <AnimatePresence mode="wait">
               {!isEnd && currentBranch && (
                 <motion.div
@@ -469,21 +440,57 @@ function AdventureReader({ params }: Props) {
                       }}
                     />
                   )}
-
-                  {inCombat && combatState && character && (
-                    <CombatUI
-                      combatState={combatState}
-                      character={character}
-                      onAttack={handleCombatAttack}
-                      onDefend={handleCombatDefend}
-                      onFlee={handleCombatFlee}
-                      onAbility={handleCombatAbility}
-                      onEnd={handleCombatEnd}
-                    />
-                  )}
                 </motion.div>
               )}
             </AnimatePresence>
+
+            <AnimatePresence>
+              {(currentEvent || (inCombat && combatState && character)) && (
+                <motion.div
+                  key="overlay-choix"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, ease: easeOut }}
+                  className="absolute left-0 right-0 top-0 z-30 min-h-full flex items-start justify-center bg-deep/90 backdrop-blur-sm rounded-card p-2"
+                >
+                  <div className="w-full">
+                    {inCombat && combatState && character ? (
+                      <CombatUI
+                        combatState={combatState}
+                        character={character}
+                        onAttack={handleCombatAttack}
+                        onDefend={handleCombatDefend}
+                        onFlee={handleCombatFlee}
+                        onAbility={handleCombatAbility}
+                        onEnd={handleCombatEnd}
+                      />
+                    ) : currentEvent ? (
+                      <RandomEventCard
+                        event={currentEvent}
+                        onChoice={(consequence, choiceIndex) => {
+                          if (currentEvent.type === "combat" && choiceIndex === 0) {
+                            import("@/lib/monsters").then(({ getMonsterById }) => {
+                              const monsterId = currentEvent.monsterId;
+                              if (monsterId) {
+                                const monster = getMonsterById(monsterId);
+                                if (monster) startCombat(monster.level);
+                              }
+                            });
+                            setCurrentEvent(null);
+                            return;
+                          }
+                          applyConsequence(1, JSON.stringify(consequence));
+                          setCurrentEvent(null);
+                          if (currentBranch?.choix1_lien) chooseOption(currentBranch.choix1_lien);
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            </div>
           </motion.div>
         </main>
       </div>

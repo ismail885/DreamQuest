@@ -1,7 +1,6 @@
 import type { GenreData, GenreNom } from "./types";
 
 // 9 genres. Chaque genre habille le décor neutre du thème.
-// Placeholders : {titre} {lieu} {lieuHabille} {decor} {antagoniste}
 
 export const GENRES: Record<GenreNom, GenreData> = {
   "Science-Fiction": {
