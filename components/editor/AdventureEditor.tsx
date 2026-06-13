@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuthContext } from "@/context/AuthContext";
 import {
   ChevronLeft, ChevronRight, Wand2, Send, Plus, Trash2,
-  Loader2, CheckCircle2, Target, BookOpen, AlertTriangle, Eye, EyeOff,
+  Loader2, CheckCircle2, Target, AlertTriangle, Eye, EyeOff,
   Rocket, Ghost, Search, Swords, Ship, Cpu, Sun, Heart
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -170,40 +170,26 @@ export default function AdventureEditor() {
       if (!res.ok) throw new Error("Erreur API");
 
       const a = await res.json();
-      if (!a.embranchements || a.embranchements.length !== 3) {
+      if (!Array.isArray(a.noeuds) || a.noeuds.length === 0) {
         throw new Error("Format invalide");
       }
 
-      const [e1, e2, e3] = a.embranchements;
-      type GenChoix = { libelle: string; consequence: Choice["consequence"] };
-      const toChoice = (c: GenChoix, target: string): Choice => ({
-        label: c.libelle,
-        target,
-        consequence: c.consequence,
-      });
+      type GenChoix = { libelle: string; cible: string; consequence: Choice["consequence"] };
+      type GenNoeud = { id: string; texte: string; fin: boolean; choix: GenChoix[] };
+      const labelFor = (n: GenNoeud) =>
+        n.id === "debut" ? "D�but" : n.fin ? n.id.replace("fin", "Fin ") : n.id.toUpperCase();
 
-      const newNodes: StoryNode[] = [
-        {
-          id: "debut", label: "Début", text: e1.texte, isEnd: false,
-          choices: [toChoice(e1.choix[0], "n2"), toChoice(e1.choix[1], "n3")],
-        },
-        {
-          id: "n2", label: "N2", text: e2.texte, isEnd: false,
-          choices: [toChoice(e2.choix[0], "fin1"), toChoice(e2.choix[1], "fin2")],
-        },
-        {
-          id: "n3", label: "N3", text: e3.texte, isEnd: false,
-          choices: [toChoice(e3.choix[0], "fin1"), toChoice(e3.choix[1], "fin2")],
-        },
-        {
-          id: "fin1", label: "Fin — Triomphe", isEnd: true, choices: [],
-          text: "Votre périple s'achève sur une victoire chèrement acquise. Le souvenir de cette aventure vous suivra longtemps.",
-        },
-        {
-          id: "fin2", label: "Fin — Amertume", isEnd: true, choices: [],
-          text: "Le destin en a décidé autrement. Vous repartez marqué, mais vivant — certaines histoires ne se terminent jamais comme prévu.",
-        },
-      ];
+      const newNodes: StoryNode[] = (a.noeuds as GenNoeud[]).map((n) => ({
+        id: n.id,
+        label: labelFor(n),
+        text: n.texte,
+        isEnd: n.fin,
+        choices: n.choix.map((c) => ({
+          label: c.libelle,
+          target: c.cible,
+          consequence: c.consequence,
+        })),
+      }));
 
       setTitle(String(a.titre).slice(0, 80));
       setDescription(a.description);
@@ -215,6 +201,18 @@ export default function AdventureEditor() {
     } finally {
       setGenerating(false);
     }
+  };
+
+  const clearAll = () => {
+    if (!confirm("Vider toute l'aventure ? Cette action est irr�versible.")) return;
+    setNodes([
+      { id: "debut", label: "D�but", text: "", isEnd: false, choices: [{ label: "", target: "" }] },
+    ]);
+    setActiveNodeId("debut");
+    setTitle("");
+    setDescription("");
+    setError(null);
+    setSuccess(null);
   };
 
   const updateNodeText = (text: string) => {
@@ -316,8 +314,9 @@ export default function AdventureEditor() {
   };
 
   const handleSave = async () => {
-    if (!user || !title.trim() || !activeNode.text.trim()) {
-      setError("Titre et contenu narratif requis");
+    const debutNode = nodes.find((nd) => nd.id === "debut") ?? nodes[0];
+    if (!user || !title.trim() || !debutNode?.text.trim()) {
+      setError("Un titre et le texte du nSud de d�but sont requis");
       return;
     }
     setSaving(true);
@@ -332,7 +331,7 @@ export default function AdventureEditor() {
           difficulty: difficulty.toLowerCase(),
           duree_estimee: duration,
           genre: currentGenre.name.toLowerCase(),
-          auteur_id: user.id,
+          auteur_id: Number(user.id),
         })
         .select()
         .single();
@@ -355,7 +354,7 @@ export default function AdventureEditor() {
         .insert(branchesToInsert)
         .select("id");
 
-      if (branchError || !insertedBranches) throw branchError;
+      if (branchError || !insertedBranches) throw branchError ?? new Error("Insertion des nSuds �chou�e");
 
       const nodeIdMap = new Map<string, number>();
       nodes.forEach((node, i) => {
@@ -395,8 +394,9 @@ export default function AdventureEditor() {
 
       setSuccess("Aventure publiée ! Redirection...");
       setTimeout(() => router.push("/dashboard"), 1500);
-    } catch {
-      setError("Erreur lors de la sauvegarde");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erreur inconnue";
+      setError("Erreur lors de la sauvegarde : " + msg);
     } finally {
       setSaving(false);
     }
@@ -422,35 +422,12 @@ export default function AdventureEditor() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: easeOutExpo }}
-      className="h-screen bg-deep text-white flex flex-col overflow-hidden"
+      className="text-white"
     >
-      <motion.header
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: easeOutExpo }}
-        className="flex items-center justify-between px-6 py-3 border-b border-gray-800 flex-shrink-0"
-      >
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition-all duration-200 text-sm group"
-          >
-            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            Retour
-          </button>
-          <div className="w-px h-5 bg-gray-800" />
-          <h1 className="text-xl font-bold text-primary">Création d&apos;Aventure</h1>
-        </div>
-        <div className="flex items-center gap-3 text-xs text-gray-400">
-          <BookOpen className="w-4 h-4 text-primary" />
-          <span>{nodes.length} nœud{nodes.length > 1 ? "s" : ""}</span>
-        </div>
-      </motion.header>
-
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex flex-col lg:flex-row gap-4">
         {/* ══════ COLONNE A — Configuration (33%) ══════ */}
-        <aside className="w-[33%] min-w-[320px] border-r border-gray-800 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-5 space-y-5 editor-scroll">
+        <aside className="w-full lg:w-[340px] flex-shrink-0 card-base overflow-hidden">
+          <div className="p-5 space-y-5">
             {/* Carrousel de genre */}
             <section>
               <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Genre</h2>
@@ -628,7 +605,7 @@ export default function AdventureEditor() {
               <button
                 onClick={handleSave}
                 disabled={!title.trim() || saving}
-                className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(124,58,237,0.5)] flex items-center justify-center gap-2 text-sm"
+                className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 text-sm"
               >
                 {saving ? (
                   <>
@@ -642,12 +619,20 @@ export default function AdventureEditor() {
                   </>
                 )}
               </button>
+              <button
+                onClick={clearAll}
+                disabled={saving || generating}
+                className="w-full py-2.5 bg-transparent border border-red-500/30 text-red-400 hover:bg-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+              >
+                <Trash2 className="w-4 h-4" />
+                Tout vider
+              </button>
             </div>
           </div>
         </aside>
 
         {/* ══════ COLONNE B — Éditeur de nœud (47%) ══════ */}
-        <main className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <main className="flex-1 min-w-0 card-base overflow-hidden flex flex-col">
           {generating ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -686,8 +671,8 @@ export default function AdventureEditor() {
                     onClick={() => setPreviewMode(!previewMode)}
                     className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all duration-300 ease-out hover:scale-105 flex items-center gap-1.5 ${
                       previewMode
-                        ? "bg-violet-600 text-white"
-                        : "bg-violet-600/20 text-violet-500 hover:bg-violet-600/30"
+                        ? "bg-cyan-600 text-white"
+                        : "bg-cyan-600/20 text-cyan-500 hover:bg-cyan-600/30"
                     }`}
                   >
                     {previewMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -707,7 +692,7 @@ export default function AdventureEditor() {
               </div>
 
               {/* Contenu éditeur / Aperçu */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-5 editor-scroll">
+              <div className="p-5 space-y-5">
                 <AnimatePresence mode="wait">
                   {previewMode ? (
                     /* ═══ MODE APERÇU ═══ */
@@ -800,7 +785,7 @@ export default function AdventureEditor() {
                           <button
                             onClick={addChoice}
                             disabled={activeNode.choices.length >= 2}
-                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-violet-600 hover:bg-violet-600/80 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white rounded-md transition-all duration-300 ease-out hover:scale-105"
+                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-cyan-600 hover:bg-cyan-600/80 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed text-white rounded-md transition-all duration-300 ease-out hover:scale-105"
                           >
                             <Plus className="w-3 h-3" />
                             Ajouter
@@ -851,7 +836,7 @@ export default function AdventureEditor() {
                                 </select>
                                 <button
                                   onClick={() => selectNodeFromChoice(idx)}
-                                  className="text-xs px-2.5 py-2 border border-violet-500 text-violet-500 hover:bg-violet-600/10 rounded-md transition-all duration-200 whitespace-nowrap"
+                                  className="text-xs px-2.5 py-2 border border-cyan-500 text-cyan-500 hover:bg-cyan-600/10 rounded-md transition-all duration-200 whitespace-nowrap"
                                 >
                                   + Nouveau nœud
                                 </button>
@@ -889,13 +874,13 @@ export default function AdventureEditor() {
         </main>
 
         {/* ══════ COLONNE C — Liste des nœuds (20%) ══════ */}
-        <aside className="w-[20%] min-w-[200px] max-w-[260px] border-l border-gray-800 flex flex-col overflow-hidden">
+        <aside className="w-full lg:w-[240px] flex-shrink-0 card-base overflow-hidden flex flex-col">
           <div className="px-4 py-3 border-b border-gray-800 flex-shrink-0">
             <h2 className="text-sm font-bold text-primary">
               Nœuds ({nodes.length})
             </h2>
           </div>
-          <div ref={nodesListRef} className="flex-1 overflow-y-auto py-2 editor-scroll">
+          <div ref={nodesListRef} className="py-2 max-h-[420px] lg:max-h-[600px] overflow-y-auto editor-scroll">
             <motion.div
               variants={containerVariants}
               initial="hidden"

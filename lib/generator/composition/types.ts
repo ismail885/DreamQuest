@@ -1,6 +1,6 @@
-// Moteur de composition thème × genre × difficulté (aucune IA, aucun appel externe).
-// Le thème (détecté dans le titre) fournit le décor, le genre la tonalité,
-// la difficulté règle la sévérité des conséquences.
+// Moteur de composition theme x genre x difficulte (aucune IA, aucun appel externe).
+// Le theme (detecte dans le titre) fournit le decor, le genre la tonalite,
+// la difficulte regle la severite des consequences et la longueur de l'histoire.
 
 export type Difficulte = "facile" | "normal" | "difficile" | "legendaire";
 
@@ -37,7 +37,7 @@ export interface ThemeData {
   decors: string[];
 }
 
-// Placeholders acceptés dans les gabarits : {titre} {lieu} {lieuHabille} {decor} {antagoniste}
+// Placeholders acceptes dans les gabarits : {titre} {lieu} {lieuHabille} {decor} {antagoniste}
 export interface GenreData {
   nom: GenreNom;
   habillagesLieu: string[];
@@ -60,13 +60,16 @@ export interface ConsequenceGeneree {
 
 export interface ChoixGenere {
   libelle: string;
+  // Id du noeud cible (ex: "n2", "fin1"). Vide pour un noeud final.
+  cible: string;
   consequence: ConsequenceGeneree;
 }
 
-export interface EmbranchementGenere {
-  id: 1 | 2 | 3;
+export interface NoeudGenere {
+  id: string; // "debut", "n1", "n2", ..., "fin1", "fin2"
   texte: string;
-  choix: [ChoixGenere, ChoixGenere];
+  fin: boolean;
+  choix: ChoixGenere[]; // 2 choix, ou 0 si fin
 }
 
 export interface AventureGeneree {
@@ -76,7 +79,7 @@ export interface AventureGeneree {
   genre: GenreNom;
   difficulte: Difficulte;
   tags: [string, string, string];
-  embranchements: [EmbranchementGenere, EmbranchementGenere, EmbranchementGenere];
+  noeuds: NoeudGenere[];
 }
 
 export interface CompositionInput {
