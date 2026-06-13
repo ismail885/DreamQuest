@@ -177,7 +177,7 @@ export default function AdventureEditor() {
       type GenChoix = { libelle: string; cible: string; consequence: Choice["consequence"] };
       type GenNoeud = { id: string; texte: string; fin: boolean; choix: GenChoix[] };
       const labelFor = (n: GenNoeud) =>
-        n.id === "debut" ? "Début" : n.fin ? n.id.replace("fin", "Fin ") : n.id.toUpperCase();
+        n.id === "debut" ? "Debut" : n.fin ? n.id.replace("fin", "Fin ") : n.id.toUpperCase();
 
       const newNodes: StoryNode[] = (a.noeuds as GenNoeud[]).map((n) => ({
         id: n.id,
@@ -204,9 +204,9 @@ export default function AdventureEditor() {
   };
 
   const clearAll = () => {
-    if (!confirm("Vider toute l'aventure ? Cette action est irréversible.")) return;
+    if (!confirm("Vider toute l'aventure ? Cette action est irreversible.")) return;
     setNodes([
-      { id: "debut", label: "Début", text: "", isEnd: false, choices: [{ label: "", target: "" }] },
+      { id: "debut", label: "Debut", text: "", isEnd: false, choices: [{ label: "", target: "" }] },
     ]);
     setActiveNodeId("debut");
     setTitle("");
@@ -316,7 +316,7 @@ export default function AdventureEditor() {
   const handleSave = async () => {
     const debutNode = nodes.find((nd) => nd.id === "debut") ?? nodes[0];
     if (!user || !title.trim() || !debutNode?.text.trim()) {
-      setError("Un titre et le texte du nSud de début sont requis");
+      setError("Un titre et le texte du noeud de debut sont requis");
       return;
     }
     setSaving(true);
@@ -354,7 +354,7 @@ export default function AdventureEditor() {
         .insert(branchesToInsert)
         .select("id");
 
-      if (branchError || !insertedBranches) throw branchError ?? new Error("Insertion des nSuds échouée");
+      if (branchError || !insertedBranches) throw branchError ?? new Error("Insertion des noeuds echouee");
 
       const nodeIdMap = new Map<string, number>();
       nodes.forEach((node, i) => {
