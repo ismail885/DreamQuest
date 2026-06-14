@@ -4,8 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import Header from "@/components/shared/Header";
+import PageBackground from "@/components/shared/PageBackground";
 import Loader from "@/components/shared/Loader";
 import { ArrowLeft, Users, BookOpen } from "lucide-react";
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name.substring(0, 2).toUpperCase();
+}
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -14,13 +22,13 @@ export default function PublicProfilePage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{
     nom_utilisateur: string;
-    date_creation: string;
+    date_creation: string | null;
   } | null>(null);
   const [characters, setCharacters] = useState<
-    { nom_personnage: string; classe: string; niveau: number }[]
+    { nom_personnage: string; classe: string; niveau: number | null }[]
   >([]);
   const [adventures, setAdventures] = useState<
-    { titre: string; popularite: number }[]
+    { titre: string; popularite: number | null }[]
   >([]);
 
   useEffect(() => {
@@ -77,46 +85,16 @@ export default function PublicProfilePage() {
 
   if (!profile) return null;
 
-  return (
-    <div className="min-h-screen text-white bg-deep">
-      <div className="fixed inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(148deg,#0c0e1a 0%,#0f1729 25%,#1a1f3a 50%,#0f1729 75%,#0c0e1a 100%)",
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(6,182,212,0.10)",
-            left: "25%",
-            top: 0,
-            opacity: 0.83,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(59,130,246,0.10)",
-            right: "25%",
-            top: "696px",
-            opacity: 0.51,
-          }}
-        />
-        <div
-          className="absolute w-96 h-96 rounded-full blur-[40px]"
-          style={{
-            background: "rgba(99,102,241,0.10)",
-            left: "51.54%",
-            top: "505px",
-            opacity: 0.93,
-          }}
-        />
-      </div>
+  const memberSince = profile.date_creation
+    ? new Date(profile.date_creation).toLocaleDateString("fr-FR")
+    : "—";
 
-      <div className="relative max-w-2xl mx-auto px-4 py-6">
+  return (
+    <div className="min-h-screen text-white bg-deep flex flex-col">
+      <PageBackground />
+      <Header />
+
+      <div className="relative max-w-2xl mx-auto w-full px-4 py-6">
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-sm mb-6"
@@ -127,15 +105,12 @@ export default function PublicProfilePage() {
 
         <div className="card-base p-6 mb-6 text-center">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-lg shadow-cyan-500/30">
-            {username.substring(0, 2).toUpperCase()}
+            {getInitials(profile.nom_utilisateur)}
           </div>
           <h1 className="text-2xl font-bold text-white">
             {profile.nom_utilisateur}
           </h1>
-          <p className="text-gray-400 text-sm">
-            Membre depuis{" "}
-            {new Date(profile.date_creation).toLocaleDateString("fr-FR")}
-          </p>
+          <p className="text-gray-400 text-sm">Membre depuis {memberSince}</p>
         </div>
 
         <div className="card-base p-6 mb-6">
@@ -157,7 +132,7 @@ export default function PublicProfilePage() {
                     <p className="text-gray-400 text-sm">{c.classe}</p>
                   </div>
                   <span className="text-primary font-bold">
-                    Niv {c.niveau}
+                    Niv {c.niveau ?? 1}
                   </span>
                 </div>
               ))}
@@ -181,7 +156,7 @@ export default function PublicProfilePage() {
                 >
                   <p className="font-semibold text-white">{a.titre}</p>
                   <span className="text-yellow-400 font-medium">
-                    {a.popularite} votes
+                    {a.popularite ?? 0} votes
                   </span>
                 </div>
               ))}

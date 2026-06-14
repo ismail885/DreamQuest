@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
+import { updateQuestProgress } from "@/lib/dailyQuests";
 import { useAuthContext } from "@/context/AuthContext";
 import {
   ChevronLeft, ChevronRight, Wand2, Send, Plus, Trash2,
@@ -391,6 +392,10 @@ export default function AdventureEditor() {
       }
 
       await Promise.all(updatePromises);
+
+      updateQuestProgress(Number(user.id), "create_story", 1)
+        .then(() => window.dispatchEvent(new CustomEvent("profile-refresh")))
+        .catch(() => {});
 
       setSuccess("Aventure publiée ! Redirection...");
       setTimeout(() => router.push("/dashboard"), 1500);

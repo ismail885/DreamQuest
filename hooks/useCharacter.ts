@@ -42,7 +42,7 @@ interface UseCharacterReturn {
   completeAdventure: (
     historyLength: number,
     userId: number,
-  ) => Promise<void>;
+  ) => Promise<{ leveledUp: boolean; levelsGained: number }>;
 }
 
 export function useCharacter({
@@ -159,7 +159,7 @@ export function useCharacter({
   // Fin d'aventure : calcul XP, level up, sauvegarde BDD
   const completeAdventure = useCallback(
     async (historyLength: number, userId: number) => {
-      if (!characterIdNum || !character) return;
+      if (!characterIdNum || !character) return { leveledUp: false, levelsGained: 0 };
 
       const progress = (await loadCharacterProgress()) || {
         niveau: character.niveau ?? 1,
@@ -200,6 +200,11 @@ export function useCharacter({
             }
           : prev,
       );
+
+      return {
+        leveledUp: result.leveledUp,
+        levelsGained: Math.max(0, result.newLevel - progress.niveau),
+      };
     },
     [character, characterIdNum, loadCharacterProgress],
   );

@@ -114,6 +114,14 @@ function AdventureReader({ params }: Props) {
         wins: prev.wins + (won ? 1 : 0),
         losses: prev.losses + (won ? 0 : 1),
       }));
+      if (won && user) {
+        updateQuestProgress(user.id, "combat_win", 1).then((r) => {
+          if (r.completion) {
+            toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
+          }
+          window.dispatchEvent(new CustomEvent("profile-refresh"));
+        }).catch(() => {});
+      }
     },
   });
 
@@ -185,7 +193,6 @@ function AdventureReader({ params }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBranch?.id, currentEvent, isEnd]);
 
-  const completedAdventuresRef = useRef(0);
   const hasAwardedRef = useRef(false);
 
   useEffect(() => {
@@ -197,25 +204,29 @@ function AdventureReader({ params }: Props) {
     if (user && characterIdNum && character) {
       hasAwardedRef.current = true;
       save();
-      completeAdventure(history.length, user.id);
 
-      completedAdventuresRef.current += 1;
-      const count = completedAdventuresRef.current;
-      updateQuestProgress(user.id, "finish_1", 1).then((r) => {
+      const uid = user.id;
+      const notifyQuest = (r: Awaited<ReturnType<typeof updateQuestProgress>>) => {
         if (r.completion) {
           toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
         }
         window.dispatchEvent(new CustomEvent("profile-refresh"));
-        checkAndNotifyAchievements(user.id, (msg) => toast.success(msg));
-      }).catch(() => {});
-      if (count >= 2) {
-        updateQuestProgress(user.id, "finish_2", 1).then((r) => {
-          if (r.completion) {
-            toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
-          }
-          window.dispatchEvent(new CustomEvent("profile-refresh"));
+      };
+
+      completeAdventure(history.length, uid).then((res) => {
+        // Chaque fin compte pour les 3 paliers ; le cumul est suivi en base,
+        // donc finish_2 / finish_5 progressent jour après jour.
+        updateQuestProgress(uid, "finish_1", 1).then((r) => {
+          notifyQuest(r);
+          checkAndNotifyAchievements(uid, (msg) => toast.success(msg));
         }).catch(() => {});
-      }
+        updateQuestProgress(uid, "finish_2", 1).then(notifyQuest).catch(() => {});
+        updateQuestProgress(uid, "finish_5", 1).then(notifyQuest).catch(() => {});
+
+        if (res.leveledUp) {
+          updateQuestProgress(uid, "level_up", res.levelsGained || 1).then(notifyQuest).catch(() => {});
+        }
+      }).catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
