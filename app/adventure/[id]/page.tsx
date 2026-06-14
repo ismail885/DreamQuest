@@ -481,14 +481,15 @@ function AdventureReader({ params }: Props) {
                         event={currentEvent}
                         onChoice={(consequence, choiceIndex) => {
                           if (currentEvent.type === "combat" && choiceIndex === 0) {
-                            import("@/lib/monsters").then(({ getMonsterById }) => {
-                              const monsterId = currentEvent.monsterId;
-                              if (monsterId) {
-                                const monster = getMonsterById(monsterId);
-                                if (monster) startCombat(monster.level);
-                              }
-                            });
+                            const monsterId = currentEvent.monsterId;
+                            const fallbackLevel = Math.max(1, character?.niveau ?? 1);
                             setCurrentEvent(null);
+                            import("@/lib/monsters")
+                              .then(({ getMonsterById }) => {
+                                const monster = monsterId ? getMonsterById(monsterId) : undefined;
+                                startCombat(monster ? monster.level : fallbackLevel);
+                              })
+                              .catch(() => startCombat(fallbackLevel));
                             return;
                           }
                           applyConsequence(1, JSON.stringify(consequence));

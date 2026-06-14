@@ -45,7 +45,6 @@ function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued
   const xpRatio = Math.min(xpCurrent / Math.max(xpNeeded, 1), 1);
   const pvRatio = Math.min(character.points_vie / Math.max(character.points_vie_max ?? 100, 1), 1);
   const pvColor = pvRatio > 0.5 ? "from-red-500 to-red-400" : pvRatio > 0.25 ? "from-orange-500 to-orange-400" : "from-red-600 to-red-500";
-  const fatigueRatio = Math.min(1, fatigueCount / Math.max(maxFatigue, 1));
 
   if (sidebar) {
     return (
@@ -106,20 +105,6 @@ function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued
           </div>
           <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-300" style={{ width: `${xpRatio * 100}%` }} />
-          </div>
-        </div>
-
-        {/* Fatigue */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className={`flex items-center gap-1 text-xs ${isFatigued ? "text-red-400" : "text-gray-400"}`}>
-              {isFatigued ? "⚡ Épuisé" : "Endurance"}
-            </span>
-            <span className="text-white/50 text-xs">{fatigueCount}/{maxFatigue}</span>
-          </div>
-          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-            <div className={`h-full rounded-full transition-all duration-300 ${isFatigued ? "bg-red-500" : "bg-emerald-400"}`}
-              style={{ width: `${fatigueRatio * 100}%` }} />
           </div>
         </div>
       </div>
@@ -185,20 +170,6 @@ function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued
             </div>
             <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-300" style={{ width: `${xpRatio * 100}%` }} />
-            </div>
-          </div>
-
-          {/* Fatigue */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className={`flex items-center gap-1 text-[10px] ${isFatigued ? "text-red-400" : "text-gray-500"}`}>
-                {isFatigued ? "⚡ Épuisé" : "Endurance"}
-              </span>
-              <span className="text-white/50 text-[10px]">{fatigueCount}/{maxFatigue}</span>
-            </div>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-              <div className={`h-full rounded-full transition-all duration-300 ${isFatigued ? "bg-red-500" : "bg-emerald-400"}`}
-                style={{ width: `${fatigueRatio * 100}%` }} />
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ Application web de jeu de rôle textuel interactif permettant de créer des pers
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![Supabase](https://img.shields.io/badge/Supabase-3-green)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20Auth-green)
 ![Vercel](https://img.shields.io/badge/Vercel-Deployed-brightgreen)
 ![License](https://img.shields.io/badge/License-Éducatif-orange)
 
@@ -20,6 +20,8 @@ DreamQuest est une application web de RPG textuel narratif où les joueurs peuve
 
 - **Créer des personnages** avec 10 classes uniques (Guerrier, Mage, Archer, Assassin, Paladin, Prêtre, Druide, Nécromancien, Voleur, Barbare)
 - **Vivre des aventures** interactives avec des choix qui influencent l'histoire
+- **Affronter des combats** au tour par tour et des événements aléatoires
+- **Progresser** : expérience, niveaux, quêtes quotidiennes, succès et saisons
 - **Sauvegarder automatiquement** leur progression
 - **Voter** pour leurs aventures préférées
 - **Classer** les meilleures aventures communautaires
@@ -30,13 +32,18 @@ DreamQuest est une application web de RPG textuel narratif où les joueurs peuve
 
 | Feature | Description |
 |---------|-------------|
-| Inscription/Connexion | Authentification JWT sécurisée |
-| Création de personnages | 10 classes avec stats et abilities uniques |
-| Aventures interactives | Parcours à choix multiples avec embranchements |
-| Sauvegarde automatique | Toutes les 30 secondes (historique + stats) |
+| Inscription/Connexion | Supabase Auth (email/mot de passe) + session serveur signée (cookie HttpOnly) |
+| Création de personnages | 10 classes avec stats et compétences uniques |
+| Aventures interactives | Parcours à choix multiples (10 à 20 nœuds, plusieurs fins) |
+| Combat au tour par tour | Attaque, défense, fuite et compétences (côté client) |
+| Événements aléatoires | Rencontres, pièges, trésors et embuscades |
+| Sauvegarde automatique | Toutes les 30 secondes (nœud courant + stats) |
+| Progression & saisons | Expérience, niveaux, meilleur niveau, prestige, multiplicateurs |
+| Quêtes & succès | Objectifs quotidiens récompensés en XP, déblocage de succès |
 | Système de votes | Un vote par utilisateur par aventure |
-| Classement | Tri par popularité |
-| Génération procédurale | Moteur local 4 genres (fantasy, horreur, sci-fi, romance) |
+| Classement | Tri par popularité (aventures et joueurs) |
+| Génération procédurale | Moteur local : thème × genre (9 genres) × difficulté, sans IA |
+| Administration | Dashboard, gestion utilisateurs / aventures / personnages, journal |
 
 ---
 
@@ -44,10 +51,11 @@ DreamQuest est une application web de RPG textuel narratif où les joueurs peuve
 
 - **Next.js 15** - Framework React avec App Router
 - **TypeScript** - Typage statique
-- **Supabase** - Base de données PostgreSQL (BaaS)
+- **Supabase** - Base de données PostgreSQL + authentification (BaaS)
 - **TailwindCSS** - Framework CSS utilitaire
 - **Framer Motion** - Animations
-- **JWT (jose)** - Authentification par tokens
+- **jose** - Signature du jeton de session (cookie HttpOnly)
+- **Jest** - Tests unitaires et d'intégration
 
 ---
 
@@ -117,7 +125,7 @@ DreamQuest/
 │       ├── users/           # Gestion utilisateurs
 │       ├── characters/      # Gestion personnages
 │       ├── adventures/      # Gestion aventures
-│       └── logs/            # Logs système
+│       └── logs/            # Journal d'activité
 ├── components/              # Composants React
 │   ├── auth/               # LoginForm, RegisterForm
 │   ├── character/          # CharacterCard, ClassCard, CreateCharacterForm
@@ -141,8 +149,6 @@ DreamQuest/
 │                           # ErrorState, PageBackground, PageTransition
 ├── context/                 # Context API
 │   └── AuthContext.tsx     # Authentification (provider + hook useAuthContext)
-│   # Note : le thème clair/sombre est appliqué via script inline dans
-│   # app/layout.tsx (lecture du cookie dreamquest_theme)
 ├── hooks/                   # Custom hooks
 │   ├── useAuth.ts          # Hook d'authentification
 │   ├── useAdventure.ts     # Navigation embranchée avec BDD
@@ -158,14 +164,17 @@ DreamQuest/
 │   ├── useConsequences.ts  # Application des conséquences de choix
 │   ├── useNetworkStatus.ts # Détection online/offline
 │   ├── useToast.tsx        # Wrapper react-hot-toast
+│   └── admin/              # Hooks d'administration (dashboard, users, characters, logs)
 ├── lib/                     # Utilitaires
 │   ├── supabaseClient.ts   # Client Supabase (timeout 15s)
-│   ├── jwt.ts              # Fonctions JWT
-│   ├── randomGenerator.ts  # Génération aléatoire
+│   ├── jwt.ts              # Fonctions JWT (jeton de session)
+│   ├── leveling.ts         # Niveaux, XP, prestige (compte utilisateur)
+│   ├── seasons.ts          # Saisons et multiplicateurs d'XP
 │   ├── dailyQuests.ts      # Quêtes quotidiennes
-│   ├── randomEvents.ts     # Événements aléatoires (combats, rencontres, trésors)
 │   ├── achievements.ts     # Système de succès
+│   ├── randomEvents.ts     # Événements aléatoires (combats, rencontres, trésors)
 │   ├── combat.ts           # Système de combat tour par tour
+│   ├── monsters.ts         # Base de monstres
 │   ├── characters/         # Définitions des classes
 │   └── generator/composition/ # Moteur de génération thème × genre × difficulté
 │       ├── composer.ts     # Assemblage (détection de thème, gabarits, combats)
@@ -183,7 +192,7 @@ DreamQuest/
 │   ├── adventureImages.ts  # Images par genre d'aventure
 │   └── enemies.ts          # Définition des ennemis
 ├── app/api/                 # API Routes
-│   ├── auth/session/       # Gestion session JWT (POST/DELETE)
+│   ├── auth/session/       # Gestion session (POST/DELETE)
 │   ├── generator/          # Génération stats/abilities
 │   └── generate-story/     # Génération procédurale d'aventures (thème × genre × difficulté)
 ├── tests/                   # Tests
@@ -200,19 +209,19 @@ DreamQuest/
 
 ## Base de données
 
-### Schéma (9 tables)
+### Schéma (7 tables)
 
 | Table | Description |
 |-------|-------------|
-| `utilisateur` | Comptes utilisateurs |
-| `personnage` | Personnages créés |
-| `aventure` | Histoires interactives |
-| `embranchement` | Nœuds narratifs avec choix |
+| `utilisateur` | Comptes (rôle, niveau, expérience, saison, lien `auth_id` vers Supabase Auth) |
+| `personnage` | Personnages créés (classe, stats, points de vie) |
+| `aventure` | Histoires interactives (genre, difficulté, popularité, auteur) |
+| `embranchement` | Nœuds narratifs : texte, deux choix, liens et conséquences (JSONB) |
 | `sauvegarde` | Progression des joueurs |
-| `vote` | Votes communautaires |
-| `parametre_utilisateur` | Préférences utilisateur |
+| `vote` | Votes communautaires (unique par utilisateur et par aventure) |
 | `quete_quotidienne` | Quêtes journalières |
-| `participation_evenement` | Événements spéciaux |
+
+> Les combats et l'état d'une partie en cours sont gérés côté client (pas de table dédiée).
 
 Voir `documents/bdd/MPD_DreamQuest.sql` pour le schéma complet.
 
@@ -224,8 +233,8 @@ Voir `documents/bdd/MPD_DreamQuest.sql` pour le schéma complet.
 npm run dev          # Développement (http://localhost:3000)
 npm run build        # Build production
 npm run start        # Serveur production
-npm run lint         # Vérification code
-npm run test         # Exécuter les tests
+npm run lint         # Vérification code (ESLint)
+npm run test         # Exécuter les tests (Jest)
 ```
 
 ---
@@ -241,14 +250,16 @@ npm run test         # Exécuter les tests
 3. Variables d'environnement configurées :
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
    - `JWT_SECRET`
+
 ---
 
 ## API Routes
 
 | Route | Méthode | Description |
 |-------|---------|-------------|
-| `/api/auth/session` | POST/DELETE | Gestion session JWT (cookie HttpOnly) |
+| `/api/auth/session` | POST/DELETE | Pose/supprime le cookie de session (vérification du jeton Supabase côté serveur) |
 | `/api/generator` | GET | Génération stats/abilities d'un personnage |
 | `/api/generate-story` | POST | Génération procédurale d'aventures (titre + genre + difficulté) |
 
@@ -260,13 +271,8 @@ npm run test         # Exécuter les tests
 - GitHub: [@ismail885](https://github.com/ismail885)
 - Projet en ligne : https://dream-quest-theta.vercel.app
 
-
 ---
 
 ## Licence
 
 Projet développé dans un cadre éducatif (CDA).
-
----
-
-
