@@ -68,6 +68,15 @@ function pickN<T>(arr: T[], n: number): T[] {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, Math.min(n, arr.length));
 }
 
+function shuffle<T>(arr: T[]): T[] {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+// Element a l'index i en bouclant sur le tableau (cyclique).
+function at<T>(arr: T[], i: number): T {
+  return arr[((i % arr.length) + arr.length) % arr.length];
+}
+
 function randInt(min: number, max: number): number {
   return min + Math.floor(Math.random() * (max - min + 1));
 }
@@ -113,12 +122,12 @@ function consequence(
   genre: GenreData,
   difficulte: Difficulte,
   ctx: Ctx,
+  texteIdx: number,
   avecCombat: boolean,
   avecEvenement: boolean,
 ): ConsequenceGeneree {
-  const c: ConsequenceGeneree = {
-    texte: remplir(pick(genre.consequences[difficulte]), ctx),
-  };
+  const pool = genre.consequences[difficulte];
+  const c: ConsequenceGeneree = { texte: remplir(at(pool, texteIdx), ctx) };
   if (avecCombat) {
     const enemyId = choisirEnnemi(genre.enemyTypes, difficulte);
     if (enemyId) c.combat = { enemyId };
@@ -135,14 +144,22 @@ export function composerAventure(input: CompositionInput): AventureGeneree {
   const genre = GENRES[genreNom];
   const theme = detecterTheme(input.titre);
 
+  // Pools melanges une fois par aventure : evite les repetitions consecutives
+  // et garantit qu'on parcourt toute la variete disponible avant de boucler.
+  const scenesPool = shuffle(genre.scenes);
+  const choixPool = shuffle(genre.choix);
+  const ambiancePool = shuffle(genre.ambiances);
+  const antagonistesPool = shuffle(genre.antagonistes);
+  const decorsPool = shuffle(theme.decors);
+  const evenementsPool = shuffle(genre.evenements);
+
   const lieu = pick(theme.lieux);
-  const antagoniste = pick(genre.antagonistes);
   const ctxBase: Ctx = {
     titre: input.titre.trim(),
     lieu,
     lieuHabille: lieu,
-    decor: pick(theme.decors),
-    antagoniste,
+    decor: decorsPool[0],
+    antagoniste: antagonistesPool[0],
   };
   const lieuHabille = remplir(pick(genre.habillagesLieu), ctxBase);
   ctxBase.lieuHabille = lieuHabille;
@@ -152,8 +169,8 @@ export function composerAventure(input: CompositionInput): AventureGeneree {
   const titre = motsCount < 4 ? `${ctxBase.titre} - ${lieu}` : ctxBase.titre;
   ctxBase.titre = titre;
 
-  // Description
-  const ambiance = remplir(pick(genre.ambiances), ctxBase);
+  // Description (ambiance dediee)
+  const ambiance = remplir(at(ambiancePool, 0), ctxBase);
   const description = `${titre} - ${ambiance} Votre quete vous mene jusqu'a ${lieuHabille}. ${CLOTURE_DIFFICULTE[difficulte]}`;
 
   // Nombre de noeuds d'histoire, variable
@@ -164,43 +181,56 @@ export function composerAventure(input: CompositionInput): AventureGeneree {
 
   for (let i = 0; i < taille; i++) {
     const id = i === 0 ? "debut" : `n${i}`;
-    const decor = pick(theme.decors);
-    const ctx: Ctx = { ...ctxBase, decor };
-    const texte = remplir(pick(genre.scenes), ctx);
-    const paire = pick(genre.choix);
+
+    // Chaque noeud combine des elements differents (decor, antagoniste,
+    // ambiance, scene, paire de choix) pris dans des pools melanges et
+    // decales par des index distincts -> chaque noeud est unique.
+    const ctx: Ctx = {
+      ...ctxBase,
+      decor: at(decorsPool, i),
+      antagoniste: at(antagonistesPool, i + 1),
+    };
+
+    const ambianceNoeud = at(ambiancePool, i + 1);
+    const scene = at(scenesPool, i);
+    const texte = remplir(`${ambianceNoeud} ${scene}`, ctx);
+    const paire = at(choixPool, i);
 
     const dernier = i === taille - 1;
     const cibleA = dernier ? "fin1" : `n${i + 1}`;
     const cibleB = dernier ? "fin2" : `n${i + 1}`;
 
-    // Combats sur ~la moitie des noeuds, evenements sur l'autre, en alternance variee
-    const avecCombat = !dernier && Math.random() < 0.55;
-    const avecEvenement = Math.random() < 0.45;
+    // Combats / evenements repartis de facon variee sur le parcours
+    const avecCombat = !dernier && i % 2 === 0;
+    const avecEvenement = i % 2 === 1;
 
     const choixA: ChoixGenere = {
       libelle: remplir(paire[0], ctx),
       cible: cibleA,
-      consequence: consequence(genre, difficulte, ctx, avecCombat, false),
+      consequence: consequence(genre, difficulte, ctx, i, avecCombat, false),
     };
     const choixB: ChoixGenere = {
       libelle: remplir(paire[1], ctx),
       cible: cibleB,
-      consequence: consequence(genre, difficulte, ctx, false, avecEvenement),
+      consequence: consequence(genre, difficulte, ctx, i + 1, false, avecEvenement),
     };
+    if (choixB.consequence.evenement) {
+      choixB.consequence.evenement = { type: at(evenementsPool, i) };
+    }
 
     noeuds.push({ id, texte, fin: false, choix: [choixA, choixB] });
   }
 
-  // Deux fins
+  // Deux fins distinctes
   noeuds.push({
     id: "fin1",
-    texte: remplir(pick(FIN_TRIOMPHE), ctxBase),
+    texte: remplir(at(FIN_TRIOMPHE, 0), { ...ctxBase, antagoniste: antagonistesPool[0] }),
     fin: true,
     choix: [],
   });
   noeuds.push({
     id: "fin2",
-    texte: remplir(pick(FIN_AMERE), ctxBase),
+    texte: remplir(at(FIN_AMERE, 0), ctxBase),
     fin: true,
     choix: [],
   });

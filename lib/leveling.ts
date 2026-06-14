@@ -127,6 +127,19 @@ export function getPrestigeTitle(bestLevel: number): string {
   return "Apprenti Aventurier";
 }
 
+// Nombre de paliers de prestige franchis (0 = Apprenti, 7 = Legende Vivante).
+// Sert de compteur de "trophees" : une distinction par palier de saison atteint.
+export function getPrestigeTier(bestLevel: number): number {
+  if (bestLevel >= 100) return 7;
+  if (bestLevel >= 85) return 6;
+  if (bestLevel >= 70) return 5;
+  if (bestLevel >= 55) return 4;
+  if (bestLevel >= 40) return 3;
+  if (bestLevel >= 25) return 2;
+  if (bestLevel >= 15) return 1;
+  return 0;
+}
+
 export function getXPInCurrentLevel(level: number, totalExperience: number): number {
   const atLevelStart = level > 1 ? getTotalXPForLevel(level) : 0;
   return Math.max(0, totalExperience - atLevelStart);

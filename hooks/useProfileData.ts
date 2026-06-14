@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
 import { getDailyQuests, DailyQuest } from "@/lib/dailyQuests";
 import { getCurrentSeason } from "@/lib/seasons";
+import { getPrestigeTier } from "@/lib/leveling";
 const PROFILE_REFRESH_EVENT = "profile-refresh";
 import type {
   ExtendedUserProfile,
@@ -73,15 +74,17 @@ export function useProfileData({
     trophies: 0,
   });
   const [refreshKey, setRefreshKey] = useState(0);
+  const initialLoadDone = useRef(false);
 
-  const loadData = useCallback(async (uid: number) => {
-    const cancelled = false;
-    setLoading(true);
+  const loadData = useCallback(async (uid: number, isCancelled: () => boolean) => {
+    // Loader plein écran uniquement au premier chargement ;
+    // les rafraîchissements (focus, refresh) se font en arrière-plan.
+    if (!initialLoadDone.current) setLoading(true);
     setDataError(null);
 
     try {
       const questData = await getDailyQuests(uid);
-      if (cancelled) return;
+      if (isCancelled()) return;
       setDailyQuests(questData.quests);
 
       const { data: profileData } = await supabase
@@ -92,7 +95,7 @@ export function useProfileData({
 
       const season = getCurrentSeason();
 
-      if (cancelled) return;
+      if (isCancelled()) return;
       if (profileData) {
         setUserProfile({
           id: profileData.id,
@@ -181,7 +184,7 @@ export function useProfileData({
             status: (save.progression ?? 0) >= 100 ? "completed" as const : "in-progress" as const,
           };
         });
-        if (cancelled) return;
+        if (isCancelled()) return;
         setUserSaves(formattedSaves);
       } else {
         setUserSaves([]);
@@ -196,7 +199,7 @@ export function useProfileData({
         console.error("Erreur chargement créations:", creationsError);
       }
 
-      if (cancelled) return;
+      if (isCancelled()) return;
       if (creationsData && creationsData.length > 0) {
         setUserCreations(
           creationsData.map(
@@ -221,7 +224,7 @@ export function useProfileData({
         .select("*")
         .eq("id_utilisateur", uid);
 
-      if (cancelled) return;
+      if (isCancelled()) return;
       if (charactersData && charactersData.length > 0) {
         const formattedCharacters: Character[] = charactersData.map(
           (c: RawCharacter) => ({
@@ -240,12 +243,12 @@ export function useProfileData({
         setUserCharacters([]);
       }
 
-      if (cancelled) return;
+      if (isCancelled()) return;
       setStats({
         storiesPlayed: savesData?.length || 0,
         storiesCreated: creationsData?.length || 0,
         likes: votesCount || 0,
-        trophies: 0,
+        trophies: getPrestigeTier(profileData?.meilleur_niveau ?? profileData?.niveau ?? 1),
       });
 
       const achievements = calculateAchievements({
@@ -257,11 +260,14 @@ export function useProfileData({
           creationsData?.reduce((sum, c) => sum + (c.popularite || 0), 0) || 0,
         level: profileData?.niveau || 1,
       });
-      if (!cancelled) setUserAchievements(achievements);
+      if (!isCancelled()) setUserAchievements(achievements);
     } catch {
-      if (!cancelled) setDataError("Impossible de charger vos données. Réessayez plus tard.");
+      if (!isCancelled()) setDataError("Impossible de charger vos données. Réessayez plus tard.");
     } finally {
-      if (!cancelled) setLoading(false);
+      if (!isCancelled()) {
+        initialLoadDone.current = true;
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -271,7 +277,11 @@ export function useProfileData({
 
   useEffect(() => {
     if (!userId || !enabled) return;
-    loadData(userId);
+    let cancelled = false;
+    loadData(userId, () => cancelled);
+    return () => {
+      cancelled = true;
+    };
   }, [userId, enabled, refreshKey, loadData]);
 
   useEffect(() => {
