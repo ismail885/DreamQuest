@@ -45,7 +45,7 @@ const AdventureCard = React.memo(function AdventureCard({
       if (isNaN(userId)) return;
       const { data } = await supabase
         .from("vote")
-        .select("id_vote")
+        .select("id")
         .eq("id_utilisateur", userId)
         .eq("id_aventure", id)
         .maybeSingle();

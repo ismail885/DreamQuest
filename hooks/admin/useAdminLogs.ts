@@ -28,17 +28,17 @@ export function useAdminLogs() {
         await Promise.all([
           supabase
             .from("utilisateur")
-            .select("id_utilisateur, nom_utilisateur, date_creation")
+            .select("id, nom_utilisateur, date_creation")
             .order("date_creation", { ascending: false })
             .limit(20),
           supabase
             .from("aventure")
-            .select("id_aventure, titre, date_creation, auteur_id")
+            .select("id, titre, date_creation, auteur_id")
             .order("date_creation", { ascending: false })
             .limit(20),
           supabase
             .from("vote")
-            .select("id_vote, date_vote, id_utilisateur, id_aventure")
+            .select("id, date_vote, id_utilisateur, id_aventure")
             .order("date_vote", { ascending: false })
             .limit(20),
           supabase
@@ -57,10 +57,10 @@ export function useAdminLogs() {
       ];
       const { data: authors } = await supabase
         .from("utilisateur")
-        .select("id_utilisateur, nom_utilisateur")
-        .in("id_utilisateur", authorIds);
+        .select("id, nom_utilisateur")
+        .in("id", authorIds);
       const authorMap = new Map(
-        (authors || []).map((a) => [a.id_utilisateur, a.nom_utilisateur]),
+        (authors || []).map((a) => [a.id, a.nom_utilisateur]),
       );
 
       const voteUserIds = [
@@ -72,17 +72,17 @@ export function useAdminLogs() {
       ];
       const { data: voteUsers } = await supabase
         .from("utilisateur")
-        .select("id_utilisateur, nom_utilisateur")
-        .in("id_utilisateur", voteUserIds);
+        .select("id, nom_utilisateur")
+        .in("id", voteUserIds);
       const voteUserMap = new Map(
-        (voteUsers || []).map((u) => [u.id_utilisateur, u.nom_utilisateur]),
+        (voteUsers || []).map((u) => [u.id, u.nom_utilisateur]),
       );
 
       const logEntries: LogEntry[] = [];
 
       (usersRes.data || []).forEach((user) => {
         logEntries.push({
-          id: `user-${user.id_utilisateur}`,
+          id: `user-${user.id}`,
           type: "inscription",
           description: "Nouvel utilisateur inscrit",
           userName: user.nom_utilisateur,
@@ -92,7 +92,7 @@ export function useAdminLogs() {
 
       (adventuresRes.data || []).forEach((adventure) => {
         logEntries.push({
-          id: `adventure-${adventure.id_aventure}`,
+          id: `adventure-${adventure.id}`,
           type: "aventure_creee",
           description: "Nouvelle aventure créée",
           userName: adventure.auteur_id
@@ -105,7 +105,7 @@ export function useAdminLogs() {
 
       (votesRes.data || []).forEach((vote) => {
         logEntries.push({
-          id: `vote-${vote.id_vote}`,
+          id: `vote-${vote.id}`,
           type: "vote",
           description: "Nouveau vote",
           userName: voteUserMap.get(vote.id_utilisateur),

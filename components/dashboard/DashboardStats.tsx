@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { UserStats } from "@/hooks/useDashboardData";
+import { getLevelFromXP, getXPInCurrentLevel, getXPForNextLevel } from "@/lib/leveling";
 
 interface DashboardStatsProps {
   stats: UserStats;
@@ -129,15 +130,16 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
             className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 hover:border-violet-400/50 rounded-xl md:rounded-2xl p-4 md:p-6 transition-colors duration-300 cursor-default"
           >
             <div className="text-2xl md:text-3xl font-bold text-violet-400 mb-1 md:mb-2">
-              {stats.userLevel}
+              {getLevelFromXP(stats.userXp)}
             </div>
             <div className="text-gray-300 text-xs md:text-sm mb-3">Niveau utilisateur</div>
 
             {/* Barre de progression XP */}
             {(() => {
-              const currentXp = stats.userXp;
-              const currentLevel = stats.userLevel;
-              const xpForNext = Math.floor(80 * Math.pow(1.35, currentLevel - 1));
+              const totalXp = stats.userXp;
+              const currentLevel = getLevelFromXP(totalXp);
+              const currentXp = getXPInCurrentLevel(currentLevel, totalXp);
+              const xpForNext = getXPForNextLevel(currentLevel);
               const progress = xpForNext > 0 ? Math.min((currentXp / xpForNext) * 100, 100) : 0;
               return (
                 <div className="space-y-1">

@@ -87,7 +87,7 @@ export function useVote({
  const { error: insertError } = await supabase
  .from('vote')
  .insert({ id_utilisateur: userId, id_aventure: adventureId });
- if (insertError) throw insertError;
+ if (insertError && insertError.code !== '23505') throw insertError;
 
  const { error: rpcError } = await supabase
  .rpc('incrementer_popularite', { aventure_id: adventureId });

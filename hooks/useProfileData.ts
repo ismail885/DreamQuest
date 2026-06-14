@@ -216,7 +216,7 @@ export function useProfileData({
 
       const { count: votesCount } = await supabase
         .from("vote")
-        .select("id_vote", { count: "exact" })
+        .select("id", { count: "exact" })
         .eq("id_utilisateur", uid);
 
       const { data: charactersData } = await supabase

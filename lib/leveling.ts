@@ -140,6 +140,14 @@ export function getPrestigeTier(bestLevel: number): number {
   return 0;
 }
 
+export function getLevelFromXP(totalExperience: number): number {
+  let level = 1;
+  while (level < MAX_LEVEL && totalExperience >= getTotalXPForLevel(level + 1)) {
+    level++;
+  }
+  return level;
+}
+
 export function getXPInCurrentLevel(level: number, totalExperience: number): number {
   const atLevelStart = level > 1 ? getTotalXPForLevel(level) : 0;
   return Math.max(0, totalExperience - atLevelStart);
