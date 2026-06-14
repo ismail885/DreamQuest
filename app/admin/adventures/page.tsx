@@ -57,7 +57,7 @@ export default function AdminAdventuresPage() {
       const { error } = await supabase
         .from("aventure")
         .delete()
-        .eq("id_aventure", aventureId);
+        .eq("id", aventureId);
 
       if (error) throw error;
       setDeleteConfirm(null);

@@ -71,7 +71,16 @@ export function getGenreImage(
   return `https://loremflickr.com/${width}/${height}/${keywords}?lock=${seed}`;
 }
 
-/** Image de secours garantie (Lorem Picsum, gratuit) si l'image principale echoue. */
+/** Image de secours instantanee : degrade SVG inline (data-URI), aucun reseau requis. */
 export function getFallbackImage(seed: number, width = 600, height = 300): string {
-  return `https://picsum.photos/seed/dq${seed}/${width}/${height}`;
+  const h1 = (seed * 47) % 360;
+  const h2 = (h1 + 40) % 360;
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'>` +
+    `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>` +
+    `<stop offset='0' stop-color='hsl(${h1},55%,22%)'/>` +
+    `<stop offset='1' stop-color='hsl(${h2},60%,12%)'/>` +
+    `</linearGradient></defs>` +
+    `<rect width='100%' height='100%' fill='url(#g)'/></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }

@@ -50,14 +50,11 @@ export function useAdminCharacters() {
       ];
       const { data: users } = await supabase
         .from("utilisateur")
-        .select("id_utilisateur, nom_utilisateur")
-        .in("id_utilisateur", userIds);
+        .select("id, nom_utilisateur")
+        .in("id", userIds);
 
       const userMap = new Map(
-        (users || []).map((u) => [
-          u.id_utilisateur,
-          u.nom_utilisateur,
-        ]),
+        (users || []).map((u) => [u.id, u.nom_utilisateur]),
       );
 
       const charactersWithUser = (data || []).map((c) => ({
@@ -82,7 +79,7 @@ export function useAdminCharacters() {
 
   const handleDelete = async (characterId: number) => {
     try {
-      await supabase.from("sauvegarde").delete().eq("id", characterId);
+      await supabase.from("sauvegarde").delete().eq("id_personnage", characterId);
 
       const { error } = await supabase
         .from("personnage")
