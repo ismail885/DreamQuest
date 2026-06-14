@@ -2,11 +2,14 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { useAuthContext } from "@/context/AuthContext";
 import { User, UserRole } from "@/types";
 
 const ITEMS_PER_PAGE = 10;
 
 export function useAdminUsers() {
+  const { user: currentUser } = useAuthContext();
+  const currentAdminId = currentUser ? Number(currentUser.id) : null;
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,9 +47,11 @@ export function useAdminUsers() {
           currentPage * ITEMS_PER_PAGE - 1,
         );
 
-      if (searchTerm) {
+      // Assainit le terme : retire les caracteres qui cassent la syntaxe du filtre PostgREST
+      const safeSearch = searchTerm.replace(/[%,()\\]/g, " ").trim();
+      if (safeSearch) {
         query = query.or(
-          `nom_utilisateur.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`,
+          `nom_utilisateur.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%`,
         );
       }
 
@@ -90,25 +95,42 @@ export function useAdminUsers() {
     setSelectedUsers(newSelected);
   };
 
+  // Supprime un utilisateur et toutes ses donnees liees (ordre FK-safe).
+  const deleteUserCascade = async (userId: number) => {
+    const { data: advs } = await supabase
+      .from("aventure")
+      .select("id")
+      .eq("auteur_id", userId);
+    const advIds = (advs || []).map((a) => a.id);
+    if (advIds.length > 0) {
+      await supabase.from("embranchement").delete().in("id_aventure", advIds);
+      await supabase.from("vote").delete().in("id_aventure", advIds);
+      await supabase.from("sauvegarde").delete().in("id_aventure", advIds);
+      await supabase.from("aventure").delete().in("id", advIds);
+    }
+    await supabase.from("vote").delete().eq("id_utilisateur", userId);
+    await supabase.from("sauvegarde").delete().eq("id_utilisateur", userId);
+    await supabase.from("quete_quotidienne").delete().eq("id_utilisateur", userId);
+    await supabase.from("parametre_utilisateur").delete().eq("id_utilisateur", userId);
+    await supabase.from("personnage").delete().eq("id_utilisateur", userId);
+    await supabase.from("utilisateur").delete().eq("id", userId);
+  };
+
   const handleBulkDelete = async () => {
+    const ids = [...selectedUsers].filter((id) => id !== currentAdminId);
+    if (ids.length === 0) {
+      setActionError("Vous ne pouvez pas supprimer votre propre compte administrateur.");
+      return;
+    }
     if (
       !confirm(
-        `Supprimer ${selectedUsers.size} utilisateurs ? Cette action est irréversible.`,
+        `Supprimer ${ids.length} utilisateur(s) ? Cette action est irréversible.`,
       )
     )
       return;
     try {
-      for (const userId of selectedUsers) {
-        await supabase.from("vote").delete().eq("id_utilisateur", userId);
-        await supabase
-          .from("sauvegarde")
-          .delete()
-          .eq("id_utilisateur", userId);
-        await supabase
-          .from("personnage")
-          .delete()
-          .eq("id_utilisateur", userId);
-        await supabase.from("utilisateur").delete().eq("id", userId);
+      for (const userId of ids) {
+        await deleteUserCascade(userId);
       }
       setSelectedUsers(new Set());
       fetchUsers();
@@ -119,6 +141,10 @@ export function useAdminUsers() {
   };
 
   const handleBulkRoleChange = async (newRole: UserRole) => {
+    if (currentAdminId && selectedUsers.has(currentAdminId) && newRole !== "admin") {
+      setActionError("Vous ne pouvez pas retirer votre propre rôle administrateur.");
+      return;
+    }
     try {
       for (const userId of selectedUsers) {
         await supabase
@@ -159,6 +185,10 @@ export function useAdminUsers() {
     e.preventDefault();
     try {
       if (editingUser) {
+        if (currentAdminId && editingUser.id === currentAdminId && formData.role !== "admin") {
+          setActionError("Vous ne pouvez pas retirer votre propre rôle administrateur.");
+          return;
+        }
         const { error } = await supabase
           .from("utilisateur")
           .update({
@@ -184,23 +214,13 @@ export function useAdminUsers() {
   };
 
   const handleDelete = async (userId: number) => {
+    if (currentAdminId && userId === currentAdminId) {
+      setActionError("Vous ne pouvez pas supprimer votre propre compte administrateur.");
+      setDeleteConfirm(null);
+      return;
+    }
     try {
-      await supabase.from("vote").delete().eq("id_utilisateur", userId);
-      await supabase
-        .from("sauvegarde")
-        .delete()
-        .eq("id_utilisateur", userId);
-      await supabase
-        .from("personnage")
-        .delete()
-        .eq("id_utilisateur", userId);
-
-      const { error } = await supabase
-        .from("utilisateur")
-        .delete()
-        .eq("id", userId);
-
-      if (error) throw error;
+      await deleteUserCascade(userId);
       setDeleteConfirm(null);
       fetchUsers();
     } catch (error) {

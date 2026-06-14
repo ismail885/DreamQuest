@@ -16,7 +16,7 @@ export default function AdminRoleDistribution({
   ];
 
   return (
-    <div className="bg-surface border border-gray-800 rounded-xl p-6">
+    <div className="card-base p-6">
       <h2 className="text-xl font-bold text-white mb-6">
         Distribution des rôles
       </h2>
@@ -32,7 +32,7 @@ export default function AdminRoleDistribution({
                 <span className="text-gray-400 text-sm">{item.role}</span>
                 <span className="text-white font-medium">{item.count}</span>
               </div>
-              <div className="w-full bg-gray-800 rounded-full h-2">
+              <div className="w-full bg-white/10 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full ${item.color}`}
                   style={{ width: `${percentage}%` }}

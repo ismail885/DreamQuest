@@ -38,8 +38,8 @@ export default function CharacterViewModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface border border-gray-800 rounded-xl w-full max-w-lg">
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
+      <div className="card-base w-full max-w-lg">
+        <div className="flex items-center justify-between p-6 border-b border-cyan-500/15">
           <h2 className="text-xl font-bold text-white">
             {character.nom_personnage}
           </h2>
@@ -66,7 +66,7 @@ export default function CharacterViewModal({
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-900/50 rounded-lg">
+          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-900/50 rounded-card">
             <div>
               <label className="text-gray-400 text-xs">Force</label>
               <p className="text-white font-bold">
@@ -109,7 +109,7 @@ export default function CharacterViewModal({
                   {Math.round(hpPercent)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-800 rounded-full h-2">
+              <div className="w-full bg-white/10 rounded-full h-2">
                 <div
                   className="bg-green-500 h-2 rounded-full transition-all"
                   style={{ width: `${hpPercent}%` }}

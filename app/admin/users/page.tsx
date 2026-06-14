@@ -42,7 +42,7 @@ export default function AdminUsersPage() {
  setSearchTerm(e.target.value);
  setCurrentPage(1);
  }}
- className="w-full pl-12 pr-10 py-3 bg-surface border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+ className="w-full pl-12 pr-10 py-3 card-base text-white placeholder:text-gray-400 focus:outline-none focus:border-primary"
  />
  {searchTerm && (
  <button
@@ -60,7 +60,7 @@ export default function AdminUsersPage() {
 
  {/* Error toast */}
  {actionError && (
- <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+ <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-card">
  <span className="text-red-400 text-sm flex-1">{actionError}</span>
  <button onClick={() => setActionError(null)} className="text-red-400 hover:text-red-300">
  <X className="w-4 h-4" />
@@ -70,30 +70,30 @@ export default function AdminUsersPage() {
 
       {/* Bulk Actions Bar */}
       {selectedUsers.size > 0 && (
-        <div className="flex flex-wrap items-center gap-3 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+        <div className="flex flex-wrap items-center gap-3 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-card">
           <span className="text-white font-medium whitespace-nowrap">{selectedUsers.size} sélectionné{selectedUsers.size > 1 ? "s" : ""}</span>
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={() => handleBulkRoleChange("joueur")}
-              className="px-2.5 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 text-xs sm:text-sm"
+              className="px-2.5 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-card hover:bg-cyan-500/30 text-xs sm:text-sm"
             >
               Joueur
             </button>
             <button
               onClick={() => handleBulkRoleChange("createur")}
-              className="px-2.5 py-1.5 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 text-xs sm:text-sm"
+              className="px-2.5 py-1.5 bg-purple-500/20 text-purple-400 rounded-card hover:bg-purple-500/30 text-xs sm:text-sm"
             >
               Créateur
             </button>
             <button
               onClick={() => handleBulkRoleChange("admin")}
-              className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-xs sm:text-sm"
+              className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-card hover:bg-red-500/30 text-xs sm:text-sm"
             >
               Admin
             </button>
             <button
               onClick={handleBulkDelete}
-              className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 text-xs sm:text-sm"
+              className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-card hover:bg-red-500/30 text-xs sm:text-sm"
             >
               Supprimer
             </button>

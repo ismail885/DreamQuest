@@ -79,7 +79,7 @@ export default function AdminLogList({
   entries,
 }: AdminLogListProps) {
   return (
-    <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
+    <div className="card-base overflow-hidden">
       {loading ? (
         <div className="p-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500 mx-auto" />
@@ -93,12 +93,12 @@ export default function AdminLogList({
           {entries.map((log) => (
             <div
               key={log.id}
-              className="p-4 hover:bg-gray-800/30 transition-colors"
+              className="p-4 hover:bg-cyan-500/10/30 transition-colors"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <div
-                    className={`p-2 rounded-lg ${getTypeColor(log.type)}`}
+                    className={`p-2 rounded-card ${getTypeColor(log.type)}`}
                   >
                     {getTypeIcon(log.type)}
                   </div>

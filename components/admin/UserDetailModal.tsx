@@ -22,8 +22,8 @@ export default function UserDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface border border-gray-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-surface">
+      <div className="card-base w-full max-w-lg max-h-[80vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-cyan-500/15 sticky top-0 bg-surface">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold text-lg">
               {user.nom_utilisateur.substring(0, 2).toUpperCase()}
@@ -41,13 +41,13 @@ export default function UserDetailModal({
         </div>
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-900/50 rounded-lg">
+            <div className="p-4 bg-gray-900/50 rounded-card">
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
                 Role
               </p>
               <p className="text-white font-medium">{user.role}</p>
             </div>
-            <div className="p-4 bg-gray-900/50 rounded-lg">
+            <div className="p-4 bg-gray-900/50 rounded-card">
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
                 Inscription
               </p>
@@ -71,7 +71,7 @@ export default function UserDetailModal({
                 {characters.map((c) => (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-gray-900/50 rounded-card"
                   >
                     <div>
                       <span className="text-white font-medium">
@@ -90,7 +90,7 @@ export default function UserDetailModal({
             )}
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-gray-900/50 rounded-lg">
+          <div className="flex items-center gap-3 p-4 bg-gray-900/50 rounded-card">
             <BookOpen className="w-5 h-5 text-purple-400" />
             <span className="text-gray-400">
               {savesCount} sauvegarde{savesCount !== 1 ? "s" : ""}

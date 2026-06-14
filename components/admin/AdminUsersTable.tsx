@@ -65,7 +65,7 @@ export default function AdminUsersTable({
   setCurrentPage,
 }: AdminUsersTableProps) {
   return (
-    <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
+    <div className="card-base overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-900/50">
@@ -122,7 +122,7 @@ export default function AdminUsersTable({
               users.map((user) => (
                 <tr
                   key={user.id}
-                  className="hover:bg-gray-800/30 transition-colors"
+                  className="hover:bg-cyan-500/10/30 transition-colors"
                 >
                   <td className="px-2 sm:px-4 py-4">
                     <button
@@ -165,21 +165,21 @@ export default function AdminUsersTable({
                     <div className="flex items-center justify-end gap-1 sm:gap-2">
                       <button
                         onClick={() => openModal(user)}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
                         title="Modifier"
                       >
                         <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => loadUserDetails(user)}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
                         title="Voir details"
                       >
                         <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(user.id)}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-card transition-colors"
                         title="Supprimer"
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -194,7 +194,7 @@ export default function AdminUsersTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-gray-800">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-cyan-500/15">
           <p className="text-gray-400 text-xs sm:text-sm">
             {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-
             {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
@@ -213,10 +213,10 @@ export default function AdminUsersTable({
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm ${
+                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-card text-xs sm:text-sm ${
                     currentPage === page
                       ? "bg-cyan-500 text-white"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800"
+                      : "text-gray-400 hover:text-white hover:bg-cyan-500/10"
                   }`}
                 >
                   {page}

@@ -38,13 +38,13 @@ export default function AdminCharactersPage() {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-12 pr-4 py-3 bg-surface border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+          className="w-full pl-12 pr-4 py-3 card-base text-white placeholder:text-gray-400 focus:outline-none focus:border-primary"
         />
       </div>
 
       {/* Error toast */}
       {actionError && (
-        <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+        <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-card">
           <span className="text-red-400 text-sm flex-1">{actionError}</span>
           <button onClick={() => setActionError(null)} className="text-red-400 hover:text-red-300">
             <X className="w-4 h-4" />

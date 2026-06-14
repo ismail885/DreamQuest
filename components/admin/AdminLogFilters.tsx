@@ -25,10 +25,10 @@ export default function AdminLogFilters({ filter, onFilterChange }: AdminLogFilt
         <button
           key={f.key}
           onClick={() => onFilterChange(f.key)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-card text-sm font-medium transition-colors ${
             filter === f.key
               ? `${f.activeColor || getActiveBg(f.key)} text-white`
-              : "bg-surface border border-gray-800 text-gray-400 hover:text-white"
+              : "bg-surface border border-cyan-500/15 text-gray-400 hover:text-white"
           }`}
         >
           {f.label}

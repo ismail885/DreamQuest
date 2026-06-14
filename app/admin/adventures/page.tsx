@@ -78,7 +78,7 @@ export default function AdminAdventuresPage() {
         </div>
         <a
           href="/create-adventure"
-          className="self-start px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors text-sm sm:text-base whitespace-nowrap"
+          className="self-start px-5 py-2.5 bg-gradient-to-r from-primary to-blue-500 hover:shadow-glow text-white font-medium rounded-card transition-colors text-sm sm:text-base whitespace-nowrap"
         >
           + Nouvelle aventure
         </a>
@@ -95,13 +95,13 @@ export default function AdminAdventuresPage() {
  setSearchTerm(e.target.value);
  setCurrentPage(1);
  }}
- className="w-full pl-12 pr-4 py-3 bg-surface border border-gray-800 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-cyan-500"
+ className="w-full pl-12 pr-4 py-3 card-base text-white placeholder:text-gray-400 focus:outline-none focus:border-primary"
  />
  </div>
 
  {/* Error toast */}
  {actionError && (
- <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+ <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-card">
  <span className="text-red-400 text-sm flex-1">{actionError}</span>
  <button onClick={() => setActionError(null)} className="text-red-400 hover:text-red-300">
  <X className="w-4 h-4" />
@@ -110,7 +110,7 @@ export default function AdminAdventuresPage() {
  )}
 
  {/* Table */}
- <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
+ <div className="card-base overflow-hidden">
  <div className="overflow-x-auto">
  <table className="w-full">
           <thead className="bg-gray-900/50">
@@ -137,10 +137,10 @@ export default function AdminAdventuresPage() {
  </tr>
  ) : (
               adventures.map((adventure) => (
-                <tr key={adventure.id} className="hover:bg-gray-800/30 transition-colors">
+                <tr key={adventure.id} className="hover:bg-cyan-500/10/30 transition-colors">
                   <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-card bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                         <Star className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                       </div>
                       <span className="text-white font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">{adventure.titre}</span>
@@ -162,14 +162,14 @@ export default function AdminAdventuresPage() {
                     <div className="flex items-center justify-end gap-1 sm:gap-2">
                       <button
                         onClick={() => setViewAdventure(adventure)}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
                         title="Voir"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(adventure.id)}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-card transition-colors"
                         title="Supprimer"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -185,7 +185,7 @@ export default function AdminAdventuresPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-gray-800">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-cyan-500/15">
           <p className="text-gray-400 text-xs sm:text-sm">
             {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
           </p>
@@ -203,10 +203,10 @@ export default function AdminAdventuresPage() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm ${
+                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-card text-xs sm:text-sm ${
                     currentPage === page
                       ? "bg-cyan-500 text-white"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800"
+                      : "text-gray-400 hover:text-white hover:bg-cyan-500/10"
                   }`}
                 >
                   {page}
@@ -228,8 +228,8 @@ export default function AdminAdventuresPage() {
  {/* View Modal */}
  {viewAdventure && (
  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <div className="bg-surface border border-gray-800 rounded-xl w-full max-w-lg">
- <div className="flex items-center justify-between p-6 border-b border-gray-800 ">
+ <div className="card-base w-full max-w-lg">
+ <div className="flex items-center justify-between p-6 border-b border-cyan-500/15 ">
  <h2 className="text-xl font-bold text-white ">{viewAdventure.titre}</h2>
  <button onClick={() => setViewAdventure(null)} className="text-gray-400 hover:text-white">
  <X className="w-5 h-5" />
@@ -266,7 +266,7 @@ export default function AdminAdventuresPage() {
  <div className="p-6 pt-0">
  <a
  href={`/adventure/${viewAdventure.id}`}
- className="block w-full px-4 py-3 bg-cyan-500 text-white text-center rounded-lg hover:bg-cyan-600 transition-colors"
+ className="block w-full px-4 py-3 bg-cyan-500 text-white text-center rounded-card hover:bg-cyan-600 transition-colors"
  >
  Voir l&apos;aventure
  </a>
@@ -278,7 +278,7 @@ export default function AdminAdventuresPage() {
  {/* Delete Confirmation Modal */}
  {deleteConfirm && (
  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <div className="bg-surface border border-gray-800 rounded-xl w-full max-w-sm">
+ <div className="card-base w-full max-w-sm">
  <div className="p-6 text-center">
  <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
  <Trash2 className="w-8 h-8 text-red-400" />
@@ -291,13 +291,13 @@ export default function AdminAdventuresPage() {
  <div className="flex gap-3 p-6 pt-0">
  <button
  onClick={() => setDeleteConfirm(null)}
- className="flex-1 px-4 py-3 border border-gray-700 text-gray-400 rounded-lg hover:bg-gray-800 transition-colors"
+ className="flex-1 px-4 py-3 border border-cyan-500/15 text-gray-400 rounded-card hover:bg-cyan-500/10 transition-colors"
  >
  Annuler
  </button>
  <button
  onClick={() => handleDelete(deleteConfirm)}
- className="flex-1 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+ className="flex-1 px-4 py-3 bg-red-500 text-white rounded-card hover:bg-red-600 transition-colors"
  >
  Supprimer
  </button>

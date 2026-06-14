@@ -34,7 +34,7 @@ export default function AdminDashboard() {
           <p className="text-gray-400">{error}</p>
           <button
             onClick={() => fetchStats(true)}
-            className="mt-6 px-6 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
+            className="mt-6 px-6 py-2.5 bg-gradient-to-r from-primary to-blue-500 hover:shadow-glow text-white font-medium rounded-card transition-colors"
           >
             Réessayer
           </button>
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
           <p className="text-gray-400 mt-1 sm:mt-2">Vue d&apos;ensemble de votre application</p>
         </div>
         <div className="flex items-center gap-3 self-start sm:self-auto">
-          <div className="flex items-center gap-2 px-3 py-2 bg-surface border border-gray-800 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-2 card-base">
             {isLive ? (
               <Wifi className="w-4 h-4 text-green-400" />
             ) : (
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => fetchStats(true)}
             disabled={isRefreshing}
-            className="p-2 bg-surface border border-gray-800 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="p-2 card-base hover:bg-cyan-500/10 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 text-gray-400 ${isRefreshing ? "animate-spin" : ""}`} />
           </button>
@@ -87,22 +87,22 @@ export default function AdminDashboard() {
         <AdminRoleDistribution stats={stats} />
 
         {/* Quick Actions */}
-        <div className="bg-surface border border-gray-800 rounded-xl p-6">
+        <div className="card-base p-6">
           <h2 className="text-xl font-bold text-white mb-6">Actions rapides</h2>
           <div className="grid grid-cols-2 gap-4">
-            <a href="/admin/users" className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center">
+            <a href="/admin/users" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
               <Users className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
               <span className="text-gray-400 text-sm">Gérer utilisateurs</span>
             </a>
-            <a href="/admin/adventures" className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center">
+            <a href="/admin/adventures" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
               <BookOpen className="w-8 h-8 text-purple-400 mx-auto mb-2" />
               <span className="text-gray-400 text-sm">Gérer aventures</span>
             </a>
-            <a href="/admin/characters" className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center">
+            <a href="/admin/characters" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
               <UserRound className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
               <span className="text-gray-400 text-sm">Gérer personnages</span>
             </a>
-            <a href="/dashboard" className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all text-center">
+            <a href="/dashboard" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
               <Activity className="w-8 h-8 text-amber-400 mx-auto mb-2" />
               <span className="text-gray-400 text-sm">Voir le site</span>
             </a>
@@ -111,11 +111,11 @@ export default function AdminDashboard() {
       </div>
 
       {/* System Info */}
-      <div className="bg-surface border border-gray-800 rounded-xl p-6">
+      <div className="card-base p-6">
         <h2 className="text-xl font-bold text-white mb-4">Informations système</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-500/10 rounded-lg">
+            <div className="p-3 bg-green-500/10 rounded-card">
               <Activity className="w-5 h-5 text-green-400" />
             </div>
             <div>
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-cyan-500/10 rounded-lg">
+            <div className="p-3 bg-cyan-500/10 rounded-card">
               <Calendar className="w-5 h-5 text-cyan-400" />
             </div>
             <div>
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-purple-500/10 rounded-lg">
+            <div className="p-3 bg-purple-500/10 rounded-card">
               <TrendingUp className="w-5 h-5 text-purple-400" />
             </div>
             <div>

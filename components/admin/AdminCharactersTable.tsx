@@ -50,7 +50,7 @@ export default function AdminCharactersTable({
   setCurrentPage,
 }: AdminCharactersTableProps) {
   return (
-    <div className="bg-surface border border-gray-800 rounded-xl overflow-hidden">
+    <div className="card-base overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-900/50">
@@ -78,10 +78,10 @@ export default function AdminCharactersTable({
               </tr>
             ) : (
               characters.map((character) => (
-                <tr key={character.id} className="hover:bg-gray-800/30 transition-colors">
+                <tr key={character.id} className="hover:bg-cyan-500/10/30 transition-colors">
                   <td className="px-3 sm:px-6 py-4">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-card bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
                         <Sword className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
                       </div>
                       <span className="text-white font-medium text-sm sm:text-base truncate max-w-[100px] sm:max-w-none">
@@ -114,14 +114,14 @@ export default function AdminCharactersTable({
                     <div className="flex items-center justify-end gap-1 sm:gap-2">
                       <button
                         onClick={() => onView(character)}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
                         title="Voir"
                       >
                         <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => character.id && onDelete(character.id)}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-card transition-colors"
                         title="Supprimer"
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -136,7 +136,7 @@ export default function AdminCharactersTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-gray-800">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-cyan-500/15">
           <p className="text-gray-400 text-xs sm:text-sm">
             {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-
             {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} sur {totalCount}
@@ -155,10 +155,10 @@ export default function AdminCharactersTable({
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm ${
+                  className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 rounded-card text-xs sm:text-sm ${
                     currentPage === page
                       ? "bg-cyan-500 text-white"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800"
+                      : "text-gray-400 hover:text-white hover:bg-cyan-500/10"
                   }`}
                 >
                   {page}

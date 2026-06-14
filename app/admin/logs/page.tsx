@@ -33,7 +33,7 @@ export default function AdminLogsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3 self-start sm:self-auto">
-          <div className="flex items-center gap-2 px-3 py-2 bg-surface border border-gray-800 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-2 card-base">
             {isLive ? (
               <Wifi className="w-4 h-4 text-green-400" />
             ) : (
@@ -51,7 +51,7 @@ export default function AdminLogsPage() {
           <button
             onClick={() => fetchLogs(true)}
             disabled={isRefreshing}
-            className="p-2 bg-surface border border-gray-800 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="p-2 card-base hover:bg-cyan-500/10 transition-colors disabled:opacity-50"
           >
             <RefreshCw
               className={`w-5 h-5 text-gray-400 ${
