@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Clock,
@@ -12,6 +12,8 @@ import {
   User,
   BookOpen,
   Users,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { UserSave } from "@/types/save";
 
@@ -70,8 +72,11 @@ function ClasseBadge({ classe }: { classe?: string }) {
   );
 }
 
+const ITEMS_PER_PAGE = 5;
+
 export default function TabStories({ saves }: TabStoriesProps) {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Regrouper les sauvegardes par aventure : chaque carte montre tous les
   // personnages qui ont sauvegardé cette histoire.
@@ -109,6 +114,12 @@ export default function TabStories({ saves }: TabStoriesProps) {
     return Array.from(map.values());
   }, [saves]);
 
+  const totalPages = Math.ceil(groupedSaves.length / ITEMS_PER_PAGE);
+  const paginatedSaves = groupedSaves.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
   if (groupedSaves.length === 0) {
     return (
       <div className="text-center py-12">
@@ -133,7 +144,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
 
   return (
     <div className="space-y-3">
-      {groupedSaves.map((group) => {
+      {paginatedSaves.map((group) => {
         const characterCount = group.saves.length;
         const characterNames = group.saves.map((s) => s.personnage_nom).filter(Boolean).join(", ");
         return (
@@ -239,6 +250,45 @@ export default function TabStories({ saves }: TabStoriesProps) {
           </div>
         );
       })}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <span className="text-xs text-gray-500">
+            Page {currentPage} / {totalPages} &middot; {groupedSaves.length} histoires
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-1.5 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-7 h-7 text-xs rounded-lg border transition-all ${
+                  page === currentPage
+                    ? "border-cyan-500/60 bg-cyan-500/20 text-cyan-300 font-semibold"
+                    : "border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-1.5 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
