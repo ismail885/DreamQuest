@@ -7,32 +7,46 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-test:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Recuperation du code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Installation de Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
+
+      - name: Installation des dependances
         run: npm install
 
-      - name: Run ESLint
+      - name: Lint (ESLint)
         run: npm run lint
 
-      - name: Run tests
-        run: npm run test
+      - name: Verification des types
+        run: npx tsc --noEmit
 
-      - name: Build project
+      - name: Tests unitaires
+        run: npx jest tests/lib --ci
+
+      - name: Tests d'integration
+        run: npx jest tests/integration --ci
+
+      - name: Build de l'application (front + API)
         run: npm run build
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Build de l'image Docker
+        run: |
+          docker build -f docker/Dockerfile \
+            --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
+            -t dreamquest:ci .

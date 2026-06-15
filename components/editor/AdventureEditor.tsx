@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
 import { updateQuestProgress } from "@/lib/dailyQuests";
+import { createAdventureSchema } from "@/lib/validation/schemas";
 import { useAuthContext } from "@/context/AuthContext";
 import {
   ChevronLeft, ChevronRight, Wand2, Send, Plus, Trash2,
@@ -318,6 +319,20 @@ export default function AdventureEditor() {
     const debutNode = nodes.find((nd) => nd.id === "debut") ?? nodes[0];
     if (!user || !title.trim() || !debutNode?.text.trim()) {
       setError("Un titre et le texte du noeud de debut sont requis");
+      return;
+    }
+    // Validation des saisies (Zod) avant l'enregistrement
+    const diffCanon: Record<string, string> = {
+      Facile: "facile", Normal: "normal", Difficile: "difficile", Expert: "legendaire",
+    };
+    const validation = createAdventureSchema.safeParse({
+      titre: title,
+      description: description || undefined,
+      genre: currentGenre.name.toLowerCase(),
+      difficulte: diffCanon[difficulty] ?? "normal",
+    });
+    if (!validation.success) {
+      setError(validation.error.issues[0]?.message ?? "Saisie invalide");
       return;
     }
     setSaving(true);

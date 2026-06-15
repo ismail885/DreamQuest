@@ -10,6 +10,7 @@ import {
   ABILITIES_DATA,
 } from "@/types";
 import { supabase } from "@/lib/supabaseClient";
+import { createCharacterSchema } from "@/lib/validation/schemas";
 import toast from "react-hot-toast";
 import {
   Check,
@@ -163,6 +164,17 @@ export default function CreateCharacterForm({
     }
     if (!userId) {
       setError("Utilisateur non connecte");
+      return;
+    }
+
+    // Validation des saisies (Zod) avant la creation
+    const parsed = createCharacterSchema.safeParse({
+      nom_personnage: characterName.trim(),
+      classe: classType,
+      id_utilisateur: Number(userId),
+    });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Saisie invalide");
       return;
     }
 
