@@ -111,7 +111,6 @@ export function useAdminUsers() {
     await supabase.from("vote").delete().eq("id_utilisateur", userId);
     await supabase.from("sauvegarde").delete().eq("id_utilisateur", userId);
     await supabase.from("quete_quotidienne").delete().eq("id_utilisateur", userId);
-    await supabase.from("parametre_utilisateur").delete().eq("id_utilisateur", userId);
     await supabase.from("personnage").delete().eq("id_utilisateur", userId);
     await supabase.from("utilisateur").delete().eq("id", userId);
   };

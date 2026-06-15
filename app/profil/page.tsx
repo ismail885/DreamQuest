@@ -88,19 +88,13 @@ export default function ProfilPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
 
-  const loadSettings = useCallback(async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("parametre_utilisateur")
-      .select("notifications, langue")
-      .eq("id_utilisateur", user.id)
-      .maybeSingle();
-
-    if (data) {
-      setNotifications(data.notifications ?? true);
-      if (data.langue) setLanguage(data.langue);
-    }
-  }, [user]);
+  const loadSettings = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const notif = window.localStorage.getItem("dreamquest_notifications");
+    const langue = window.localStorage.getItem("dreamquest_langue");
+    if (notif !== null) setNotifications(notif === "true");
+    if (langue) setLanguage(langue);
+  }, []);
 
   const settingsLoadedRef = useRef(false);
   useEffect(() => {
@@ -112,18 +106,9 @@ export default function ProfilPage() {
 
   const toggleNotifications = () => {
     const newVal = !notifications;
-    const prev = notifications;
     setNotifications(newVal);
-    if (user) {
-      supabase
-        .from("parametre_utilisateur")
-        .upsert(
-          { id_utilisateur: user.id, notifications: newVal },
-          { onConflict: "id_utilisateur" },
-        )
-        .then(() => {}, () => {
-          setNotifications(prev);
-        });
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("dreamquest_notifications", String(newVal));
     }
   };
 
@@ -179,13 +164,9 @@ export default function ProfilPage() {
     setSettingsMessage(null);
 
     try {
-      if (user) {
-        await supabase
-          .from("parametre_utilisateur")
-          .upsert(
-            { id_utilisateur: user.id, notifications, langue: language },
-            { onConflict: "id_utilisateur" },
-          );
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("dreamquest_notifications", String(notifications));
+        window.localStorage.setItem("dreamquest_langue", language);
       }
       setSettingsMessage({ type: "success", text: "Paramètres sauvegardés !" });
 
