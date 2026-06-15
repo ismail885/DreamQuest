@@ -65,11 +65,34 @@ const CLASSE_ICONS: Record<string, React.ReactNode> = {
 function ClasseBadge({ classe }: { classe?: string }) {
   if (!classe) return null;
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 rounded-full whitespace-nowrap">
       {CLASSE_ICONS[classe] ?? <User className="w-3.5 h-3.5" />}
       {classe}
     </span>
   );
+}
+
+/**
+ * Génère la liste des numéros de page à afficher avec des "..." pour les trous.
+ * Ex: [1, "...", 4, 5, 6, "...", 12]
+ */
+function getPageRange(
+  current: number,
+  total: number,
+  siblings = 1,
+): (number | "...")[] {
+  if (total <= 1) return [1];
+
+  const left = Math.max(2, current - siblings);
+  const right = Math.min(total - 1, current + siblings);
+  const pages: (number | "...")[] = [1];
+
+  if (left > 2) pages.push("...");
+  for (let i = left; i <= right; i++) pages.push(i);
+  if (right < total - 1) pages.push("...");
+  if (total > 1) pages.push(total);
+
+  return pages;
 }
 
 const ITEMS_PER_PAGE = 5;
@@ -78,8 +101,6 @@ export default function TabStories({ saves }: TabStoriesProps) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Regrouper les sauvegardes par aventure : chaque carte montre tous les
-  // personnages qui ont sauvegardé cette histoire.
   const groupedSaves = useMemo<AdventureGroup[]>(() => {
     const map = new Map<number, AdventureGroup>();
 
@@ -104,7 +125,6 @@ export default function TabStories({ saves }: TabStoriesProps) {
           if (save.progression > existing.maxProgression) {
             existing.maxProgression = save.progression;
           }
-          // Le groupe reste "en cours" tant qu'au moins un perso n'a pas terminé.
           if (existing.status === "completed" && save.status !== "completed") {
             existing.status = "in-progress";
           }
@@ -120,21 +140,23 @@ export default function TabStories({ saves }: TabStoriesProps) {
     currentPage * ITEMS_PER_PAGE,
   );
 
+  const pageRange = getPageRange(currentPage, totalPages);
+
   if (groupedSaves.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 px-4">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-700/50 flex items-center justify-center">
           <BookOpen className="w-8 h-8 text-gray-500" />
         </div>
         <h3 className="text-lg font-semibold text-white mb-2">
           Aucune histoire jouée
         </h3>
-        <p className="text-gray-400 mb-4">
+        <p className="text-gray-400 mb-4 text-sm">
           Commencez une aventure pour voir votre progression ici.
         </p>
         <button
           onClick={() => router.push("/dashboard")}
-          className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium rounded-lg transition-colors"
+          className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 active:scale-95 text-white font-medium rounded-lg transition-all touch-manipulation"
         >
           Découvrir les aventures
         </button>
@@ -146,22 +168,26 @@ export default function TabStories({ saves }: TabStoriesProps) {
     <div className="space-y-3">
       {paginatedSaves.map((group) => {
         const characterCount = group.saves.length;
-        const characterNames = group.saves.map((s) => s.personnage_nom).filter(Boolean).join(", ");
+        const characterNames = group.saves
+          .map((s) => s.personnage_nom)
+          .filter(Boolean)
+          .join(", ");
+
         return (
           <div
             key={group.adventureId}
             className="backdrop-blur-card bg-slate-900/50 border border-gray-700/30 rounded-xl overflow-hidden"
           >
-            {/* En-tête : titre de l'aventure + statut global + personnages */}
-            <div className="p-4 border-b border-gray-700/30">
-              <div className="flex items-start justify-between gap-4">
+            {/* En-tête : titre de l'aventure + statut + progression */}
+            <div className="p-3 sm:p-4 border-b border-gray-700/30">
+              <div className="flex items-start justify-between gap-2 sm:gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <h3 className="text-base font-semibold text-white truncate">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                    <h3 className="text-sm sm:text-base font-semibold text-white truncate max-w-[160px] xs:max-w-none">
                       {group.title}
                     </h3>
                     <span
-                      className={`flex-shrink-0 px-2.5 py-0.5 text-[10px] font-semibold rounded-full border ${
+                      className={`flex-shrink-0 px-2 py-0.5 text-[10px] font-semibold rounded-full border ${
                         group.status === "completed"
                           ? "border-green-500/50 text-green-400 bg-green-500/10"
                           : "border-amber-500/50 text-amber-400 bg-amber-500/10"
@@ -171,9 +197,10 @@ export default function TabStories({ saves }: TabStoriesProps) {
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                    <Users className="w-3 h-3" />
+                    <Users className="w-3 h-3 flex-shrink-0" />
                     <span className="truncate">
-                      {characterNames || `${characterCount} personnage${characterCount > 1 ? "s" : ""}`}
+                      {characterNames ||
+                        `${characterCount} personnage${characterCount > 1 ? "s" : ""}`}
                     </span>
                   </div>
                 </div>
@@ -181,14 +208,14 @@ export default function TabStories({ saves }: TabStoriesProps) {
                   <div className="text-[10px] text-gray-500 uppercase tracking-wide">
                     Progression
                   </div>
-                  <div className="text-base font-bold text-white">
+                  <div className="text-sm sm:text-base font-bold text-white">
                     {group.maxProgression}%
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Liste des personnages ayant sauvegardé */}
+            {/* Liste des personnages */}
             <div className="bg-slate-950/30">
               {group.saves.map((save, idx) => (
                 <div
@@ -199,20 +226,23 @@ export default function TabStories({ saves }: TabStoriesProps) {
                       `/adventure/${save.id_aventure}?personnage=${save.id_personnage}&save=${save.id}`,
                     )
                   }
-                  className={`group/save flex items-center gap-3 px-4 py-3 transition-all ${
+                  className={`group/save flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 transition-all touch-manipulation ${
                     idx > 0 ? "border-t border-gray-700/20" : ""
                   } ${
                     save.status === "completed"
                       ? "opacity-75 cursor-default"
-                      : "hover:bg-cyan-500/5 cursor-pointer"
+                      : "hover:bg-cyan-500/5 active:bg-cyan-500/10 cursor-pointer"
                   }`}
                 >
+                  {/* Avatar */}
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center">
                     <User className="w-4 h-4 text-cyan-400" />
                   </div>
+
+                  {/* Nom + barre de progression */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-sm font-medium text-white truncate max-w-[160px]">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                      <span className="text-sm font-medium text-white truncate max-w-[100px] sm:max-w-[180px]">
                         {save.personnage_nom ?? "Personnage"}
                       </span>
                       <ClasseBadge classe={save.personnage_classe} />
@@ -228,19 +258,23 @@ export default function TabStories({ saves }: TabStoriesProps) {
                           style={{ width: `${save.progression}%` }}
                         />
                       </div>
-                      <span className="text-[10px] font-medium text-gray-400 flex-shrink-0 w-8 text-right">
+                      <span className="text-[10px] font-medium text-gray-400 flex-shrink-0 w-7 text-right">
                         {save.progression}%
                       </span>
                     </div>
                   </div>
-                  <div className="flex-shrink-0 text-right">
+
+                  {/* Timestamp — masqué sur très petit écran */}
+                  <div className="hidden xs:flex flex-shrink-0 text-right">
                     <div className="text-[10px] text-gray-500 flex items-center gap-1">
                       <Clock className="w-2.5 h-2.5" />
                       {getRelativeTime(save.date_sauvegarde)}
                     </div>
                   </div>
+
+                  {/* Bouton play — toujours visible sur touch, hover sur desktop */}
                   {save.status !== "completed" && (
-                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center opacity-0 group-hover/save:opacity-100 transition-opacity">
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center transition-opacity opacity-100 sm:opacity-0 sm:group-hover/save:opacity-100">
                       <Play className="w-3 h-3 text-cyan-400 ml-0.5" />
                     </div>
                   )}
@@ -251,38 +285,61 @@ export default function TabStories({ saves }: TabStoriesProps) {
         );
       })}
 
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2">
-          <span className="text-xs text-gray-500">
-            Page {currentPage} / {totalPages} &middot; {groupedSaves.length} histoires
+        <div className="flex flex-col xs:flex-row items-center justify-between gap-3 pt-2">
+          {/* Compteur */}
+          <span className="text-xs text-gray-500 order-2 xs:order-1">
+            Page {currentPage} / {totalPages} &middot; {groupedSaves.length}{" "}
+            histoires
           </span>
-          <div className="flex items-center gap-1">
+
+          {/* Boutons */}
+          <div className="flex items-center gap-1 order-1 xs:order-2 flex-wrap justify-center">
+            {/* Précédent */}
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              aria-label="Page précédente"
+              className="flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all touch-manipulation"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`w-7 h-7 text-xs rounded-lg border transition-all ${
-                  page === currentPage
-                    ? "border-cyan-500/60 bg-cyan-500/20 text-cyan-300 font-semibold"
-                    : "border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+            {/* Numéros de page avec ellipsis */}
+            {pageRange.map((page, i) =>
+              page === "..." ? (
+                <span
+                  key={`ellipsis-${i}`}
+                  className="flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 text-xs text-gray-500 select-none"
+                >
+                  …
+                </span>
+              ) : (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  aria-label={`Page ${page}`}
+                  aria-current={page === currentPage ? "page" : undefined}
+                  className={`flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 text-xs rounded-lg border transition-all active:scale-95 touch-manipulation ${
+                    page === currentPage
+                      ? "border-cyan-500/60 bg-cyan-500/20 text-cyan-300 font-semibold"
+                      : "border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10"
+                  }`}
+                >
+                  {page}
+                </button>
+              ),
+            )}
 
+            {/* Suivant */}
             <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              onClick={() =>
+                setCurrentPage((p) => Math.min(totalPages, p + 1))
+              }
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              aria-label="Page suivante"
+              className="flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all touch-manipulation"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

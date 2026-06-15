@@ -41,6 +41,9 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Évite le zoom auto sur les inputs iOS Safari */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
@@ -48,10 +51,20 @@
     color: white;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Empêche le défilement horizontal involontaire sur mobile */
+    overflow-x: hidden;
   }
 
+  /* ── Scrollbar standard (Firefox & Chrome 121+) ── */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #06b6d4 #070b15;
+  }
+
+  /* ── Scrollbar Webkit (Chrome, Safari, Edge) ── */
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
@@ -69,10 +82,67 @@
     box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.5);
   }
 
+  /* ── Sélection de texte ── */
   ::selection {
     background-color: rgba(6, 182, 212, 0.3);
     color: white;
   }
+
+  /* ── Focus visible pour accessibilité clavier (tous navigateurs) ── */
+  :focus-visible {
+    outline: 2px solid #06b6d4;
+    outline-offset: 2px;
+  }
+
+  /* ── Supprime l'outline par défaut sur les éléments non-clavier ── */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* ── Améliore le tap color sur mobile ── */
+  * {
+    -webkit-tap-highlight-color: rgba(6, 182, 212, 0.15);
+  }
+
+  /* ── Empêche les images de déborder ── */
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ── Inputs : taille minimale 16px sur iOS pour éviter le zoom auto ── */
+  input, textarea, select {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* =============================================
+   UTILITAIRES RESPONSIVE
+   ============================================= */
+
+/* Scrollbar fine pour les conteneurs horizontaux (onglets profil, etc.) */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(6, 182, 212, 0.3) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3);
+  border-radius: 9999px;
+}
+
+/* Masque la scrollbar visuellement tout en conservant le scroll */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 /* === Animations du Loader === */

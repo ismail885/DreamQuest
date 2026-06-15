@@ -82,7 +82,7 @@ export default function Home() {
               <Link
                 href="/create-character"
                 prefetch
-                className="h-[58px] w-[250px] rounded-card bg-gradient-to-r from-primary to-blue-500 text-white text-[18px] font-semibold flex items-center justify-center shadow-glow hover:opacity-90 hover:scale-102 active:scale-98 transition-all duration-300 ease-out hover:shadow-glow-lg"
+                className="h-[58px] w-full sm:w-[250px] rounded-card bg-gradient-to-r from-primary to-blue-500 text-white text-[18px] font-semibold flex items-center justify-center shadow-glow hover:opacity-90 hover:scale-102 active:scale-98 transition-all duration-300 ease-out hover:shadow-glow-lg touch-manipulation"
               >
                 Créer un Personnage
               </Link>
@@ -90,7 +90,7 @@ export default function Home() {
               <Link
                 href="/adventure"
                 prefetch
-                className="h-[58px] w-[222px] rounded-card border border-cyan-500/20 text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 hover:scale-102 active:scale-98 transition-all duration-300 ease-out"
+                className="h-[58px] w-full sm:w-[222px] rounded-card border border-cyan-500/20 text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 hover:scale-102 active:scale-98 transition-all duration-300 ease-out touch-manipulation"
               >
                 Explorer les Quêtes
               </Link>
