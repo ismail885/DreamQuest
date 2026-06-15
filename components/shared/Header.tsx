@@ -49,7 +49,29 @@ const Header = React.memo(function Header() {
 
   const close = () => setIsOpen(false);
 
-  const userNavLinks = user
+  // Liens desktop — ordre original préservé
+  const desktopNavLinks = user
+    ? [
+        { href: "/dashboard", label: "Accueil" },
+        { href: "/adventure", label: "Aventures" },
+        ...(user.role === "createur" || user.role === "admin"
+          ? [{ href: "/create-adventure", label: "Créateur", accent: "text-purple-400" as const }]
+          : []),
+        ...(user.role === "admin"
+          ? [{ href: "/admin", label: "ADMIN", accent: "text-red-400 font-bold" as const }]
+          : []),
+        { href: "/classement", label: "Classement" },
+        { href: "/profil", label: "Profil" },
+      ]
+    : [
+        { href: "/", label: "Accueil" },
+        { href: "/adventure", label: "Aventures" },
+        { href: "/create-character", label: "Créer" },
+        { href: "/classement", label: "Classement" },
+      ];
+
+  // Liens mobile drawer — ordre logique pour petits écrans
+  const mobileNavLinks = user
     ? [
         { href: "/dashboard", label: "Accueil" },
         { href: "/adventure", label: "Aventures" },
@@ -65,7 +87,7 @@ const Header = React.memo(function Header() {
     : [
         { href: "/", label: "Accueil" },
         { href: "/adventure", label: "Aventures" },
-        { href: "/create-character", label: "Créer" },
+        { href: "/create-character", label: "Créer un personnage" },
         { href: "/classement", label: "Classement" },
       ];
 
@@ -95,7 +117,7 @@ const Header = React.memo(function Header() {
 
             {/* Nav desktop */}
             <div className="hidden md:flex items-center gap-8">
-              {userNavLinks.map(({ href, label, accent }) => (
+              {desktopNavLinks.map(({ href, label, accent }) => (
                 <Link
                   key={href}
                   href={href}
@@ -204,7 +226,7 @@ const Header = React.memo(function Header() {
           )}
 
           {/* Liens */}
-          {userNavLinks.map(({ href, label, accent }) => (
+          {mobileNavLinks.map(({ href, label, accent }) => (
             <Link
               key={href}
               href={href}
