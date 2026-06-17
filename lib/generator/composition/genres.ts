@@ -19,7 +19,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     ambiances: [
       "Les néons de secours de {lieu} clignotent dans un silence de vide spatial.",
       "Dans {decor}, vos scanners captent une signature énergétique qui ne devrait pas exister.",
-      "Une alarme lointaine résonne ; {lieu} n'a plus vu d'équipage depuis des années.",
+      "Une alarme lointaine résonne, {lieu} n'a plus vu d'équipage depuis des années.",
     ],
     scenes: [
       "Les portes blindées de {lieu} s'ouvrent sur {decor}. Vos capteurs s'affolent : {antagoniste} a verrouillé les protocoles de survie.",
@@ -34,7 +34,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "Le protocole obéit : le sas s'ouvre et vous progressez sans dommage.",
-        "Vos boucliers encaissent ; vous sortez de {decor} intact, données en main.",
+        "Vos boucliers encaissent, vous sortez de {decor} intact, données en main.",
       ],
       normal: [
         "Le sas cède, mais une décharge grille un de vos modules : votre combinaison clignote en orange.",
@@ -42,7 +42,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "L'IA verrouille {decor} derrière vous : blessé, vous fuyez sans la moitié des données.",
-        "{antagoniste} touche votre réacteur dorsal ; vous progressez en perdant de l'oxygène.",
+        "{antagoniste} touche votre réacteur dorsal, vous progressez en perdant de l'oxygène.",
       ],
       legendaire: [
         "Le complexe se dépressurise : pour survivre, vous devez sacrifier votre coéquipier resté dans {decor}.",
@@ -85,7 +85,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "Votre sort opère : la voie s'ouvre et la magie vous épargne.",
-        "L'artefact répond à votre appel ; vous traversez {decor} auréolé de lumière.",
+        "L'artefact répond à votre appel, vous traversez {decor} auréolé de lumière.",
       ],
       normal: [
         "Le sceau cède, mais le contrecoup magique vous laisse étourdi pour un long moment.",
@@ -93,7 +93,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "La malédiction de {lieu} vous marque : vous fuyez {decor} blessé et privé de vos sorts.",
-        "{antagoniste} brise votre arme ; vous battez en retraite, désarmé et traqué.",
+        "{antagoniste} brise votre arme, vous battez en retraite, désarmé et traqué.",
       ],
       legendaire: [
         "Le sortilège vous engloutit : pour survivre, vous offrez votre force vitale en sacrifice.",
@@ -136,7 +136,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "Votre nerf tient bon : vous traversez {decor} le cœur battant mais indemne.",
-        "La présence s'éloigne ; vous reprenez votre souffle, vivant.",
+        "La présence s'éloigne, vous reprenez votre souffle, vivant.",
       ],
       normal: [
         "Vous échappez à {antagoniste}, mais ce que vous avez vu hantera vos nuits.",
@@ -172,7 +172,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     ambiances: [
       "Rien n'est laissé au hasard dans {lieu} : chaque détail peut être un indice.",
       "Dans {decor}, une trace discordante attire votre œil d'enquêteur.",
-      "Le calme de {lieu} sonne faux ; quelqu'un ici sait et se tait.",
+      "Le calme de {lieu} sonne faux, quelqu'un ici sait et se tait.",
     ],
     scenes: [
       "Vous examinez {decor} de {lieu}. Un indice contredit la version officielle, et {antagoniste} vous observe de loin.",
@@ -187,7 +187,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "L'interrogatoire porte : {antagoniste} se trahit et vous tenez votre piste.",
-        "L'indice de {decor} parle de lui-même ; l'enquête avance nettement.",
+        "L'indice de {decor} parle de lui-même, l'enquête avance nettement.",
       ],
       normal: [
         "Vous obtenez un aveu partiel, mais {antagoniste} a eu le temps de prévenir les autres.",
@@ -195,7 +195,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "{antagoniste} retourne la situation : compromis, vous perdez l'accès à {lieu}.",
-        "Le piège se referme sur vous ; blessé, vous voyez le coupable s'enfuir.",
+        "Le piège se referme sur vous, blessé, vous voyez le coupable s'enfuir.",
       ],
       legendaire: [
         "Le commanditaire avait un coup d'avance : votre témoin est retrouvé mort dans {decor}.",
@@ -221,7 +221,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       "un shérif vendu au plus offrant",
     ],
     ambiances: [
-      "Le soleil écrase {lieu} ; seule la poussière ose bouger.",
+      "Le soleil écrase {lieu}, seule la poussière ose bouger.",
       "Dans {decor}, une silhouette vous toise, la main près du holster.",
       "Le saloon de {lieu} s'est tu d'un coup : votre arrivée n'est pas passée inaperçue.",
     ],
@@ -238,7 +238,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "Plus rapide que lui : {antagoniste} mord la poussière et la région respire.",
-        "Vos mots font mouche ; on vous laisse traverser {decor} sans une balle.",
+        "Vos mots font mouche, on vous laisse traverser {decor} sans une balle.",
       ],
       normal: [
         "Vous l'emportez, mais une balle vous a éraflé l'épaule et le clan retiendra votre visage.",
@@ -246,11 +246,11 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "{antagoniste} dégaine le premier : touché, vous battez en retraite hors de {lieu}.",
-        "Les hommes du clan vous encerclent ; dépouillé de vos armes, vous fuyez à pied.",
+        "Les hommes du clan vous encerclent, dépouillé de vos armes, vous fuyez à pied.",
       ],
       legendaire: [
         "L'embuscade tourne au massacre : pour vous en sortir, vous laissez un allié dans {decor}.",
-        "Le shérif vous livre au clan ; trahi de tous, vous n'avez plus que votre dernière balle.",
+        "Le shérif vous livre au clan, trahi de tous, vous n'avez plus que votre dernière balle.",
       ],
     },
     tags: ["western", "far-west", "duel", "hors-la-loi", "honneur", "désert"],
@@ -274,7 +274,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     ambiances: [
       "Le sel et la poudre flottent dans l'air de {lieu}.",
       "Dans {decor}, une carte au trésor à moitié effacée attend son lecteur.",
-      "Les vagues frappent {lieu} ; quelque part, une cloche de naufrage sonne.",
+      "Les vagues frappent {lieu}, quelque part, une cloche de naufrage sonne.",
     ],
     scenes: [
       "Vous abordez {decor} de {lieu}. {antagoniste} hisse son pavillon : le combat semble inévitable.",
@@ -289,7 +289,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "L'abordage est un triomphe : le butin et la gloire sont à vous.",
-        "Vous filez avec le coffre ; {decor} disparaît dans votre sillage.",
+        "Vous filez avec le coffre, {decor} disparaît dans votre sillage.",
       ],
       normal: [
         "Vous prenez le navire, mais la moitié de votre équipage gît sur le pont.",
@@ -297,7 +297,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "{antagoniste} éperonne votre coque : blessé, vous abandonnez le butin dans {decor}.",
-        "La tempête vous drosse sur {lieu} ; vous perdez votre navire et la moitié de vos hommes.",
+        "La tempête vous drosse sur {lieu}, vous perdez votre navire et la moitié de vos hommes.",
       ],
       legendaire: [
         "La malédiction du trésor s'éveille : pour survivre, vous offrez une âme aux abysses.",
@@ -325,7 +325,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     ambiances: [
       "Sous la pluie acide, les néons de {lieu} grésillent comme un avertissement.",
       "Dans {decor}, vos implants captent une fréquence qui n'aurait pas dû exister.",
-      "Les drones de {lieu} quadrillent le ciel ; chaque pas est enregistré quelque part.",
+      "Les drones de {lieu} quadrillent le ciel, chaque pas est enregistré quelque part.",
     ],
     scenes: [
       "Votre interface neurale détecte une backdoor dans {lieu}. Mais {antagoniste} surveille le réseau, et chaque seconde de connexion laisse une trace.",
@@ -340,7 +340,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "Le hack passe net : vous récupérez les données et quelques crédits au passage.",
-        "Le deal tient ; vous quittez {decor} plus riche et toujours anonyme.",
+        "Le deal tient, vous quittez {decor} plus riche et toujours anonyme.",
       ],
       normal: [
         "Vous récupérez les données, mais l'intrusion a grillé un implant — votre interface clignote en rouge.",
@@ -348,7 +348,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "Tracé : {antagoniste} verrouille les issues et votre implant surchauffe, vous fuyez {decor} blessé.",
-        "Le fixer vous trahit ; dépouillé de vos crédits, vous êtes recherché dans tout le secteur.",
+        "Le fixer vous trahit, dépouillé de vos crédits, vous êtes recherché dans tout le secteur.",
       ],
       legendaire: [
         "L'IA retourne votre interface contre vous : une partie de votre mémoire est effacée à jamais.",
@@ -391,7 +391,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "Les dieux sourient à votre courage : l'épreuve est franchie, leur faveur vous accompagne.",
-        "La relique vous accepte ; {decor} s'illumine sur votre passage.",
+        "La relique vous accepte, {decor} s'illumine sur votre passage.",
       ],
       normal: [
         "Vous réussissez l'épreuve, mais un dieu mineur vous tient désormais rancune.",
@@ -399,7 +399,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "{antagoniste} châtie votre arrogance : marqué par sa colère, vous fuyez {decor} affaibli.",
-        "L'épreuve vous brise ; les dieux vous renvoient blessé et privé de leur grâce.",
+        "L'épreuve vous brise, les dieux vous renvoient blessé et privé de leur grâce.",
       ],
       legendaire: [
         "Le tribut est inévitable : pour apaiser {antagoniste}, vous sacrifiez ce que vous aimez le plus.",
@@ -432,7 +432,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     scenes: [
       "Vous retrouvez l'être aimé dans {decor} de {lieu}. Mais {antagoniste} se dresse entre vos deux mondes.",
       "Une lettre vous attend près de {decor}. Les mots qu'elle contient pourraient tout changer — ou tout briser à cause de {antagoniste}.",
-      "Le bal de {lieu} bat son plein. Dans {decor}, un regard suffit ; pourtant {antagoniste} épie le moindre geste.",
+      "Le bal de {lieu} bat son plein. Dans {decor}, un regard suffit, pourtant {antagoniste} épie le moindre geste.",
     ],
     choix: [
       ["Avouer vos sentiments malgré {antagoniste}", "Taire votre cœur pour protéger l'autre"],
@@ -442,7 +442,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     consequences: {
       facile: [
         "Votre aveu est accueilli avec tendresse : deux cœurs ne battent plus que comme un seul.",
-        "La fuite réussit ; loin de {lieu}, votre amour respire enfin librement.",
+        "La fuite réussit, loin de {lieu}, votre amour respire enfin librement.",
       ],
       normal: [
         "L'aveu touche sa cible, mais {antagoniste} jure de ne pas en rester là.",
@@ -450,7 +450,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       difficile: [
         "{antagoniste} sépare vos chemins : le cœur en miettes, vous quittez {lieu} seul.",
-        "Le secret éclate dans {decor} ; la confiance se brise et les mots blessent.",
+        "Le secret éclate dans {decor}, la confiance se brise et les mots blessent.",
       ],
       legendaire: [
         "Pour sauver l'être aimé, vous renoncez à lui pour toujours et partez sans un adieu.",

@@ -463,9 +463,13 @@ function AdventureReader({ params }: Props) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3, ease: easeOut }}
-                  className="absolute left-0 right-0 top-0 z-30 min-h-full flex items-start justify-center bg-deep/90 backdrop-blur-sm rounded-card p-2"
+                  className={
+                    inCombat
+                      ? "fixed inset-0 z-50 flex items-center justify-center bg-deep/95 backdrop-blur-sm p-3 sm:p-6 overflow-y-auto"
+                      : "absolute left-0 right-0 top-0 z-30 min-h-full flex items-start justify-center bg-deep/90 backdrop-blur-sm rounded-card p-2"
+                  }
                 >
-                  <div className="w-full">
+                  <div className={inCombat ? "w-full max-w-4xl max-h-[95vh] overflow-y-auto" : "w-full"}>
                     {inCombat && combatState && character ? (
                       <CombatUI
                         combatState={combatState}
