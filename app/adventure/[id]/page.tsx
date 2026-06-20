@@ -1,6 +1,6 @@
 "use client";
 
-import { use, Suspense, useEffect, useState, useRef } from "react";
+import { use, Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
@@ -78,6 +78,7 @@ function AdventureReader({ params }: Props) {
   } | null>(null);
   const [combatStats, setCombatStats] = useState({ wins: 0, losses: 0 });
   const [fatigueCount, setFatigueCount] = useState(0);
+  const pendingCombatLinkRef = useRef<number | null>(null);
 
   const {
     character,
@@ -145,6 +146,13 @@ function AdventureReader({ params }: Props) {
     chooseOption,
     restart,
   } = useAdventure(adventureId, user?.id ?? null);
+
+  const handleCombatEndAndContinue = useCallback(async () => {
+    await handleCombatEnd();
+    const link = pendingCombatLinkRef.current;
+    pendingCombatLinkRef.current = null;
+    if (link) chooseOption(link);
+  }, [handleCombatEnd, chooseOption]);
 
   // Dénominateur adaptatif : borné par la taille réelle de l'aventure
   // (évite une barre bloquée bas sur les aventures courtes, ex. générées)
@@ -427,7 +435,11 @@ function AdventureReader({ params }: Props) {
                           1,
                           currentBranch?.choix1_consequences,
                         );
-                        if (!isCombat) chooseOption(currentBranch.choix1_lien);
+                        if (isCombat) {
+                          pendingCombatLinkRef.current = currentBranch.choix1_lien;
+                        } else {
+                          chooseOption(currentBranch.choix1_lien);
+                        }
                       }}
                     />
                   )}
@@ -447,7 +459,11 @@ function AdventureReader({ params }: Props) {
                           2,
                           currentBranch?.choix2_consequences,
                         );
-                        if (!isCombat) chooseOption(currentBranch.choix2_lien);
+                        if (isCombat) {
+                          pendingCombatLinkRef.current = currentBranch.choix2_lien;
+                        } else {
+                          chooseOption(currentBranch.choix2_lien);
+                        }
                       }}
                     />
                   )}
@@ -465,11 +481,11 @@ function AdventureReader({ params }: Props) {
                   transition={{ duration: 0.3, ease: easeOut }}
                   className={
                     inCombat
-                      ? "fixed inset-0 z-50 flex items-center justify-center bg-deep/95 backdrop-blur-sm p-3 sm:p-6 overflow-y-auto"
+                      ? "fixed inset-0 z-50 flex items-center justify-center bg-deep/95 backdrop-blur-sm p-3 sm:p-6 md:p-10 overflow-y-auto"
                       : "absolute left-0 right-0 top-0 z-30 min-h-full flex items-start justify-center bg-deep/90 backdrop-blur-sm rounded-card p-2"
                   }
                 >
-                  <div className={inCombat ? "w-full max-w-4xl max-h-[95vh] overflow-y-auto" : "w-full"}>
+                  <div className={inCombat ? "w-full max-w-5xl" : "w-full"}>
                     {inCombat && combatState && character ? (
                       <CombatUI
                         combatState={combatState}
@@ -478,7 +494,7 @@ function AdventureReader({ params }: Props) {
                         onDefend={handleCombatDefend}
                         onFlee={handleCombatFlee}
                         onAbility={handleCombatAbility}
-                        onEnd={handleCombatEnd}
+                        onEnd={handleCombatEndAndContinue}
                       />
                     ) : currentEvent ? (
                       <RandomEventCard

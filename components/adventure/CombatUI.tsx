@@ -140,14 +140,14 @@ export default function CombatUI({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="backdrop-blur-card bg-slate-900/60 border border-red-500/30 rounded-card p-5 space-y-5"
+      className="backdrop-blur-card bg-slate-900/70 border border-red-500/30 rounded-card p-6 sm:p-8 space-y-6 shadow-2xl shadow-red-900/20"
     >
       <div className="flex items-center gap-3 mb-1">
-        <Swords className="w-5 h-5 text-red-400" aria-hidden="true" />
-        <h2 className="text-red-400 font-bold text-lg">COMBAT</h2>
+        <Swords className="w-6 h-6 text-red-400" aria-hidden="true" />
+        <h2 className="text-red-400 font-bold text-xl sm:text-2xl tracking-wide">COMBAT</h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 items-center">
+      <div className="grid grid-cols-2 gap-6 sm:gap-10 items-center">
         <div className="space-y-2 relative">
           <motion.div
             animate={shakePlayer > 0 ? { x: [0, -5, 5, -3, 3, 0] } : {}}
@@ -188,8 +188,8 @@ export default function CombatUI({
         </div>
 
         <div className="text-center">
-          <div className="text-3xl mb-1" aria-hidden="true">⚔️</div>
-          <div className="text-2xl font-bold text-gray-500">VS</div>
+          <div className="text-4xl sm:text-5xl mb-1" aria-hidden="true">⚔️</div>
+          <div className="text-3xl sm:text-4xl font-black text-gray-500">VS</div>
         </div>
 
         <div className="space-y-2 relative">
@@ -337,8 +337,8 @@ export default function CombatUI({
         </>
       )}
 
-      <div className="bg-deep rounded-card p-3 h-32 overflow-y-auto space-y-1 scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700">
-        {combatState.log.slice(-6).map((line, i) => (
+      <div className="bg-deep rounded-card p-4 h-40 sm:h-48 overflow-y-auto space-y-1 scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700">
+        {combatState.log.slice(-10).map((line, i) => (
           <p key={i} className={`${logColor(line)} text-sm leading-relaxed`}>{line}</p>
         ))}
         <div ref={logEndRef} />

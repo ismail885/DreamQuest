@@ -112,8 +112,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  };
  init();
 
- const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
- if (event === "INITIAL_SESSION") return; 
+ const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+ if (event === "INITIAL_SESSION") return;
+ // Différé hors du callback : évite l'interblocage du verrou supabase-auth.
+ setTimeout(() => {
+ (async () => {
  switch (event) {
  case "SIGNED_IN":
  case "TOKEN_REFRESHED":
@@ -133,6 +136,8 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  clearAuthSession();
  break;
  }
+ })();
+ }, 0);
  });
 
  return () => {
