@@ -147,37 +147,50 @@ export default function CombatUI({
         <h2 className="text-red-400 font-bold text-xl sm:text-2xl tracking-wide">COMBAT</h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 sm:gap-10 items-center">
-        <div className="space-y-2 relative">
+      <div className="grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-5 items-center">
+        <div className="relative rounded-xl border border-cyan-500/30 bg-gradient-to-b from-cyan-500/10 to-slate-900/40 p-3 sm:p-4">
           <motion.div
             animate={shakePlayer > 0 ? { x: [0, -5, 5, -3, 3, 0] } : {}}
             transition={{ duration: 0.3 }}
-            className="space-y-2"
+            className="space-y-3"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-white font-semibold text-sm">{character.nom_personnage || "Toi"}</span>
-              <span className="text-gray-400 text-xs">
-                {combatState.status.buff_force > 0 && <span className="text-orange-400 mr-2">Force+{combatState.status.buff_force}</span>}
-                {combatState.status.buff_agility > 0 && <span className="text-green-400 mr-2">Agilité+{combatState.status.buff_agility}</span>}
-                {combatState.status.buff_defense > 0 && <span className="text-blue-400">Bouclier</span>}
-              </span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-bold flex-shrink-0">
+                {(character.nom_personnage || "T").charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <p className="text-white font-semibold text-sm truncate">{character.nom_personnage || "Toi"}</p>
+                <div className="flex flex-wrap gap-x-2 text-[10px] leading-tight">
+                  {combatState.status.buff_force > 0 && <span className="text-orange-400">Force+{combatState.status.buff_force}</span>}
+                  {combatState.status.buff_agility > 0 && <span className="text-green-400">Agilité+{combatState.status.buff_agility}</span>}
+                  {combatState.status.buff_defense > 0 && <span className="text-blue-400">Bouclier</span>}
+                </div>
+              </div>
             </div>
-            <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full"
-                animate={{ width: `${playerPvRatio * 100}%` }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              />
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-gray-300">PV</span>
+                <span className="text-gray-200 font-medium">{combatState.playerPv} / {combatState.playerPvMax}</span>
+              </div>
+              <div className="h-3 bg-gray-800/80 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full"
+                  animate={{ width: `${playerPvRatio * 100}%` }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                />
+              </div>
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-400">{combatState.playerPv} / {combatState.playerPvMax} PV</span>
-              <span className="text-blue-400">{combatState.playerMana} PM</span>
-            </div>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all"
-                style={{ width: `${playerManaRatio * 100}%` }}
-              />
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-blue-300">PM</span>
+                <span className="text-blue-200 font-medium">{combatState.playerMana} / {combatState.playerManaMax}</span>
+              </div>
+              <div className="h-2 bg-gray-800/80 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all"
+                  style={{ width: `${playerManaRatio * 100}%` }}
+                />
+              </div>
             </div>
           </motion.div>
           <AnimatePresence>
@@ -187,54 +200,62 @@ export default function CombatUI({
           </AnimatePresence>
         </div>
 
-        <div className="text-center">
-          <div className="text-4xl sm:text-5xl mb-1" aria-hidden="true">⚔️</div>
-          <div className="text-3xl sm:text-4xl font-black text-gray-500">VS</div>
+        <div className="flex flex-col items-center justify-center px-0.5">
+          <Swords className="w-7 h-7 sm:w-9 sm:h-9 text-gray-400" aria-hidden="true" />
+          <div className="text-lg sm:text-2xl font-black text-gray-500 mt-1">VS</div>
         </div>
 
-        <div className="space-y-2 relative">
+        <div className="relative rounded-xl border border-red-500/30 bg-gradient-to-b from-red-500/10 to-slate-900/40 p-3 sm:p-4">
           {critFlash && (
             <motion.div
               initial={{ opacity: 0.6 }}
               animate={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-0 bg-yellow-400/30 rounded-card pointer-events-none"
+              className="absolute inset-0 bg-yellow-400/30 rounded-xl pointer-events-none"
               style={{ zIndex: 40 }}
             />
           )}
           <motion.div
             animate={shakeEnemy > 0 ? { x: [0, -5, 5, -3, 3, 0] } : {}}
             transition={{ duration: 0.3 }}
-            className="space-y-2"
+            className="space-y-3"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-red-400 font-semibold text-sm">{enemy.name}</span>
-              <div className="flex items-center gap-1.5">
-                {enemy.level && <span className="text-gray-500 text-xs">Niv.{enemy.level}</span>}
-                {enemy.xpReward > 0 && (
-                  <span className="text-orange-400/60 text-[10px] flex items-center gap-0.5">
-                    <Gem className="w-2.5 h-2.5" />{enemy.xpReward}XP
-                  </span>
-                )}
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-500/20 border border-red-400/40 flex items-center justify-center text-red-300 flex-shrink-0">
+                <Swords className="w-5 h-5" aria-hidden="true" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-red-300 font-semibold text-sm truncate">{enemy.name}</p>
+                <div className="flex items-center gap-2 text-[10px] leading-tight">
+                  {enemy.level && <span className="text-gray-400">Niv.{enemy.level}</span>}
+                  {enemy.xpReward > 0 && (
+                    <span className="text-orange-400/70 flex items-center gap-0.5">
+                      <Gem className="w-2.5 h-2.5" />{enemy.xpReward}XP
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-red-400 to-red-500 rounded-full"
-                animate={{ width: `${enemyPvRatio * 100}%` }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              />
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-400">{enemy.pv} / {enemy.pvMax} PV</span>
-              <div className="flex items-center gap-2">
-                <span className="flex items-center gap-0.5 text-red-400/70">
-                  <Crosshair className="w-2.5 h-2.5" />{enemy.force}
-                </span>
-                <span className="flex items-center gap-0.5 text-blue-400/70">
-                  <ShieldHalf className="w-2.5 h-2.5" />{enemy.defense}
-                </span>
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-gray-300">PV</span>
+                <span className="text-gray-200 font-medium">{enemy.pv} / {enemy.pvMax}</span>
               </div>
+              <div className="h-3 bg-gray-800/80 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-red-400 to-red-500 rounded-full"
+                  animate={{ width: `${enemyPvRatio * 100}%` }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1 text-red-400/80">
+                <Crosshair className="w-3 h-3" />{enemy.force}
+              </span>
+              <span className="flex items-center gap-1 text-blue-400/80">
+                <ShieldHalf className="w-3 h-3" />{enemy.defense}
+              </span>
             </div>
           </motion.div>
           <AnimatePresence>
@@ -246,7 +267,7 @@ export default function CombatUI({
       </div>
 
       {enemy.description && (
-        <p className="text-gray-500 text-xs italic">{enemy.description}</p>
+        <p className="text-gray-500 text-xs italic text-center">{enemy.description}</p>
       )}
 
       {!combatState.won && !combatState.lost && !combatState.fled && (
@@ -337,11 +358,16 @@ export default function CombatUI({
         </>
       )}
 
-      <div className="bg-deep rounded-card p-4 h-40 sm:h-48 overflow-y-auto space-y-1 scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700">
-        {combatState.log.slice(-10).map((line, i) => (
-          <p key={i} className={`${logColor(line)} text-sm leading-relaxed`}>{line}</p>
-        ))}
-        <div ref={logEndRef} />
+      <div className="bg-deep/80 border border-gray-800/60 rounded-card overflow-hidden">
+        <div className="px-4 py-2 border-b border-gray-800/60 text-gray-400 text-xs font-semibold uppercase tracking-wide">
+          Journal de combat
+        </div>
+        <div className="p-4 h-28 sm:h-32 overflow-y-auto space-y-1 scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700">
+          {combatState.log.slice(-10).map((line, i) => (
+            <p key={i} className={`${logColor(line)} text-sm leading-relaxed`}>{line}</p>
+          ))}
+          <div ref={logEndRef} />
+        </div>
       </div>
 
         {(combatState.won || combatState.lost || combatState.fled) && (
