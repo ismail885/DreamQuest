@@ -5,6 +5,7 @@ export interface Adventure {
   auteur_id: number | null
   date_creation: string
   popularite: number
+  genre?: string | null
   embranchement_initial_id?: number | null
 }
 

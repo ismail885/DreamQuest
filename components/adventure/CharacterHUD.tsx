@@ -26,8 +26,12 @@ const CLASS_IMAGES: Record<string, string> = {
   barbare: "/illustrations_personnage/barbare.jpg",
 };
 
+function normalizeClass(classe: string): string {
+  return (classe ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
 function getCharacterImage(classe: string): string {
-  return CLASS_IMAGES[classe?.toLowerCase()] ?? "/illustrations_personnage/guerrier.jpg";
+  return CLASS_IMAGES[normalizeClass(classe)] ?? "/illustrations_personnage/guerrier.jpg";
 }
 
 function classLabel(classe: string): string {
@@ -36,7 +40,7 @@ function classLabel(classe: string): string {
     assassin: "Assassin", paladin: "Paladin", pretre: "Prêtre",
     druide: "Druide", necromancien: "Nécromancien", voleur: "Voleur", barbare: "Barbare",
   };
-  return labels[classe?.toLowerCase()] || classe;
+  return labels[normalizeClass(classe)] || classe;
 }
 
 function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued = false, sidebar = false }: CharacterHUDProps) {

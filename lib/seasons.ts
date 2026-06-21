@@ -1,10 +1,16 @@
 export const MAX_LEVEL = 100;
 
+export interface SeasonMode {
+  name: string;
+  rule: string;
+}
+
 export interface SeasonConfig {
   id: number;
   name: string;
   description: string;
   xpMultiplier: number;
+  mode: SeasonMode;
   questPool: string[];
   startDate: string;
   endDate: string;
@@ -16,6 +22,7 @@ export const SEASONS: Record<number, SeasonConfig> = {
     name: "L'Éveil des Héros",
     description: "Les portes de l'aventure s'ouvrent… L'ancien monde vous attend.",
     xpMultiplier: 1.0,
+    mode: { name: "Initiation", rule: "XP standard, idéal pour débuter sereinement." },
     questPool: ["finish_2", "finish_1", "finish_5", "vote_3", "vote_1", "create_char", "play_story", "combat_win", "create_story", "level_up"],
     startDate: "2026-01-01",
     endDate: "2026-03-31",
@@ -25,6 +32,7 @@ export const SEASONS: Record<number, SeasonConfig> = {
     name: "La Flamme des Légendes",
     description: "Les braises du passé ravivent les héros d'antan.",
     xpMultiplier: 1.2,
+    mode: { name: "Ferveur", rule: "+20% d'XP sur toutes les aventures." },
     questPool: ["finish_2", "finish_1", "finish_5", "vote_3", "vote_1", "play_story", "combat_win", "create_story", "level_up"],
     startDate: "2026-04-01",
     endDate: "2026-06-30",
@@ -34,6 +42,7 @@ export const SEASONS: Record<number, SeasonConfig> = {
     name: "L'Ombre du Néant",
     description: "Une brume maléfique s'abat sur le royaume… seuls les plus courageux résisteront.",
     xpMultiplier: 1.0,
+    mode: { name: "Survie", rule: "XP standard, mais l'obscurité rôde : restez vigilants." },
     questPool: ["finish_2", "finish_1", "finish_5", "create_char", "play_story", "combat_win", "level_up"],
     startDate: "2026-07-01",
     endDate: "2026-09-30",
@@ -43,6 +52,7 @@ export const SEASONS: Record<number, SeasonConfig> = {
     name: "L'Apogée des Dieux",
     description: "Les dieux eux-mêmes descendent sur le plan mortel. La bataille finale commence.",
     xpMultiplier: 1.5,
+    mode: { name: "Légendaire", rule: "+50% d'XP, la récompense ultime pour les plus braves." },
     questPool: ["finish_2", "finish_1", "finish_5", "vote_3", "vote_1", "create_char", "play_story", "combat_win", "create_story", "level_up"],
     startDate: "2026-10-01",
     endDate: "2026-12-31",

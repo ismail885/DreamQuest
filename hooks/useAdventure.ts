@@ -41,7 +41,7 @@ export function useAdventure(
  try {
   const { data: adventure, error: advError } = await supabase
  .from('aventure')
- .select('id,titre,description,auteur_id,date_creation,popularite,embranchement_initial_id')
+ .select('id,titre,description,auteur_id,date_creation,popularite,genre,embranchement_initial_id')
  .eq('id', adventureId)
  .single();
 

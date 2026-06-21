@@ -535,27 +535,46 @@ export const COMBAT_EVENTS: RandomEvent[] = [
   },
 ];
 
-// Tous les événements组合
 export const RANDOM_EVENTS: RandomEvent[] = [...NARRATIVE_EVENTS, ...COMBAT_EVENTS];
 
-/**
- * Retourne un événement aléatoire (narratif OU combat selon le paramètre)
- */
-export function getRandomEvent(allowCombat: boolean = true): RandomEvent {
+// Événements réservés à certains genres (les autres sont universels).
+const FANTASY_ONLY_EVENTS = new Set([
+  'magic', 'tempete_magique', 'puits_a_souhaits', 'foret_ensorcelee', 'cimetiere_ancien',
+  'autel_elementaire', 'cercles_de_pierre', 'fontaine_magique', 'nids_d_harpies', 'enchanteur_errant',
+  'gobelin_ambush', 'skeleton_encounter', 'troll_encounter', 'vampire_encounter', 'golem_de_pierre',
+  'spectre_vengeur', 'guerriers_orcs', 'manticore', 'elementaire_de_feu', 'soldats_squelettes', 'harceleur_tenebreux',
+]);
+
+const MEDIEVAL_EVENTS = new Set([
+  'tresor', 'pont_effondre', 'statue_ancienne', 'ermite', 'festin_villageois', 'champ_de_bataille',
+  'bibliotheque_itinerante', 'guerisseuse', 'epee_dans_la_pierre', 'spider_encounter', 'plante_vorace',
+]);
+
+const FANTASY_GENRES = ['Fantasy', 'Mythologique', 'Horreur'];
+const MODERN_GENRES = ['Science-Fiction', 'Cyberpunk', 'Policier', 'Romance'];
+
+function isEventAllowed(event: RandomEvent, genre?: string | null): boolean {
+  if (!genre) return true;
+  if (FANTASY_ONLY_EVENTS.has(event.id)) return FANTASY_GENRES.includes(genre);
+  if (MEDIEVAL_EVENTS.has(event.id)) return !MODERN_GENRES.includes(genre);
+  return true;
+}
+
+function pickForGenre(events: RandomEvent[], genre?: string | null): RandomEvent {
+  const pool = genre ? events.filter((e) => isEventAllowed(e, genre)) : events;
+  const finalPool = pool.length > 0 ? pool : events;
+  return finalPool[Math.floor(Math.random() * finalPool.length)];
+}
+
+export function getRandomEvent(allowCombat: boolean = true, genre?: string | null): RandomEvent {
   const events = allowCombat ? RANDOM_EVENTS : NARRATIVE_EVENTS;
-  return events[Math.floor(Math.random() * events.length)];
+  return pickForGenre(events, genre);
 }
 
-/**
- * Retourne uniquement un événement de combat
- */
-export function getRandomCombatEvent(): RandomEvent {
-  return COMBAT_EVENTS[Math.floor(Math.random() * COMBAT_EVENTS.length)];
+export function getRandomCombatEvent(genre?: string | null): RandomEvent {
+  return pickForGenre(COMBAT_EVENTS, genre);
 }
 
-/**
- * Retourne uniquement un événement narratif (sans combat)
- */
-export function getRandomNarrativeEvent(): RandomEvent {
-  return NARRATIVE_EVENTS[Math.floor(Math.random() * NARRATIVE_EVENTS.length)];
+export function getRandomNarrativeEvent(genre?: string | null): RandomEvent {
+  return pickForGenre(NARRATIVE_EVENTS, genre);
 }

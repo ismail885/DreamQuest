@@ -195,7 +195,7 @@ function AdventureReader({ params }: Props) {
     lastBranchIdRef.current = currentBranch.id;
     const shouldTrigger = Math.random() < 0.15;
     if (shouldTrigger) {
-      const event = getRandomEvent();
+      const event = getRandomEvent(true, adventure?.genre);
       setCurrentEvent(event);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

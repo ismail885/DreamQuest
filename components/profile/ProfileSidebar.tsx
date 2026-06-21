@@ -6,7 +6,7 @@ import {
   getXPForNextLevel,
   getPrestigeTitle,
 } from "@/lib/leveling";
-import { getSeasonById, MAX_LEVEL } from "@/lib/seasons";
+import { getCurrentSeason, MAX_LEVEL } from "@/lib/seasons";
 
 interface ProfileSidebarProps {
   userProfile: {
@@ -42,8 +42,8 @@ export default function ProfileSidebar({
   const currentLevel = userProfile?.niveau || 1;
   const currentExperience = userProfile?.experience || 0;
   const bestLevel = userProfile?.meilleur_niveau || currentLevel;
-  const seasonId = userProfile?.saison_actuelle || 1;
-  const season = getSeasonById(seasonId);
+  const season = getCurrentSeason();
+  const seasonId = season.id;
   const prestigeTitle = getPrestigeTitle(bestLevel);
 
   const xpInCurrentLevel = getXPInCurrentLevel(currentLevel, currentExperience);
@@ -68,6 +68,11 @@ export default function ProfileSidebar({
             <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold text-green-300 bg-green-500/20 border border-green-500/30 rounded-full">
               +{Math.round((season.xpMultiplier - 1) * 100)}% XP
             </span>
+          )}
+          {season && (
+            <p className="mt-1.5 text-[10px] text-cyan-300">
+              <span className="font-semibold">Mode {season.mode.name}</span> · {season.mode.rule}
+            </p>
           )}
         </div>
 

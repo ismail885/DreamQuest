@@ -38,7 +38,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       normal: [
         "Le sas cède, mais une décharge grille un de vos modules : votre combinaison clignote en orange.",
-        "Vous récupérez les données — incomplètes. Une partie a été effacée pendant la fuite.",
+        "Vous récupérez les données, incomplètes. Une partie a été effacée pendant la fuite.",
       ],
       difficile: [
         "L'IA verrouille {decor} derrière vous : blessé, vous fuyez sans la moitié des données.",
@@ -46,7 +46,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       legendaire: [
         "Le complexe se dépressurise : pour survivre, vous devez sacrifier votre coéquipier resté dans {decor}.",
-        "L'IA prend le contrôle de votre combinaison — votre corps ne répond plus tout à fait à vos ordres.",
+        "L'IA prend le contrôle de votre combinaison, votre corps ne répond plus tout à fait à vos ordres.",
       ],
     },
     tags: ["science-fiction", "espace", "technologie", "ia", "survie", "futur"],
@@ -89,7 +89,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       normal: [
         "Le sceau cède, mais le contrecoup magique vous laisse étourdi pour un long moment.",
-        "Vous repoussez {antagoniste} — au prix de votre amulette, brisée dans l'affrontement.",
+        "Vous repoussez {antagoniste}, au prix de votre amulette, brisée dans l'affrontement.",
       ],
       difficile: [
         "La malédiction de {lieu} vous marque : vous fuyez {decor} blessé et privé de vos sorts.",
@@ -97,7 +97,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       legendaire: [
         "Le sortilège vous engloutit : pour survivre, vous offrez votre force vitale en sacrifice.",
-        "{antagoniste} vous corrompt de sa magie noire — une part de vous ne reviendra jamais.",
+        "{antagoniste} vous corrompt de sa magie noire, une part de vous ne reviendra jamais.",
       ],
     },
     tags: ["fantasy", "magie", "épopée", "dragon", "quête", "héroïque"],
@@ -120,7 +120,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     ],
     ambiances: [
       "Le silence de {lieu} est si dense qu'il en devient assourdissant.",
-      "Dans {decor}, quelque chose bouge — puis s'immobilise dès que vous regardez.",
+      "Dans {decor}, quelque chose bouge, puis s'immobilise dès que vous regardez.",
       "L'odeur de {lieu} vous serre la gorge : ici, la mort n'a pas dit son dernier mot.",
     ],
     scenes: [
@@ -140,7 +140,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       normal: [
         "Vous échappez à {antagoniste}, mais ce que vous avez vu hantera vos nuits.",
-        "La sortie cède — vous laissez derrière vous une partie de votre raison.",
+        "La sortie cède, vous laissez derrière vous une partie de votre raison.",
       ],
       difficile: [
         "{antagoniste} vous frôle : glacé d'effroi, vous fuyez {decor} en sang et en larmes.",
@@ -148,7 +148,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       legendaire: [
         "La chose vous saisit : votre esprit se brise et quelque chose d'autre prend votre place.",
-        "Pour échapper à {antagoniste}, vous l'abandonnez à votre compagnon — ses hurlements ne cessent jamais.",
+        "Pour échapper à {antagoniste}, vous l'abandonnez à votre compagnon, ses hurlements ne cessent jamais.",
       ],
     },
     tags: ["horreur", "épouvante", "survie", "ténèbres", "folie", "surnaturel"],
@@ -191,7 +191,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       normal: [
         "Vous obtenez un aveu partiel, mais {antagoniste} a eu le temps de prévenir les autres.",
-        "La preuve est solide — sauf qu'un détail vous a échappé et vous coûtera plus tard.",
+        "La preuve est solide, sauf qu'un détail vous a échappé et vous coûtera plus tard.",
       ],
       difficile: [
         "{antagoniste} retourne la situation : compromis, vous perdez l'accès à {lieu}.",
@@ -199,7 +199,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       legendaire: [
         "Le commanditaire avait un coup d'avance : votre témoin est retrouvé mort dans {decor}.",
-        "Pour coincer {antagoniste}, vous devez sacrifier votre couverture — et plus rien ne vous protège.",
+        "Pour coincer {antagoniste}, vous devez sacrifier votre couverture, et plus rien ne vous protège.",
       ],
     },
     tags: ["policier", "enquête", "mystère", "crime", "indices", "suspense"],
@@ -242,7 +242,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       normal: [
         "Vous l'emportez, mais une balle vous a éraflé l'épaule et le clan retiendra votre visage.",
-        "La fuite réussit — au prix de votre cheval, abattu dans {decor}.",
+        "La fuite réussit, au prix de votre cheval, abattu dans {decor}.",
       ],
       difficile: [
         "{antagoniste} dégaine le premier : touché, vous battez en retraite hors de {lieu}.",
@@ -293,7 +293,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       normal: [
         "Vous prenez le navire, mais la moitié de votre équipage gît sur le pont.",
-        "Le trésor est sauf — une voie d'eau menace pourtant de couler votre navire.",
+        "Le trésor est sauf, une voie d'eau menace pourtant de couler votre navire.",
       ],
       difficile: [
         "{antagoniste} éperonne votre coque : blessé, vous abandonnez le butin dans {decor}.",
@@ -329,7 +329,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     ],
     scenes: [
       "Votre interface neurale détecte une backdoor dans {lieu}. Mais {antagoniste} surveille le réseau, et chaque seconde de connexion laisse une trace.",
-      "Un fixer vous attend près de {decor}. L'info est juteuse — {antagoniste} la veut tout autant que vous.",
+      "Un fixer vous attend près de {decor}. L'info est juteuse, {antagoniste} la veut tout autant que vous.",
       "Les pare-feu de {lieu} tombent un à un sous votre hack. Dans {decor}, {antagoniste} lance ses ICE contre votre esprit.",
     ],
     choix: [
@@ -343,7 +343,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
         "Le deal tient, vous quittez {decor} plus riche et toujours anonyme.",
       ],
       normal: [
-        "Vous récupérez les données, mais l'intrusion a grillé un implant — votre interface clignote en rouge.",
+        "Vous récupérez les données, mais l'intrusion a grillé un implant, votre interface clignote en rouge.",
         "L'info est bonne, sauf que {antagoniste} connaît désormais votre signature réseau.",
       ],
       difficile: [
@@ -431,7 +431,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
     ],
     scenes: [
       "Vous retrouvez l'être aimé dans {decor} de {lieu}. Mais {antagoniste} se dresse entre vos deux mondes.",
-      "Une lettre vous attend près de {decor}. Les mots qu'elle contient pourraient tout changer — ou tout briser à cause de {antagoniste}.",
+      "Une lettre vous attend près de {decor}. Les mots qu'elle contient pourraient tout changer, ou tout briser à cause de {antagoniste}.",
       "Le bal de {lieu} bat son plein. Dans {decor}, un regard suffit, pourtant {antagoniste} épie le moindre geste.",
     ],
     choix: [
@@ -446,7 +446,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
       ],
       normal: [
         "L'aveu touche sa cible, mais {antagoniste} jure de ne pas en rester là.",
-        "Vous restez unis — au prix d'une rupture avec votre propre famille.",
+        "Vous restez unis, au prix d'une rupture avec votre propre famille.",
       ],
       difficile: [
         "{antagoniste} sépare vos chemins : le cœur en miettes, vous quittez {lieu} seul.",
