@@ -9,81 +9,91 @@ const ITEMS_PER_PAGE = 12;
 export type AdventureFilter =
   | "tous"
   | "fantasy"
-  | "scifi"
-  | "horreur"
-  | "romance"
-  | "mystere"
-  | "aventure"
-  | "pirate"
-  | "cyberpunk"
+  | "dark-fantasy"
   | "mythologique"
-  | "western";
+  | "flibuste"
+  | "intrigue"
+  | "marches-sauvages"
+  | "conte-feerique"
+  | "epopee-guerriere"
+  | "arcane-reliques";
 
 export const FILTER_OPTIONS: { value: AdventureFilter; label: string }[] = [
   { value: "tous", label: "Tous" },
   { value: "fantasy", label: "Fantasy" },
-  { value: "scifi", label: "Sci-Fi" },
-  { value: "horreur", label: "Horreur" },
-  { value: "romance", label: "Romance" },
-  { value: "mystere", label: "Mystère" },
-  { value: "aventure", label: "Aventure" },
-  { value: "pirate", label: "Pirate" },
-  { value: "cyberpunk", label: "Cyberpunk" },
+  { value: "dark-fantasy", label: "Dark Fantasy" },
   { value: "mythologique", label: "Mythologique" },
-  { value: "western", label: "Western" },
+  { value: "flibuste", label: "Flibuste" },
+  { value: "intrigue", label: "Intrigue de Cour" },
+  { value: "marches-sauvages", label: "Marches Sauvages" },
+  { value: "conte-feerique", label: "Conte Féerique" },
+  { value: "epopee-guerriere", label: "Épopée Guerrière" },
+  { value: "arcane-reliques", label: "Arcane & Reliques" },
 ];
 
-/** Mappe un filtre utilisateur vers les valeurs possibles en BDD
- *  (l'éditeur manuel stocke `name.toLowerCase()` alors que le générateur
- *   automatique stocke `genreBDD` — ex: "fantasy" vs "fantaisy") */
+/** Mappe un filtre utilisateur vers les valeurs possibles en BDD.
+ *  On inclut aussi les anciens alias (avant la refonte vers une DA 100%
+ *  heroic-fantasy) pour rester robuste si une ligne legacy subsiste. */
 const DB_GENRE_MAP: Record<string, string[] | null> = {
   tous: null,
   fantasy: ["fantasy", "fantaisy"],
-  scifi: ["science-fiction", "scifi"],
-  horreur: ["horreur", "horror"],
-  romance: ["romance"],
-  mystere: ["mystere", "policier"],
-  aventure: ["aventure"],
-  pirate: ["pirate"],
-  cyberpunk: ["cyberpunk"],
+  "dark-fantasy": ["dark-fantasy", "horreur", "horror"],
   mythologique: ["mythologique"],
-  western: ["western"],
+  flibuste: ["flibuste", "pirate"],
+  intrigue: ["intrigue", "policier", "mystere"],
+  "marches-sauvages": ["marches-sauvages", "western"],
+  "conte-feerique": ["conte-feerique", "romance"],
+  "epopee-guerriere": ["epopee-guerriere", "cyberpunk"],
+  "arcane-reliques": ["arcane-reliques", "science-fiction", "scifi"],
 };
 
-/** Étiquette lisible pour un genre (utilisée dans AdventureCard) */
+/** Étiquette lisible pour un genre (utilisée dans AdventureCard).
+ *  Les anciens alias pointent vers le nouveau libellé equivalent. */
 export const GENRE_LABELS: Record<string, string> = {
   fantasy: "Fantasy",
   fantaisy: "Fantasy",
-  "science-fiction": "Sci-Fi",
-  scifi: "Sci-Fi",
-  horreur: "Horreur",
-  horror: "Horreur",
-  romance: "Romance",
-  mystere: "Mystère",
-  policier: "Policier",
-  aventure: "Aventure",
-  pirate: "Pirate",
-  cyberpunk: "Cyberpunk",
+  "dark-fantasy": "Dark Fantasy",
+  horreur: "Dark Fantasy",
+  horror: "Dark Fantasy",
   mythologique: "Mythologique",
-  western: "Western",
+  flibuste: "Flibuste",
+  pirate: "Flibuste",
+  intrigue: "Intrigue de Cour",
+  policier: "Intrigue de Cour",
+  mystere: "Intrigue de Cour",
+  "marches-sauvages": "Marches Sauvages",
+  western: "Marches Sauvages",
+  "conte-feerique": "Conte Féerique",
+  romance: "Conte Féerique",
+  "epopee-guerriere": "Épopée Guerrière",
+  cyberpunk: "Épopée Guerrière",
+  "arcane-reliques": "Arcane & Reliques",
+  "science-fiction": "Arcane & Reliques",
+  scifi: "Arcane & Reliques",
 };
 
 /** Couleur de badge pour chaque genre */
 export const GENRE_COLORS: Record<string, string> = {
   fantasy: "bg-purple-500/20 text-purple-300 border-purple-500/30",
   fantaisy: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-  "science-fiction": "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-  scifi: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
+  "dark-fantasy": "bg-red-500/20 text-red-300 border-red-500/30",
   horreur: "bg-red-500/20 text-red-300 border-red-500/30",
   horror: "bg-red-500/20 text-red-300 border-red-500/30",
-  romance: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-  mystere: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-  policier: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-  aventure: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-  pirate: "bg-yellow-600/20 text-yellow-400 border-yellow-600/30",
-  cyberpunk: "bg-green-500/20 text-green-300 border-green-500/30",
   mythologique: "bg-orange-500/20 text-orange-300 border-orange-500/30",
+  flibuste: "bg-yellow-600/20 text-yellow-400 border-yellow-600/30",
+  pirate: "bg-yellow-600/20 text-yellow-400 border-yellow-600/30",
+  intrigue: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+  policier: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+  mystere: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+  "marches-sauvages": "bg-amber-700/20 text-amber-400 border-amber-700/30",
   western: "bg-amber-700/20 text-amber-400 border-amber-700/30",
+  "conte-feerique": "bg-pink-500/20 text-pink-300 border-pink-500/30",
+  romance: "bg-pink-500/20 text-pink-300 border-pink-500/30",
+  "epopee-guerriere": "bg-green-500/20 text-green-300 border-green-500/30",
+  cyberpunk: "bg-green-500/20 text-green-300 border-green-500/30",
+  "arcane-reliques": "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
+  "science-fiction": "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
+  scifi: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
 };
 
 interface UseAdventureListReturn {

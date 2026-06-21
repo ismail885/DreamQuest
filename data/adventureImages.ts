@@ -11,36 +11,42 @@ export function getAdventureImage(adventureId: number): string {
   return ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
 }
 
-// Genre canonique (les alias BDD pointent vers les memes mots-cles).
+// Genre canonique (les alias BDD, anciens comme nouveaux, pointent vers
+// les memes mots-cles). DA 100% heroic-fantasy.
 const CANONICAL_GENRE: Record<string, string> = {
   fantasy: "fantasy",
   fantaisy: "fantasy",
-  "science-fiction": "scifi",
-  scifi: "scifi",
-  horreur: "horreur",
-  horror: "horreur",
-  romance: "romance",
-  mystere: "mystere",
-  policier: "mystere",
-  aventure: "aventure",
-  pirate: "pirate",
-  cyberpunk: "cyberpunk",
+  "dark-fantasy": "dark-fantasy",
+  horreur: "dark-fantasy",
+  horror: "dark-fantasy",
   mythologique: "mythologique",
-  western: "western",
+  flibuste: "flibuste",
+  pirate: "flibuste",
+  intrigue: "intrigue",
+  policier: "intrigue",
+  mystere: "intrigue",
+  "marches-sauvages": "marches-sauvages",
+  western: "marches-sauvages",
+  "conte-feerique": "conte-feerique",
+  romance: "conte-feerique",
+  "epopee-guerriere": "epopee-guerriere",
+  cyberpunk: "epopee-guerriere",
+  "arcane-reliques": "arcane-reliques",
+  "science-fiction": "arcane-reliques",
+  scifi: "arcane-reliques",
 };
 
 // Mots-cles par genre pour LoremFlickr (gratuit, sans cle, par mot-cle).
 const GENRE_KEYWORDS: Record<string, string> = {
   fantasy: "fantasy,castle",
-  scifi: "scifi,space",
-  horreur: "horror,dark",
-  romance: "romantic,sunset",
-  mystere: "mystery,fog",
-  aventure: "adventure,jungle",
-  pirate: "pirate,ship",
-  cyberpunk: "cyberpunk,neon",
+  "dark-fantasy": "dark,gothic,crypt",
   mythologique: "mythology,temple",
-  western: "western,desert",
+  flibuste: "pirate,ship",
+  intrigue: "medieval,castle,throne",
+  "marches-sauvages": "wilderness,outpost,frontier",
+  "conte-feerique": "fairytale,enchanted,forest",
+  "epopee-guerriere": "medieval,battle,knight",
+  "arcane-reliques": "magic,artifact,ruins",
 };
 
 const DEFAULT_CANON = "fantasy";

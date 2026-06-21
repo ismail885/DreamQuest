@@ -5,15 +5,15 @@
 export type Difficulte = "facile" | "normal" | "difficile" | "legendaire";
 
 export type GenreNom =
-  | "Science-Fiction"
   | "Fantasy"
-  | "Horreur"
-  | "Policier"
-  | "Western"
-  | "Pirate"
-  | "Cyberpunk"
+  | "Dark Fantasy"
   | "Mythologique"
-  | "Romance";
+  | "Flibuste"
+  | "Intrigue de Cour"
+  | "Marches Sauvages"
+  | "Conte Féerique"
+  | "Épopée Guerrière"
+  | "Arcane & Reliques";
 
 export type ThemeId =
   | "chateau"
@@ -51,11 +51,20 @@ export interface GenreData {
   evenements: string[];
 }
 
-// Format compatible avec les colonnes JSONB existantes (choix1/2_consequences).
+// Format consomme directement par le jeu (hooks/useConsequences.ts) :
+//  - { type: "combat", level } declenche un combat
+//  - { pv, force, agility, magie, endurance } applique des effets (evenement)
+//  - text : narration affichee
+// Stocke tel quel dans les colonnes JSONB choix1/2_consequences.
 export interface ConsequenceGeneree {
-  texte: string;
-  combat?: { enemyId: string };
-  evenement?: { type: string };
+  text: string;
+  type?: "combat";
+  level?: number;
+  pv?: number;
+  force?: number;
+  agility?: number;
+  magie?: number;
+  endurance?: number;
 }
 
 export interface ChoixGenere {

@@ -537,26 +537,10 @@ export const COMBAT_EVENTS: RandomEvent[] = [
 
 export const RANDOM_EVENTS: RandomEvent[] = [...NARRATIVE_EVENTS, ...COMBAT_EVENTS];
 
-// Événements réservés à certains genres (les autres sont universels).
-const FANTASY_ONLY_EVENTS = new Set([
-  'magic', 'tempete_magique', 'puits_a_souhaits', 'foret_ensorcelee', 'cimetiere_ancien',
-  'autel_elementaire', 'cercles_de_pierre', 'fontaine_magique', 'nids_d_harpies', 'enchanteur_errant',
-  'gobelin_ambush', 'skeleton_encounter', 'troll_encounter', 'vampire_encounter', 'golem_de_pierre',
-  'spectre_vengeur', 'guerriers_orcs', 'manticore', 'elementaire_de_feu', 'soldats_squelettes', 'harceleur_tenebreux',
-]);
-
-const MEDIEVAL_EVENTS = new Set([
-  'tresor', 'pont_effondre', 'statue_ancienne', 'ermite', 'festin_villageois', 'champ_de_bataille',
-  'bibliotheque_itinerante', 'guerisseuse', 'epee_dans_la_pierre', 'spider_encounter', 'plante_vorace',
-]);
-
-const FANTASY_GENRES = ['Fantasy', 'Mythologique', 'Horreur'];
-const MODERN_GENRES = ['Science-Fiction', 'Cyberpunk', 'Policier', 'Romance'];
-
-function isEventAllowed(event: RandomEvent, genre?: string | null): boolean {
-  if (!genre) return true;
-  if (FANTASY_ONLY_EVENTS.has(event.id)) return FANTASY_GENRES.includes(genre);
-  if (MEDIEVAL_EVENTS.has(event.id)) return !MODERN_GENRES.includes(genre);
+// Depuis la refonte vers une direction artistique 100% heroic-fantasy,
+// tous les genres partagent le meme univers medieval-fantastique : aucun
+// evenement n'est plus exclu en fonction du genre.
+function isEventAllowed(_event: RandomEvent, _genre?: string | null): boolean {
   return true;
 }
 

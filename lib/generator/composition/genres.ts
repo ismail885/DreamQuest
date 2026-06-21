@@ -1,59 +1,10 @@
 import type { GenreData, GenreNom } from "./types";
 
-// 9 genres. Chaque genre habille le décor neutre du thème.
+// 9 genres, tous ancres dans la meme direction artistique heroic-fantasy
+// medievale (cf. les classes : Guerrier, Mage, Assassin, Paladin, Nicromancien...).
+// Chaque genre habille le decor neutre du theme d'une tonalite distincte.
 
 export const GENRES: Record<GenreNom, GenreData> = {
-  "Science-Fiction": {
-    nom: "Science-Fiction",
-    habillagesLieu: [
-      "{lieu}, reconverti en station orbitale à l'abandon",
-      "{lieu}, complexe cybernétique aux circuits éteints",
-      "{lieu}, avant-poste colonial perdu aux confins du système",
-    ],
-    antagonistes: [
-      "un androïde de sécurité défaillant",
-      "l'IA corrompue du complexe",
-      "une milice corporatiste",
-      "une forme de vie synthétique inconnue",
-    ],
-    ambiances: [
-      "Les néons de secours de {lieu} clignotent dans un silence de vide spatial.",
-      "Dans {decor}, vos scanners captent une signature énergétique qui ne devrait pas exister.",
-      "Une alarme lointaine résonne, {lieu} n'a plus vu d'équipage depuis des années.",
-    ],
-    scenes: [
-      "Les portes blindées de {lieu} s'ouvrent sur {decor}. Vos capteurs s'affolent : {antagoniste} a verrouillé les protocoles de survie.",
-      "Un signal de détresse vous guide à travers {decor}. L'air se raréfie, et {antagoniste} surveille chaque sas.",
-      "L'écran holographique de {lieu} affiche un compte à rebours. Près de {decor}, {antagoniste} bloque l'accès aux données vitales.",
-    ],
-    choix: [
-      ["Pirater le terminal pour ouvrir le sas", "Couper l'alimentation et passer par {decor}"],
-      ["Affronter {antagoniste} avec votre arme à énergie", "Récupérer les données avant qu'il vous repère"],
-      ["Tenter de raisonner l'IA", "Lancer le protocole d'autodestruction"],
-    ],
-    consequences: {
-      facile: [
-        "Le protocole obéit : le sas s'ouvre et vous progressez sans dommage.",
-        "Vos boucliers encaissent, vous sortez de {decor} intact, données en main.",
-      ],
-      normal: [
-        "Le sas cède, mais une décharge grille un de vos modules : votre combinaison clignote en orange.",
-        "Vous récupérez les données, incomplètes. Une partie a été effacée pendant la fuite.",
-      ],
-      difficile: [
-        "L'IA verrouille {decor} derrière vous : blessé, vous fuyez sans la moitié des données.",
-        "{antagoniste} touche votre réacteur dorsal, vous progressez en perdant de l'oxygène.",
-      ],
-      legendaire: [
-        "Le complexe se dépressurise : pour survivre, vous devez sacrifier votre coéquipier resté dans {decor}.",
-        "L'IA prend le contrôle de votre combinaison, votre corps ne répond plus tout à fait à vos ordres.",
-      ],
-    },
-    tags: ["science-fiction", "espace", "technologie", "ia", "survie", "futur"],
-    enemyTypes: ["human", "elemental"],
-    evenements: ["panne_systeme", "depressurisation", "signal_inconnu"],
-  },
-
   Fantasy: {
     nom: "Fantasy",
     habillagesLieu: [
@@ -105,17 +56,17 @@ export const GENRES: Record<GenreNom, GenreData> = {
     evenements: ["sceau_brise", "rencontre_mystique", "tresor_enchante"],
   },
 
-  Horreur: {
-    nom: "Horreur",
+  "Dark Fantasy": {
+    nom: "Dark Fantasy",
     habillagesLieu: [
       "{lieu}, hanté par ce qui n'aurait jamais dû mourir",
       "{lieu}, où chaque mur semble retenir un cri",
-      "{lieu}, rongé par une présence invisible",
+      "{lieu}, rongé par une malédiction sans nom",
     ],
     antagonistes: [
       "une chose tapie dans l'obscurité",
       "un spectre qui ne supporte pas les vivants",
-      "une entité sans nom ni visage",
+      "un seigneur mort-vivant assoiffé d'âmes",
       "ce qui rôde derrière les murs",
     ],
     ambiances: [
@@ -124,13 +75,13 @@ export const GENRES: Record<GenreNom, GenreData> = {
       "L'odeur de {lieu} vous serre la gorge : ici, la mort n'a pas dit son dernier mot.",
     ],
     scenes: [
-      "Vous avancez dans {decor} de {lieu}. Votre lampe faiblit, et {antagoniste} se rapproche dans votre dos.",
+      "Vous avancez dans {decor} de {lieu}. Votre torche faiblit, et {antagoniste} se rapproche dans votre dos.",
       "Un murmure monte de {decor}. Vous voulez fuir, mais {antagoniste} a déjà scellé la sortie.",
-      "Les murs de {lieu} suintent. Près de {decor}, {antagoniste} prononce votre nom d'une voix qui n'est pas humaine.",
+      "Les murs de {lieu} suintent une sève noire. Près de {decor}, {antagoniste} prononce votre nom d'une voix qui n'est pas humaine.",
     ],
     choix: [
       ["Affronter votre peur et avancer dans {decor}", "Vous terrer en retenant votre souffle"],
-      ["Allumer ce qui reste de votre lampe", "Suivre le murmure jusqu'à sa source"],
+      ["Brandir votre torche pour repousser les ombres", "Suivre le murmure jusqu'à sa source"],
       ["Courir vers la sortie scellée", "Vous retourner pour faire face à {antagoniste}"],
     ],
     consequences: {
@@ -143,7 +94,7 @@ export const GENRES: Record<GenreNom, GenreData> = {
         "La sortie cède, vous laissez derrière vous une partie de votre raison.",
       ],
       difficile: [
-        "{antagoniste} vous frôle : glacé d'effroi, vous fuyez {decor} en sang et en larmes.",
+        "{antagoniste} vous frôle : glacé d'effroi, vous fuyez {decor} en sang.",
         "Piégé dans {lieu}, vous perdez le sens du temps et de votre propre nom.",
       ],
       legendaire: [
@@ -151,213 +102,9 @@ export const GENRES: Record<GenreNom, GenreData> = {
         "Pour échapper à {antagoniste}, vous l'abandonnez à votre compagnon, ses hurlements ne cessent jamais.",
       ],
     },
-    tags: ["horreur", "épouvante", "survie", "ténèbres", "folie", "surnaturel"],
+    tags: ["dark-fantasy", "ténèbres", "malédiction", "morts-vivants", "épouvante", "survie"],
     enemyTypes: ["undead", "demon"],
     evenements: ["apparition", "piege_mortel", "perte_de_raison"],
-  },
-
-  Policier: {
-    nom: "Policier",
-    habillagesLieu: [
-      "{lieu}, théâtre d'un meurtre encore tiède",
-      "{lieu}, où une disparition reste inexpliquée",
-      "{lieu}, repaire présumé d'une organisation criminelle",
-    ],
-    antagonistes: [
-      "un suspect trop sûr de lui",
-      "un complice dans l'ombre",
-      "le commanditaire qui tire les ficelles",
-      "un tueur méthodique",
-    ],
-    ambiances: [
-      "Rien n'est laissé au hasard dans {lieu} : chaque détail peut être un indice.",
-      "Dans {decor}, une trace discordante attire votre œil d'enquêteur.",
-      "Le calme de {lieu} sonne faux, quelqu'un ici sait et se tait.",
-    ],
-    scenes: [
-      "Vous examinez {decor} de {lieu}. Un indice contredit la version officielle, et {antagoniste} vous observe de loin.",
-      "Un témoin vous attend près de {decor}. Ses mains tremblent : {antagoniste} l'a peut-être déjà menacé.",
-      "Les pièces du puzzle s'assemblent dans {lieu}. Mais {antagoniste} efface ses traces plus vite que vous ne les trouvez.",
-    ],
-    choix: [
-      ["Interroger {antagoniste} sans détour", "Filer discrètement pour le prendre en flagrant délit"],
-      ["Analyser l'indice trouvé dans {decor}", "Confronter le témoin à ses contradictions"],
-      ["Tendre un piège au coupable", "Rassembler des preuves avant d'agir"],
-    ],
-    consequences: {
-      facile: [
-        "L'interrogatoire porte : {antagoniste} se trahit et vous tenez votre piste.",
-        "L'indice de {decor} parle de lui-même, l'enquête avance nettement.",
-      ],
-      normal: [
-        "Vous obtenez un aveu partiel, mais {antagoniste} a eu le temps de prévenir les autres.",
-        "La preuve est solide, sauf qu'un détail vous a échappé et vous coûtera plus tard.",
-      ],
-      difficile: [
-        "{antagoniste} retourne la situation : compromis, vous perdez l'accès à {lieu}.",
-        "Le piège se referme sur vous, blessé, vous voyez le coupable s'enfuir.",
-      ],
-      legendaire: [
-        "Le commanditaire avait un coup d'avance : votre témoin est retrouvé mort dans {decor}.",
-        "Pour coincer {antagoniste}, vous devez sacrifier votre couverture, et plus rien ne vous protège.",
-      ],
-    },
-    tags: ["policier", "enquête", "mystère", "crime", "indices", "suspense"],
-    enemyTypes: ["human"],
-    evenements: ["nouvel_indice", "fausse_piste", "temoin_silencieux"],
-  },
-
-  Western: {
-    nom: "Western",
-    habillagesLieu: [
-      "{lieu}, fort abandonné battu par la poussière",
-      "{lieu}, bastion d'un hors-la-loi recherché",
-      "{lieu}, ville-frontière au shérif corrompu",
-    ],
-    antagonistes: [
-      "un pistolero à la gâchette facile",
-      "un chasseur de primes sans pitié",
-      "le chef de clan qui règne sur la région",
-      "un shérif vendu au plus offrant",
-    ],
-    ambiances: [
-      "Le soleil écrase {lieu}, seule la poussière ose bouger.",
-      "Dans {decor}, une silhouette vous toise, la main près du holster.",
-      "Le saloon de {lieu} s'est tu d'un coup : votre arrivée n'est pas passée inaperçue.",
-    ],
-    scenes: [
-      "Vous arrivez à {decor} de {lieu}. {antagoniste} crache par terre : la tension monte d'un cran.",
-      "Une diligence renversée bloque {decor}. {antagoniste} et ses hommes vous attendaient au tournant.",
-      "La cloche de {lieu} sonne midi. Face à vous, dans {decor}, {antagoniste} dégaine lentement.",
-    ],
-    choix: [
-      ["Provoquer {antagoniste} en duel", "Désamorcer la situation par la parole"],
-      ["Sauter en selle et fuir par {decor}", "Tenir votre position, fusil en main"],
-      ["Rallier les habitants à votre cause", "Régler ça seul, comme un homme de l'Ouest"],
-    ],
-    consequences: {
-      facile: [
-        "Plus rapide que lui : {antagoniste} mord la poussière et la région respire.",
-        "Vos mots font mouche, on vous laisse traverser {decor} sans une balle.",
-      ],
-      normal: [
-        "Vous l'emportez, mais une balle vous a éraflé l'épaule et le clan retiendra votre visage.",
-        "La fuite réussit, au prix de votre cheval, abattu dans {decor}.",
-      ],
-      difficile: [
-        "{antagoniste} dégaine le premier : touché, vous battez en retraite hors de {lieu}.",
-        "Les hommes du clan vous encerclent, dépouillé de vos armes, vous fuyez à pied.",
-      ],
-      legendaire: [
-        "L'embuscade tourne au massacre : pour vous en sortir, vous laissez un allié dans {decor}.",
-        "Le shérif vous livre au clan, trahi de tous, vous n'avez plus que votre dernière balle.",
-      ],
-    },
-    tags: ["western", "far-west", "duel", "hors-la-loi", "honneur", "désert"],
-    enemyTypes: ["human", "beast"],
-    evenements: ["duel_au_soleil", "embuscade", "chevauchee"],
-  },
-
-  Pirate: {
-    nom: "Pirate",
-    habillagesLieu: [
-      "{lieu}, forteresse côtière à prendre d'assaut",
-      "{lieu}, repaire de corsaires niché dans un delta",
-      "{lieu}, où dort un trésor maudit",
-    ],
-    antagonistes: [
-      "un capitaine rival assoiffé d'or",
-      "la garde de la Couronne",
-      "une créature des abysses",
-      "le fantôme d'un flibustier trahi",
-    ],
-    ambiances: [
-      "Le sel et la poudre flottent dans l'air de {lieu}.",
-      "Dans {decor}, une carte au trésor à moitié effacée attend son lecteur.",
-      "Les vagues frappent {lieu}, quelque part, une cloche de naufrage sonne.",
-    ],
-    scenes: [
-      "Vous abordez {decor} de {lieu}. {antagoniste} hisse son pavillon : le combat semble inévitable.",
-      "Le coffre repose enfin dans {decor}. Mais {antagoniste} surgit, sabre au clair, pour vous le disputer.",
-      "Une tempête pousse votre navire vers {lieu}. Sur {decor}, {antagoniste} compte bien vous envoyer par le fond.",
-    ],
-    choix: [
-      ["Ordonner l'abordage du navire de {antagoniste}", "Négocier un partage du butin"],
-      ["Saisir le trésor et fuir par {decor}", "Affronter {antagoniste} pour l'honneur de l'équipage"],
-      ["Tenir la barre dans la tempête", "Jeter du lest pour gagner en vitesse"],
-    ],
-    consequences: {
-      facile: [
-        "L'abordage est un triomphe : le butin et la gloire sont à vous.",
-        "Vous filez avec le coffre, {decor} disparaît dans votre sillage.",
-      ],
-      normal: [
-        "Vous prenez le navire, mais la moitié de votre équipage gît sur le pont.",
-        "Le trésor est sauf, une voie d'eau menace pourtant de couler votre navire.",
-      ],
-      difficile: [
-        "{antagoniste} éperonne votre coque : blessé, vous abandonnez le butin dans {decor}.",
-        "La tempête vous drosse sur {lieu}, vous perdez votre navire et la moitié de vos hommes.",
-      ],
-      legendaire: [
-        "La malédiction du trésor s'éveille : pour survivre, vous offrez une âme aux abysses.",
-        "Acculé, vous faites sauter votre propre soute pour emporter {antagoniste} dans la mort.",
-      ],
-    },
-    tags: ["pirate", "mer", "trésor", "flibuste", "abordage", "aventure"],
-    enemyTypes: ["human", "beast", "undead"],
-    evenements: ["abordage", "tempete", "tresor_maudit"],
-  },
-
-  Cyberpunk: {
-    nom: "Cyberpunk",
-    habillagesLieu: [
-      "{lieu}, reconverti en bunker par la mégacorpo Hélios",
-      "{lieu}, gratte-ciel tombé aux mains des gangs des bas-fonds",
-      "{lieu}, nœud de données noyé sous les néons",
-    ],
-    antagonistes: [
-      "l'agent corporatiste Voss",
-      "le gang des Lames Néon",
-      "une IA de surveillance corrompue",
-      "un netrunner ennemi mieux équipé que vous",
-    ],
-    ambiances: [
-      "Sous la pluie acide, les néons de {lieu} grésillent comme un avertissement.",
-      "Dans {decor}, vos implants captent une fréquence qui n'aurait pas dû exister.",
-      "Les drones de {lieu} quadrillent le ciel, chaque pas est enregistré quelque part.",
-    ],
-    scenes: [
-      "Votre interface neurale détecte une backdoor dans {lieu}. Mais {antagoniste} surveille le réseau, et chaque seconde de connexion laisse une trace.",
-      "Un fixer vous attend près de {decor}. L'info est juteuse, {antagoniste} la veut tout autant que vous.",
-      "Les pare-feu de {lieu} tombent un à un sous votre hack. Dans {decor}, {antagoniste} lance ses ICE contre votre esprit.",
-    ],
-    choix: [
-      ["Forcer la backdoor avant d'être tracé", "Débrancher et passer par {decor}"],
-      ["Conclure le deal avec le fixer", "Doubler tout le monde et garder l'info"],
-      ["Affronter {antagoniste} dans le cyberespace", "Brûler vos traces et disparaître"],
-    ],
-    consequences: {
-      facile: [
-        "Le hack passe net : vous récupérez les données et quelques crédits au passage.",
-        "Le deal tient, vous quittez {decor} plus riche et toujours anonyme.",
-      ],
-      normal: [
-        "Vous récupérez les données, mais l'intrusion a grillé un implant, votre interface clignote en rouge.",
-        "L'info est bonne, sauf que {antagoniste} connaît désormais votre signature réseau.",
-      ],
-      difficile: [
-        "Tracé : {antagoniste} verrouille les issues et votre implant surchauffe, vous fuyez {decor} blessé.",
-        "Le fixer vous trahit, dépouillé de vos crédits, vous êtes recherché dans tout le secteur.",
-      ],
-      legendaire: [
-        "L'IA retourne votre interface contre vous : une partie de votre mémoire est effacée à jamais.",
-        "Pour échapper aux ICE, vous sacrifiez la conscience numérique de votre allié restée dans {decor}.",
-      ],
-    },
-    tags: ["cyberpunk", "hacking", "dystopie", "mégacorporation", "implants", "néon"],
-    enemyTypes: ["human", "elemental"],
-    evenements: ["raid_corporatiste", "panne_reseau", "marche_noir"],
   },
 
   Mythologique: {
@@ -411,54 +158,309 @@ export const GENRES: Record<GenreNom, GenreData> = {
     evenements: ["epreuve_divine", "prophetie", "faveur_des_dieux"],
   },
 
-  Romance: {
-    nom: "Romance",
+  Flibuste: {
+    nom: "Flibuste",
     habillagesLieu: [
-      "{lieu}, demeure d'un noble au passé mystérieux",
-      "{lieu}, refuge d'une rencontre interdite",
-      "{lieu}, théâtre d'un amour que tout oppose",
+      "{lieu}, forteresse côtière à prendre d'assaut",
+      "{lieu}, repaire de corsaires niché dans un delta",
+      "{lieu}, où dort un trésor maudit",
     ],
     antagonistes: [
-      "un rival amoureux déterminé",
-      "deux familles qui se déchirent",
-      "un secret du passé impossible à taire",
-      "un serment qui vous enchaîne à un autre",
+      "un capitaine rival assoiffé d'or",
+      "la garde de la Couronne",
+      "une créature des abysses",
+      "le fantôme d'un flibustier trahi",
     ],
     ambiances: [
-      "Une douceur mélancolique imprègne chaque pièce de {lieu}.",
-      "Dans {decor}, un parfum familier ravive un souvenir qui fait battre votre cœur.",
-      "Les lumières de {lieu} tremblent comme l'aveu que vous n'osez pas faire.",
+      "Le sel et la poudre flottent dans l'air de {lieu}.",
+      "Dans {decor}, une carte au trésor à moitié effacée attend son lecteur.",
+      "Les vagues frappent {lieu}, quelque part, une cloche de naufrage sonne.",
     ],
     scenes: [
-      "Vous retrouvez l'être aimé dans {decor} de {lieu}. Mais {antagoniste} se dresse entre vos deux mondes.",
-      "Une lettre vous attend près de {decor}. Les mots qu'elle contient pourraient tout changer, ou tout briser à cause de {antagoniste}.",
-      "Le bal de {lieu} bat son plein. Dans {decor}, un regard suffit, pourtant {antagoniste} épie le moindre geste.",
+      "Vous abordez {decor} de {lieu}. {antagoniste} hisse son pavillon : le combat semble inévitable.",
+      "Le coffre repose enfin dans {decor}. Mais {antagoniste} surgit, sabre au clair, pour vous le disputer.",
+      "Une tempête pousse votre navire vers {lieu}. Sur {decor}, {antagoniste} compte bien vous envoyer par le fond.",
     ],
     choix: [
-      ["Avouer vos sentiments malgré {antagoniste}", "Taire votre cœur pour protéger l'autre"],
-      ["Fuir ensemble loin de {lieu}", "Affronter {antagoniste} et plaider votre cause"],
-      ["Sacrifier votre bonheur pour le sien", "Vous battre pour cet amour, quoi qu'il en coûte"],
+      ["Ordonner l'abordage du navire de {antagoniste}", "Négocier un partage du butin"],
+      ["Saisir le trésor et fuir par {decor}", "Affronter {antagoniste} pour l'honneur de l'équipage"],
+      ["Tenir la barre dans la tempête", "Jeter du lest pour gagner en vitesse"],
     ],
     consequences: {
       facile: [
-        "Votre aveu est accueilli avec tendresse : deux cœurs ne battent plus que comme un seul.",
-        "La fuite réussit, loin de {lieu}, votre amour respire enfin librement.",
+        "L'abordage est un triomphe : le butin et la gloire sont à vous.",
+        "Vous filez avec le coffre, {decor} disparaît dans votre sillage.",
       ],
       normal: [
-        "L'aveu touche sa cible, mais {antagoniste} jure de ne pas en rester là.",
-        "Vous restez unis, au prix d'une rupture avec votre propre famille.",
+        "Vous prenez le navire, mais la moitié de votre équipage gît sur le pont.",
+        "Le trésor est sauf, une voie d'eau menace pourtant de couler votre navire.",
       ],
       difficile: [
-        "{antagoniste} sépare vos chemins : le cœur en miettes, vous quittez {lieu} seul.",
-        "Le secret éclate dans {decor}, la confiance se brise et les mots blessent.",
+        "{antagoniste} éperonne votre coque : blessé, vous abandonnez le butin dans {decor}.",
+        "La tempête vous drosse sur {lieu}, vous perdez votre navire et la moitié de vos hommes.",
       ],
       legendaire: [
-        "Pour sauver l'être aimé, vous renoncez à lui pour toujours et partez sans un adieu.",
-        "Le serment l'emporte sur la passion : vous vous condamnez à aimer en silence jusqu'à la fin.",
+        "La malédiction du trésor s'éveille : pour survivre, vous offrez une âme aux abysses.",
+        "Acculé, vous faites sauter votre propre soute pour emporter {antagoniste} dans la mort.",
       ],
     },
-    tags: ["romance", "passion", "sentiments", "destin", "amour", "drame"],
-    enemyTypes: ["human"],
-    evenements: ["rencontre", "aveu", "trahison_du_coeur"],
+    tags: ["flibuste", "corsaires", "mer", "trésor", "abordage", "aventure"],
+    enemyTypes: ["human", "beast", "undead"],
+    evenements: ["abordage", "tempete", "tresor_maudit"],
+  },
+
+  "Intrigue de Cour": {
+    nom: "Intrigue de Cour",
+    habillagesLieu: [
+      "{lieu}, théâtre d'un complot contre la couronne",
+      "{lieu}, où un noble a été retrouvé sans vie",
+      "{lieu}, nid d'espions au service de maisons rivales",
+    ],
+    antagonistes: [
+      "un conseiller à l'ambition dévorante",
+      "un maître-espion dans l'ombre",
+      "le grand chambellan qui tire les ficelles",
+      "une dame de cour au sourire empoisonné",
+    ],
+    ambiances: [
+      "Sous les lustres de {lieu}, chaque révérence cache une lame.",
+      "Dans {decor}, un sceau brisé trahit une lettre que nul ne devait lire.",
+      "Le calme de {lieu} sonne faux : ici, on murmure plus qu'on ne parle.",
+    ],
+    scenes: [
+      "Vous arpentez {decor} de {lieu}. Un indice contredit la version officielle, et {antagoniste} vous observe par-dessus son éventail.",
+      "Un valet effrayé vous attend près de {decor}. Il sait quelque chose, mais {antagoniste} l'a déjà menacé.",
+      "Les pièces du complot s'assemblent dans {lieu}. Mais {antagoniste} efface ses traces plus vite que vous ne les découvrez.",
+    ],
+    choix: [
+      ["Confondre {antagoniste} devant la cour", "Le filer discrètement jusqu'à son commanditaire"],
+      ["Déchiffrer la lettre cachée dans {decor}", "Soudoyer le témoin pour qu'il parle"],
+      ["Tendre un piège au traître", "Réunir des preuves avant de frapper"],
+    ],
+    consequences: {
+      facile: [
+        "Votre joute verbale porte : {antagoniste} se trahit devant témoins.",
+        "La lettre de {decor} parle d'elle-même, le complot se dévoile.",
+      ],
+      normal: [
+        "Vous arrachez un demi-aveu, mais {antagoniste} a eu le temps d'alerter ses alliés.",
+        "La preuve est solide, sauf qu'un détail vous a échappé et vous coûtera plus tard.",
+      ],
+      difficile: [
+        "{antagoniste} retourne la cour contre vous : déshonoré, vous perdez l'accès à {lieu}.",
+        "Le piège se referme sur vous, une dague vous frôle dans {decor} avant que le traître ne s'enfuie.",
+      ],
+      legendaire: [
+        "Le commanditaire avait un coup d'avance : votre témoin est retrouvé mort dans {decor}.",
+        "Pour démasquer {antagoniste}, vous sacrifiez votre nom, et plus aucune maison ne vous protège.",
+      ],
+    },
+    tags: ["intrigue", "complot", "espionnage", "cour", "mystère", "trahison"],
+    enemyTypes: ["human", "undead"],
+    evenements: ["complot_devoile", "fausse_piste", "temoin_silencieux"],
+  },
+
+  "Marches Sauvages": {
+    nom: "Marches Sauvages",
+    habillagesLieu: [
+      "{lieu}, avant-poste battu par les vents de la frontière",
+      "{lieu}, repaire d'un hors-la-loi recherché",
+      "{lieu}, bourg-frontière sous la coupe d'un seigneur de guerre",
+    ],
+    antagonistes: [
+      "un chef de bande à la hache facile",
+      "un chasseur de primes sans pitié",
+      "le seigneur pillard qui règne sur les marches",
+      "un capitaine de mercenaires vendu au plus offrant",
+    ],
+    ambiances: [
+      "Le vent balaie {lieu}, seule la poussière ose bouger.",
+      "Dans {decor}, une silhouette vous toise, la main près de la garde.",
+      "La taverne de {lieu} s'est tue d'un coup : votre arrivée n'est pas passée inaperçue.",
+    ],
+    scenes: [
+      "Vous arrivez à {decor} de {lieu}. {antagoniste} crache par terre : la tension monte d'un cran.",
+      "Un chariot renversé bloque {decor}. {antagoniste} et ses hommes vous attendaient au tournant.",
+      "La cloche de {lieu} sonne midi. Face à vous, dans {decor}, {antagoniste} dégaine lentement sa lame.",
+    ],
+    choix: [
+      ["Provoquer {antagoniste} en duel", "Désamorcer la situation par la parole"],
+      ["Sauter en selle et fuir par {decor}", "Tenir votre position, arc bandé"],
+      ["Rallier les habitants à votre cause", "Régler ça seul, à la pointe de l'épée"],
+    ],
+    consequences: {
+      facile: [
+        "Plus vif que lui : {antagoniste} mord la poussière et les marches respirent.",
+        "Vos mots font mouche, on vous laisse traverser {decor} sans une flèche.",
+      ],
+      normal: [
+        "Vous l'emportez, mais une lame vous a éraflé l'épaule et la bande retiendra votre visage.",
+        "La fuite réussit, au prix de votre monture, abattue dans {decor}.",
+      ],
+      difficile: [
+        "{antagoniste} frappe le premier : touché, vous battez en retraite hors de {lieu}.",
+        "Les hommes du seigneur vous encerclent, dépouillé de vos armes, vous fuyez à pied.",
+      ],
+      legendaire: [
+        "L'embuscade tourne au massacre : pour vous en sortir, vous laissez un allié dans {decor}.",
+        "Le bourgmestre vous livre à la bande, trahi de tous, il ne vous reste que votre dernière flèche.",
+      ],
+    },
+    tags: ["marches", "frontière", "hors-la-loi", "duel", "honneur", "aventure"],
+    enemyTypes: ["human", "beast"],
+    evenements: ["duel_a_l_aube", "embuscade", "chevauchee"],
+  },
+
+  "Conte Féerique": {
+    nom: "Conte Féerique",
+    habillagesLieu: [
+      "{lieu}, baigné d'une lumière qui n'appartient pas à ce monde",
+      "{lieu}, où le voile entre les royaumes s'amincit",
+      "{lieu}, demeure d'un esprit lié par un ancien pacte",
+    ],
+    antagonistes: [
+      "une reine des fées capricieuse",
+      "un esprit lié par un serment rompu",
+      "un sorcier qui collectionne les souvenirs",
+      "une créature née d'un vœu corrompu",
+    ],
+    ambiances: [
+      "Une douceur enchantée flotte sur {lieu}, mais toute féerie a son prix.",
+      "Dans {decor}, des lucioles dessinent un chemin que vous n'aviez pas vu.",
+      "Les lumières de {lieu} tremblent comme une promesse qu'on n'ose pas formuler.",
+    ],
+    scenes: [
+      "Vous pénétrez dans {decor} de {lieu}. Un pacte ancien s'éveille, et {antagoniste} attend que vous prononciez le mauvais mot.",
+      "Une offrande vous attend près de {decor}. L'accepter pourrait tout changer, ou vous lier à {antagoniste} pour toujours.",
+      "Le bal des esprits de {lieu} bat son plein. Dans {decor}, un seul faux pas et {antagoniste} réclamera son dû.",
+    ],
+    choix: [
+      ["Accepter le pacte malgré {antagoniste}", "Refuser et chercher une autre voie"],
+      ["Suivre le sentier de lucioles", "Briser l'enchantement de {decor}"],
+      ["Offrir un souvenir cher en échange", "Vous battre pour reprendre ce qui vous a été pris"],
+    ],
+    consequences: {
+      facile: [
+        "Le pacte vous est favorable : la féerie vous ouvre {decor} en souriant.",
+        "L'enchantement se dissipe, vous quittez {lieu} le cœur léger et béni.",
+      ],
+      normal: [
+        "Le vœu s'exauce, mais {antagoniste} jure de réclamer son tribut tôt ou tard.",
+        "Vous traversez {decor} indemne, au prix d'un souvenir précieux à jamais effacé.",
+      ],
+      difficile: [
+        "{antagoniste} retourne la magie contre vous : égaré, vous errez dans {decor} sans repère.",
+        "Le pacte se referme comme un piège, vous quittez {lieu} marqué d'une dette féerique.",
+      ],
+      legendaire: [
+        "Pour rompre le sortilège, vous renoncez à ce qui vous est le plus cher, sans retour possible.",
+        "Le serment l'emporte : {antagoniste} vous garde à sa cour pour cent ans et un jour.",
+      ],
+    },
+    tags: ["féerie", "enchantement", "pacte", "esprits", "merveilleux", "destin"],
+    enemyTypes: ["beast", "elemental"],
+    evenements: ["pacte_feerique", "don_enchante", "serment_brise"],
+  },
+
+  "Épopée Guerrière": {
+    nom: "Épopée Guerrière",
+    habillagesLieu: [
+      "{lieu}, place forte assiégée depuis des mois",
+      "{lieu}, dernier bastion avant la chute du royaume",
+      "{lieu}, champ de bataille où s'est jouée une guerre",
+    ],
+    antagonistes: [
+      "un seigneur de guerre invaincu",
+      "une horde en marche vers la capitale",
+      "le général renégat d'une armée maudite",
+      "un champion ennemi que nul n'a su abattre",
+    ],
+    ambiances: [
+      "Les tambours de guerre font trembler les remparts de {lieu}.",
+      "Dans {decor}, les bannières déchirées claquent au-dessus des morts.",
+      "Le cor de {lieu} sonne le rassemblement : l'assaut est pour bientôt.",
+    ],
+    scenes: [
+      "Vous gagnez {decor} de {lieu}. La ligne va céder, et {antagoniste} mène déjà la charge.",
+      "Un éclaireur tombe à vos pieds près de {decor} : {antagoniste} a contourné vos défenses.",
+      "Les portes de {lieu} ploient sous le bélier. Au cœur de {decor}, {antagoniste} cherche votre étendard.",
+    ],
+    choix: [
+      ["Mener la contre-charge contre {antagoniste}", "Tenir la formation coûte que coûte"],
+      ["Sonner la retraite vers {decor}", "Défier {antagoniste} en combat singulier"],
+      ["Rallier les troupes en déroute", "Tenter une manœuvre désespérée par {decor}"],
+    ],
+    consequences: {
+      facile: [
+        "Votre charge enfonce la ligne ennemie : {antagoniste} recule et la place tient.",
+        "La formation tient bon, vous repoussez l'assaut hors de {decor} sans rompre.",
+      ],
+      normal: [
+        "Vous repoussez l'attaque, mais la moitié de votre compagnie gît dans {decor}.",
+        "La position est sauve, au prix d'une blessure qui vous suivra toute la campagne.",
+      ],
+      difficile: [
+        "{antagoniste} brise votre flanc : blessé, vous abandonnez {decor} à l'ennemi.",
+        "La retraite vire à la débâcle, vous fuyez {lieu} en laissant vos étendards au sol.",
+      ],
+      legendaire: [
+        "Pour sauver l'armée, vous tenez {decor} seul et vous y laissez la vie de vos frères d'armes.",
+        "Le duel tourne mal : {antagoniste} vous épargne pour mieux vous humilier devant vos hommes.",
+      ],
+    },
+    tags: ["guerre", "bataille", "siège", "héroïsme", "conquête", "honneur"],
+    enemyTypes: ["human", "beast", "undead"],
+    evenements: ["assaut", "charge_de_cavalerie", "siege"],
+  },
+
+  "Arcane & Reliques": {
+    nom: "Arcane & Reliques",
+    habillagesLieu: [
+      "{lieu}, atelier d'un artificier disparu sans laisser de traces",
+      "{lieu}, voûte scellée où dort une relique interdite",
+      "{lieu}, ruine traversée d'automates encore en veille",
+    ],
+    antagonistes: [
+      "un golem-gardien devenu fou",
+      "l'esprit lié à une relique corrompue",
+      "une confrérie de mages-artificiers rivale",
+      "une création arcanique échappée à son maître",
+    ],
+    ambiances: [
+      "Des cristaux d'arcane palpitent faiblement dans la pénombre de {lieu}.",
+      "Dans {decor}, des rouages anciens se remettent en marche à votre approche.",
+      "Une alarme runique résonne au loin : {lieu} n'a plus vu d'âme vivante depuis des siècles.",
+    ],
+    scenes: [
+      "Les portes runiques de {lieu} s'ouvrent sur {decor}. Vos sens s'affolent : {antagoniste} a scellé les passages.",
+      "Une relique pulse au cœur de {decor}. À peine l'approchez-vous que {antagoniste} s'anime pour la défendre.",
+      "Le mécanisme de {lieu} s'enclenche. Près de {decor}, {antagoniste} verrouille l'accès au cœur arcanique.",
+    ],
+    choix: [
+      ["Déchiffrer les runes pour ouvrir le sceau", "Couper le flux d'arcane et passer par {decor}"],
+      ["Affronter {antagoniste} avec votre magie", "Récupérer la relique avant qu'il ne réagisse"],
+      ["Tenter de maîtriser le golem par une formule", "Provoquer la surcharge du mécanisme"],
+    ],
+    consequences: {
+      facile: [
+        "Les runes obéissent : le sceau s'ouvre et vous progressez sans dommage.",
+        "Votre bouclier arcanique tient, vous quittez {decor} intact, relique en main.",
+      ],
+      normal: [
+        "Le sceau cède, mais une décharge d'arcane vous brûle la main : votre talisman grésille.",
+        "Vous saisissez la relique, fêlée. Une part de son pouvoir s'est dissipée dans la fuite.",
+      ],
+      difficile: [
+        "{antagoniste} verrouille {decor} derrière vous : blessé, vous fuyez sans la relique.",
+        "Le golem broie votre arme, vous battez en retraite, désarmé et traqué dans {lieu}.",
+      ],
+      legendaire: [
+        "Le mécanisme s'effondre : pour survivre, vous abandonnez votre compagnon dans {decor}.",
+        "La relique vous corrompt de son arcane : votre corps ne répond plus tout à fait à vos ordres.",
+      ],
+    },
+    tags: ["arcane", "relique", "artificier", "golem", "magitech", "mystère"],
+    enemyTypes: ["elemental", "demon", "undead"],
+    evenements: ["surcharge_arcanique", "eveil_du_golem", "relique_instable"],
   },
 };

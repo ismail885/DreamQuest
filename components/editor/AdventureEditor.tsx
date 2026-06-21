@@ -10,7 +10,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import {
   ChevronLeft, ChevronRight, Wand2, Send, Plus, Trash2,
   Loader2, CheckCircle2, Target, AlertTriangle, Eye, EyeOff,
-  Rocket, Ghost, Search, Swords, Ship, Cpu, Sun, Heart
+  Ghost, Search, Swords, Ship, Sun, Sparkles, Shield, Gem
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -37,9 +37,14 @@ interface Choice {
   label: string;
   target: string;
   consequence?: {
-    texte: string;
-    combat?: { enemyId: string };
-    evenement?: { type: string };
+    text: string;
+    type?: "combat";
+    level?: number;
+    pv?: number;
+    force?: number;
+    agility?: number;
+    magie?: number;
+    endurance?: number;
   };
 }
 
@@ -54,19 +59,20 @@ interface StoryNode {
 interface Genre {
   icon: LucideIcon;
   name: string;
+  value: string;
   desc: string;
 }
 
 const GENRES: Genre[] = [
-  { icon: Rocket, name: "Science-Fiction", desc: "Futur, espace et technologie" },
-  { icon: Wand2, name: "Fantasy", desc: "Magie, dragons et épopées" },
-  { icon: Ghost, name: "Horreur", desc: "Tension, mystère et frissons" },
-  { icon: Search, name: "Policier", desc: "Enquêtes et rebondissements" },
-  { icon: Swords, name: "Western", desc: "Désert, duels et aventure" },
-  { icon: Ship, name: "Pirate", desc: "Trésors, mers et flibustes" },
-  { icon: Cpu, name: "Cyberpunk", desc: "Néons, hackers et mégacorporations" },
-  { icon: Sun, name: "Mythologique", desc: "Dieux, héros et légendes antiques" },
-  { icon: Heart, name: "Romance", desc: "Passion, sentiments et destin" },
+  { icon: Wand2, name: "Fantasy", value: "fantasy", desc: "Magie, dragons et épopées" },
+  { icon: Ghost, name: "Dark Fantasy", value: "dark-fantasy", desc: "Ténèbres, malédictions et morts-vivants" },
+  { icon: Sun, name: "Mythologique", value: "mythologique", desc: "Dieux, héros et légendes antiques" },
+  { icon: Ship, name: "Flibuste", value: "flibuste", desc: "Corsaires, trésors et îles maudites" },
+  { icon: Search, name: "Intrigue de Cour", value: "intrigue", desc: "Complots, espionnage et trahisons" },
+  { icon: Swords, name: "Marches Sauvages", value: "marches-sauvages", desc: "Frontières, hors-la-loi et duels" },
+  { icon: Sparkles, name: "Conte Féerique", value: "conte-feerique", desc: "Féerie, pactes et enchantements" },
+  { icon: Shield, name: "Épopée Guerrière", value: "epopee-guerriere", desc: "Sièges, batailles et conquêtes" },
+  { icon: Gem, name: "Arcane & Reliques", value: "arcane-reliques", desc: "Artefacts, golems et magitech" },
 ];
 
 const DEFAULT_NODES: StoryNode[] = [
@@ -328,7 +334,7 @@ export default function AdventureEditor() {
     const validation = createAdventureSchema.safeParse({
       titre: title,
       description: description || undefined,
-      genre: currentGenre.name.toLowerCase(),
+      genre: currentGenre.value,
       difficulte: diffCanon[difficulty] ?? "normal",
     });
     if (!validation.success) {
@@ -346,7 +352,7 @@ export default function AdventureEditor() {
           description,
           difficulty: difficulty.toLowerCase(),
           duree_estimee: duration,
-          genre: currentGenre.name.toLowerCase(),
+          genre: currentGenre.value,
           auteur_id: Number(user.id),
         })
         .select()

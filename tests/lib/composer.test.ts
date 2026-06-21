@@ -4,7 +4,7 @@ import type { GenreNom, Difficulte } from "@/lib/generator/composition/types";
 describe("composerAventure — moteur de generation theme x genre x difficulte", () => {
   describe("detection de theme et entrees", () => {
     it("fonctionne avec un titre a mot-cle (chateau)", () => {
-      const a = composerAventure({ titre: "Le Château Hanté", genre: "Horreur", difficulte: "normal" });
+      const a = composerAventure({ titre: "Le Château Hanté", genre: "Dark Fantasy", difficulte: "normal" });
       expect(a.lieu.length).toBeGreaterThan(0);
       expect(a.noeuds.length).toBeGreaterThan(0);
     });
@@ -16,8 +16,8 @@ describe("composerAventure — moteur de generation theme x genre x difficulte",
 
     it("retourne le genre identique", () => {
       const genres: GenreNom[] = [
-        "Science-Fiction", "Fantasy", "Horreur", "Policier", "Western",
-        "Pirate", "Cyberpunk", "Mythologique", "Romance",
+        "Fantasy", "Dark Fantasy", "Mythologique", "Flibuste", "Intrigue de Cour",
+        "Marches Sauvages", "Conte Féerique", "Épopée Guerrière", "Arcane & Reliques",
       ];
       for (const g of genres) {
         expect(composerAventure({ titre: "Test", genre: g, difficulte: "normal" }).genre).toBe(g);
@@ -56,14 +56,14 @@ describe("composerAventure — moteur de generation theme x genre x difficulte",
           for (const c of n.choix) {
             expect(c.libelle.length).toBeGreaterThan(0);
             expect(c.cible.length).toBeGreaterThan(0);
-            expect(c.consequence.texte.length).toBeGreaterThan(0);
+            expect(c.consequence.text.length).toBeGreaterThan(0);
           }
         }
       }
     });
 
     it("toutes les cibles pointent vers un noeud existant", () => {
-      const a = composerAventure({ titre: "La Crypte", genre: "Horreur", difficulte: "legendaire" });
+      const a = composerAventure({ titre: "La Crypte", genre: "Dark Fantasy", difficulte: "legendaire" });
       const ids = new Set(a.noeuds.map((n) => n.id));
       for (const n of a.noeuds) {
         for (const c of n.choix) {
@@ -98,7 +98,7 @@ describe("composerAventure — moteur de generation theme x genre x difficulte",
 
   describe("contenu", () => {
     it("3 tags, description et titre non vides", () => {
-      const a = composerAventure({ titre: "Test", genre: "Cyberpunk", difficulte: "normal" });
+      const a = composerAventure({ titre: "Test", genre: "Épopée Guerrière", difficulte: "normal" });
       expect(a.tags).toHaveLength(3);
       expect(a.description.length).toBeGreaterThan(0);
       expect(a.titre.length).toBeGreaterThan(0);
@@ -109,14 +109,16 @@ describe("composerAventure — moteur de generation theme x genre x difficulte",
       expect(a.titre).toContain("-");
     });
 
-    it("attache au moins un combat et un evenement", () => {
+    it("attache au moins un combat et un evenement a effet", () => {
       let combats = 0;
       let events = 0;
+      const hasEffet = (c: { pv?: number; force?: number; agility?: number; magie?: number; endurance?: number }) =>
+        [c.pv, c.force, c.agility, c.magie, c.endurance].some((v) => typeof v === "number" && v !== 0);
       for (let i = 0; i < 10; i++) {
         const a = composerAventure({ titre: "Le Donjon Maudit", genre: "Fantasy", difficulte: "difficile" });
         const choix = a.noeuds.flatMap((n) => n.choix);
-        combats += choix.filter((c) => c.consequence.combat).length;
-        events += choix.filter((c) => c.consequence.evenement).length;
+        combats += choix.filter((c) => c.consequence.type === "combat").length;
+        events += choix.filter((c) => hasEffet(c.consequence)).length;
       }
       expect(combats).toBeGreaterThan(0);
       expect(events).toBeGreaterThan(0);

@@ -1,4 +1,3 @@
-import { BASE_MONSTERS } from "@/lib/monsters";
 import { THEMES, THEME_ORDER } from "./themes";
 import { GENRES } from "./genres";
 import type {
@@ -7,7 +6,6 @@ import type {
   CompositionInput,
   ConsequenceGeneree,
   Difficulte,
-  EnemyType,
   GenreData,
   GenreNom,
   NoeudGenere,
@@ -15,8 +13,8 @@ import type {
 } from "./types";
 
 const GENRES_VALIDES: GenreNom[] = [
-  "Science-Fiction", "Fantasy", "Horreur", "Policier", "Western",
-  "Pirate", "Cyberpunk", "Mythologique", "Romance",
+  "Fantasy", "Dark Fantasy", "Mythologique", "Flibuste", "Intrigue de Cour",
+  "Marches Sauvages", "Conte Féerique", "Épopée Guerrière", "Arcane & Reliques",
 ];
 
 const DIFFICULTES_VALIDES: Difficulte[] = ["facile", "normal", "difficile", "legendaire"];
@@ -110,32 +108,43 @@ function remplir(gabarit: string, ctx: Ctx): string {
     .replace(/\{antagoniste\}/g, ctx.antagoniste);
 }
 
-function choisirEnnemi(types: EnemyType[], difficulte: Difficulte): string | undefined {
-  const [min, max] = NIVEAUX_PAR_DIFFICULTE[difficulte];
-  const pool = BASE_MONSTERS.filter((m) => types.includes(m.type) && m.level >= min && m.level <= max);
-  const fallback = BASE_MONSTERS.filter((m) => types.includes(m.type));
-  const choix = pool.length > 0 ? pool : fallback;
-  return choix.length > 0 ? pick(choix).id : undefined;
+// Ampleur des effets d'evenement selon la difficulte.
+const PV_MAG_PAR_DIFFICULTE: Record<Difficulte, number> = {
+  facile: 10, normal: 15, difficile: 20, legendaire: 25,
+};
+const STAT_MAG_PAR_DIFFICULTE: Record<Difficulte, number> = {
+  facile: 1, normal: 1, difficile: 2, legendaire: 2,
+};
+const STAT_KEYS = ["force", "agility", "magie", "endurance"] as const;
+
+function texteConsequence(genre: GenreData, difficulte: Difficulte, ctx: Ctx, texteIdx: number): string {
+  return remplir(at(genre.consequences[difficulte], texteIdx), ctx);
 }
 
-function consequence(
-  genre: GenreData,
-  difficulte: Difficulte,
-  ctx: Ctx,
-  texteIdx: number,
-  avecCombat: boolean,
-  avecEvenement: boolean,
-): ConsequenceGeneree {
-  const pool = genre.consequences[difficulte];
-  const c: ConsequenceGeneree = { texte: remplir(at(pool, texteIdx), ctx) };
-  if (avecCombat) {
-    const enemyId = choisirEnnemi(genre.enemyTypes, difficulte);
-    if (enemyId) c.combat = { enemyId };
-  }
-  if (avecEvenement) {
-    c.evenement = { type: pick(genre.evenements) };
-  }
+// Conséquence "combat" : déclenche un vrai combat en jeu (useConsequences lit type==="combat").
+function consequenceCombat(genre: GenreData, difficulte: Difficulte, ctx: Ctx, texteIdx: number): ConsequenceGeneree {
+  const [min, max] = NIVEAUX_PAR_DIFFICULTE[difficulte];
+  const level = randInt(min, Math.min(max, 12));
+  return { type: "combat", level, text: texteConsequence(genre, difficulte, ctx, texteIdx) };
+}
+
+// Conséquence "evenement" : effet aléatoire réel (PV / statistique), gain ou perte.
+function consequenceEvenement(genre: GenreData, difficulte: Difficulte, ctx: Ctx, texteIdx: number): ConsequenceGeneree {
+  const text = texteConsequence(genre, difficulte, ctx, texteIdx);
+  const pvMag = PV_MAG_PAR_DIFFICULTE[difficulte];
+  const statMag = STAT_MAG_PAR_DIFFICULTE[difficulte];
+  const c: ConsequenceGeneree = { text };
+  const r = Math.random();
+  if (r < 0.30) c.pv = Math.round(pvMag * 0.7);          // soin / repos
+  else if (r < 0.62) c.pv = -pvMag;                       // blessure / piège
+  else if (r < 0.81) c[pick(STAT_KEYS)] = statMag;        // gain de stat (trésor, entraînement)
+  else c[pick(STAT_KEYS)] = -statMag;                     // perte de stat (malédiction, fatigue)
   return c;
+}
+
+// Conséquence narrative simple (aucun effet mécanique).
+function consequenceSimple(genre: GenreData, difficulte: Difficulte, ctx: Ctx, texteIdx: number): ConsequenceGeneree {
+  return { text: texteConsequence(genre, difficulte, ctx, texteIdx) };
 }
 
 export function composerAventure(input: CompositionInput): AventureGeneree {
@@ -151,7 +160,6 @@ export function composerAventure(input: CompositionInput): AventureGeneree {
   const ambiancePool = shuffle(genre.ambiances);
   const antagonistesPool = shuffle(genre.antagonistes);
   const decorsPool = shuffle(theme.decors);
-  const evenementsPool = shuffle(genre.evenements);
 
   const lieu = pick(theme.lieux);
   const ctxBase: Ctx = {
@@ -200,23 +208,23 @@ export function composerAventure(input: CompositionInput): AventureGeneree {
     const cibleA = dernier ? "fin1" : `n${i + 1}`;
     const cibleB = dernier ? "fin2" : `n${i + 1}`;
 
-    // Combats / evenements repartis de facon variee sur le parcours
-    const avecCombat = !dernier && i % 2 === 0;
-    const avecEvenement = i % 2 === 1;
+    // Rythme modéré : 1 nœud sur 3 propose un combat (choix A), 1 sur 3 un
+    // evenement à effet (choix B), le reste reste narratif. Le dernier nœud
+    // mène aux fins, donc pas de combat dessus. L'autre choix est toujours
+    // "simple" : le joueur peut éviter le combat / l'effet.
+    const kind = dernier ? "plain" : i % 3 === 0 ? "combat" : i % 3 === 1 ? "event" : "plain";
 
-    const choixA: ChoixGenere = {
-      libelle: remplir(paire[0], ctx),
-      cible: cibleA,
-      consequence: consequence(genre, difficulte, ctx, i, avecCombat, false),
-    };
-    const choixB: ChoixGenere = {
-      libelle: remplir(paire[1], ctx),
-      cible: cibleB,
-      consequence: consequence(genre, difficulte, ctx, i + 1, false, avecEvenement),
-    };
-    if (choixB.consequence.evenement) {
-      choixB.consequence.evenement = { type: at(evenementsPool, i) };
-    }
+    const consA: ConsequenceGeneree =
+      kind === "combat"
+        ? consequenceCombat(genre, difficulte, ctx, i)
+        : consequenceSimple(genre, difficulte, ctx, i);
+    const consB: ConsequenceGeneree =
+      kind === "event"
+        ? consequenceEvenement(genre, difficulte, ctx, i + 1)
+        : consequenceSimple(genre, difficulte, ctx, i + 1);
+
+    const choixA: ChoixGenere = { libelle: remplir(paire[0], ctx), cible: cibleA, consequence: consA };
+    const choixB: ChoixGenere = { libelle: remplir(paire[1], ctx), cible: cibleB, consequence: consB };
 
     noeuds.push({ id, texte, fin: false, choix: [choixA, choixB] });
   }
