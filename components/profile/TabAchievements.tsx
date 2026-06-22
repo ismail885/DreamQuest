@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import type { UserAchievements } from "@/lib/achievements";
-import type { UserTrophies } from "@/lib/trophies";
+import type { UserTrophies, Trophy } from "@/lib/trophies";
 
 interface TabAchievementsProps {
   achievements: UserAchievements | null;
@@ -56,7 +56,7 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
   const total = achievements.achievements.length;
   const iconRegistry = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>;
 
-  const trophiesBySeason = (trophies?.trophies ?? []).reduce<Record<string, typeof trophies.trophies>>(
+  const trophiesBySeason = (trophies?.trophies ?? []).reduce<Record<string, Trophy[]>>(
     (acc, t) => {
       (acc[t.seasonName] ||= []).push(t);
       return acc;
