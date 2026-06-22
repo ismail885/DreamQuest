@@ -3,9 +3,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import type { UserAchievements } from "@/lib/achievements";
+import type { UserTrophies } from "@/lib/trophies";
 
 interface TabAchievementsProps {
   achievements: UserAchievements | null;
+  trophies?: UserTrophies | null;
 }
 
 const CATEGORIES = [
@@ -36,7 +38,7 @@ const cardVariants = {
   },
 };
 
-export default function TabAchievements({ achievements }: TabAchievementsProps) {
+export default function TabAchievements({ achievements, trophies }: TabAchievementsProps) {
   if (!achievements) {
     return (
       <div className="text-center py-12">
@@ -54,8 +56,66 @@ export default function TabAchievements({ achievements }: TabAchievementsProps) 
   const total = achievements.achievements.length;
   const iconRegistry = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>;
 
+  const trophiesBySeason = (trophies?.trophies ?? []).reduce<Record<string, typeof trophies.trophies>>(
+    (acc, t) => {
+      (acc[t.seasonName] ||= []).push(t);
+      return acc;
+    },
+    {},
+  );
+
   return (
     <div className="space-y-8">
+      {trophies && trophies.total > 0 && (
+        <div>
+          <div className="text-center mb-4">
+            <div className="text-3xl font-bold text-yellow-400">
+              {trophies.totalUnlocked}
+              <span className="text-gray-500 text-2xl"> / {trophies.total}</span>
+            </div>
+            <div className="text-gray-400 text-sm">trophées de saison</div>
+          </div>
+          <div className="space-y-5">
+            {Object.entries(trophiesBySeason).map(([seasonName, list]) => {
+              const current = list.some((t) => t.fromCurrentSeason);
+              return (
+                <div key={seasonName}>
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 ml-1 flex items-center gap-2">
+                    {seasonName}
+                    {current && (
+                      <span className="text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2 py-0.5 rounded-full normal-case">
+                        Saison en cours
+                      </span>
+                    )}
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {list.map((t) => {
+                      const Icon = iconRegistry[t.icon] ?? LucideIcons.Award;
+                      return (
+                        <div
+                          key={t.id}
+                          className={`flex flex-col items-center p-5 rounded-xl border transition-colors duration-300 ${
+                            t.unlocked
+                              ? "bg-gradient-to-b from-yellow-500/15 to-yellow-500/5 border-yellow-500/30"
+                              : "bg-gray-800/20 border-gray-700/20 opacity-60"
+                          }`}
+                        >
+                          <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-3 ${t.unlocked ? "bg-yellow-400/15" : "bg-gray-700/30"}`}>
+                            <Icon className={`w-8 h-8 ${t.unlocked ? "text-yellow-400" : "text-gray-600"}`} />
+                          </div>
+                          <h4 className={`text-sm font-semibold text-center ${t.unlocked ? "text-white" : "text-gray-600"}`}>{t.title}</h4>
+                          <p className={`text-xs text-center mt-1 ${t.unlocked ? "text-gray-400" : "text-gray-700"}`}>{t.description}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="text-center">
         <div className="text-3xl font-bold text-cyan-400">
           {achievements.totalUnlocked}

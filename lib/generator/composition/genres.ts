@@ -1,9 +1,6 @@
 import type { GenreData, GenreNom } from "./types";
 
-// 9 genres, tous ancres dans la meme direction artistique heroic-fantasy
-// medievale (cf. les classes : Guerrier, Mage, Assassin, Paladin, Nicromancien...).
-// Chaque genre habille le decor neutre du theme d'une tonalite distincte.
-
+// 9 genres heroic-fantasy ; chaque genre habille le décor du thème.
 export const GENRES: Record<GenreNom, GenreData> = {
   Fantasy: {
     nom: "Fantasy",

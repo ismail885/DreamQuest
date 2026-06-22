@@ -7,6 +7,7 @@ interface AdventurePaginationProps {
   totalPages: number;
   totalCount: number;
   onPageChange: (page: number) => void;
+  label?: string;
 }
 
 export default function AdventurePagination({
@@ -14,6 +15,7 @@ export default function AdventurePagination({
   totalPages,
   totalCount,
   onPageChange,
+  label = "aventures",
 }: AdventurePaginationProps) {
   if (totalPages <= 1) return null;
 
@@ -67,7 +69,7 @@ export default function AdventurePagination({
       </div>
 
       <p className="text-center text-gray-300 text-sm mt-4">
-        {totalCount} aventures • Page {currentPage}/{totalPages}
+        {totalCount} {label} • Page {currentPage}/{totalPages}
       </p>
     </>
   );

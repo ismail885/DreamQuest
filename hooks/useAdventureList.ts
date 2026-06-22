@@ -31,9 +31,7 @@ export const FILTER_OPTIONS: { value: AdventureFilter; label: string }[] = [
   { value: "arcane-reliques", label: "Arcane & Reliques" },
 ];
 
-/** Mappe un filtre utilisateur vers les valeurs possibles en BDD.
- *  On inclut aussi les anciens alias (avant la refonte vers une DA 100%
- *  heroic-fantasy) pour rester robuste si une ligne legacy subsiste. */
+/** Filtre utilisateur -> valeurs BDD (avec anciens alias). */
 const DB_GENRE_MAP: Record<string, string[] | null> = {
   tous: null,
   fantasy: ["fantasy", "fantaisy"],
@@ -47,8 +45,7 @@ const DB_GENRE_MAP: Record<string, string[] | null> = {
   "arcane-reliques": ["arcane-reliques", "science-fiction", "scifi"],
 };
 
-/** Étiquette lisible pour un genre (utilisée dans AdventureCard).
- *  Les anciens alias pointent vers le nouveau libellé equivalent. */
+/** Étiquette lisible par genre (anciens alias inclus). */
 export const GENRE_LABELS: Record<string, string> = {
   fantasy: "Fantasy",
   fantaisy: "Fantasy",

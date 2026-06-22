@@ -8,7 +8,7 @@ import Footer from "@/components/shared/Footer";
 import PageBackground from "@/components/shared/PageBackground";
 import PageTransition from "@/components/shared/PageTransition";
 import AdventureCard from "@/components/adventure/AdventureCard";
-import { SkeletonAdventureList } from "@/components/shared/Skeleton";
+import Loader from "@/components/shared/Loader";
 import { Search, X, User, Frown, ChevronDown } from "lucide-react";
 import { useAdventureList, FILTER_OPTIONS, type AdventureFilter } from "@/hooks/useAdventureList";
 import AdventurePagination from "@/components/adventure/AdventurePagination";
@@ -167,7 +167,7 @@ function AdventurePageContent() {
           </motion.div>
 
           {loading ? (
-            <SkeletonAdventureList count={6} />
+            <Loader message="Chargement des aventures..." />
           ) : error ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}

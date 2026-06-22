@@ -537,9 +537,7 @@ export const COMBAT_EVENTS: RandomEvent[] = [
 
 export const RANDOM_EVENTS: RandomEvent[] = [...NARRATIVE_EVENTS, ...COMBAT_EVENTS];
 
-// Depuis la refonte vers une direction artistique 100% heroic-fantasy,
-// tous les genres partagent le meme univers medieval-fantastique : aucun
-// evenement n'est plus exclu en fonction du genre.
+// Tous les genres partagent la même DA fantasy : aucun événement exclu.
 function isEventAllowed(_event: RandomEvent, _genre?: string | null): boolean {
   return true;
 }

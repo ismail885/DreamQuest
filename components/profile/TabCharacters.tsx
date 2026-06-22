@@ -1,15 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Character } from "@/types";
 import { getTotalXPForLevel, calculateRequiredXP } from "@/types";
 import {
   Swords, Sparkles, Wind, Cross, Shield, Target, Leaf, Skull, User, Flame,
 } from "lucide-react";
+import AdventurePagination from "@/components/adventure/AdventurePagination";
 
 interface TabCharactersProps {
   characters: Character[];
 }
+
+const ITEMS_PER_PAGE = 6;
 
 const PASSIFS: Record<string, { name: string; desc: string }> = {
   Guerrier: { name: "Force du Combattant", desc: "+10% dégâts physiques" },
@@ -52,6 +56,16 @@ const ICON_MAP: Record<string, typeof Swords> = {
 
 export default function TabCharacters({ characters }: TabCharactersProps) {
   const router = useRouter();
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(characters.length / ITEMS_PER_PAGE));
+
+  // Si la liste rétrécit (suppression), on évite de rester sur une page vide.
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  const pageItems = characters.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   if (characters.length === 0) {
     return (
@@ -88,7 +102,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {characters.map((char, index) => {
+        {pageItems.map((char, index) => {
           const niveau = char.niveau || 1;
           const totalXp = char.experience ?? 0;
           const xpAtLevelStart = niveau > 1 ? getTotalXPForLevel(niveau) : 0;
@@ -149,6 +163,14 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
           );
         })}
       </div>
+
+      <AdventurePagination
+        currentPage={page}
+        totalPages={totalPages}
+        totalCount={characters.length}
+        onPageChange={setPage}
+        label="personnages"
+      />
     </div>
   );
 }

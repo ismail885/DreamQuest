@@ -7,6 +7,8 @@ import dynamic from "next/dynamic";
 import Loader from "@/components/shared/Loader";
 import Footer from "@/components/shared/Footer";
 import PageBackground from "@/components/shared/PageBackground";
+import { supabase } from "@/lib/supabaseClient";
+import { getLevelFromXP } from "@/lib/leveling";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useSave } from "@/hooks/useSave";
 import { useCombat } from "@/hooks/useCombat";
@@ -148,11 +150,44 @@ function AdventureReader({ params }: Props) {
   } = useAdventure(adventureId, user?.id ?? null);
 
   const handleCombatEndAndContinue = useCallback(async () => {
+    const wasDefeated = combatState?.lost ?? false;
     await handleCombatEnd();
     const link = pendingCombatLinkRef.current;
     pendingCombatLinkRef.current = null;
+    if (wasDefeated) {
+      // Défaite : l'aventure s'arrête, le personnage est soigné, retour à la liste.
+      toast.error("Vous avez été vaincu. Votre personnage est soigné, l'aventure s'arrête ici.");
+      router.push("/adventure");
+      return;
+    }
     if (link) chooseOption(link);
-  }, [handleCombatEnd, chooseOption]);
+  }, [handleCombatEnd, chooseOption, combatState, router]);
+
+  // Recommencer : repart du début et annule l'XP/stats gagnés cette partie.
+  const handleRestart = useCallback(async () => {
+    if (character && initialStats) {
+      const revivedStats = {
+        force: initialStats.force,
+        agility: initialStats.agility,
+        magie: initialStats.magie,
+        endurance: initialStats.endurance,
+      };
+      const revivedLevel = getLevelFromXP(initialStats.xp);
+      const maxPv = character.points_vie_max || 100;
+      try {
+        await saveCharacterStats(revivedLevel, revivedStats, initialStats.xp);
+        if (character.id) {
+          await supabase.from("personnage").update({ points_vie: maxPv }).eq("id", character.id);
+        }
+      } catch { /* on tente quand même de relancer */ }
+      setCharacter((prev) =>
+        prev
+          ? { ...prev, niveau: revivedLevel, stats: revivedStats, experience: initialStats.xp, points_vie: maxPv }
+          : prev,
+      );
+    }
+    await restart();
+  }, [character, initialStats, saveCharacterStats, setCharacter, restart]);
 
   // Dénominateur adaptatif : borné par la taille réelle de l'aventure
   // (évite une barre bloquée bas sur les aventures courtes, ex. générées)
@@ -302,7 +337,7 @@ function AdventureReader({ params }: Props) {
             router.back();
           }
         }}
-        onRestart={restart}
+        onRestart={handleRestart}
         isSaving={isSaving}
       />
 
@@ -393,7 +428,7 @@ function AdventureReader({ params }: Props) {
                       endurance: Math.max(0, (character.stats?.endurance ?? 0) - initialStats.endurance),
                     }}
                     combatStats={combatStats}
-                    onRestart={restart}
+                    onRestart={handleRestart}
                   />
                 </motion.div>
               )}

@@ -108,7 +108,6 @@ function remplir(gabarit: string, ctx: Ctx): string {
     .replace(/\{antagoniste\}/g, ctx.antagoniste);
 }
 
-// Ampleur des effets d'evenement selon la difficulte.
 const PV_MAG_PAR_DIFFICULTE: Record<Difficulte, number> = {
   facile: 10, normal: 15, difficile: 20, legendaire: 25,
 };
@@ -121,28 +120,25 @@ function texteConsequence(genre: GenreData, difficulte: Difficulte, ctx: Ctx, te
   return remplir(at(genre.consequences[difficulte], texteIdx), ctx);
 }
 
-// Conséquence "combat" : déclenche un vrai combat en jeu (useConsequences lit type==="combat").
 function consequenceCombat(genre: GenreData, difficulte: Difficulte, ctx: Ctx, texteIdx: number): ConsequenceGeneree {
   const [min, max] = NIVEAUX_PAR_DIFFICULTE[difficulte];
   const level = randInt(min, Math.min(max, 12));
   return { type: "combat", level, text: texteConsequence(genre, difficulte, ctx, texteIdx) };
 }
 
-// Conséquence "evenement" : effet aléatoire réel (PV / statistique), gain ou perte.
 function consequenceEvenement(genre: GenreData, difficulte: Difficulte, ctx: Ctx, texteIdx: number): ConsequenceGeneree {
   const text = texteConsequence(genre, difficulte, ctx, texteIdx);
   const pvMag = PV_MAG_PAR_DIFFICULTE[difficulte];
   const statMag = STAT_MAG_PAR_DIFFICULTE[difficulte];
   const c: ConsequenceGeneree = { text };
   const r = Math.random();
-  if (r < 0.30) c.pv = Math.round(pvMag * 0.7);          // soin / repos
-  else if (r < 0.62) c.pv = -pvMag;                       // blessure / piège
-  else if (r < 0.81) c[pick(STAT_KEYS)] = statMag;        // gain de stat (trésor, entraînement)
-  else c[pick(STAT_KEYS)] = -statMag;                     // perte de stat (malédiction, fatigue)
+  if (r < 0.30) c.pv = Math.round(pvMag * 0.7);
+  else if (r < 0.62) c.pv = -pvMag;
+  else if (r < 0.81) c[pick(STAT_KEYS)] = statMag;
+  else c[pick(STAT_KEYS)] = -statMag;
   return c;
 }
 
-// Conséquence narrative simple (aucun effet mécanique).
 function consequenceSimple(genre: GenreData, difficulte: Difficulte, ctx: Ctx, texteIdx: number): ConsequenceGeneree {
   return { text: texteConsequence(genre, difficulte, ctx, texteIdx) };
 }
@@ -208,10 +204,7 @@ export function composerAventure(input: CompositionInput): AventureGeneree {
     const cibleA = dernier ? "fin1" : `n${i + 1}`;
     const cibleB = dernier ? "fin2" : `n${i + 1}`;
 
-    // Rythme modéré : 1 nœud sur 3 propose un combat (choix A), 1 sur 3 un
-    // evenement à effet (choix B), le reste reste narratif. Le dernier nœud
-    // mène aux fins, donc pas de combat dessus. L'autre choix est toujours
-    // "simple" : le joueur peut éviter le combat / l'effet.
+    // Rythme modéré : 1 nœud/3 combat, 1/3 événement, reste narratif.
     const kind = dernier ? "plain" : i % 3 === 0 ? "combat" : i % 3 === 1 ? "event" : "plain";
 
     const consA: ConsequenceGeneree =

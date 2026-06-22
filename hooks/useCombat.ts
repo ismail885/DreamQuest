@@ -344,11 +344,16 @@ export function useCombat({
             : null,
       );
     } else {
-          if (character.id && character.points_vie !== undefined) {
+      // Défaite : ranime à pleins PV. Fuite : conserve les PV courants.
+      const finalPv = combatState?.lost
+        ? (character.points_vie_max || 100)
+        : character.points_vie;
+      if (character.id && finalPv !== undefined) {
         await supabase
           .from("personnage")
-          .update({ points_vie: character.points_vie })
+          .update({ points_vie: finalPv })
           .eq("id", character.id);
+        setCharacter((prev) => (prev ? { ...prev, points_vie: finalPv } : prev));
       }
     }
 
@@ -433,6 +438,7 @@ export function useCombat({
               "Tu as été vaincu!",
             ],
             won: false,
+            lost: true,
             cooldowns: updateCooldowns(prev.cooldowns),
           };
         }

@@ -51,11 +51,7 @@ export interface GenreData {
   evenements: string[];
 }
 
-// Format consomme directement par le jeu (hooks/useConsequences.ts) :
-//  - { type: "combat", level } declenche un combat
-//  - { pv, force, agility, magie, endurance } applique des effets (evenement)
-//  - text : narration affichee
-// Stocke tel quel dans les colonnes JSONB choix1/2_consequences.
+// Conséquence lue par le jeu (useConsequences), stockée en JSONB.
 export interface ConsequenceGeneree {
   text: string;
   type?: "combat";

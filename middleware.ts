@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, getTokenFromCookies } from '@/lib/jwt';
 
-const protectedRoutes = ['/dashboard', '/profil', '/create-character', '/create-adventure', '/adventure', '/admin'];
+// /profil est protégé côté client (évite une déconnexion edge pendant la synchro du cookie).
+const protectedRoutes = ['/dashboard', '/create-character', '/create-adventure', '/adventure', '/admin'];
 const adminRoutes = ['/admin'];
 const authRoutes = ['/auth/login', '/auth/register', '/auth/callback'];
 

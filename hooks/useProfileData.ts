@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { calculateAchievements, UserAchievements } from "@/lib/achievements";
+import { calculateTrophies, UserTrophies } from "@/lib/trophies";
 import { getDailyQuests, DailyQuest } from "@/lib/dailyQuests";
 import { getCurrentSeason } from "@/lib/seasons";
-import { getPrestigeTier } from "@/lib/leveling";
 const PROFILE_REFRESH_EVENT = "profile-refresh";
 import type {
   ExtendedUserProfile,
@@ -50,6 +50,7 @@ interface UseProfileDataReturn {
   userCreations: UserCreation[];
   userCharacters: Character[];
   userAchievements: UserAchievements | null;
+  userTrophies: UserTrophies | null;
   dailyQuests: DailyQuest[];
   stats: UserStats;
   refresh: () => void;
@@ -66,6 +67,7 @@ export function useProfileData({
   const [userCreations, setUserCreations] = useState<UserCreation[]>([]);
   const [userCharacters, setUserCharacters] = useState<Character[]>([]);
   const [userAchievements, setUserAchievements] = useState<UserAchievements | null>(null);
+  const [userTrophies, setUserTrophies] = useState<UserTrophies | null>(null);
   const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
   const [stats, setStats] = useState<UserStats>({
     storiesPlayed: 0,
@@ -244,14 +246,7 @@ export function useProfileData({
       }
 
       if (isCancelled()) return;
-      setStats({
-        storiesPlayed: savesData?.length || 0,
-        storiesCreated: creationsData?.length || 0,
-        likes: votesCount || 0,
-        trophies: getPrestigeTier(profileData?.meilleur_niveau ?? profileData?.niveau ?? 1),
-      });
-
-      const achievements = calculateAchievements({
+      const statsInput = {
         storiesPlayed: savesData?.length || 0,
         charactersCreated: charactersData?.length ?? 0,
         votes: votesCount || 0,
@@ -259,7 +254,19 @@ export function useProfileData({
         totalLikes:
           creationsData?.reduce((sum, c) => sum + (c.popularite || 0), 0) || 0,
         level: profileData?.niveau || 1,
+      };
+
+      const trophies = calculateTrophies(statsInput);
+
+      setStats({
+        storiesPlayed: statsInput.storiesPlayed,
+        storiesCreated: statsInput.storiesCreated,
+        likes: votesCount || 0,
+        trophies: trophies.totalUnlocked,
       });
+      if (!isCancelled()) setUserTrophies(trophies);
+
+      const achievements = calculateAchievements(statsInput);
       if (!isCancelled()) setUserAchievements(achievements);
     } catch {
       if (!isCancelled()) setDataError("Impossible de charger vos données. Réessayez plus tard.");
@@ -303,6 +310,7 @@ export function useProfileData({
     userCreations,
     userCharacters,
     userAchievements,
+    userTrophies,
     dailyQuests,
     stats,
     refresh,

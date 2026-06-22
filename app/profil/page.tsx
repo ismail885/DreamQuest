@@ -54,6 +54,7 @@ export default function ProfilPage() {
     userCreations,
     userCharacters,
     userAchievements,
+    userTrophies,
     dailyQuests,
     stats,
     refresh,
@@ -313,7 +314,7 @@ export default function ProfilPage() {
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <TabAchievements achievements={userAchievements} />
+                        <TabAchievements achievements={userAchievements} trophies={userTrophies} />
                       </motion.div>
                     )}
                     {activeTab === "creations" && (

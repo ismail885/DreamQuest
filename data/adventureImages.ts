@@ -11,8 +11,7 @@ export function getAdventureImage(adventureId: number): string {
   return ADVENTURE_IMAGES[adventureId] ?? ADVENTURE_IMAGES[1];
 }
 
-// Genre canonique (les alias BDD, anciens comme nouveaux, pointent vers
-// les memes mots-cles). DA 100% heroic-fantasy.
+// Genre canonique (alias BDD anciens et nouveaux).
 const CANONICAL_GENRE: Record<string, string> = {
   fantasy: "fantasy",
   fantaisy: "fantasy",
