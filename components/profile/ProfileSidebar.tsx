@@ -64,10 +64,19 @@ export default function ProfileSidebar({
           <p className="text-sm font-semibold text-white">
             {season?.name ?? "Inconnue"}
           </p>
-          {season && season.xpMultiplier !== 1.0 && (
-            <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold text-green-300 bg-green-500/20 border border-green-500/30 rounded-full">
-              +{Math.round((season.xpMultiplier - 1) * 100)}% XP
-            </span>
+          {season && (season.bonuses.length > 0 || season.maluses.length > 0) && (
+            <div className="mt-1.5 flex flex-wrap justify-center gap-1">
+              {season.bonuses.map((b) => (
+                <span key={b} className="px-2 py-0.5 text-[10px] font-bold text-green-300 bg-green-500/20 border border-green-500/30 rounded-full">
+                  {b}
+                </span>
+              ))}
+              {season.maluses.map((m) => (
+                <span key={m} className="px-2 py-0.5 text-[10px] font-bold text-red-300 bg-red-500/20 border border-red-500/30 rounded-full">
+                  {m}
+                </span>
+              ))}
+            </div>
           )}
           {season && (
             <p className="mt-1.5 text-[10px] text-cyan-300">

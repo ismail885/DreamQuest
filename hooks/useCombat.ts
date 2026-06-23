@@ -86,8 +86,8 @@ export function useCombat({
       combatState.enemy,
       combatState.status,
     );
-    const effectiveDmg = damageMultiplier < 1
-      ? Math.max(1, Math.floor(result.dmg * damageMultiplier))
+    const effectiveDmg = damageMultiplier !== 1
+      ? Math.max(1, Math.round(result.dmg * damageMultiplier))
       : result.dmg;
     const newEnemyPv = Math.max(0, combatState.enemy.pv - effectiveDmg);
     const newLog = [...combatState.log, result.log];
@@ -231,8 +231,8 @@ export function useCombat({
       let newEnemyStatus = combatState.enemyStatus;
 
       if (result.damage) {
-        const effectiveAbilityDmg = damageMultiplier < 1
-          ? Math.max(1, Math.floor(result.damage * damageMultiplier))
+        const effectiveAbilityDmg = damageMultiplier !== 1
+          ? Math.max(1, Math.round(result.damage * damageMultiplier))
           : result.damage;
         newEnemyPv = Math.max(0, combatState.enemy.pv - effectiveAbilityDmg);
         newEnemyStatus = [

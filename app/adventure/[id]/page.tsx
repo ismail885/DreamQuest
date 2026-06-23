@@ -9,6 +9,7 @@ import Footer from "@/components/shared/Footer";
 import PageBackground from "@/components/shared/PageBackground";
 import { supabase } from "@/lib/supabaseClient";
 import { getLevelFromXP } from "@/lib/leveling";
+import { getCurrentSeason } from "@/lib/seasons";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useSave } from "@/hooks/useSave";
 import { useCombat } from "@/hooks/useCombat";
@@ -96,7 +97,8 @@ function AdventureReader({ params }: Props) {
 
   const maxFatigue = character ? Math.max(1, (character.stats?.endurance ?? 5) * 2) : 10;
   const isFatigued = fatigueCount >= maxFatigue;
-  const damageMultiplier = isFatigued ? 0.7 : 1.0;
+  // Dégâts du joueur = fatigue × modificateur de la saison en cours (bonus/malus).
+  const damageMultiplier = (isFatigued ? 0.7 : 1.0) * getCurrentSeason().playerDamageMultiplier;
 
   const {
     inCombat,

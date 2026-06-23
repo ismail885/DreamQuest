@@ -20,11 +20,13 @@ DreamQuest est une application web de RPG textuel narratif où les joueurs peuve
 
 - **Créer des personnages** avec 10 classes uniques (Guerrier, Mage, Archer, Assassin, Paladin, Prêtre, Druide, Nécromancien, Voleur, Barbare)
 - **Vivre des aventures** interactives avec des choix qui influencent l'histoire
-- **Affronter des combats** au tour par tour et des événements aléatoires
-- **Progresser** : expérience, niveaux, quêtes quotidiennes, succès et saisons
+- **Affronter des combats** au tour par tour et des événements aléatoires intégrés directement aux aventures générées
+- **Progresser** : expérience, niveaux, quêtes quotidiennes, succès, trophées de saison et saisons
 - **Sauvegarder automatiquement** leur progression
 - **Voter** pour leurs aventures préférées
 - **Classer** les meilleures aventures communautaires
+
+Tout l'univers partage une **direction artistique heroic-fantasy** cohérente : les 9 genres (Fantasy, Dark Fantasy, Mythologique, Flibuste, Intrigue de Cour, Marches Sauvages, Conte Féerique, Épopée Guerrière, Arcane & Reliques) s'accordent avec les classes médiévales-fantastiques.
 
 ---
 
@@ -35,14 +37,14 @@ DreamQuest est une application web de RPG textuel narratif où les joueurs peuve
 | Inscription/Connexion | Supabase Auth (email/mot de passe) + session serveur signée (cookie HttpOnly) |
 | Création de personnages | 10 classes avec stats et compétences uniques |
 | Aventures interactives | Parcours à choix multiples (10 à 20 nœuds, plusieurs fins) |
-| Combat au tour par tour | Attaque, défense, fuite et compétences (côté client) |
-| Événements aléatoires | Rencontres, pièges, trésors et embuscades |
-| Sauvegarde automatique | Toutes les 30 secondes (nœud courant + stats) |
-| Progression & saisons | Expérience, niveaux, meilleur niveau, prestige, multiplicateurs |
-| Quêtes & succès | Objectifs quotidiens récompensés en XP, déblocage de succès |
+| Combat au tour par tour | Attaque, défense, fuite et compétences (côté client) ; la défaite soigne et renvoie à la liste |
+| Événements aléatoires | Rencontres, pièges, trésors et embuscades, ambiants ou intégrés aux choix |
+| Sauvegarde automatique | Toutes les 60 secondes (nœud courant + progression) ; reprise fidèle de la progression |
+| Progression & saisons | Expérience, niveaux, meilleur niveau, prestige ; 4 saisons trimestrielles cycliques avec bonus/malus mécaniques (XP et dégâts) |
+| Quêtes, succès & trophées | Quêtes quotidiennes en XP, succès permanents, et trophées saisonniers (raretés bronze→légendaire, points, progression) |
 | Système de votes | Un vote par utilisateur par aventure |
 | Classement | Tri par popularité (aventures et joueurs) |
-| Génération procédurale | Moteur local : thème × genre (9 genres) × difficulté, sans IA |
+| Génération procédurale | Moteur local : thème × genre (9 genres heroic-fantasy) × difficulté, sans IA, avec combats et événements à effet intégrés |
 | Administration | Dashboard, gestion utilisateurs / aventures / personnages, journal |
 
 ---
@@ -152,7 +154,7 @@ DreamQuest/
 ├── hooks/                   # Custom hooks
 │   ├── useAuth.ts          # Hook d'authentification
 │   ├── useAdventure.ts     # Navigation embranchée avec BDD
-│   ├── useSave.ts          # Auto-save toutes les 30s
+│   ├── useSave.ts          # Auto-save toutes les 60s
 │   ├── useVote.ts          # Vote avec timeout 10s
 │   ├── useCachedQuery.ts   # Requêtes avec cache client
 │   ├── useCharacter.ts     # Gestion des personnages (création, level-up)
@@ -170,6 +172,7 @@ DreamQuest/
 │   ├── jwt.ts              # Fonctions JWT (jeton de session)
 │   ├── leveling.ts         # Niveaux, XP, prestige (compte utilisateur)
 │   ├── seasons.ts          # Saisons et multiplicateurs d'XP
+│   ├── trophies.ts         # Trophées rattachés aux saisons (statiques, calculés)
 │   ├── dailyQuests.ts      # Quêtes quotidiennes
 │   ├── achievements.ts     # Système de succès
 │   ├── randomEvents.ts     # Événements aléatoires (combats, rencontres, trésors)
@@ -177,9 +180,9 @@ DreamQuest/
 │   ├── monsters.ts         # Base de monstres
 │   ├── characters/         # Définitions des classes
 │   └── generator/composition/ # Moteur de génération thème × genre × difficulté
-│       ├── composer.ts     # Assemblage (détection de thème, gabarits, combats)
+│       ├── composer.ts     # Assemblage (thème, gabarits, combats + événements à effet)
 │       ├── themes.ts       # 10 thèmes (décors, lieux, mots-clés)
-│       ├── genres.ts       # 9 genres (ambiances, antagonistes, conséquences)
+│       ├── genres.ts       # 9 genres heroic-fantasy (ambiances, antagonistes, conséquences)
 │       └── types.ts        # Types du moteur
 ├── types/                   # Définitions TypeScript
 │   ├── character.ts        # Types personnage

@@ -3,7 +3,15 @@
 import { motion, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import type { UserAchievements } from "@/lib/achievements";
-import type { UserTrophies, Trophy } from "@/lib/trophies";
+import type { UserTrophies, Trophy, TrophyRarity } from "@/lib/trophies";
+import { RARITY_LABELS } from "@/lib/trophies";
+
+const RARITY_STYLES: Record<TrophyRarity, { ring: string; icon: string; badge: string; bar: string }> = {
+  bronze: { ring: "border-amber-700/40 bg-amber-700/10", icon: "text-amber-500", badge: "bg-amber-700/20 text-amber-400 border-amber-700/30", bar: "bg-amber-600" },
+  argent: { ring: "border-slate-400/40 bg-slate-400/10", icon: "text-slate-300", badge: "bg-slate-400/20 text-slate-200 border-slate-400/30", bar: "bg-slate-300" },
+  or: { ring: "border-yellow-500/40 bg-yellow-500/10", icon: "text-yellow-400", badge: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30", bar: "bg-yellow-400" },
+  legendaire: { ring: "border-fuchsia-500/40 bg-fuchsia-500/10", icon: "text-fuchsia-400", badge: "bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30", bar: "bg-fuchsia-400" },
+};
 
 interface TabAchievementsProps {
   achievements: UserAchievements | null;
@@ -73,7 +81,9 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
               {trophies.totalUnlocked}
               <span className="text-gray-500 text-2xl"> / {trophies.total}</span>
             </div>
-            <div className="text-gray-400 text-sm">trophées de saison</div>
+            <div className="text-gray-400 text-sm">
+              trophées de saison · <span className="text-yellow-300 font-semibold">{trophies.totalPoints}</span> / {trophies.maxPoints} pts
+            </div>
           </div>
           <div className="space-y-5">
             {Object.entries(trophiesBySeason).map(([seasonName, list]) => {
@@ -91,20 +101,30 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {list.map((t) => {
                       const Icon = iconRegistry[t.icon] ?? LucideIcons.Award;
+                      const style = RARITY_STYLES[t.rarity];
                       return (
                         <div
                           key={t.id}
                           className={`flex flex-col items-center p-5 rounded-xl border transition-colors duration-300 ${
-                            t.unlocked
-                              ? "bg-gradient-to-b from-yellow-500/15 to-yellow-500/5 border-yellow-500/30"
-                              : "bg-gray-800/20 border-gray-700/20 opacity-60"
+                            t.unlocked ? style.ring : "bg-gray-800/20 border-gray-700/20 opacity-70"
                           }`}
                         >
-                          <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-3 ${t.unlocked ? "bg-yellow-400/15" : "bg-gray-700/30"}`}>
-                            <Icon className={`w-8 h-8 ${t.unlocked ? "text-yellow-400" : "text-gray-600"}`} />
+                          <span className={`self-end -mt-1 mb-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${style.badge}`}>
+                            {RARITY_LABELS[t.rarity]} · {t.points}pt
+                          </span>
+                          <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-3 ${t.unlocked ? "bg-white/5" : "bg-gray-700/30"}`}>
+                            <Icon className={`w-8 h-8 ${t.unlocked ? style.icon : "text-gray-600"}`} />
                           </div>
-                          <h4 className={`text-sm font-semibold text-center ${t.unlocked ? "text-white" : "text-gray-600"}`}>{t.title}</h4>
-                          <p className={`text-xs text-center mt-1 ${t.unlocked ? "text-gray-400" : "text-gray-700"}`}>{t.description}</p>
+                          <h4 className={`text-sm font-semibold text-center ${t.unlocked ? "text-white" : "text-gray-500"}`}>{t.title}</h4>
+                          <p className={`text-xs text-center mt-1 ${t.unlocked ? "text-gray-400" : "text-gray-600"}`}>{t.description}</p>
+                          {!t.unlocked && (
+                            <div className="w-full mt-3">
+                              <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                <div className={`h-full rounded-full ${style.bar}`} style={{ width: `${Math.round(t.progress * 100)}%` }} />
+                              </div>
+                              <p className="text-[10px] text-gray-500 text-center mt-1">{t.current} / {t.goal}</p>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
