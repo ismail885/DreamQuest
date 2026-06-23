@@ -1,6 +1,7 @@
 import { SEASONS, getCurrentSeason } from "@/lib/seasons";
 
 // Trophées saisonniers statiques, calculés à la volée (aucune table).
+// 5 paliers par saison, cumulant 5000 points/saison.
 export interface TrophyStatsInput {
   storiesPlayed: number;
   charactersCreated: number;
@@ -13,19 +14,19 @@ export interface TrophyStatsInput {
 export type TrophyRarity = "bronze" | "argent" | "or" | "legendaire";
 type Metric = keyof TrophyStatsInput;
 
-export const RARITY_POINTS: Record<TrophyRarity, number> = {
-  bronze: 10,
-  argent: 25,
-  or: 50,
-  legendaire: 100,
-};
-
 export const RARITY_LABELS: Record<TrophyRarity, string> = {
   bronze: "Bronze",
   argent: "Argent",
   or: "Or",
   legendaire: "Légendaire",
 };
+
+// Points et rareté par palier (5 paliers → 200+400+800+1600+2000 = 5000 / saison).
+const TIER_POINTS = [200, 400, 800, 1600, 2000];
+const TIER_RARITY: TrophyRarity[] = ["bronze", "bronze", "argent", "or", "legendaire"];
+const ROMAN = ["I", "II", "III", "IV", "V"];
+
+export const SEASON_POINTS_CAP = TIER_POINTS.reduce((s, p) => s + p, 0); // 5000
 
 export interface Trophy {
   id: string;
@@ -38,7 +39,7 @@ export interface Trophy {
   points: number;
   current: number;
   goal: number;
-  progress: number; // 0 → 1
+  progress: number;
   unlocked: boolean;
   fromCurrentSeason: boolean;
 }
@@ -51,68 +52,62 @@ export interface UserTrophies {
   trophies: Trophy[];
 }
 
-interface TrophyDef {
-  id: string;
-  seasonId: number;
-  title: string;
-  description: string;
-  icon: string;
-  rarity: TrophyRarity;
+interface SeasonTrack {
   metric: Metric;
-  goal: number;
+  icon: string;
+  label: string;
+  goals: [number, number, number, number, number];
 }
 
-export const TROPHIES_CONFIG: TrophyDef[] = [
-  // Saison 1 — L'Éveil des Héros
-  { id: "eveil_heros", seasonId: 1, title: "Éveil du Héros", description: "Terminez votre première aventure", icon: "Sparkles", rarity: "bronze", metric: "storiesPlayed", goal: 1 },
-  { id: "ame_curieuse", seasonId: 1, title: "Âme Curieuse", description: "Créez votre premier personnage", icon: "UserPlus", rarity: "bronze", metric: "charactersCreated", goal: 1 },
-  { id: "premiere_ascension", seasonId: 1, title: "Première Ascension", description: "Atteignez le niveau 5", icon: "TrendingUp", rarity: "bronze", metric: "level", goal: 5 },
-
-  // Saison 2 — La Flamme des Légendes
-  { id: "flamme_naissante", seasonId: 2, title: "Flamme Naissante", description: "Terminez 5 aventures", icon: "Flame", rarity: "argent", metric: "storiesPlayed", goal: 5 },
-  { id: "porte_flambeau", seasonId: 2, title: "Porte-Flambeau", description: "Atteignez le niveau 10", icon: "Zap", rarity: "argent", metric: "level", goal: 10 },
-  { id: "conteur_ardent", seasonId: 2, title: "Conteur Ardent", description: "Publiez une aventure", icon: "Feather", rarity: "argent", metric: "storiesCreated", goal: 1 },
-  { id: "voix_du_peuple", seasonId: 2, title: "Voix du Peuple", description: "Votez pour 10 aventures", icon: "ThumbsUp", rarity: "bronze", metric: "votes", goal: 10 },
-
-  // Saison 3 — L'Ombre du Néant
-  { id: "survivant_ombres", seasonId: 3, title: "Survivant des Ombres", description: "Terminez 10 aventures", icon: "Skull", rarity: "or", metric: "storiesPlayed", goal: 10 },
-  { id: "veilleur_neant", seasonId: 3, title: "Veilleur du Néant", description: "Atteignez le niveau 25", icon: "Moon", rarity: "or", metric: "level", goal: 25 },
-  { id: "scribe_des_tenebres", seasonId: 3, title: "Scribe des Ténèbres", description: "Publiez 3 aventures", icon: "Feather", rarity: "argent", metric: "storiesCreated", goal: 3 },
-
-  // Saison 4 — L'Apogée des Dieux
-  { id: "legende_incarnee", seasonId: 4, title: "Légende Incarnée", description: "Terminez 20 aventures", icon: "Trophy", rarity: "legendaire", metric: "storiesPlayed", goal: 20 },
-  { id: "favori_dieux", seasonId: 4, title: "Favori des Dieux", description: "Atteignez le niveau 50", icon: "Crown", rarity: "legendaire", metric: "level", goal: 50 },
-  { id: "idole_pantheon", seasonId: 4, title: "Idole du Panthéon", description: "Cumulez 50 votes sur vos aventures", icon: "Star", rarity: "or", metric: "totalLikes", goal: 50 },
-  { id: "immortel", seasonId: 4, title: "Immortel", description: "Atteignez le niveau maximum (100)", icon: "Infinity", rarity: "legendaire", metric: "level", goal: 100 },
-];
+// Un objectif progressif par saison (métriques globales, paliers croissants).
+const SEASON_TRACKS: Record<number, SeasonTrack> = {
+  1: { metric: "storiesPlayed", icon: "BookOpen", label: "Aventures terminées", goals: [1, 2, 4, 7, 12] },
+  2: { metric: "level", icon: "TrendingUp", label: "Niveau atteint", goals: [3, 6, 10, 15, 22] },
+  3: { metric: "charactersCreated", icon: "UserPlus", label: "Personnages créés", goals: [1, 2, 3, 4, 6] },
+  4: { metric: "storiesPlayed", icon: "Flame", label: "Aventures terminées", goals: [3, 6, 10, 16, 25] },
+  5: { metric: "votes", icon: "ThumbsUp", label: "Votes donnés", goals: [1, 5, 12, 25, 45] },
+  6: { metric: "level", icon: "Zap", label: "Niveau atteint", goals: [10, 18, 28, 40, 55] },
+  7: { metric: "storiesCreated", icon: "Feather", label: "Aventures publiées", goals: [1, 2, 4, 7, 12] },
+  8: { metric: "storiesPlayed", icon: "Trophy", label: "Aventures terminées", goals: [5, 10, 18, 30, 50] },
+  9: { metric: "level", icon: "Moon", label: "Niveau atteint", goals: [20, 32, 48, 68, 90] },
+  10: { metric: "totalLikes", icon: "Star", label: "Votes reçus", goals: [10, 30, 70, 140, 250] },
+  11: { metric: "storiesPlayed", icon: "Crown", label: "Aventures terminées", goals: [8, 16, 28, 45, 70] },
+  12: { metric: "level", icon: "Infinity", label: "Niveau atteint", goals: [40, 60, 80, 95, 100] },
+};
 
 export function calculateTrophies(stats: TrophyStatsInput): UserTrophies {
   const currentSeasonId = getCurrentSeason().id;
+  const trophies: Trophy[] = [];
 
-  const trophies: Trophy[] = TROPHIES_CONFIG.map((def) => {
-    const current = stats[def.metric] ?? 0;
-    const unlocked = current >= def.goal;
-    return {
-      id: def.id,
-      seasonId: def.seasonId,
-      seasonName: SEASONS[def.seasonId]?.name ?? `Saison ${def.seasonId}`,
-      title: def.title,
-      description: def.description,
-      icon: def.icon,
-      rarity: def.rarity,
-      points: RARITY_POINTS[def.rarity],
-      current: Math.min(current, def.goal),
-      goal: def.goal,
-      progress: def.goal > 0 ? Math.min(1, current / def.goal) : 0,
-      unlocked,
-      fromCurrentSeason: def.seasonId === currentSeasonId,
-    };
-  });
+  for (const [seasonIdStr, track] of Object.entries(SEASON_TRACKS)) {
+    const seasonId = Number(seasonIdStr);
+    const seasonName = SEASONS[seasonId]?.name ?? `Saison ${seasonId}`;
+    const value = stats[track.metric] ?? 0;
 
+    track.goals.forEach((goal, tier) => {
+      trophies.push({
+        id: `s${seasonId}_t${tier}`,
+        seasonId,
+        seasonName,
+        title: `${track.label} ${ROMAN[tier]}`,
+        description: `Atteindre ${goal} — ${track.label.toLowerCase()}`,
+        icon: track.icon,
+        rarity: TIER_RARITY[tier],
+        points: TIER_POINTS[tier],
+        current: Math.min(value, goal),
+        goal,
+        progress: goal > 0 ? Math.min(1, value / goal) : 0,
+        unlocked: value >= goal,
+        fromCurrentSeason: seasonId === currentSeasonId,
+      });
+    });
+  }
+
+  const unlocked = trophies.filter((t) => t.unlocked);
   return {
-    totalUnlocked: trophies.filter((t) => t.unlocked).length,
+    totalUnlocked: unlocked.length,
     total: trophies.length,
-    totalPoints: trophies.filter((t) => t.unlocked).reduce((s, t) => s + t.points, 0),
+    totalPoints: unlocked.reduce((s, t) => s + t.points, 0),
     maxPoints: trophies.reduce((s, t) => s + t.points, 0),
     trophies,
   };

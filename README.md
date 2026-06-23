@@ -40,8 +40,8 @@ Tout l'univers partage une **direction artistique heroic-fantasy** cohérente : 
 | Combat au tour par tour | Attaque, défense, fuite et compétences (côté client) ; la défaite soigne et renvoie à la liste |
 | Événements aléatoires | Rencontres, pièges, trésors et embuscades, ambiants ou intégrés aux choix |
 | Sauvegarde automatique | Toutes les 60 secondes (nœud courant + progression) ; reprise fidèle de la progression |
-| Progression & saisons | Expérience, niveaux, meilleur niveau, prestige ; 4 saisons trimestrielles cycliques avec bonus/malus mécaniques (XP et dégâts) |
-| Quêtes, succès & trophées | Quêtes quotidiennes en XP, succès permanents, et trophées saisonniers (raretés bronze→légendaire, points, progression) |
+| Progression & saisons | Expérience, niveaux, meilleur niveau, prestige ; 12 saisons mensuelles cycliques, chacune appliquant **soit un bonus, soit un malus** mécanique (XP ou dégâts) |
+| Quêtes, succès & trophées | Quêtes quotidiennes en XP, succès permanents, et trophées saisonniers à paliers (raretés bronze→légendaire, progression chiffrée, jusqu'à 5000 pts/saison) |
 | Système de votes | Un vote par utilisateur par aventure |
 | Classement | Tri par popularité (aventures et joueurs) |
 | Génération procédurale | Moteur local : thème × genre (9 genres heroic-fantasy) × difficulté, sans IA, avec combats et événements à effet intégrés |
