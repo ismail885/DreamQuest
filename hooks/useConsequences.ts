@@ -226,8 +226,10 @@ export function useConsequences({
 
       try {
         if (effect?.type === "combat") {
-          const enemyLevel =
-            effect.level || character.niveau || 1;
+          // La difficulté suit le niveau du personnage : l'ennemi est au moins à son niveau, plus un écart issu de la difficulté de l'aventure
+          const baked = effect.level ?? 0;
+          const ecart = baked <= 3 ? 0 : baked <= 6 ? 1 : baked <= 9 ? 2 : 3;
+          const enemyLevel = Math.max(1, (character.niveau || 1) + ecart);
           startCombat(enemyLevel);
           return true; // Indique que le combat doit remplacer la navigation
         }

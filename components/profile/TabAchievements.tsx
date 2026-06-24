@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import type { UserAchievements } from "@/lib/achievements";
@@ -47,6 +48,8 @@ const cardVariants = {
 };
 
 export default function TabAchievements({ achievements, trophies }: TabAchievementsProps) {
+  const [subTab, setSubTab] = useState<"succes" | "trophees">("succes");
+
   if (!achievements) {
     return (
       <div className="text-center py-12">
@@ -73,8 +76,31 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
   );
 
   return (
-    <div className="space-y-8">
-      {trophies && trophies.total > 0 && (
+    <div className="space-y-6">
+      <div className="flex justify-center gap-2">
+        <button
+          onClick={() => setSubTab("succes")}
+          className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+            subTab === "succes"
+              ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+              : "bg-transparent text-gray-400 border border-gray-700/40 hover:text-white"
+          }`}
+        >
+          Succès
+        </button>
+        <button
+          onClick={() => setSubTab("trophees")}
+          className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+            subTab === "trophees"
+              ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/40"
+              : "bg-transparent text-gray-400 border border-gray-700/40 hover:text-white"
+          }`}
+        >
+          Trophées
+        </button>
+      </div>
+
+      {subTab === "trophees" && trophies && trophies.total > 0 && (
         <div>
           <div className="text-center mb-4">
             <div className="text-3xl font-bold text-yellow-400">
@@ -136,6 +162,8 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
         </div>
       )}
 
+      {subTab === "succes" && (
+        <>
       <div className="text-center">
         <div className="text-3xl font-bold text-cyan-400">
           {achievements.totalUnlocked}
@@ -241,6 +269,8 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
           </div>
         );
       })}
+        </>
+      )}
     </div>
   );
 }

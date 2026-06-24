@@ -107,7 +107,8 @@ export function useProfileData({
           role: profileData.role || "joueur",
           niveau: profileData.niveau || 1,
           experience: profileData.experience || 0,
-          saison_actuelle: profileData.saison_actuelle ?? season.id,
+          // Saison unifiée pour tous : toujours la saison courante (par date).
+          saison_actuelle: season.id,
           meilleur_niveau: profileData.meilleur_niveau ?? (profileData.niveau || 1),
         });
       } else {

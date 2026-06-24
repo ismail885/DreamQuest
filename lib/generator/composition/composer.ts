@@ -35,19 +35,19 @@ const NIVEAUX_PAR_DIFFICULTE: Record<Difficulte, [number, number]> = {
 };
 
 const CLOTURE_DIFFICULTE: Record<Difficulte, string> = {
-  facile: "Une chance reelle s'offre a l'aventurier courageux.",
-  normal: "Seul un guerrier experimente en sortira indemne.",
-  difficile: "Il faudra un heros chevronne pour survivre a cette epreuve.",
-  legendaire: "Seule une ame prete au sacrifice peut esperer en revenir.",
+  facile: "Une chance réelle s'offre à l'aventurier courageux.",
+  normal: "Seul un guerrier expérimenté en sortira indemne.",
+  difficile: "Il faudra un héros chevronné pour survivre à cette épreuve.",
+  legendaire: "Seule une âme prête au sacrifice peut espérer en revenir.",
 };
 
 const FIN_TRIOMPHE = [
-  "Contre toute attente, vous triomphez. Le souvenir de {lieu} vous suivra comme une legende.",
-  "L'epreuve s'acheve sur une victoire cherement acquise. {antagoniste} ne menacera plus personne.",
+  "Contre toute attente, vous triomphez. Le souvenir de {lieu} vous suivra comme une légende.",
+  "L'épreuve s'achève sur une victoire chèrement acquise. {antagoniste} ne menacera plus personne.",
 ];
 const FIN_AMERE = [
-  "Vous survivez, mais marque a jamais. Certaines histoires ne se terminent pas comme on l'espere.",
-  "Le destin en a decide autrement : vous quittez {lieu} en laissant une part de vous derriere.",
+  "Vous survivez, mais marqué à jamais. Certaines histoires ne se terminent pas comme on l'espère.",
+  "Le destin en a décidé autrement : vous quittez {lieu} en laissant une part de vous derrière.",
 ];
 
 interface Ctx {
@@ -99,13 +99,29 @@ function normaliserDifficulte(d: string): Difficulte {
   return (DIFFICULTES_VALIDES.find((x) => x === d) ?? "normal") as Difficulte;
 }
 
+// Corrige les élisions issues de la substitution ({lieu}/{decor} commencent
+// souvent par "le/les") : "de le" -> "du", "à les" -> "aux", "que une" -> "qu'une"...
+function corrigerElisions(s: string): string {
+  return s
+    .replace(/\bjusqu'à le /g, "jusqu'au ")
+    .replace(/\bjusqu'à les /g, "jusqu'aux ")
+    .replace(/\bde le /g, "du ")
+    .replace(/\bde les /g, "des ")
+    .replace(/\bà le /g, "au ")
+    .replace(/\bà les /g, "aux ")
+    .replace(/\bque une /g, "qu'une ")
+    .replace(/\bque un /g, "qu'un ");
+}
+
 function remplir(gabarit: string, ctx: Ctx): string {
-  return gabarit
-    .replace(/\{titre\}/g, ctx.titre)
-    .replace(/\{lieuHabille\}/g, ctx.lieuHabille)
-    .replace(/\{lieu\}/g, ctx.lieu)
-    .replace(/\{decor\}/g, ctx.decor)
-    .replace(/\{antagoniste\}/g, ctx.antagoniste);
+  return corrigerElisions(
+    gabarit
+      .replace(/\{titre\}/g, ctx.titre)
+      .replace(/\{lieuHabille\}/g, ctx.lieuHabille)
+      .replace(/\{lieu\}/g, ctx.lieu)
+      .replace(/\{decor\}/g, ctx.decor)
+      .replace(/\{antagoniste\}/g, ctx.antagoniste),
+  );
 }
 
 const PV_MAG_PAR_DIFFICULTE: Record<Difficulte, number> = {
@@ -175,7 +191,7 @@ export function composerAventure(input: CompositionInput): AventureGeneree {
 
   // Description (ambiance dediee)
   const ambiance = remplir(at(ambiancePool, 0), ctxBase);
-  const description = `${titre} - ${ambiance} Votre quete vous mene jusqu'a ${lieuHabille}. ${CLOTURE_DIFFICULTE[difficulte]}`;
+  const description = corrigerElisions(`${titre} - ${ambiance} Votre quête vous mène jusqu'à ${lieuHabille}. ${CLOTURE_DIFFICULTE[difficulte]}`);
 
   // Nombre de noeuds d'histoire, variable
   const [min, max] = TAILLE_PAR_DIFFICULTE[difficulte];
