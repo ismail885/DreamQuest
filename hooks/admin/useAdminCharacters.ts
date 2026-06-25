@@ -27,7 +27,7 @@ export function useAdminCharacters() {
       let query = supabase
         .from("personnage")
         .select("*", { count: "exact" })
-        .order("date_creation", { ascending: false })
+        .order("id", { ascending: false })
         .range(
           (currentPage - 1) * ITEMS_PER_PAGE,
           currentPage * ITEMS_PER_PAGE - 1,

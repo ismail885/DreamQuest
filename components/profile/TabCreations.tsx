@@ -1,12 +1,25 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { UserCreation } from "@/types/adventure";
+import AdventurePagination from "@/components/adventure/AdventurePagination";
+
+const ITEMS_PER_PAGE = 6;
 
 interface TabCreationsProps {
   creations: UserCreation[];
 }
 
 export default function TabCreations({ creations }: TabCreationsProps) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(creations.length / ITEMS_PER_PAGE));
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  const pageItems = creations.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
   if (creations.length === 0) {
     return (
       <div className="text-center py-12">
@@ -29,7 +42,7 @@ export default function TabCreations({ creations }: TabCreationsProps) {
 
   return (
     <div className="space-y-4">
-      {creations.map((creation) => (
+      {pageItems.map((creation) => (
         <div
           key={creation.id}
           className="bg-surface border border-gray-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer"
@@ -45,6 +58,14 @@ export default function TabCreations({ creations }: TabCreationsProps) {
           </div>
         </div>
       ))}
+
+      <AdventurePagination
+        currentPage={page}
+        totalPages={totalPages}
+        totalCount={creations.length}
+        onPageChange={setPage}
+        label="créations"
+      />
     </div>
   );
 }
