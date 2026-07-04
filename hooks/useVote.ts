@@ -74,7 +74,7 @@ export function useVote({
 
  const { error: rpcError } = await supabase
  .rpc('decrementer_popularite', { aventure_id: adventureId });
- if (rpcError && !rpcError.message?.includes('does not exist')) {
+ if (rpcError) {
  throw rpcError;
  }
  })(),
@@ -91,7 +91,7 @@ export function useVote({
 
  const { error: rpcError } = await supabase
  .rpc('incrementer_popularite', { aventure_id: adventureId });
- if (rpcError && !rpcError.message?.includes('does not exist')) {
+ if (rpcError) {
  throw rpcError;
  }
  })(),

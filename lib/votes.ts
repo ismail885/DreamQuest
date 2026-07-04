@@ -18,19 +18,8 @@ export async function voteForAdventure(userId: number, adventureId: number): Pro
     }
 
     const { error: rpcError } = await supabase.rpc('incrementer_popularite', { aventure_id: adventureId })
-    if (rpcError && rpcError.message?.includes('does not exist')) {
-      // Fallback si la RPC n'existe pas
-      const { data: current } = await supabase
-        .from('aventure')
-        .select('popularite')
-        .eq('id', adventureId)
-        .single()
-      if (current) {
-        await supabase
-          .from('aventure')
-          .update({ popularite: (current as { popularite: number }).popularite + 1 })
-          .eq('id', adventureId)
-      }
+    if (rpcError) {
+      throw rpcError
     }
 
     return true
