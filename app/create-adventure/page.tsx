@@ -19,7 +19,7 @@ function EditorContent() {
       <div className="min-h-screen bg-deep flex flex-col">
         <PageBackground />
         <Header />
-        <div className="flex-1 flex flex-col items-center justify-center gap-6 px-4 relative z-10">
+        <main className="flex-1 flex flex-col items-center justify-center gap-6 px-4 relative z-10">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -37,7 +37,7 @@ function EditorContent() {
           >
             Se connecter
           </motion.a>
-        </div>
+        </main>
         <Footer />
       </div>
     );
@@ -50,14 +50,14 @@ function EditorContent() {
       <div className="min-h-screen bg-deep flex flex-col">
         <PageBackground />
         <Header />
-        <motion.div
+        <motion.main
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
           className="flex-1 flex items-center justify-center px-4 relative z-10"
         >
           <p className="text-red-400 text-lg text-center">Accès restreint aux créateurs</p>
-        </motion.div>
+        </motion.main>
         <Footer />
       </div>
     );
@@ -69,7 +69,7 @@ function EditorContent() {
       <Header />
 
       <PageTransition className="flex-1 container mx-auto px-4 md:px-6 py-6 md:py-8 relative z-10 pb-24 md:pb-8">
-        <div className="max-w-6xl mx-auto">
+        <main className="max-w-6xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-white">
               Créer une Aventure
@@ -79,7 +79,7 @@ function EditorContent() {
             </p>
           </div>
           <AdventureEditor />
-        </div>
+        </main>
       </PageTransition>
 
       <Footer />

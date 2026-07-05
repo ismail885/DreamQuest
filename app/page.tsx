@@ -36,6 +36,7 @@ export default function Home() {
       <PageBackground />
 
       <Header />
+      <main>
       <section className="relative py-16 md:py-24 px-4 md:px-6 overflow-hidden">
         <motion.div
           className="container mx-auto max-w-7xl relative z-10"
@@ -183,7 +184,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
+      </main>
       <Footer />
     </div>
   );

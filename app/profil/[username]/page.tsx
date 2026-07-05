@@ -94,7 +94,7 @@ export default function PublicProfilePage() {
       <PageBackground />
       <Header />
 
-      <div className="relative max-w-2xl mx-auto w-full px-4 py-6">
+      <main className="relative max-w-2xl mx-auto w-full px-4 py-6">
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-sm mb-6"
@@ -165,7 +165,7 @@ export default function PublicProfilePage() {
             <p className="text-gray-400">Aucune aventure</p>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

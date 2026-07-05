@@ -89,6 +89,7 @@ export default function AdminAdventuresPage() {
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 " />
  <input
  type="text"
+ aria-label="Rechercher une aventure par titre"
  placeholder="Rechercher par titre..."
  value={searchTerm}
  onChange={(e) => {

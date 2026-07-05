@@ -115,6 +115,7 @@ function AdventurePageContent() {
                 <Search className="ml-4 w-5 h-5 text-gray-400 flex-shrink-0 group-focus-within:text-primary transition-colors duration-300" />
                 <input
                   type="text"
+                  aria-label="Rechercher une histoire"
                   placeholder="Rechercher une histoire..."
                   value={searchQuery}
                   onChange={(e) => {

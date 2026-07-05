@@ -11,7 +11,9 @@ const config: Config = {
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
+      tsconfig: {
+        jsx: 'react-jsx',
+      },
     }],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

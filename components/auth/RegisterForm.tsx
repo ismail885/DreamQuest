@@ -76,7 +76,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
+    <main className="min-h-screen flex items-center justify-center p-4 relative bg-deep">
       <div className="fixed inset-0 pointer-events-none">
         <div
           className="absolute inset-0"
@@ -407,6 +407,6 @@ export default function RegisterForm() {
           notre politique de confidentialité
         </p>
       </div>
-    </div>
+    </main>
   );
 }

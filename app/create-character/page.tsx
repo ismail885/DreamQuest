@@ -42,14 +42,14 @@ export default function CreateCharacterPage() {
 
   return (
     <Suspense fallback={<Loader fullScreen />}>
-    <div className="min-h-screen bg-deep pb-24 md:pb-0">
+    <main className="min-h-screen bg-deep pb-24 md:pb-0">
       <PageTransition>
         <CreateCharacterForm
           userId={user.id}
           onCharacterCreated={handleCharacterCreated}
         />
       </PageTransition>
-    </div>
+    </main>
     </Suspense>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { RefreshCw, Wifi, WifiOff, Users, BookOpen, UserRound, Activity, TrendingUp, Calendar, Sparkles } from "lucide-react";
+import { RefreshCw, Wifi, WifiOff, Users, BookOpen, UserRound, Activity, TrendingUp, Calendar } from "lucide-react";
 import { useAdminDashboard } from "@/hooks/admin/useAdminDashboard";
 import AdminStatCards from "@/components/admin/AdminStatCards";
 import AdminRoleDistribution from "@/components/admin/AdminRoleDistribution";
@@ -105,10 +105,6 @@ export default function AdminDashboard() {
             <a href="/dashboard" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
               <Activity className="w-8 h-8 text-amber-400 mx-auto mb-2" />
               <span className="text-gray-400 text-sm">Voir le site</span>
-            </a>
-            <a href="/admin/generate" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
-              <Sparkles className="w-8 h-8 text-pink-400 mx-auto mb-2" />
-              <span className="text-gray-400 text-sm">Générateur IA</span>
             </a>
           </div>
         </div>

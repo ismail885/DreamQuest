@@ -94,7 +94,7 @@ const Header = React.memo(function Header() {
   return (
     <>
       {/* ── BARRE STICKY ── */}
-      <nav className="border-b border-gray-800/50 backdrop-blur-sm bg-deep/80 sticky top-0 z-50">
+      <header className="border-b border-gray-800/50 backdrop-blur-sm bg-deep/80 sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
 
@@ -116,7 +116,7 @@ const Header = React.memo(function Header() {
             </Link>
 
             {/* Nav desktop */}
-            <div className="hidden md:flex items-center gap-8">
+            <nav aria-label="Navigation principale" className="hidden md:flex items-center gap-8">
               {desktopNavLinks.map(({ href, label, accent }) => (
                 <Link
                   key={href}
@@ -126,7 +126,7 @@ const Header = React.memo(function Header() {
                   {label}
                 </Link>
               ))}
-            </div>
+            </nav>
 
             {/* Actions desktop */}
             <div className="hidden md:flex items-center gap-4">
@@ -174,7 +174,7 @@ const Header = React.memo(function Header() {
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* ── OVERLAY ── */}
       <div
