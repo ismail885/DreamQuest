@@ -22,7 +22,7 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 ## 4. Enjeux fonctionnels et techniques
 
 - Moteur narratif dynamique et évolutif (8 banques de contenu).
-- Interface immersive, responsive et intuitive (247 breakpoints).
+- Interface immersive, responsive et intuitive.
 - Sécurité des comptes utilisateurs (authentification JWT + HttpOnly cookies).
 - Base de données PostgreSQL via Supabase (BaaS).
 - Architecture Next.js 15 App Router avec rendu hybride (SSG/SSR).
@@ -48,7 +48,7 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 - Générateur procédural d'histoires (8 genres : fantasy, horreur, science-fiction, romance, western, pirate, cyberpunk, mythologique).
 - Moteur narratif avec phases (introduction, développement, climax) et contextes (lieux, PNJ, artefacts, monstres, twists).
 - Éditeur visuel d'aventures (création de nœuds, choix, prévisualisation, sauvegarde en BDD).
-- Génération assistée par IA (via API Anthropic, fallback local).
+- Génération assistée.
 
 ### Système de combat
 - Combat tour par tour (joueur vs ennemi).
@@ -58,7 +58,7 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 - Conséquences des choix peuvent déclencher un combat.
 
 ### Progression et sauvegarde
-- Sauvegarde automatique toutes les 30 secondes.
+- Sauvegarde automatique toutes les 60 secondes.
 - Reprise de partie (dernier nœud visité).
 - XP et level-up après chaque aventure.
 - Quêtes quotidiennes.
@@ -88,7 +88,6 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 
 ## 7. Fonctionnalités futures (non réalisées)
 
-- Système de messagerie entre joueurs.
 - Traduction multilingue.
 - Événements saisonniers.
 - Mode multijoueur / coopératif.
