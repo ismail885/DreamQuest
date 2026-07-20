@@ -72,15 +72,15 @@ export function useVote({
  .eq('id_aventure', adventureId);
  if (deleteError) throw deleteError;
 
- const { error: rpcError } = await supabase
- .rpc('decrementer_popularite', { aventure_id: adventureId });
- if (rpcError) {
- throw rpcError;
- }
- })(),
- VOTE_TIMEOUT
- );
- setHasVoted(false);
+      const { error: updateError } = await supabase
+          .from('aventure')
+          .update({ popularite: popularite - 1 })
+          .eq('id', adventureId);
+        if (updateError) throw updateError;
+      })(),
+      VOTE_TIMEOUT
+    );
+    setHasVoted(false);
  } else {
  await withTimeout(
  (async () => {
@@ -89,15 +89,15 @@ export function useVote({
  .insert({ id_utilisateur: userId, id_aventure: adventureId });
  if (insertError && insertError.code !== '23505') throw insertError;
 
- const { error: rpcError } = await supabase
- .rpc('incrementer_popularite', { aventure_id: adventureId });
- if (rpcError) {
- throw rpcError;
- }
- })(),
- VOTE_TIMEOUT
- );
- setHasVoted(true);
+      const { error: updateError } = await supabase
+          .from('aventure')
+          .update({ popularite: popularite + 1 })
+          .eq('id', adventureId);
+        if (updateError) throw updateError;
+      })(),
+      VOTE_TIMEOUT
+    );
+    setHasVoted(true);
  }
 
  await withTimeout(refetchPopularite(), VOTE_TIMEOUT);
