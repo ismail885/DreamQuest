@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { RefreshCw, Wifi, WifiOff, Users, BookOpen, UserRound, Activity, TrendingUp, Calendar } from "lucide-react";
+import { RefreshCw, Wifi, WifiOff, Users, BookOpen, UserRound, Activity, TrendingUp, Calendar, ScrollText } from "lucide-react";
 import { useAdminDashboard } from "@/hooks/admin/useAdminDashboard";
 import AdminStatCards from "@/components/admin/AdminStatCards";
 import AdminRoleDistribution from "@/components/admin/AdminRoleDistribution";
@@ -101,6 +101,10 @@ export default function AdminDashboard() {
             <a href="/admin/characters" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
               <UserRound className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
               <span className="text-gray-400 text-sm">Gérer personnages</span>
+            </a>
+            <a href="/admin/logs" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
+              <ScrollText className="w-8 h-8 text-amber-400 mx-auto mb-2" />
+              <span className="text-gray-400 text-sm">Logs</span>
             </a>
             <a href="/dashboard" className="p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-card hover:bg-cyan-500/10 transition-all text-center">
               <Activity className="w-8 h-8 text-amber-400 mx-auto mb-2" />

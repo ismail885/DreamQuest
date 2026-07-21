@@ -72,11 +72,10 @@ export function useVote({
  .eq('id_aventure', adventureId);
  if (deleteError) throw deleteError;
 
-      const { error: updateError } = await supabase
-          .from('aventure')
-          .update({ popularite: popularite - 1 })
-          .eq('id', adventureId);
-        if (updateError) throw updateError;
+      const { data: newPop, error: syncError } = await supabase
+        .rpc('sync_popularite', { p_aventure_id: adventureId });
+      if (syncError) throw syncError;
+      if (typeof newPop === 'number') setPopularite(newPop);
       })(),
       VOTE_TIMEOUT
     );
@@ -89,19 +88,17 @@ export function useVote({
  .insert({ id_utilisateur: userId, id_aventure: adventureId });
  if (insertError && insertError.code !== '23505') throw insertError;
 
-      const { error: updateError } = await supabase
-          .from('aventure')
-          .update({ popularite: popularite + 1 })
-          .eq('id', adventureId);
-        if (updateError) throw updateError;
+      const { data: newPop, error: syncError } = await supabase
+        .rpc('sync_popularite', { p_aventure_id: adventureId });
+      if (syncError) throw syncError;
+      if (typeof newPop === 'number') setPopularite(newPop);
       })(),
       VOTE_TIMEOUT
     );
     setHasVoted(true);
  }
 
- await withTimeout(refetchPopularite(), VOTE_TIMEOUT);
- } catch (err) {
+  } catch (err) {
  const message = err instanceof Error ? err.message : "Erreur lors du vote";
  setError(message);
  } finally {
