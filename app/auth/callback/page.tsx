@@ -2,122 +2,59 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import Loader from "@/components/shared/Loader";
 
-function buildUsername(user: User): string {
- const fromMeta =
- (user.user_metadata?.user_name as string | undefined) ||
- (user.user_metadata?.name as string | undefined) ||
- (user.user_metadata?.preferred_username as string | undefined) ||
- "";
-
- const fromEmail = user.email ? user.email.split("@")[0] : "joueur";
- const candidate = (fromMeta || fromEmail || "joueur").trim();
- return candidate.slice(0, 50) || "joueur";
-}
-
-async function ensureUtilisateurAfterOAuth(user: User): Promise<void> {
- if (!user.email) {
- throw new Error("Email OAuth manquant");
- }
-
- const username = buildUsername(user);
-
- const { data: existingByAuthId, error: existingByAuthIdError } = await supabase
- .from("utilisateur")
- .select("id, nom_utilisateur, email, role")
- .eq("auth_id", user.id)
- .maybeSingle();
-
- if (existingByAuthIdError) {
- throw existingByAuthIdError;
- }
-
- if (existingByAuthId) {
- return;
- }
-
- const { data: updatedByEmail, error: updateError } = await supabase
- .from("utilisateur")
- .update({
- auth_id: user.id,
- nom_utilisateur: username,
- })
- .eq("email", user.email)
- .is("auth_id", null)
- .select("id, nom_utilisateur, email, role");
-
- if (updateError) {
- throw updateError;
- }
-
- if (updatedByEmail && updatedByEmail.length > 0) {
- return;
- }
-
- const { data: inserted, error: insertError } = await supabase
- .from("utilisateur")
- .insert({
- nom_utilisateur: username,
- email: user.email,
-  mot_de_passe: null,
- role: "joueur",
- auth_id: user.id,
- })
- .select("id, nom_utilisateur, email, role")
- .single();
-
- if (insertError) {
- throw insertError;
- }
-
- if (inserted) {
- // User créé avec succès — AuthContext.onAuthStateChange va détecter la session
- }
+async function ensureUtilisateurAfterOAuth(accessToken: string): Promise<void> {
+  const res = await fetch('/api/auth/oauth-callback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ accessToken }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Erreur lors de la création du profil');
+  }
 }
 
 export default function AuthCallback() {
  const router = useRouter();
  const [error, setError] = useState<string | null>(null);
 
- useEffect(() => {
- const handleCallback = async () => {
- try {
- const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  useEffect(() => {
+  const handleCallback = async () => {
+  try {
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const accessToken = hashParams.get('access_token');
+  
+  if (accessToken) {
+  // Utiliser le token d'accès directement pour créer le profil côté serveur
+  await ensureUtilisateurAfterOAuth(accessToken);
+  // Rediriger vers la page de callback Supabase interne pour finaliser la session
+  router.replace("/dashboard");
+  return;
+  }
+  
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
- if (sessionError) {
- setError("Erreur lors de la connexion");
- return;
- }
+  if (sessionError) {
+  setError("Erreur lors de la connexion");
+  return;
+  }
 
- if (session?.user) {
- await ensureUtilisateurAfterOAuth(session.user);
- document.cookie = `auth_user=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
- router.replace("/dashboard");
- } else {
- const hashParams = new URLSearchParams(window.location.hash.substring(1));
- const accessToken = hashParams.get('access_token');
- 
- if (accessToken) {
- const { data: newSession } = await supabase.auth.refreshSession();
- if (newSession?.user) {
- await ensureUtilisateurAfterOAuth(newSession.user);
- router.replace("/dashboard");
- return;
- }
- }
- 
- setError("Aucun utilisateur trouvé");
- }
- } catch {
- setError("Erreur lors de la création du profil utilisateur");
- }
- };
+  if (session?.access_token) {
+  await ensureUtilisateurAfterOAuth(session.access_token);
+  router.replace("/dashboard");
+  } else {
+  setError("Aucun utilisateur trouvé");
+  }
+  } catch {
+  setError("Erreur lors de la création du profil utilisateur");
+  }
+  };
 
- handleCallback();
- }, [router]);
+  handleCallback();
+  }, [router]);
 
  if (error) {
  return (

@@ -50,39 +50,20 @@ export async function saveProgress(
   progression: number,
 ): Promise<boolean> {
   try {
-    const { data: existingSave } = await supabase
-      .from('sauvegarde')
-      .select('id')
-      .eq('id_utilisateur', userId)
-      .eq('id_aventure', adventureId)
-      .eq('id_personnage', characterId)
-      .single()
+    const res = await fetch('/api/saves', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adventureId,
+        characterId,
+        currentBranchId,
+        progression,
+      }),
+    });
 
-    if (existingSave) {
-      const { error } = await supabase
-        .from('sauvegarde')
-        .update({
-          id_embranchement_actuel: currentBranchId,
-          progression,
-        })
-        .eq('id', (existingSave as { id: number }).id)
-
-      if (error) throw error
-    } else {
-      const { error } = await supabase
-        .from('sauvegarde')
-        .insert({
-          id_utilisateur: userId,
-          id_aventure: adventureId,
-          id_personnage: characterId,
-          id_embranchement_actuel: currentBranchId,
-          progression,
-        })
-
-      if (error) throw error
-    }
-
-    return true
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur de sauvegarde');
+    return true;
   } catch (err) {
     console.error('[saves] saveProgress failed:', err, 'userId:', userId, 'adventureId:', adventureId)
     return false

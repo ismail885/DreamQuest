@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import type { Character, ConsequenceEffect } from "@/types";
 
 // useConsequences — Parse et applique les conséquences des choix
@@ -262,10 +261,11 @@ export function useConsequences({
         );
 
         if (character.id) {
-          await supabase
-            .from("personnage")
-            .update({ points_vie: newPv })
-            .eq("id", character.id);
+          await fetch('/api/progress/character', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ characterId: character.id, points_vie: newPv }),
+          });
         }
 
         setCharacter((prev) => {

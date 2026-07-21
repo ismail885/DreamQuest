@@ -31,12 +31,8 @@ export default function RootLayout({
   return (
     <html lang="fr" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        {/* Blocking inline script — lit le cookie theme avant le rendu pour éviter le FOIT */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var c=document.cookie.match(new RegExp("(?:^|; )dreamquest_theme=([^;]+)"));var dark=c?c[1]==="dark":true;if(dark)document.documentElement.classList.add("dark")}catch(e){}})()`,
-          }}
-        />
+        {/* Blocking script — lit le cookie theme avant le rendu pour éviter le FOIT */}
+        <script src="/scripts/theme-init.js" />
         <link rel="icon" href="/Logo_DreamQuest.png" sizes="any" />
         <meta name="theme-color" content="#00d4ff" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -1,4 +1,3 @@
-import { supabase } from "@/lib/supabaseClient";
 import {
   MAX_LEVEL,
   getCurrentSeason,
@@ -33,66 +32,51 @@ export async function addExperience(
   const multiplier = season.xpMultiplier;
   const adjustedAmount = Math.round(amount * multiplier);
 
-  const { data: user, error } = await supabase
-    .from("utilisateur")
-    .select("experience, niveau, saison_actuelle, meilleur_niveau")
-    .eq("id", userId)
-    .single();
+  try {
+    const res = await fetch('/api/progress/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ xpAmount: amount, source }),
+    });
+    const data = await res.json();
 
-  if (error || !user) {
-    console.error("[Leveling] Utilisateur introuvable :", userId, error);
+    if (!res.ok) {
+      console.error("[Leveling] Erreur API:", data.error);
+      return {
+        newLevel: 1, newExperience: 0,
+        leveledUp: false, levelsGained: 0, seasonId: season.id,
+      };
+    }
+
+    if (data.leveledUp) {
+      console.log(
+        `[Leveling] +${adjustedAmount} XP ×${multiplier} (${source ?? "?"}) → Niv.${data.newLevel - data.levelsGained} → ${data.newLevel} ` +
+        `(+${data.levelsGained})`,
+      );
+    }
+
+    return {
+      newLevel: data.newLevel,
+      newExperience: data.newExperience,
+      leveledUp: data.leveledUp,
+      levelsGained: data.levelsGained,
+      seasonId: data.seasonId,
+    };
+  } catch (error) {
+    console.error("[Leveling] Erreur réseau:", error);
     return {
       newLevel: 1, newExperience: 0,
       leveledUp: false, levelsGained: 0, seasonId: season.id,
     };
   }
-
-  const currentLevel = user.niveau ?? 1;
-  const currentXP = user.experience ?? 0;
-  const newExperience = currentXP + adjustedAmount;
-
-  let newLevel = currentLevel;
-  while (newLevel < MAX_LEVEL && newExperience >= getTotalXPForLevel(newLevel + 1)) {
-    newLevel++;
-  }
-
-  const levelsGained = newLevel - currentLevel;
-  const newBestLevel = Math.max(newLevel, user.meilleur_niveau ?? 1);
-
-  const { error: updateError } = await supabase
-    .from("utilisateur")
-    .update({
-      experience: newExperience,
-      niveau: newLevel,
-      meilleur_niveau: newBestLevel,
-      saison_actuelle: season.id,
-    })
-    .eq("id", userId);
-
-  if (updateError) {
-    console.error("[Leveling] Erreur mise à jour XP :", updateError);
-  }
-
-  if (levelsGained > 0) {
-    console.log(
-      `[Leveling] +${adjustedAmount} XP ×${multiplier} (${source ?? "?"}) → Niv.${currentLevel} → ${newLevel} ` +
-      `(+${levelsGained}) — Meilleur : ${newBestLevel}`,
-    );
-  }
-
-  return {
-    newLevel,
-    newExperience,
-    leveledUp: levelsGained > 0,
-    levelsGained,
-    seasonId: season.id,
-  };
 }
 
 export async function resetForNewSeason(
   userId: number,
   newSeasonId: number,
 ): Promise<{ oldLevel: number; bestLevel: number; prestigeTitle: string }> {
+  const { default: supabase } = await import('@/lib/supabaseClient');
+
   const { data: user } = await supabase
     .from("utilisateur")
     .select("niveau, meilleur_niveau")
@@ -103,7 +87,10 @@ export async function resetForNewSeason(
   const bestLevel = Math.max(oldLevel, user?.meilleur_niveau ?? 1);
   const prestigeTitle = getPrestigeTitle(bestLevel);
 
-  await supabase
+  // Cette fonction est appelée côté serveur uniquement (reset de saison)
+  const { createAdminClient } = await import('@/lib/supabaseClient');
+  const admin = createAdminClient();
+  await admin
     .from("utilisateur")
     .update({
       niveau: 1,

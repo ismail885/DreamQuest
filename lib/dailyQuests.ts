@@ -122,11 +122,19 @@ export async function getDailyQuests(userId: number): Promise<DailyQuestData> {
   return { quests, lastReset: today };
 }
 
+const VALID_QUEST_IDS = new Set(QUEST_POOL.map(q => q.id));
+
 export async function updateQuestProgress(
   userId: number,
   questId: string,
   amount: number = 1,
 ): Promise<DailyQuestData & { completion?: QuestCompletionResult }> {
+  // Valider questId contre la allowlist
+  if (!VALID_QUEST_IDS.has(questId)) {
+    console.warn(`[DailyQuests] questId invalide: ${questId}`);
+    return getDailyQuests(userId);
+  }
+
   const today = getDateKey();
   const safeAmount = Math.max(1, Math.min(amount, 100));
 

@@ -152,19 +152,17 @@ export function useAdventure(
   }
   }, []);
 
- const restart = useCallback(async () => {
- if (!state.adventure || !userIdRef.current) return;
- setState((s) => ({ ...s, loading: true }));
+  const restart = useCallback(async () => {
+  if (!state.adventure || !userIdRef.current) return;
+  setState((s) => ({ ...s, loading: true }));
 
-  try {
- await supabase
- .from('sauvegarde')
- .delete()
- .eq('id_aventure', state.adventure.id)
- .eq('id_utilisateur', userIdRef.current);
-  } catch (err) {
-    console.warn('[useAdventure] restart delete save failed:', err)
-  }
+   try {
+     await fetch(`/api/saves?adventureId=${state.adventure.id}`, {
+       method: 'DELETE',
+     });
+   } catch (err) {
+     console.warn('[useAdventure] restart delete save failed:', err)
+   }
 
   const rootId = state.adventure.embranchement_initial_id;
 

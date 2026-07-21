@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import {
   playerAttack,
   enemyAttack,
@@ -349,10 +348,11 @@ export function useCombat({
         ? (character.points_vie_max || 100)
         : character.points_vie;
       if (character.id && finalPv !== undefined) {
-        await supabase
-          .from("personnage")
-          .update({ points_vie: finalPv })
-          .eq("id", character.id);
+        await fetch('/api/progress/character', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ characterId: character.id, points_vie: finalPv }),
+        });
         setCharacter((prev) => (prev ? { ...prev, points_vie: finalPv } : prev));
       }
     }

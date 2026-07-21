@@ -61,7 +61,20 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://*.supabase.co https://api.anthropic.com; font-src 'self' data:;",
+            // Note: script-src 'unsafe-inline' est requis par Next.js pour ses scripts d'hydratation.
+            // Voir https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: https:",
+              "font-src 'self' data:",
+              "connect-src 'self' https://*.supabase.co https://api.anthropic.com",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "object-src 'none'",
+            ].join('; '),
           },
         ],
       },

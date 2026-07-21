@@ -6,7 +6,7 @@ export function getJwtSecret(): string {
     throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env.local file.');
   }
   if (secret.length < 32) {
-    console.warn('[JWT] Warning: JWT_SECRET is shorter than 32 characters. Recommended for security.');
+    throw new Error('JWT_SECRET must be at least 32 characters long. Please update your .env.local file.');
   }
   return secret;
 }

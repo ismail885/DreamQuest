@@ -1,4 +1,3 @@
-import { supabase } from './supabaseClient'
 import { calculateRequiredXP } from './characters/classDefinitions'
 import { addExperience } from './leveling'
 import { LEVEL_BONUS } from './levelBonus'
@@ -77,9 +76,11 @@ export async function saveCharacterProgress(
 ): Promise<void> {
   if (!characterId) return
 
-  await supabase
-    .from('personnage')
-    .update({
+  await fetch('/api/progress/character', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      characterId,
       niveau,
       experience,
       force_personnage: stats.force,
@@ -87,8 +88,8 @@ export async function saveCharacterProgress(
       magie_personnage: stats.magie,
       endurance_personnage: stats.endurance,
       points_vie: pointsVie,
-    })
-    .eq('id', characterId)
+    }),
+  });
 }
 
 /**
