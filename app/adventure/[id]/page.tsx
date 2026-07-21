@@ -164,7 +164,7 @@ function AdventureReader({ params }: Props) {
       return;
     }
     if (link) chooseOption(link);
-  }, [handleCombatEnd, chooseOption, combatState, router]);
+  }, [handleCombatEnd, chooseOption, combatState, router, toast]);
 
   // Recommencer : repart du début et annule l'XP/stats gagnés cette partie.
   const handleRestart = useCallback(async () => {
@@ -363,9 +363,6 @@ function AdventureReader({ params }: Props) {
                 <div className="backdrop-blur-card bg-slate-900/60 border border-cyan-500/15 rounded-card p-4 space-y-4">
                   <CharacterHUD
                     character={character}
-                    fatigueCount={fatigueCount}
-                    maxFatigue={maxFatigue}
-                    isFatigued={isFatigued}
                     sidebar
                   />
                 </div>
@@ -375,9 +372,6 @@ function AdventureReader({ params }: Props) {
               <div className="md:hidden mb-3">
                 <CharacterHUD
                   character={character}
-                  fatigueCount={fatigueCount}
-                  maxFatigue={maxFatigue}
-                  isFatigued={isFatigued}
                 />
               </div>
             </>

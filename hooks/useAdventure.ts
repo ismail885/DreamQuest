@@ -97,7 +97,7 @@ export function useAdventure(
  
   if (fallbackBranch) {
     const isEnd = !fallbackBranch.choix1_lien && !fallbackBranch.choix2_lien;
-    setState({ adventure, currentBranch: fallbackBranch, loading: false, error: null, isEnd, history: [fallbackBranch], totalBranches: totalBranches ?? 0 });
+    setState({ adventure, currentBranch: fallbackBranch, loading: false, error: null, isEnd, history: [fallbackBranch], totalBranches: totalBranches ?? 0, savedProgression: 0 });
   } else {
     setState((s) => ({ ...s, adventure, loading: false, error: "Impossible de charger l'histoire." }));
   }

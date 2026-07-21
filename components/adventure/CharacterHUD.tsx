@@ -6,9 +6,6 @@ import { getXPInCurrentLevel, getXPForNextLevel } from "@/lib/leveling";
 
 interface CharacterHUDProps {
   character: Character;
-  fatigueCount?: number;
-  maxFatigue?: number;
-  isFatigued?: boolean;
   /** Mode sidebar (desktop) ou compact (mobile) */
   sidebar?: boolean;
 }
@@ -43,7 +40,7 @@ function classLabel(classe: string): string {
   return labels[normalizeClass(classe)] || classe;
 }
 
-function CharacterHUD({ character, fatigueCount = 0, maxFatigue = 10, isFatigued = false, sidebar = false }: CharacterHUDProps) {
+function CharacterHUD({ character, sidebar = false }: CharacterHUDProps) {
   const xpCurrent = getXPInCurrentLevel(character.niveau, character.experience ?? 0);
   const xpNeeded = getXPForNextLevel(character.niveau);
   const xpRatio = Math.min(xpCurrent / Math.max(xpNeeded, 1), 1);
@@ -191,8 +188,6 @@ export default memo(CharacterHUD, (prev, next) => {
     prev.character.stats?.force === next.character.stats?.force &&
     prev.character.stats?.agility === next.character.stats?.agility &&
     prev.character.stats?.magie === next.character.stats?.magie &&
-    prev.character.stats?.endurance === next.character.stats?.endurance &&
-    prev.fatigueCount === next.fatigueCount &&
-    prev.isFatigued === next.isFatigued
+    prev.character.stats?.endurance === next.character.stats?.endurance
   );
 });

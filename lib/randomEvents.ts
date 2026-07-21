@@ -538,12 +538,12 @@ export const COMBAT_EVENTS: RandomEvent[] = [
 export const RANDOM_EVENTS: RandomEvent[] = [...NARRATIVE_EVENTS, ...COMBAT_EVENTS];
 
 // Tous les genres partagent la même DA fantasy : aucun événement exclu.
-function isEventAllowed(_event: RandomEvent, _genre?: string | null): boolean {
+function isEventAllowed(): boolean {
   return true;
 }
 
 function pickForGenre(events: RandomEvent[], genre?: string | null): RandomEvent {
-  const pool = genre ? events.filter((e) => isEventAllowed(e, genre)) : events;
+  const pool = genre ? events.filter(() => isEventAllowed()) : events;
   const finalPool = pool.length > 0 ? pool : events;
   return finalPool[Math.floor(Math.random() * finalPool.length)];
 }
