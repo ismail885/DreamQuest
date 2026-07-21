@@ -95,24 +95,15 @@ export function useAdminUsers() {
     setSelectedUsers(newSelected);
   };
 
-  // Supprime un utilisateur et toutes ses donnees liees (ordre FK-safe).
+  // Supprime un utilisateur et toutes ses donnees liees (via API sécurisée).
   const deleteUserCascade = async (userId: number) => {
-    const { data: advs } = await supabase
-      .from("aventure")
-      .select("id")
-      .eq("auteur_id", userId);
-    const advIds = (advs || []).map((a) => a.id);
-    if (advIds.length > 0) {
-      await supabase.from("embranchement").delete().in("id_aventure", advIds);
-      await supabase.from("vote").delete().in("id_aventure", advIds);
-      await supabase.from("sauvegarde").delete().in("id_aventure", advIds);
-      await supabase.from("aventure").delete().in("id", advIds);
-    }
-    await supabase.from("vote").delete().eq("id_utilisateur", userId);
-    await supabase.from("sauvegarde").delete().eq("id_utilisateur", userId);
-    await supabase.from("quete_quotidienne").delete().eq("id_utilisateur", userId);
-    await supabase.from("personnage").delete().eq("id_utilisateur", userId);
-    await supabase.from("utilisateur").delete().eq("id", userId);
+    const res = await fetch('/api/admin/users/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userIds: [userId] }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression');
   };
 
   const handleBulkDelete = async () => {
@@ -128,14 +119,20 @@ export function useAdminUsers() {
     )
       return;
     try {
-      for (const userId of ids) {
-        await deleteUserCascade(userId);
-      }
+      const res = await fetch('/api/admin/users/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userIds: ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression');
       setSelectedUsers(new Set());
       fetchUsers();
     } catch (error) {
       console.error("Error deleting users:", error);
-      setActionError("Erreur lors de la suppression des utilisateurs.");
+      setActionError(
+        error instanceof Error ? error.message : "Erreur lors de la suppression des utilisateurs.",
+      );
     }
   };
 
@@ -145,17 +142,23 @@ export function useAdminUsers() {
       return;
     }
     try {
-      for (const userId of selectedUsers) {
-        await supabase
-          .from("utilisateur")
-          .update({ role: newRole })
-          .eq("id", userId);
-      }
+      const res = await fetch('/api/admin/users/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userIds: [...selectedUsers],
+          role: newRole,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors du changement de rôle');
       setSelectedUsers(new Set());
       fetchUsers();
     } catch (error) {
       console.error("Error updating roles:", error);
-      setActionError("Erreur lors du changement de rôle.");
+      setActionError(
+        error instanceof Error ? error.message : "Erreur lors du changement de rôle.",
+      );
     }
   };
 
@@ -188,16 +191,18 @@ export function useAdminUsers() {
           setActionError("Vous ne pouvez pas retirer votre propre rôle administrateur.");
           return;
         }
-        const { error } = await supabase
-          .from("utilisateur")
-          .update({
+        const res = await fetch('/api/admin/users/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userIds: [editingUser.id],
             nom_utilisateur: formData.nom_utilisateur,
             email: formData.email,
             role: formData.role,
-          })
-          .eq("id", editingUser.id);
-
-        if (error) throw error;
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur lors de la sauvegarde');
       } else {
         setActionError(
           "La création d'utilisateur via admin nécessite le formulaire d'inscription.",
@@ -208,7 +213,9 @@ export function useAdminUsers() {
       fetchUsers();
     } catch (error) {
       console.error("Error saving user:", error);
-      setActionError("Erreur lors de la sauvegarde de l'utilisateur.");
+      setActionError(
+        error instanceof Error ? error.message : "Erreur lors de la sauvegarde de l'utilisateur.",
+      );
     }
   };
 
@@ -219,12 +226,20 @@ export function useAdminUsers() {
       return;
     }
     try {
-      await deleteUserCascade(userId);
+      const res = await fetch('/api/admin/users/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userIds: [userId] }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression');
       setDeleteConfirm(null);
       fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
-      setActionError("Erreur lors de la suppression de l'utilisateur.");
+      setActionError(
+        error instanceof Error ? error.message : "Erreur lors de la suppression de l'utilisateur.",
+      );
       setDeleteConfirm(null);
     }
   };

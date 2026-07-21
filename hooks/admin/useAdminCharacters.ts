@@ -79,20 +79,19 @@ export function useAdminCharacters() {
 
   const handleDelete = async (characterId: number) => {
     try {
-      await supabase.from("sauvegarde").delete().eq("id_personnage", characterId);
-
-      const { error } = await supabase
-        .from("personnage")
-        .delete()
-        .eq("id", characterId);
-
-      if (error) throw error;
+      const res = await fetch('/api/admin/characters/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ characterId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression');
       setDeleteConfirm(null);
       fetchCharacters();
     } catch (error) {
       console.error("Error deleting character:", error);
       setActionError(
-        "Erreur lors de la suppression du personnage.",
+        error instanceof Error ? error.message : "Erreur lors de la suppression du personnage.",
       );
       setDeleteConfirm(null);
     }
