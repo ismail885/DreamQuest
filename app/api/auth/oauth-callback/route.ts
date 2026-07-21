@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Créer un nouvel utilisateur
-    const { data: inserted, error: insertError } = await admin
+    const { error: insertError } = await admin
       .from('utilisateur')
       .insert({
         nom_utilisateur: username,

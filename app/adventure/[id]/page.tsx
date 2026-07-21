@@ -2,6 +2,7 @@
 
 import { use, Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 
 import Loader from "@/components/shared/Loader";
@@ -388,10 +389,13 @@ function AdventureReader({ params }: Props) {
             {/* Image d'en-tête (discrète) */}
             {image && (
               <div className="relative w-full h-48 md:h-56 rounded-xl overflow-hidden">
-                <img
+                <Image
                   src={image}
                   alt=""
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 80vw"
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/30 to-transparent" />
                 <div className="absolute bottom-3 left-4">

@@ -95,17 +95,6 @@ export function useAdminUsers() {
     setSelectedUsers(newSelected);
   };
 
-  // Supprime un utilisateur et toutes ses donnees liees (via API sécurisée).
-  const deleteUserCascade = async (userId: number) => {
-    const res = await fetch('/api/admin/users/delete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userIds: [userId] }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression');
-  };
-
   const handleBulkDelete = async () => {
     const ids = [...selectedUsers].filter((id) => id !== currentAdminId);
     if (ids.length === 0) {
