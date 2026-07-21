@@ -10,6 +10,7 @@ interface UseAdventureState {
   isEnd: boolean;
   history: Branch[];
   totalBranches: number;
+  savedProgression: number;
 }
 
 export function useAdventure(
@@ -25,6 +26,7 @@ export function useAdventure(
     isEnd: false,
     history: [],
     totalBranches: 0,
+    savedProgression: 0,
   });
 
  const userIdRef = useRef(userId);
@@ -79,13 +81,7 @@ export function useAdventure(
  }
  }
 
- // Reprise : historique cohérent avec la progression sauvegardée.
- const seedHistoryLength = (resumedProgression > 0 && totalBranches)
- ? Math.min(totalBranches, Math.max(1, Math.round((resumedProgression / 100) * totalBranches)))
- : 1;
- const buildHistory = (b: Branch): Branch[] => Array.from({ length: seedHistoryLength }, () => b);
-
- const { data: branch, error: branchError } = await supabase
+  const { data: branch, error: branchError } = await supabase
  .from('embranchement')
  .select('id,texte,choix1,choix1_lien,choix1_consequences,choix2,choix2_lien,choix2_consequences,id_aventure')
  .eq('id', branchIdToLoad)
@@ -109,7 +105,7 @@ export function useAdventure(
     }
 
   const isEnd = !branch.choix1_lien && !branch.choix2_lien;
-  setState({ adventure, currentBranch: branch, loading: false, error: null, isEnd, history: buildHistory(branch), totalBranches: totalBranches ?? 0 });
+  setState({ adventure, currentBranch: branch, loading: false, error: null, isEnd, history: [branch], totalBranches: totalBranches ?? 0, savedProgression: resumedProgression });
   } catch (err) {
     console.error('[useAdventure] loadAdventure failed:', err, 'adventureId:', adventureId)
     setState((s) => ({ ...s, loading: false, error: "Une erreur est survenue." }));

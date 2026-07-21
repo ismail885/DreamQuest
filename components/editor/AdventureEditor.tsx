@@ -416,7 +416,7 @@ export default function AdventureEditor() {
 
       updateQuestProgress(Number(user.id), "create_story", 1)
         .then(() => window.dispatchEvent(new CustomEvent("profile-refresh")))
-        .catch(() => {});
+        .catch((err) => console.error("[Quest] update create_story failed:", err));
 
       setSuccess("Aventure publiée ! Redirection...");
       setTimeout(() => router.push("/dashboard"), 1500);

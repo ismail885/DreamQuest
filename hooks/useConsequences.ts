@@ -159,7 +159,8 @@ export function useConsequences({
           impactText: impacts.join(" • "),
           isCombat: false,
         };
-      } catch {
+      } catch (err) {
+        console.error("[Consequences] parseStatImpacts failed:", err);
         return {
           hasImpact: false,
           isPositive: true,
@@ -306,7 +307,8 @@ export function useConsequences({
         }, 3000);
 
         return false;
-      } catch {
+      } catch (err) {
+        console.error("[Consequences] applyConsequence failed:", err);
         return false;
       }
     },
@@ -341,7 +343,8 @@ export function useConsequences({
         if (effect.endurance && effect.endurance !== 0) statChanges.endurance = effect.endurance;
         
         return statChanges;
-      } catch {
+      } catch (err) {
+        console.error("[Consequences] parseStatChanges failed:", err);
         return {};
       }
     },

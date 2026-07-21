@@ -125,7 +125,7 @@ function AdventureReader({ params }: Props) {
             toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
           }
           window.dispatchEvent(new CustomEvent("profile-refresh"));
-        }).catch(() => {});
+        }).catch((err) => console.error("[Quest] update combat_win failed:", err));
       }
     },
   });
@@ -147,6 +147,7 @@ function AdventureReader({ params }: Props) {
     isEnd,
     history,
     totalBranches,
+    savedProgression,
     chooseOption,
     restart,
   } = useAdventure(adventureId, user?.id ?? null);
@@ -181,7 +182,7 @@ function AdventureReader({ params }: Props) {
         if (character.id) {
           await supabase.from("personnage").update({ points_vie: maxPv }).eq("id", character.id);
         }
-      } catch { /* on tente quand même de relancer */ }
+      } catch (err) { console.error("[Restart] saveCharacterStats failed:", err); }
       setCharacter((prev) =>
         prev
           ? { ...prev, niveau: revivedLevel, stats: revivedStats, experience: initialStats.xp, points_vie: maxPv }
@@ -194,8 +195,13 @@ function AdventureReader({ params }: Props) {
   // Dénominateur adaptatif : borné par la taille réelle de l'aventure
   // (évite une barre bloquée bas sur les aventures courtes, ex. générées)
   const progressionMax = Math.max(1, Math.min(MAX_STEPS, totalBranches || MAX_STEPS));
+  // Sur reprise, savedProgression sert de point de départ (historique = [nœud courant] uniquement).
+  // Dès que le joueur avance, history.length > 1 et le calcul réel prend le relais.
+  const isResuming = savedProgression > 0 && history.length <= 1;
   const progression = isEnd ? 100 : Math.min(
-    Math.round((history.length / progressionMax) * 100),
+    isResuming
+      ? savedProgression
+      : Math.round((history.length / progressionMax) * 100),
     99,
   );
 
@@ -264,14 +270,14 @@ function AdventureReader({ params }: Props) {
         updateQuestProgress(uid, "finish_1", 1).then((r) => {
           notifyQuest(r);
           checkAndNotifyAchievements(uid, (msg) => toast.success(msg));
-        }).catch(() => {});
-        updateQuestProgress(uid, "finish_2", 1).then(notifyQuest).catch(() => {});
-        updateQuestProgress(uid, "finish_5", 1).then(notifyQuest).catch(() => {});
+        }).catch((err) => console.error("[Quest] update finish_1 failed:", err));
+        updateQuestProgress(uid, "finish_2", 1).then(notifyQuest).catch((err) => console.error("[Quest] update finish_2 failed:", err));
+        updateQuestProgress(uid, "finish_5", 1).then(notifyQuest).catch((err) => console.error("[Quest] update finish_5 failed:", err));
 
         if (res.leveledUp) {
-          updateQuestProgress(uid, "level_up", res.levelsGained || 1).then(notifyQuest).catch(() => {});
+          updateQuestProgress(uid, "level_up", res.levelsGained || 1).then(notifyQuest).catch((err) => console.error("[Quest] update level_up failed:", err));
         }
-      }).catch(() => {});
+      }).catch((err) => console.error("[Adventure] completeAdventure chain failed:", err));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -293,7 +299,7 @@ function AdventureReader({ params }: Props) {
           toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
         }
         window.dispatchEvent(new CustomEvent("profile-refresh"));
-      }).catch(() => {});
+      }).catch((err) => console.error("[Quest] update play_story failed:", err));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBranch?.id, user]);

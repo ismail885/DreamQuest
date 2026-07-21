@@ -92,7 +92,7 @@ const AdventureCard = React.memo(function AdventureCard({
           toast.success(`Quête terminée : ${r.completion.questId} (+${r.completion.xpAwarded} XP)`);
         }
         window.dispatchEvent(new CustomEvent("profile-refresh"));
-      }).catch(() => {});
+      }).catch((err) => console.error("[Quest] update vote_3 failed:", err));
     bumpVote("vote_1");
     bumpVote("vote_3");
   };
