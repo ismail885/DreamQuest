@@ -48,50 +48,46 @@ describe('Intégration - Sauvegarde (lib/saves.ts réel)', () => {
     mockSupabase.__clearCalls()
   })
 
-  describe('Flux: Nouvelle sauvegarde (insert)', () => {
-    it('devrait faire un insert quand aucune sauvegarde n\'existe pour ce user/adventure/character', async () => {
-      mockSupabase.__setResolved({ data: null, error: null }) // lookup: no existing save
+  describe('Flux: Nouvelle sauvegarde (POST /api/saves)', () => {
+    let fetchMock: jest.SpyInstance
 
+    beforeEach(() => {
+      fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+      } as unknown as Response)
+    })
+
+    afterEach(() => {
+      fetchMock.mockRestore()
+    })
+
+    it('devrait POSTer vers /api/saves et retourner true si ok', async () => {
       const result = await saveProgress(1, 10, 20, 5, 50)
 
       expect(result).toBe(true)
-      expect(mockSupabase.insert).toHaveBeenCalledWith({
-        id_utilisateur: 1,
-        id_aventure: 10,
-        id_personnage: 20,
-        id_embranchement_actuel: 5,
-        progression: 50,
+      expect(fetchMock).toHaveBeenCalledWith('/api/saves', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adventureId: 10, characterId: 20, currentBranchId: 5, progression: 50 }),
       })
-      expect(mockSupabase.update).not.toHaveBeenCalled()
     })
-  })
 
-  describe('Flux: Mise à jour de sauvegarde (upsert)', () => {
-    it('devrait faire un update quand une sauvegarde existe déjà', async () => {
-      mockSupabase.__setResolved({ data: { id: 7 }, error: null }) // lookup: existing save
-
-      const result = await saveProgress(1, 10, 20, 9, 90)
-
-      expect(result).toBe(true)
-      expect(mockSupabase.update).toHaveBeenCalledWith({
-        id_embranchement_actuel: 9,
-        progression: 90,
-      })
-      expect(mockSupabase.insert).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('Flux: Gestion d\'erreur DB', () => {
-    it('devrait retourner false en cas d\'erreur sur insert', async () => {
-      mockSupabase.__setResolved({ data: null, error: { message: 'FK violation' } })
+    it('devrait retourner false si l\'API répond avec une erreur', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({ error: 'Erreur de sauvegarde' }),
+      } as unknown as Response)
 
       const result = await saveProgress(1, 10, 20, 5, 50)
 
       expect(result).toBe(false)
     })
 
-    it('devrait retourner false en cas d\'erreur sur update', async () => {
-      mockSupabase.__setResolved({ data: { id: 1 }, error: { message: 'update failed' } })
+    it('devrait retourner false si fetch jette une exception', async () => {
+      fetchMock.mockRejectedValue(new Error('Network error'))
 
       const result = await saveProgress(1, 10, 20, 5, 50)
 
