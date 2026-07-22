@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { AlertTriangle } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ConfirmLeaveModalProps {
   isOpen: boolean;
@@ -15,9 +16,10 @@ const ConfirmLeaveModal = memo(function ConfirmLeaveModal({
   isOpen,
   onConfirm,
   onCancel,
-  title = "Quitter l'aventure ?",
-  message = "Votre progression sera sauvegardée automatiquement.",
+  title,
+  message,
 }: ConfirmLeaveModalProps) {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   return (
@@ -31,21 +33,21 @@ const ConfirmLeaveModal = memo(function ConfirmLeaveModal({
           <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
             <AlertTriangle className="w-5 h-5 text-yellow-400" />
           </div>
-          <h3 className="text-xl font-bold text-white ">{title}</h3>
+          <h3 className="text-xl font-bold text-white ">{title ?? t("adventure.confirmLeave")}</h3>
         </div>
-        <p className="text-gray-400 mb-6">{message}</p>
+        <p className="text-gray-400 mb-6">{message ?? t("adventure.confirmLeaveMessage")}</p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
             className="flex-1 py-3 px-4 bg-[#141d2e] border border-gray-600 rounded-lg text-white font-medium hover:bg-[#141d2e]/80 transition-colors"
           >
-            Annuler
+            {t("common.cancel")}
           </button>
           <button
             onClick={onConfirm}
             className="flex-1 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-medium transition-colors"
           >
-            Quitter
+            {t("adventure.quit")}
           </button>
         </div>
       </div>

@@ -16,6 +16,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { UserSave } from "@/types/save";
+import { useLanguage } from "@/context/LanguageContext";
+import type { Lang } from "@/lib/i18n/types";
 
 interface TabStoriesProps {
   saves: UserSave[];
@@ -29,23 +31,31 @@ interface AdventureGroup {
   saves: UserSave[];
 }
 
-function getRelativeTime(dateStr: string): string {
+function getRelativeTime(dateStr: string, lang: Lang): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffMs = now - then;
-  if (diffMs < 0) return "À l'instant";
+  if (diffMs < 0) return lang === "en" ? "Just now" : "À l'instant";
 
   const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return "À l'instant";
-  if (minutes < 60) return `Il y a ${minutes} min`;
+  if (minutes < 1) return lang === "en" ? "Just now" : "À l'instant";
+  if (minutes < 60) {
+    return lang === "en" ? `${minutes} min ago` : `Il y a ${minutes} min`;
+  }
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `Il y a ${hours}h`;
+  if (hours < 24) {
+    return lang === "en" ? `${hours}h ago` : `Il y a ${hours}h`;
+  }
 
   const days = Math.floor(hours / 24);
-  if (days < 30) return `Il y a ${days} jour${days > 1 ? "s" : ""}`;
+  if (days < 30) {
+    if (lang === "en") return `${days} day${days > 1 ? "s" : ""} ago`;
+    return `Il y a ${days} jour${days > 1 ? "s" : ""}`;
+  }
 
   const months = Math.floor(days / 30);
+  if (lang === "en") return `${months} month${months > 1 ? "s" : ""} ago`;
   return `Il y a ${months} mois`;
 }
 
@@ -99,6 +109,7 @@ const ITEMS_PER_PAGE = 5;
 
 export default function TabStories({ saves }: TabStoriesProps) {
   const router = useRouter();
+  const { t, lang } = useLanguage();
   const [currentPage, setCurrentPage] = useState(1);
 
   const groupedSaves = useMemo<AdventureGroup[]>(() => {
@@ -149,16 +160,16 @@ export default function TabStories({ saves }: TabStoriesProps) {
           <BookOpen className="w-8 h-8 text-gray-500" />
         </div>
         <h3 className="text-lg font-semibold text-white mb-2">
-          Aucune histoire jouée
+          {t("profile.noStories")}
         </h3>
         <p className="text-gray-400 mb-4 text-sm">
-          Commencez une aventure pour voir votre progression ici.
+          {t("profile.noStoriesDesc")}
         </p>
         <button
           onClick={() => router.push("/dashboard")}
           className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 active:scale-95 text-white font-medium rounded-lg transition-all touch-manipulation"
         >
-          Découvrir les aventures
+          {t("profile.discoverAdventures")}
         </button>
       </div>
     );
@@ -193,20 +204,20 @@ export default function TabStories({ saves }: TabStoriesProps) {
                           : "border-amber-500/50 text-amber-400 bg-amber-500/10"
                       }`}
                     >
-                      {group.status === "completed" ? "Terminée" : "En cours"}
+                      {group.status === "completed" ? t("profile.completed") : t("profile.inProgress")}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-gray-400">
                     <Users className="w-3 h-3 flex-shrink-0" />
                     <span className="truncate">
                       {characterNames ||
-                        `${characterCount} personnage${characterCount > 1 ? "s" : ""}`}
+                        `${characterCount} ${t("profile.stats.characters").toLowerCase()}`}
                     </span>
                   </div>
                 </div>
                 <div className="flex-shrink-0 text-right">
                   <div className="text-[10px] text-gray-500 uppercase tracking-wide">
-                    Progression
+                    {t("profile.progression")}
                   </div>
                   <div className="text-sm sm:text-base font-bold text-white">
                     {group.maxProgression}%
@@ -243,7 +254,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
                       <span className="text-sm font-medium text-white truncate max-w-[100px] sm:max-w-[180px]">
-                        {save.personnage_nom ?? "Personnage"}
+                        {save.personnage_nom ?? t("character.name")}
                       </span>
                       <ClasseBadge classe={save.personnage_classe} />
                     </div>
@@ -268,7 +279,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
                   <div className="hidden xs:flex flex-shrink-0 text-right">
                     <div className="text-[10px] text-gray-500 flex items-center gap-1">
                       <Clock className="w-2.5 h-2.5" />
-                      {getRelativeTime(save.date_sauvegarde)}
+                      {getRelativeTime(save.date_sauvegarde, lang)}
                     </div>
                   </div>
 
@@ -290,8 +301,10 @@ export default function TabStories({ saves }: TabStoriesProps) {
         <div className="flex flex-col xs:flex-row items-center justify-between gap-3 pt-2">
           {/* Compteur */}
           <span className="text-xs text-gray-500 order-2 xs:order-1">
-            Page {currentPage} / {totalPages} &middot; {groupedSaves.length}{" "}
-            histoires
+            {t("profile.pageInfo")
+              .replace("{current}", String(currentPage))
+              .replace("{total}", String(totalPages))
+              .replace("{count}", String(groupedSaves.length))}
           </span>
 
           {/* Boutons */}
@@ -300,7 +313,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              aria-label="Page précédente"
+              aria-label={t("profile.previousPage")}
               className="flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all touch-manipulation"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -319,7 +332,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  aria-label={`Page ${page}`}
+                  aria-label={t("profile.goToPage").replace("{page}", String(page))}
                   aria-current={page === currentPage ? "page" : undefined}
                   className={`flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 text-xs rounded-lg border transition-all active:scale-95 touch-manipulation ${
                     page === currentPage
@@ -338,7 +351,7 @@ export default function TabStories({ saves }: TabStoriesProps) {
                 setCurrentPage((p) => Math.min(totalPages, p + 1))
               }
               disabled={currentPage === totalPages}
-              aria-label="Page suivante"
+              aria-label={t("profile.nextPage")}
               className="flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-lg border border-gray-700/40 text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all touch-manipulation"
             >
               <ChevronRight className="w-4 h-4" />

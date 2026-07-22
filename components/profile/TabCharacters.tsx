@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Character } from "@/types";
 import { getTotalXPForLevel, calculateRequiredXP } from "@/types";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   Swords, Sparkles, Wind, Cross, Shield, Target, Leaf, Skull, User, Flame,
 } from "lucide-react";
@@ -56,6 +57,7 @@ const ICON_MAP: Record<string, typeof Swords> = {
 
 export default function TabCharacters({ characters }: TabCharactersProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [page, setPage] = useState(1);
 
   const totalPages = Math.max(1, Math.ceil(characters.length / ITEMS_PER_PAGE));
@@ -75,13 +77,13 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">Aucun personnage</h3>
-        <p className="text-gray-400 mb-4">Créez votre premier personnage pour commencer l&apos;aventure.</p>
+        <h3 className="text-lg font-semibold text-white mb-2">{t("character.noCharacters")}</h3>
+        <p className="text-gray-400 mb-4">{t("character.createFirst")}</p>
         <button
           onClick={() => router.push("/create-character")}
           className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
         >
-          Créer un personnage
+          {t("character.createCharacter")}
         </button>
       </div>
     );
@@ -90,7 +92,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-gray-400 text-sm">{characters.length} personnage{characters.length > 1 ? "s" : ""}</p>
+        <p className="text-gray-400 text-sm">{characters.length}</p>
         <button
           onClick={() => router.push("/create-character")}
           className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium flex items-center gap-2"
@@ -98,7 +100,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Nouveau
+          {t("character.newBtn")}
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -125,7 +127,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
                 <h3 className="text-lg font-bold text-white text-center leading-tight">{char.nom_personnage}</h3>
                 <p className="text-cyan-400 text-sm font-medium">{char.classe}</p>
                 <span className="mt-2 px-3 py-0.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-full text-xs text-cyan-300 font-semibold">
-                  Niveau {niveau}
+                  {t("character.level")} {niveau}
                 </span>
               </div>
 
@@ -140,7 +142,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
                 <div className="flex justify-between text-xs text-gray-500">
                   <span className="flex items-center gap-1">
                     <Heart className="w-3.5 h-3.5 text-red-400" />
-                    {char.points_vie || 100} PV
+                    {char.points_vie || 100} {t("character.hpShort")}
                   </span>
                   <span>{Math.floor(xpInCurrentLevel)} / {xpForNextLevel} XP</span>
                 </div>
@@ -156,7 +158,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
                   onClick={() => router.push(`/adventure?personnage=${char.id}`)}
                   className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all text-sm font-semibold"
                 >
-                  Jouer
+                  {t("character.play")}
                 </button>
               </div>
             </div>
@@ -169,7 +171,7 @@ export default function TabCharacters({ characters }: TabCharactersProps) {
         totalPages={totalPages}
         totalCount={characters.length}
         onPageChange={setPage}
-        label="personnages"
+        label=""
       />
     </div>
   );

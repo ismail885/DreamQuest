@@ -1,9 +1,12 @@
 'use client';
 
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import { ClassInfo, CLASS_ICONS, STAT_LABELS, STAT_COLORS, ABILITIES_DATA, CLASS_DIFFICULTIES, DIFFICULTY_LABELS, AbilityInfo } from '@/types';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ClassCardProps {
  classInfo: ClassInfo;
@@ -12,7 +15,8 @@ interface ClassCardProps {
 }
 
 const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelect }: ClassCardProps) {
- const ClassIcon = CLASS_ICONS[classInfo.name];
+  const { t } = useLanguage();
+  const ClassIcon = CLASS_ICONS[classInfo.name];
  const difficultyInfo = CLASS_DIFFICULTIES[classInfo.name];
  const difficultyMeta = DIFFICULTY_LABELS[difficultyInfo?.level ?? 'DEBUTANT'];
  
@@ -58,7 +62,7 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
   role="button"
   tabIndex={0}
   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }}
-  aria-label={`Sélectionner la classe ${classInfo.name} - ${classInfo.role}`}
+  aria-label={`${t("character.select")} ${classInfo.name} - ${classInfo.role}`}
   className={`relative bg-surface/80 border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
  isSelected 
  ? 'border-cyan-400 shadow-lg shadow-cyan-400/20 scale-102' 
@@ -92,7 +96,7 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
  </p>
  
  <div className="inline-block px-3 py-1 bg-gray-800/50 rounded-full text-xs text-gray-500 mb-6">
- Mode: {classInfo.playstyle}
+  {t("character.mode")} : {classInfo.playstyle}
  </div>
 
  {/* Barres de statistiques */}
@@ -132,10 +136,10 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-lg bg-gray-900 border border-gray-700 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
  {/* Type de capacité */}
  <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium mb-2 ${getAbilityTypeColor(ability.type)}`}>
- {ability.type === 'OFFENSIVE' ? 'Offensive' :
- ability.type === 'DEFENSIVE' ? 'Défensive' :
- ability.type === 'SUPPORT' ? 'Soutien' :
- ability.type === 'UTILITY' ? 'Utilitaire' : 'Passive'}
+  {ability.type === 'OFFENSIVE' ? t("character.abilityType.offensive") :
+  ability.type === 'DEFENSIVE' ? t("character.abilityType.defensive") :
+  ability.type === 'SUPPORT' ? t("character.abilityType.support") :
+  ability.type === 'UTILITY' ? t("character.abilityType.utility") : t("character.abilityType.passive")}
  </span>
  
  {/* Description */}
@@ -146,7 +150,7 @@ const ClassCard = React.memo(function ClassCard({ classInfo, isSelected, onSelec
  {/* Cooldown si applicable */}
  {ability.cooldown && ability.cooldown > 0 && (
  <p className="text-xs text-gray-500 mt-1">
- Recharge : {ability.cooldown} tours
+  {t("character.abilityCooldown").replace("{tours}", String(ability.cooldown))}
  </p>
  )}
  

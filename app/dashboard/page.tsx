@@ -4,6 +4,7 @@ import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
@@ -51,6 +52,7 @@ const CharacterList = dynamic(() => import("@/components/character/CharacterList
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuthContext();
+  const { t } = useLanguage();
   const {
   stats,
   statsLoading,
@@ -66,7 +68,7 @@ export default function DashboardPage() {
 
   // Auth pas encore pret -> loader bloquant (normal)
  if (loading) {
- return <Loader fullScreen message="Chargement de votre espace..." />;
+  return <Loader fullScreen message={t("common.loading")} />;
  }
 
  if (!user) return null;
@@ -90,17 +92,17 @@ export default function DashboardPage() {
   variants={fadeInUp}
   className="text-2xl md:text-4xl font-bold mb-2"
  >
- Bienvenue,{" "}
- <span className="text-cyan-400">
- {user?.username || "Aventurier"}
- </span>
- </motion.h1>
- <motion.p
+                {t("dashboard.welcome")},{" "}
+  <span className="text-cyan-400">
+  {user?.username || t("dashboard.adventurer")}
+  </span>
+  </motion.h1>
+  <motion.p
   variants={fadeInUp}
   className="text-gray-300 text-sm md:text-base"
- >
- Prêt à vivre de nouvelles aventures ?
- </motion.p>
+  >
+  {t("dashboard.ready")}
+  </motion.p>
  </motion.div>
 
   {/* Section personnages */}
@@ -114,16 +116,16 @@ export default function DashboardPage() {
   variants={fadeInUp}
   className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6"
  >
- <h2 className="text-xl md:text-2xl font-bold text-white ">
- Mes Personnages
- </h2>
- <button
- onClick={() => router.push("/create-character")}
- className="group w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
- >
- <Plus className="w-5 h-5 transition-transform duration-300 ease-out group-hover:rotate-90" />
- Créer un Personnage
- </button>
+  <h2 className="text-xl md:text-2xl font-bold text-white ">
+  {t("dashboard.myCharacters")}
+  </h2>
+  <button
+  onClick={() => router.push("/create-character")}
+  className="group w-full sm:w-auto px-5 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98 flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
+  >
+  <Plus className="w-5 h-5 transition-transform duration-300 ease-out group-hover:rotate-90" />
+  {t("nav.createCharacter")}
+  </button>
  </motion.div>
  <motion.div variants={fadeInUp}>
  <CharacterList userId={user.id} />

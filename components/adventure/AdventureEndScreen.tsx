@@ -1,7 +1,10 @@
 "use client";
 
+"use client";
+
 import { motion } from "framer-motion";
 import { Zap, Swords, Wind, Wand2, Shield, Trophy, RotateCw } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AdventureEndScreenProps {
   historyLength: number;
@@ -48,6 +51,7 @@ export default function AdventureEndScreen({
   combatStats,
   onRestart,
 }: AdventureEndScreenProps) {
+  const { t } = useLanguage();
   const hasStatsGain = Object.values(statsGained).some((val) => val > 0);
 
   return (
@@ -71,19 +75,20 @@ export default function AdventureEndScreen({
         >
           <Trophy className="w-7 h-7 text-cyan-400" />
         </motion.div>
-        <p className="text-white font-bold text-xl">Aventure terminée !</p>
+        <p className="text-white font-bold text-xl">{t("adventure.endScreen.title")}</p>
         <p className="text-gray-300 text-sm">
-          Complétée en {historyLength} étape{historyLength > 1 ? "s" : ""}
+          {t("adventure.endScreen.completedIn")} {historyLength} {t("adventure.endScreen.steps")}{historyLength > 1 ? "s" : ""}
         </p>
+        {/* Note: plural "s" works for both fr (étape→étapes) and en (step→steps) */}
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 text-center text-sm">
         <div className="backdrop-blur-sm bg-slate-900/40 border border-cyan-500/10 rounded-lg p-2">
-          <p className="text-gray-300 text-xs">Combats gagnés</p>
+          <p className="text-gray-300 text-xs">{t("adventure.endScreen.battlesWon")}</p>
           <p className="text-green-400 font-bold text-lg">{combatStats.wins}</p>
         </div>
         <div className="backdrop-blur-sm bg-slate-900/40 border border-cyan-500/10 rounded-lg p-2">
-          <p className="text-gray-300 text-xs">Combats perdus</p>
+          <p className="text-gray-300 text-xs">{t("adventure.endScreen.battlesLost")}</p>
           <p className="text-red-400 font-bold text-lg">{combatStats.losses}</p>
         </div>
       </motion.div>
@@ -95,40 +100,40 @@ export default function AdventureEndScreen({
         >
           <Zap className="w-4 h-4 text-yellow-400 flex-shrink-0" />
           <span className="text-sm text-gray-300">
-            XP gagnée: <span className="text-yellow-400 font-bold">+{xpGained}</span>
+            {t("adventure.endScreen.xpGained")}: <span className="text-yellow-400 font-bold">+{xpGained}</span>
           </span>
         </motion.div>
       )}
 
       {hasStatsGain && (
         <motion.div variants={itemVariants} className="space-y-2">
-          <p className="text-gray-300 text-xs font-semibold px-1">Stats acquises :</p>
+          <p className="text-gray-300 text-xs font-semibold px-1">{t("adventure.endScreen.statsAcquired")}</p>
           <div className="grid grid-cols-4 gap-2">
             {statsGained.force > 0 && (
               <div className="backdrop-blur-sm bg-orange-500/10 border border-orange-500/30 rounded-lg p-2 text-center text-xs">
                 <Swords className="w-3 h-3 text-orange-400 mx-auto mb-1" />
-                <p className="text-gray-300">Force</p>
+                <p className="text-gray-300">{t("character.statsLabels.force")}</p>
                 <p className="text-orange-400 font-bold">+{statsGained.force}</p>
               </div>
             )}
             {statsGained.agility > 0 && (
               <div className="backdrop-blur-sm bg-green-500/10 border border-green-500/30 rounded-lg p-2 text-center text-xs">
                 <Wind className="w-3 h-3 text-green-400 mx-auto mb-1" />
-                <p className="text-gray-300">Agilité</p>
+                <p className="text-gray-300">{t("character.statsLabels.agility")}</p>
                 <p className="text-green-400 font-bold">+{statsGained.agility}</p>
               </div>
             )}
             {statsGained.magie > 0 && (
               <div className="backdrop-blur-sm bg-purple-500/10 border border-purple-500/30 rounded-lg p-2 text-center text-xs">
                 <Wand2 className="w-3 h-3 text-purple-400 mx-auto mb-1" />
-                <p className="text-gray-300">Magie</p>
+                <p className="text-gray-300">{t("character.statsLabels.magie")}</p>
                 <p className="text-purple-400 font-bold">+{statsGained.magie}</p>
               </div>
             )}
             {statsGained.endurance > 0 && (
               <div className="backdrop-blur-sm bg-blue-500/10 border border-blue-500/30 rounded-lg p-2 text-center text-xs">
                 <Shield className="w-3 h-3 text-blue-400 mx-auto mb-1" />
-                <p className="text-gray-300">Endurance</p>
+                <p className="text-gray-300">{t("character.statsLabels.endurance")}</p>
                 <p className="text-blue-400 font-bold">+{statsGained.endurance}</p>
               </div>
             )}
@@ -142,7 +147,7 @@ export default function AdventureEndScreen({
           className="text-yellow-400 font-semibold text-center text-sm"
         >
           <Zap className="w-4 h-4 text-yellow-400 inline mr-1" />
-          Niveau {characterNiveau} atteint !
+          {t("adventure.endScreen.levelReached").replace("{level}", String(characterNiveau))}
         </motion.p>
       )}
 
@@ -152,7 +157,7 @@ export default function AdventureEndScreen({
         className="group w-full px-8 py-3 bg-gradient-to-r from-primary to-blue-500 text-white rounded-card font-semibold transition-all duration-300 ease-out hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] mt-4 flex items-center justify-center gap-2"
       >
         <RotateCw className="w-4 h-4 transition-transform duration-300 ease-out group-hover:rotate-180" />
-        Recommencer
+        {t("adventure.restart")}
       </motion.button>
     </motion.div>
   );

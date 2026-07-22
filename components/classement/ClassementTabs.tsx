@@ -1,6 +1,7 @@
 "use client";
 
 import { BookOpen, Users } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ClassementTabsProps {
   activeTab: "adventures" | "players";
@@ -11,6 +12,7 @@ export default function ClassementTabs({
   activeTab,
   setActiveTab,
 }: ClassementTabsProps) {
+  const { t } = useLanguage();
   return (
     <div
       className="flex justify-center gap-2 mb-8 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4"
@@ -27,7 +29,7 @@ export default function ClassementTabs({
         }`}
       >
         <BookOpen className="w-4 h-4 inline mr-2" />
-        Aventures
+        {t("nav.adventures")}
       </button>
       <button
         role="tab"
@@ -40,7 +42,7 @@ export default function ClassementTabs({
         }`}
       >
         <Users className="w-4 h-4 inline mr-2" />
-        Joueurs
+        {t("nav.players")}
       </button>
     </div>
   );

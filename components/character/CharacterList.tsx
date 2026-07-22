@@ -8,6 +8,7 @@ import ConfirmDeleteModal from '@/components/shared/ConfirmDeleteModal';
 import { SkeletonCharacterList } from '@/components/shared/Skeleton';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import { useLanguage } from '@/context/LanguageContext';
 
 
 type SortOption = 'nom' | 'niveau' | 'date';
@@ -17,8 +18,9 @@ interface CharacterListProps {
 }
 
 export default function CharacterList({ userId }: CharacterListProps) {
- const router = useRouter();
- const searchParams = useSearchParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { t } = useLanguage();
  const [characters, setCharacters] = useState<Character[]>([]);
  const [isLoading, setIsLoading] = useState(true);
  const [error, setError] = useState('');
@@ -63,7 +65,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
  .order('id', { ascending: false });
 
  if (error) {
- console.error('Erreur fetch personnages:', error);
+ console.error('Error fetching characters:', error);
  setError(error.message);
  return;
  }
@@ -82,7 +84,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
  setError('');
  } catch (err) {
  console.error('Erreur:', err);
- setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+    setError(err instanceof Error ? err.message : t("common.error"));
  } finally {
  setIsLoading(false);
  }
@@ -102,21 +104,21 @@ export default function CharacterList({ userId }: CharacterListProps) {
  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, []);
 
- const handleDeleteRequest = async (character: Character) => {
- setDeleteError('');
- 
-  if (character.id) {
- const { data: saves } = await supabase
- .from('sauvegarde')
- .select('id')
- .eq('id_personnage', character.id);
- 
- const saveCount = saves?.length ?? 0;
- setDeleteError(saveCount > 0 ? `Ce personnage a ${saveCount} sauvegarde(s)` : '');
- }
- 
- setPendingDelete(character);
- };
+  const handleDeleteRequest = async (character: Character) => {
+  setDeleteError('');
+  
+   if (character.id) {
+  const { data: saves } = await supabase
+  .from('sauvegarde')
+  .select('id')
+  .eq('id_personnage', character.id);
+  
+  const saveCount = saves?.length ?? 0;
+  setDeleteError(saveCount > 0 ? `${saveCount} sauvegarde(s)` : '');
+  }
+  
+  setPendingDelete(character);
+  };
 
  const handleDeleteConfirm = async () => {
  if (!pendingDelete?.id) {
@@ -138,7 +140,7 @@ export default function CharacterList({ userId }: CharacterListProps) {
  // Recharger pour être sûr
  fetchCharacters();
  } catch (err) {
- setDeleteError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+    setDeleteError(err instanceof Error ? err.message : t("common.error"));
  } finally {
  setIsDeleting(false);
  }
@@ -168,14 +170,14 @@ export default function CharacterList({ userId }: CharacterListProps) {
  <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
  </svg>
- <p className="text-lg mb-2">Aucun personnage créé</p>
- <p className="text-sm">Créez votre premier personnage pour commencer votre aventure</p>
+  <p className="text-lg mb-2">{t("character.noCharacters")}</p>
+  <p className="text-sm">{t("character.createFirst")}</p>
  </div>
  <Link
  href="/create-character"
  className="inline-block px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
  >
- Créer un personnage
+  {t("character.createCharacter")}
  </Link>
  </div>
  );
@@ -201,9 +203,9 @@ export default function CharacterList({ userId }: CharacterListProps) {
  onChange={(e) => setSortBy(e.target.value as SortOption)}
  className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 cursor-pointer"
  >
- <option value="date">Plus récents</option>
- <option value="niveau">Niveau</option>
- <option value="nom">Nom</option>
+  <option value="date">{t("character.sortDate")}</option>
+  <option value="niveau">{t("character.sortLevel")}</option>
+  <option value="nom">{t("character.sortName")}</option>
  </select>
  </div>
  )}

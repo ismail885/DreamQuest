@@ -9,6 +9,7 @@ import Header from "@/components/shared/Header";
 import PageBackground from "@/components/shared/PageBackground";
 import Loader from "@/components/shared/Loader";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { useProfileData } from "@/hooks/useProfileData";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 
@@ -88,13 +89,12 @@ export default function ProfilPage() {
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const { lang, setLang, t } = useLanguage();
 
   const loadSettings = useCallback(() => {
     if (typeof window === "undefined") return;
     const notif = window.localStorage.getItem("dreamquest_notifications");
-    const langue = window.localStorage.getItem("dreamquest_langue");
     if (notif !== null) setNotifications(notif === "true");
-    if (langue) setLanguage(langue);
   }, []);
 
   const settingsLoadedRef = useRef(false);
@@ -113,7 +113,6 @@ export default function ProfilPage() {
     }
   };
 
-  const [language, setLanguage] = useState("fr");
   const [settingsMessage, setSettingsMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -167,9 +166,8 @@ export default function ProfilPage() {
     try {
       if (typeof window !== "undefined") {
         window.localStorage.setItem("dreamquest_notifications", String(notifications));
-        window.localStorage.setItem("dreamquest_langue", language);
       }
-      setSettingsMessage({ type: "success", text: "Paramètres sauvegardés !" });
+      setSettingsMessage({ type: "success", text: t("profile.settingsSaved") });
 
       setTimeout(() => {
         closeSettingsModal();
@@ -177,7 +175,7 @@ export default function ProfilPage() {
     } catch {
       setSettingsMessage({
         type: "error",
-        text: "Erreur lors de la sauvegarde.",
+        text: t("errors.generic"),
       });
     } finally {
       setIsSavingSettings(false);
@@ -243,11 +241,11 @@ export default function ProfilPage() {
   };
 
   if (loading) {
-    return <Loader fullScreen message="Chargement de votre profil..." />;
+    return <Loader fullScreen message={t("profile.title")} />;
   }
 
   return (
-    <Suspense fallback={<Loader fullScreen message="Chargement de votre profil..." />}>
+    <Suspense fallback={<Loader fullScreen message={t("profile.title")} />}>
     <div className="min-h-screen text-white flex flex-col bg-deep">
       <PageBackground />
 
@@ -284,11 +282,11 @@ export default function ProfilPage() {
                           : "text-gray-400 hover:text-white hover:bg-cyan-500/5"
                       }`}
                     >
-                      {tab === "stories" && "Mes Histoires"}
-                      {tab === "achievements" && "Réalisations"}
-                      {tab === "creations" && "Mes Créations"}
-                      {tab === "quests" && "Quêtes"}
-                      {tab === "characters" && "Mes Persos"}
+                      {tab === "stories" && t("profile.tabs.stories")}
+                      {tab === "achievements" && t("profile.tabs.achievements")}
+                      {tab === "creations" && t("profile.tabs.creations")}
+                      {tab === "quests" && t("profile.tabs.quests")}
+                      {tab === "characters" && t("profile.tabs.characters")}
                     </button>
                   ))}
                 </div>
@@ -363,8 +361,8 @@ export default function ProfilPage() {
         onClose={closeSettingsModal}
         notifications={notifications}
         onToggleNotifications={toggleNotifications}
-        language={language}
-        onLanguageChange={setLanguage}
+        language={lang}
+        onLanguageChange={setLang}
         isSavingSettings={isSavingSettings}
         settingsMessage={settingsMessage}
         onSave={handleSaveSettings}

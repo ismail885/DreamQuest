@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -25,6 +27,7 @@ export default function EditProfileModal({
   saveMessage,
   getUserInitials,
 }: EditProfileModalProps) {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   return (
@@ -50,7 +53,7 @@ export default function EditProfileModal({
                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
               />
             </svg>
-            Modifier le profil
+            {t("profile.editProfile")}
           </h3>
           <button
             onClick={onClose}
@@ -83,27 +86,27 @@ export default function EditProfileModal({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-white mb-2">
-              Nom d&apos;utilisateur
+              {t("auth.username")}
             </label>
             <input
               type="text"
               value={editUsername}
               onChange={(e) => onEditUsernameChange(e.target.value)}
               className="w-full px-4 py-3 bg-transparent border border-cyan-500/20 rounded-card text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              placeholder="Votre nom d'utilisateur"
+              placeholder={t("profile.usernamePlaceholder")}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-white mb-2">
-              Email
+              {t("auth.email")}
             </label>
             <input
               type="email"
               value={editEmail}
               onChange={(e) => onEditEmailChange(e.target.value)}
               className="w-full px-4 py-3 bg-transparent border border-cyan-500/20 rounded-card text-white placeholder:text-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              placeholder="Votre email"
+              placeholder={t("profile.emailPlaceholder")}
             />
           </div>
 
@@ -125,7 +128,7 @@ export default function EditProfileModal({
             onClick={onClose}
             className="flex-1 py-3 px-4 bg-transparent border border-cyan-500/20 rounded-card text-white font-medium hover:bg-cyan-500/5 transition-all"
           >
-            Annuler
+            {t("common.cancel")}
           </button>
           <button
             onClick={onSave}
@@ -153,7 +156,7 @@ export default function EditProfileModal({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Sauvegarde...
+                {t("common.saving")}
               </>
             ) : (
               <>
@@ -170,7 +173,7 @@ export default function EditProfileModal({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                Sauvegarder
+                {t("common.save")}
               </>
             )}
           </button>

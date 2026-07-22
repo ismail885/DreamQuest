@@ -1,12 +1,15 @@
 "use client";
 
+import { useLanguage } from "@/context/LanguageContext";
+import type { Lang } from "@/lib/i18n/types";
+
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: boolean;
   onToggleNotifications: () => void;
-  language: string;
-  onLanguageChange: (lang: string) => void;
+  language: Lang;
+  onLanguageChange: (lang: Lang) => void;
   isSavingSettings: boolean;
   settingsMessage: { type: "success" | "error"; text: string } | null;
   onSave: () => void;
@@ -23,6 +26,7 @@ export default function SettingsModal({
   settingsMessage,
   onSave,
 }: SettingsModalProps) {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   return (
@@ -54,7 +58,7 @@ export default function SettingsModal({
                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            Paramètres
+            {t("profile.settings")}
           </h3>
           <button
             onClick={onClose}
@@ -92,7 +96,7 @@ export default function SettingsModal({
                   d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                 />
               </svg>
-              <span className="text-white">Notifications</span>
+              <span className="text-white">{t("profile.notifications")}</span>
             </div>
             <button
               onClick={onToggleNotifications}
@@ -119,14 +123,15 @@ export default function SettingsModal({
                   d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
                 />
               </svg>
-              <span className="text-white">Langue</span>
+              <span className="text-white">{t("profile.language")}</span>
             </div>
             <select
               value={language}
-              onChange={(e) => onLanguageChange(e.target.value)}
+              onChange={(e) => onLanguageChange(e.target.value as Lang)}
               className="w-full px-4 py-2 bg-transparent border border-cyan-500/20 rounded-card text-white focus:outline-none focus:border-primary transition-all"
             >
               <option value="fr">Français</option>
+              <option value="en">English</option>
             </select>
           </div>
 
@@ -148,7 +153,7 @@ export default function SettingsModal({
             onClick={onClose}
             className="flex-1 py-3 px-4 bg-transparent border border-cyan-500/20 rounded-card text-white font-medium hover:bg-cyan-500/5 transition-all"
           >
-            Annuler
+            {t("common.cancel")}
           </button>
           <button
             onClick={onSave}
@@ -176,7 +181,7 @@ export default function SettingsModal({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Sauvegarde...
+                {t("common.saving")}
               </>
             ) : (
               <>
@@ -193,7 +198,7 @@ export default function SettingsModal({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                Sauvegarder
+                {t("common.save")}
               </>
             )}
           </button>

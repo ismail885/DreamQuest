@@ -1,8 +1,11 @@
 "use client";
 
+"use client";
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Swords, Shield, Trophy, Zap, Crosshair, ShieldHalf, Gem } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 import { getAbilitiesForClass, type CombatState, type CombatAbility } from "@/lib/combat";
 import type { Character } from "@/types";
 
@@ -134,6 +137,7 @@ export default function CombatUI({
     onAbility(ability);
   }, [onAbility]);
 
+  const { t } = useLanguage();
   if (!enemy) return null;
 
   return (
@@ -144,7 +148,7 @@ export default function CombatUI({
     >
       <div className="flex items-center gap-3 mb-1">
         <Swords className="w-6 h-6 text-red-400" aria-hidden="true" />
-        <h2 className="text-red-400 font-bold text-xl sm:text-2xl tracking-wide">COMBAT</h2>
+        <h2 className="text-red-400 font-bold text-xl sm:text-2xl tracking-wide">{t("adventure.combat.title")}</h2>
       </div>
 
       <div className="grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-5 items-center">
@@ -169,7 +173,7 @@ export default function CombatUI({
             </div>
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-gray-300">PV</span>
+                <span className="text-gray-300">{t("adventure.combat.health")}</span>
                 <span className="text-gray-200 font-medium">{combatState.playerPv} / {combatState.playerPvMax}</span>
               </div>
               <div className="h-3 bg-gray-800/80 rounded-full overflow-hidden">
@@ -182,7 +186,7 @@ export default function CombatUI({
             </div>
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-blue-300">PM</span>
+                <span className="text-blue-300">{t("adventure.combat.mana")}</span>
                 <span className="text-blue-200 font-medium">{combatState.playerMana} / {combatState.playerManaMax}</span>
               </div>
               <div className="h-2 bg-gray-800/80 rounded-full overflow-hidden">
@@ -202,7 +206,7 @@ export default function CombatUI({
 
         <div className="flex flex-col items-center justify-center px-0.5">
           <Swords className="w-7 h-7 sm:w-9 sm:h-9 text-gray-400" aria-hidden="true" />
-          <div className="text-lg sm:text-2xl font-black text-gray-500 mt-1">VS</div>
+          <div className="text-lg sm:text-2xl font-black text-gray-500 mt-1">{t("adventure.combat.vs")}</div>
         </div>
 
         <div className="relative rounded-xl border border-red-500/30 bg-gradient-to-b from-red-500/10 to-slate-900/40 p-3 sm:p-4">
@@ -227,7 +231,7 @@ export default function CombatUI({
               <div className="min-w-0 flex-1">
                 <p className="text-red-300 font-semibold text-sm truncate">{enemy.name}</p>
                 <div className="flex items-center gap-2 text-[10px] leading-tight">
-                  {enemy.level && <span className="text-gray-400">Niv.{enemy.level}</span>}
+                  {enemy.level && <span className="text-gray-400">{t("adventure.combat.level")}{enemy.level}</span>}
                   {enemy.xpReward > 0 && (
                     <span className="text-orange-400/70 flex items-center gap-0.5">
                       <Gem className="w-2.5 h-2.5" />{enemy.xpReward}XP
@@ -238,7 +242,7 @@ export default function CombatUI({
             </div>
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-gray-300">PV</span>
+                <span className="text-gray-300">{t("adventure.combat.health")}</span>
                 <span className="text-gray-200 font-medium">{enemy.pv} / {enemy.pvMax}</span>
               </div>
               <div className="h-3 bg-gray-800/80 rounded-full overflow-hidden">
@@ -278,33 +282,33 @@ export default function CombatUI({
               whileTap={{ scale: 0.98 }}
               onClick={onAttack}
               disabled={combatState.turn !== "player"}
-              aria-label="Attaquer l'ennemi"
+              aria-label={t("adventure.combat.attack")}
               className="flex items-center justify-center gap-2 py-3 bg-red-500/10 border border-red-500/40 text-red-400 rounded-card hover:bg-red-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
               <Swords className="w-4 h-4" aria-hidden="true" />
-              Attaquer
+              {t("adventure.combat.attack")}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onDefend}
               disabled={combatState.turn !== "player"}
-              aria-label="Se défendre"
+              aria-label={t("adventure.combat.defend")}
               className="flex items-center justify-center gap-2 py-3 bg-blue-500/10 border border-blue-500/40 text-blue-400 rounded-card hover:bg-blue-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
               <Shield className="w-4 h-4" aria-hidden="true" />
-              Défense
+              {t("adventure.combat.defend")}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onFlee}
               disabled={combatState.turn !== "player"}
-              aria-label="Fuir le combat"
+              aria-label={t("adventure.combat.flee")}
               className="flex items-center justify-center gap-2 py-3 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 rounded-card hover:bg-yellow-500/20 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-all"
             >
               <Trophy className="w-4 h-4" aria-hidden="true" />
-              Fuir
+              {t("adventure.combat.flee")}
             </motion.button>
           </div>
 
@@ -315,7 +319,7 @@ export default function CombatUI({
               className="flex items-center gap-2 mb-2"
             >
               <Zap className="w-4 h-4 text-purple-400" aria-hidden="true" />
-              <span className="text-purple-400 text-sm font-semibold">Compétences</span>
+              <span className="text-purple-400 text-sm font-semibold">{t("adventure.combat.skills")}</span>
             </motion.div>
             <div className="grid grid-cols-2 gap-2">
               {getAbilitiesForClass(character?.classe || "guerrier").map((ability) => {
@@ -345,10 +349,10 @@ export default function CombatUI({
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-medium">{ability.name}</span>
-                      <span className="text-xs text-gray-500">{ability.manaCost} PM</span>
+                      <span className="text-xs text-gray-500">{ability.manaCost} {t("adventure.combat.mana")}</span>
                     </div>
                     {inCooldown && (
-                      <span className="text-xs text-gray-600">Recharge: {combatState.cooldowns[ability.id]} tours</span>
+                      <span className="text-xs text-gray-600">{t("adventure.combat.cooldown")}: {combatState.cooldowns[ability.id]} {t("adventure.combat.turns")}</span>
                     )}
                   </motion.button>
                 );
@@ -360,7 +364,7 @@ export default function CombatUI({
 
       <div className="bg-deep/80 border border-gray-800/60 rounded-card overflow-hidden">
         <div className="px-4 py-2 border-b border-gray-800/60 text-gray-400 text-xs font-semibold uppercase tracking-wide">
-          Journal de combat
+          {t("adventure.combat.log")}
         </div>
         <div className="p-4 h-28 sm:h-32 overflow-y-auto space-y-1 scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700">
           {combatState.log.slice(-10).map((line, i) => (
@@ -377,7 +381,7 @@ export default function CombatUI({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onEnd}
-          aria-label={combatState.won ? "Victoire, continuer" : combatState.fled ? "Fuite, continuer" : "Défaite, continuer"}
+          aria-label={combatState.won ? t("adventure.combat.victory") : combatState.fled ? t("adventure.combat.escaped") : t("adventure.combat.defeat")}
           className={`w-full py-3 rounded-card font-bold text-white transition-all ${
             combatState.won
               ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400"
@@ -387,15 +391,15 @@ export default function CombatUI({
           {combatState.won ? (
             <div className="flex items-center justify-center gap-2">
               <Trophy className="w-4 h-4" aria-hidden="true" />
-              <span>Victoire !</span>
+              <span>{t("adventure.combat.victory")}</span>
               <span className="text-yellow-200">+{enemy.xpReward || 0} XP</span>
               {character.niveau && (
-                <span className="text-xs text-white/60">(Niv.{character.niveau})</span>
+                <span className="text-xs text-white/60">({t("adventure.combat.level")}{character.niveau})</span>
               )}
             </div>
           ) : combatState.fled
-            ? "Tu as fui le combat"
-            : "Tu as été vaincu"}
+            ? t("adventure.combat.escaped")
+            : t("adventure.combat.defeat")}
         </motion.button>
       )}
     </motion.div>

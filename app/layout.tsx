@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import dynamic from "next/dynamic";
 import Script from "next/script";
 import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const Toaster = dynamic(() => import("react-hot-toast").then((m) => m.Toaster));
 
@@ -42,6 +43,7 @@ export default function RootLayout({
         className={`${plusJakartaSans.variable} bg-deep text-white antialiased`}
       >
         <AuthProvider>
+          <LanguageProvider>
           <div className="relative min-h-screen flex flex-col">
             <div className="fixed inset-0 -z-10 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-deep via-[#111827] to-deep"></div>
@@ -71,6 +73,7 @@ export default function RootLayout({
               },
             }}
           />
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

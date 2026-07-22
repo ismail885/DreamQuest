@@ -12,6 +12,7 @@ import {
 import { supabase } from "@/lib/supabaseClient";
 import { createCharacterSchema } from "@/lib/validation/schemas";
 import toast from "react-hot-toast";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   Check,
   AlertCircle,
@@ -100,6 +101,7 @@ export default function CreateCharacterForm({
   userId,
   onCharacterCreated,
 }: CreateCharacterFormProps) {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState(0);
   const [characterName, setCharacterName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -159,11 +161,11 @@ export default function CreateCharacterForm({
 
     const nameValidation = validateCharacterName(characterName);
     if (!nameValidation.valid) {
-      setError(nameValidation.error ?? "Nom invalide");
+      setError(nameValidation.error ?? t("common.error"));
       return;
     }
     if (!userId) {
-      setError("Utilisateur non connecte");
+      setError("Utilisateur non connecté");
       return;
     }
 
@@ -174,7 +176,7 @@ export default function CreateCharacterForm({
       id_utilisateur: Number(userId),
     });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Saisie invalide");
+      setError(parsed.error.issues[0]?.message ?? t("common.error"));
       return;
     }
 
@@ -217,14 +219,14 @@ export default function CreateCharacterForm({
         <div className="flex items-center gap-2">
           <Check className="w-5 h-5 text-green-400" />
           <span>
-            Personnage &laquo; {characterName.trim()} &raquo; créé avec succès !
+            {t("character.createdSuccess").replace("{name}", characterName.trim())}
           </span>
         </div>,
         { duration: 3000 },
       );
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Une erreur est intervenue",
+        err instanceof Error ? err.message : t("common.error"),
       );
     } finally {
       setIsLoading(false);
@@ -243,10 +245,10 @@ export default function CreateCharacterForm({
           className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-sm group"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Retour
+          {t("common.back")}
         </button>
         <h1 className="text-2xl md:text-3xl font-bold text-primary mt-2">
-          Creation de Personnage
+          {t("character.creation")}
         </h1>
       </div>
 
@@ -320,7 +322,7 @@ export default function CreateCharacterForm({
                         </p>
                         {ability.cooldown && ability.cooldown > 0 && (
                           <p className="text-xs text-gray-500 mt-1">
-                            Recharge : {ability.cooldown} tours
+                            {t("character.abilityCooldown").replace("{tours}", String(ability.cooldown))}
                           </p>
                         )}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 border-r border-b border-gray-700 rotate-45 -mt-1" />
@@ -348,7 +350,7 @@ export default function CreateCharacterForm({
                   onClick={handlePrevious}
                   disabled={currentStep === 0}
                   className="w-10 h-10 rounded-full bg-[#141d2e]/90 hover:bg-cyan-600/50 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all border border-gray-700/50 hover:border-cyan-500/50"
-                  aria-label="Classe precedente"
+                  aria-label={t("character.previousClass")}
                 >
                   <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
@@ -359,7 +361,7 @@ export default function CreateCharacterForm({
                   onClick={handleNext}
                   disabled={currentStep === classes.length - 1}
                   className="w-10 h-10 rounded-full bg-[#141d2e]/90 hover:bg-cyan-600/50 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all border border-gray-700/50 hover:border-cyan-500/50"
-                  aria-label="Classe suivante"
+                  aria-label={t("character.nextClass")}
                 >
                   <ChevronRight className="w-5 h-5 text-white" />
                 </button>
@@ -375,7 +377,7 @@ export default function CreateCharacterForm({
                 htmlFor="characterName"
                 className="block text-gray-300 text-sm mb-2 font-medium"
               >
-                Nom du Personnage
+                {t("character.name")}
               </label>
               <div className="relative">
                 <input
@@ -383,7 +385,7 @@ export default function CreateCharacterForm({
                   type="text"
                   value={characterName}
                   onChange={(e) => validateName(e.target.value)}
-                  placeholder="Entrez le nom de votre personnage..."
+                  placeholder={t("character.namePlaceholder")}
                   maxLength={20}
                   className={`w-full px-4 py-3 bg-transparent border rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 transition-all text-sm ${
                     nameError
@@ -413,7 +415,7 @@ export default function CreateCharacterForm({
                 characterName.length > 0 &&
                 characterName.length < 3 && (
                   <p className="mt-1 text-xs text-gray-500 ">
-                    Minimum 3 caracteres ({characterName.length}/3)
+                    {t("character.minChars")} ({characterName.length}/3)
                   </p>
                 )}
             </div>
@@ -459,10 +461,10 @@ export default function CreateCharacterForm({
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Creation en cours...
+                  {t("character.creating")}
                 </span>
               ) : (
-                "Créer votre Personnage"
+                t("character.createCharacter")
               )}
             </button>
           </form>
@@ -480,7 +482,7 @@ export default function CreateCharacterForm({
                     ? "bg-cyan-800/50 w-2 hover:w-3"
                     : "bg-gray-700 w-2 hover:bg-gray-500 hover:w-3"
               }`}
-              aria-label={`Aller a la classe ${index + 1}`}
+              aria-label={`${t("character.goToClass")} ${index + 1}`}
             />
           ))}
         </div>

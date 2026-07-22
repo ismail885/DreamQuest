@@ -5,9 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import toast from "react-hot-toast";
 
 export default function RegisterForm() {
+  const { t } = useLanguage();
   const router = useRouter();
   const { register } = useAuthContext();
   const [formData, setFormData] = useState({
@@ -31,26 +33,26 @@ export default function RegisterForm() {
     setError("");
 
     if (formData.username.length < 3) {
-      setError("Le nom d'aventurier doit contenir au moins 3 caracteres");
+      setError(t("auth.errors.usernameTooShort"));
       setIsLoading(false);
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError("Veuillez entrer une adresse email valide");
+      setError(t("auth.errors.emailInvalid"));
       setIsLoading(false);
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+      setError(t("auth.errors.passwordMismatch"));
       setIsLoading(false);
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("Le mot de passe doit contenir au moins 8 caracteres");
+      setError(t("auth.errors.passwordTooShort"));
       setIsLoading(false);
       return;
     }
@@ -63,14 +65,14 @@ export default function RegisterForm() {
       );
 
       if (result.success) {
-        toast.success("Inscription réussie ! Connectez-vous.");
+        toast.success(t("auth.registrationSuccess"));
         setTimeout(() => router.push("/auth/login"), 1500);
       } else {
-        setError(result.error || "Erreur lors de l'inscription");
+        setError(result.error || t("auth.errors.registerError"));
         setIsLoading(false);
       }
     } catch {
-      setError("Une erreur est survenue");
+      setError(t("auth.errors.unexpected"));
       setIsLoading(false);
     }
   };
@@ -129,7 +131,7 @@ export default function RegisterForm() {
             </div>
             <h1 className="text-2xl font-bold text-primary">DreamQuest</h1>
             <p className="text-gray-400 text-sm mt-1">
-              Créer votre compte jeune aventurier
+              {t("auth.registerSubtitle")}
             </p>
           </div>
 
@@ -145,7 +147,7 @@ export default function RegisterForm() {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-400 mb-1.5"
               >
-                Nom d&apos;aventurier
+                {t("auth.username")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -162,7 +164,7 @@ export default function RegisterForm() {
                   id="username"
                   name="username"
                   className="w-full pl-10 pr-4 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
-                  placeholder="Entrez votre nom..."
+                  placeholder={t("auth.usernamePlaceholder")}
                   value={formData.username}
                   onChange={handleChange}
                   required
@@ -175,7 +177,7 @@ export default function RegisterForm() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-400 mb-1.5"
               >
-                Email
+                {t("auth.email")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -198,7 +200,7 @@ export default function RegisterForm() {
                   id="email"
                   name="email"
                   className="w-full pl-10 pr-4 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
-                  placeholder="votre.email@exemple.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -211,7 +213,7 @@ export default function RegisterForm() {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-400 mb-1.5"
               >
-                Mot de passe
+                {t("auth.password")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -290,7 +292,7 @@ export default function RegisterForm() {
                 htmlFor="confirmPassword"
                 className="block text-sm font-medium text-gray-400 mb-1.5"
               >
-                Confirmer le mot de passe
+                {t("auth.confirmPassword")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -313,7 +315,7 @@ export default function RegisterForm() {
                   id="confirmPassword"
                   name="confirmPassword"
                   className="w-full pl-10 pr-12 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
-                  placeholder="Confirmez votre mot de passe"
+                  placeholder={t("auth.confirmPasswordPlaceholder")}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
@@ -387,24 +389,23 @@ export default function RegisterForm() {
                   />
                 </svg>
               )}
-              {isLoading ? "Inscription en cours..." : "S'inscrire"}
+              {isLoading ? t("auth.registering") : t("auth.registerButton")}
             </button>
 
             <p className="text-center text-sm text-gray-400 mt-4">
-              Déjà un compte ?{" "}
+              {t("auth.hasAccount")}{" "}
               <Link
                 href="/auth/login"
                 className="text-primary hover:text-[#3b82f6] font-semibold transition-colors"
               >
-                Se connecter
+                {t("auth.hasAccountLink")}
               </Link>
             </p>
           </form>
         </div>
 
         <p className="mt-6 text-xs text-gray-600 text-center leading-relaxed max-w-xs mx-auto">
-          En continuant, vous acceptez nos conditions d&apos;utilisation et
-          notre politique de confidentialité
+          {t("auth.terms")}
         </p>
       </div>
     </main>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import PageBackground from "@/components/shared/PageBackground";
+import { useLanguage } from "@/context/LanguageContext";
 import { Zap, Users, BookOpen, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -31,6 +32,7 @@ const staggerContainer = {
 };
 
 export default function Home() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen flex flex-col bg-deep">
       <PageBackground />
@@ -50,7 +52,7 @@ export default function Home() {
               className="inline-flex items-center gap-2 px-4 h-[37px] bg-cyan-500/10 border border-cyan-500/30 rounded-full text-primary text-[14px]"
             >
               <Zap size={16} />
-              RPG Textuel Interactif
+              {t("home.rpgTag")}
             </motion.div>
 
             <motion.h1
@@ -64,16 +66,14 @@ export default function Home() {
                 backgroundClip: "text",
               }}
             >
-              Vivez Votre Propre Aventure
+              {t("home.heroTitle")}
             </motion.h1>
 
             <motion.p
               variants={fadeInUp}
               className="text-base md:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed px-4"
             >
-              Créez votre personnage unique, explorez des mondes fantastiques et
-              prenez des décisions qui façonneront votre destin. Chaque choix
-              compte dans DreamQuest.
+              {t("home.heroSubtitle")}
             </motion.p>
 
             <motion.div
@@ -85,7 +85,7 @@ export default function Home() {
                 prefetch
                 className="h-[58px] w-full sm:w-[250px] rounded-card bg-gradient-to-r from-primary to-blue-500 text-white text-[18px] font-semibold flex items-center justify-center shadow-glow hover:opacity-90 hover:scale-102 active:scale-98 transition-all duration-300 ease-out hover:shadow-glow-lg touch-manipulation"
               >
-                Créer un Personnage
+                {t("home.createCharacter")}
               </Link>
 
               <Link
@@ -93,7 +93,7 @@ export default function Home() {
                 prefetch
                 className="h-[58px] w-full sm:w-[222px] rounded-card border border-cyan-500/20 text-[#e5e7eb] text-[18px] font-semibold flex items-center justify-center hover:bg-white/5 hover:scale-102 active:scale-98 transition-all duration-300 ease-out touch-manipulation"
               >
-                Explorer les Quêtes
+                {t("home.exploreQuests")}
               </Link>
             </motion.div>
           </div>
@@ -125,11 +125,10 @@ export default function Home() {
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
-                  Personnages Uniques
+                  {t("home.features.characters.title")}
                 </h3>
                 <p className="text-[16px] leading-[25.6px] text-gray-400">
-                  Créez des héros avec 10 classes différentes, chacune avec ses
-                  capacités et son histoire.
+                  {t("home.features.characters.description")}
                 </p>
               </div>
             </motion.div>
@@ -150,11 +149,10 @@ export default function Home() {
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
-                  Histoires Immersives
+                  {t("home.features.stories.title")}
                 </h3>
                 <p className="text-[16px] leading-[25.6px] text-gray-400">
-                  Plongez dans des récits à embranchements multiples où chaque
-                  décision compte.
+                  {t("home.features.stories.description")}
                 </p>
               </div>
             </motion.div>
@@ -174,10 +172,11 @@ export default function Home() {
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-500 rounded-[12px] flex items-center justify-center">
                   <Trophy className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-white">Classements</h3>
+                <h3 className="text-xl font-bold text-white">
+                  {t("home.features.ranking.title")}
+                </h3>
                 <p className="text-[16px] leading-[25.6px] text-gray-400">
-                  Comparez vos exploits avec d&apos;autres aventuriers et
-                  grimpez dans les rangs.
+                  {t("home.features.ranking.description")}
                 </p>
               </div>
             </motion.div>

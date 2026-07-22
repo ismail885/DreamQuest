@@ -1,8 +1,11 @@
+'use client';
+
 import React from 'react';
 import { Character, CHARACTER_CLASSES, STAT_ICONS, CLASS_PASSIVES, getTotalXPForLevel, calculateRequiredXP } from '@/types';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CharacterCardProps {
  character: Character;
@@ -12,7 +15,8 @@ interface CharacterCardProps {
 }
 
 const CharacterCard = React.memo(function CharacterCard({ character, onSelect, onDelete, isSelected }: CharacterCardProps) {
- const classInfo = CHARACTER_CLASSES[character.classe];
+  const { t } = useLanguage();
+  const classInfo = CHARACTER_CLASSES[character.classe];
  const passif = CLASS_PASSIVES[character.classe as keyof typeof CLASS_PASSIVES];
  const pv = character.points_vie ?? 0;
  const pvMax = character.points_vie_max ?? 100;
@@ -44,18 +48,18 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
  <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
   {isSelected && (
   <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold text-sm flex items-center gap-1">
-  <Check className="w-3.5 h-3.5" />Sélectionné
+   <Check className="w-3.5 h-3.5" />{t("character.selected")}
   </span>
   )}
  <span className="bg-cyan-500 text-gray-900 rounded-full px-3 py-1 font-bold">
- Niv. {character.niveau}
+  {t("character.level")} {character.niveau}
  </span>
  </div>
  
  {/* Barre XP */}
  <div className="absolute bottom-2 left-2 right-2">
  <div className="flex justify-between text-xs text-gray-300 mb-1">
- <span>XP</span>
+  <span>{t("character.xp")}</span>
  <span>{Math.floor(xpInCurrentLevel)} / {xpForNextLevel}</span>
  </div>
  <div className="h-1.5 bg-gray-900/80 rounded-full overflow-hidden">
@@ -83,7 +87,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
 
  <div className="mb-3">
  <div className="flex justify-between text-xs text-gray-400 mb-1">
- <span>Points de Vie</span>
+  <span>{t("character.hp")}</span>
  <span>{pv} / {pvMax}</span>
  </div>
  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
@@ -117,15 +121,15 @@ const CharacterCard = React.memo(function CharacterCard({ character, onSelect, o
  onClick={onSelect}
  className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
  >
- {isSelected ? '▶ Jouez' : 'Sélectionner'}
+  {isSelected ? t("character.play") : t("character.select")}
  </motion.button>
  )}
   {onDelete && (
   <button
   onClick={onDelete}
-  aria-label="Supprimer le personnage"
-  className="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors"
-  title="Supprimer le personnage"
+   aria-label={t("character.deleteTitle")}
+   className="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors"
+   title={t("character.deleteTitle")}
   >
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

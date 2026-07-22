@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, Compass } from "lucide-react";
 import { GENRE_LABELS, GENRE_COLORS } from "@/hooks/useAdventureList";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface DashboardSuggestionsProps {
   suggestions: { id: number; titre: string; description: string | null; genre?: string | null }[];
@@ -38,6 +39,7 @@ export default function DashboardSuggestions({
   loading,
 }: DashboardSuggestionsProps) {
   const router = useRouter();
+  const { t } = useLanguage();
 
   // Skeleton pendant le chargement
   if (loading) {
@@ -45,7 +47,7 @@ export default function DashboardSuggestions({
       <div className="mb-8 md:mb-12">
         <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
           <Sparkles className="w-5 h-5 text-yellow-400" />
-          Pour Vous
+          {t("dashboard.forYou")}
         </h2>
         <div className="grid md:grid-cols-3 gap-4 md:gap-6">
           {[1, 2, 3].map((i) => (
@@ -68,7 +70,7 @@ export default function DashboardSuggestions({
     <div className="mb-8 md:mb-12">
       <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
         <Sparkles className="w-5 h-5 text-yellow-400" />
-        Pour Vous
+        {t("dashboard.forYou")}
       </h2>
 
       {suggestions.length === 0 ? (
@@ -82,17 +84,17 @@ export default function DashboardSuggestions({
             <Compass className="w-6 h-6 text-yellow-400" />
           </div>
           <p className="text-white font-medium mb-1">
-            Vous avez tout exploré !
+            {t("dashboard.allExplored")}
           </p>
           <p className="text-gray-400 text-sm mb-4">
-            Aucune nouvelle suggestion pour l&apos;instant. Découvrez toutes les aventures disponibles.
+            {t("dashboard.noSuggestions")}
           </p>
           <button
             onClick={() => router.push("/adventure")}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold rounded-lg transition-all duration-300 ease-out hover:scale-102 active:scale-98"
           >
             <Compass className="w-4 h-4" />
-            Explorer les aventures
+            {t("dashboard.exploreAdventures")}
           </button>
         </motion.div>
       ) : (
@@ -121,7 +123,7 @@ export default function DashboardSuggestions({
                   <Sparkles className="w-4 h-4 text-yellow-400" />
                 </div>
                 <span className="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
-                  Recommande
+                  {t("dashboard.recommended")}
                 </span>
                 {adventure.genre && GENRE_LABELS[adventure.genre] && (
                   <span
@@ -137,7 +139,7 @@ export default function DashboardSuggestions({
                 {adventure.titre}
               </h3>
               <p className="text-gray-300 text-sm line-clamp-2">
-                {adventure.description || "Une aventure palpitante vous attend..."}
+                {adventure.description || t("adventure.thrillingDescription")}
               </p>
             </motion.div>
           ))}

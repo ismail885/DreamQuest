@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { UserStats } from "@/hooks/useDashboardData";
 import { getLevelFromXP, getXPInCurrentLevel, getXPForNextLevel } from "@/lib/leveling";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface DashboardStatsProps {
   stats: UserStats;
@@ -33,38 +34,28 @@ const containerVariants = {
   },
 };
 
-const statCards = [
-  {
-    key: "charactersCount",
-    label: "Personnages",
-    gradient: "from-cyan-500/10 to-blue-500/10",
-    border: "border-cyan-500/20 hover:border-cyan-400/50",
-    text: "text-cyan-400",
-    suffix: "",
-  },
-  {
-    key: "completedQuests",
-    label: "Quetes",
-    gradient: "from-purple-500/10 to-pink-500/10",
-    border: "border-purple-500/20 hover:border-purple-400/50",
-    text: "text-purple-400",
-    suffix: "",
-  },
-  {
-    key: "maxLevel",
-    label: "Niveau max perso",
-    gradient: "from-green-500/10 to-emerald-500/10",
-    border: "border-green-500/20 hover:border-green-400/50",
-    text: "text-green-400",
-    suffix: "",
-  },
-] as const;
+type StatCardDef = {
+  key: string;
+  labelKey: string;
+  gradient: string;
+  border: string;
+  text: string;
+  suffix: string;
+};
 
 export default function DashboardStats({ stats, loading, error }: DashboardStatsProps) {
+  const { t } = useLanguage();
+
+  const statCards: StatCardDef[] = [
+    { key: "charactersCount", labelKey: t("dashboard.stats.characters"), gradient: "from-cyan-500/10 to-blue-500/10", border: "border-cyan-500/20 hover:border-cyan-400/50", text: "text-cyan-400", suffix: "" },
+    { key: "completedQuests", labelKey: t("dashboard.stats.quests"), gradient: "from-purple-500/10 to-pink-500/10", border: "border-purple-500/20 hover:border-purple-400/50", text: "text-purple-400", suffix: "" },
+    { key: "maxLevel", labelKey: t("dashboard.stats.maxLevel"), gradient: "from-green-500/10 to-emerald-500/10", border: "border-green-500/20 hover:border-green-400/50", text: "text-green-400", suffix: "" },
+  ];
+
   return (
     <div className="mb-8 md:mb-12">
       <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 sticky top-16 md:top-20 z-20 bg-deep/80 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-3 -mt-3 md:-mt-4">
-        Vos Statistiques
+        {t("dashboard.statsTitle")}
       </h2>
 
       {error && (
@@ -111,7 +102,7 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
                 <div className={`text-2xl md:text-3xl font-bold ${card.text} mb-1 md:mb-2`}>
                   {display}
                 </div>
-                <div className="text-gray-300 text-xs md:text-sm">{card.label}</div>
+                <div className="text-gray-300 text-xs md:text-sm">{card.labelKey}</div>
               </motion.div>
             );
           })}
@@ -132,7 +123,7 @@ export default function DashboardStats({ stats, loading, error }: DashboardStats
             <div className="text-2xl md:text-3xl font-bold text-violet-400 mb-1 md:mb-2">
               {getLevelFromXP(stats.userXp)}
             </div>
-            <div className="text-gray-300 text-xs md:text-sm mb-3">Niveau utilisateur</div>
+            <div className="text-gray-300 text-xs md:text-sm mb-3">{t("dashboard.stats.userLevel")}</div>
 
             {/* Barre de progression XP */}
             {(() => {

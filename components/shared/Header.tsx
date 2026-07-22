@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, Plus, ChevronRight } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 function getUserInitials(
   user: { username?: string; email?: string } | null,
@@ -17,6 +18,7 @@ function getUserInitials(
 
 const Header = React.memo(function Header() {
   const { user } = useAuthContext();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -52,43 +54,43 @@ const Header = React.memo(function Header() {
   // Liens desktop — ordre original préservé
   const desktopNavLinks = user
     ? [
-        { href: "/dashboard", label: "Accueil" },
-        { href: "/adventure", label: "Aventures" },
+        { href: "/dashboard", label: t("nav.dashboard") },
+        { href: "/adventure", label: t("nav.adventures") },
         ...(user.role === "createur" || user.role === "admin"
-          ? [{ href: "/create-adventure", label: "Créateur", accent: "text-purple-400" as const }]
+          ? [{ href: "/create-adventure", label: t("nav.creator"), accent: "text-purple-400" as const }]
           : []),
         ...(user.role === "admin"
-          ? [{ href: "/admin", label: "ADMIN", accent: "text-red-400 font-bold" as const }]
+          ? [{ href: "/admin", label: t("nav.admin"), accent: "text-red-400 font-bold" as const }]
           : []),
-        { href: "/classement", label: "Classement" },
-        { href: "/profil", label: "Profil" },
+        { href: "/classement", label: t("nav.ranking") },
+        { href: "/profil", label: t("nav.profile") },
       ]
     : [
-        { href: "/", label: "Accueil" },
-        { href: "/adventure", label: "Aventures" },
-        { href: "/create-character", label: "Créer" },
-        { href: "/classement", label: "Classement" },
+        { href: "/", label: t("nav.home") },
+        { href: "/adventure", label: t("nav.adventures") },
+        { href: "/create-character", label: t("nav.createCharacter") },
+        { href: "/classement", label: t("nav.ranking") },
       ];
 
   // Liens mobile drawer — ordre logique pour petits écrans
   const mobileNavLinks = user
     ? [
-        { href: "/dashboard", label: "Accueil" },
-        { href: "/adventure", label: "Aventures" },
-        { href: "/classement", label: "Classement" },
-        { href: "/profil", label: "Mon Profil" },
+        { href: "/dashboard", label: t("nav.dashboard") },
+        { href: "/adventure", label: t("nav.adventures") },
+        { href: "/classement", label: t("nav.ranking") },
+        { href: "/profil", label: t("nav.myProfile") },
         ...(user.role === "createur" || user.role === "admin"
-          ? [{ href: "/create-adventure", label: "Créateur", accent: "text-purple-400" as const }]
+          ? [{ href: "/create-adventure", label: t("nav.creator"), accent: "text-purple-400" as const }]
           : []),
         ...(user.role === "admin"
-          ? [{ href: "/admin", label: "Administration", accent: "text-red-400" as const }]
+          ? [{ href: "/admin", label: t("nav.admin"), accent: "text-red-400" as const }]
           : []),
       ]
     : [
-        { href: "/", label: "Accueil" },
-        { href: "/adventure", label: "Aventures" },
-        { href: "/create-character", label: "Créer un personnage" },
-        { href: "/classement", label: "Classement" },
+        { href: "/", label: t("nav.home") },
+        { href: "/adventure", label: t("nav.adventures") },
+        { href: "/create-character", label: t("nav.createCharacter") },
+        { href: "/classement", label: t("nav.ranking") },
       ];
 
   return (
@@ -134,13 +136,13 @@ const Header = React.memo(function Header() {
                 <>
                   <Link href="/create-character">
                     <button className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors">
-                      Nouveau Personnage
+                      {t("nav.newCharacter")}
                     </button>
                   </Link>
                   <Link href="/profil">
                     <button
                       className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold hover:bg-cyan-600 transition-colors"
-                      title="Mon profil"
+                      title={t("nav.profile")}
                     >
                       {getUserInitials(user)}
                     </button>
@@ -150,12 +152,12 @@ const Header = React.memo(function Header() {
                 <>
                   <Link href="/auth/login">
                     <button className="px-5 py-2.5 text-white hover:text-cyan-400 font-medium transition-colors">
-                      Connexion
+                      {t("nav.login")}
                     </button>
                   </Link>
                   <Link href="/auth/register">
                     <button className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors">
-                      S&apos;inscrire
+                      {t("nav.register")}
                     </button>
                   </Link>
                 </>
@@ -198,7 +200,7 @@ const Header = React.memo(function Header() {
       >
         {/* Header du drawer */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800/50">
-          <span className="text-cyan-400 font-bold">Navigation</span>
+          <span className="text-cyan-400 font-bold">{t("nav.navigation")}</span>
           <button
             onClick={close}
             aria-label="Fermer le menu"
@@ -246,19 +248,19 @@ const Header = React.memo(function Header() {
               <Link href="/create-character" onClick={close}>
                 <button className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 active:scale-[0.98] text-white font-semibold rounded-xl transition-all touch-manipulation text-sm">
                   <Plus className="w-4 h-4" />
-                  Nouveau Personnage
+                  {t("nav.newCharacter")}
                 </button>
               </Link>
             ) : (
               <>
                 <Link href="/auth/login" onClick={close}>
                   <button className="w-full py-3 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 active:scale-[0.98] font-semibold rounded-xl transition-all touch-manipulation text-sm">
-                    Se connecter
+                    {t("nav.login")}
                   </button>
                 </Link>
                 <Link href="/auth/register" onClick={close}>
                   <button className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 active:scale-[0.98] text-white font-semibold rounded-xl transition-all touch-manipulation text-sm">
-                    S&apos;inscrire
+                    {t("nav.register")}
                   </button>
                 </Link>
               </>

@@ -1,0 +1,352 @@
+export type NestedKeyOf<T> = {
+  [K in keyof T & (string | number)]: T[K] extends object
+    ? `${K}.${NestedKeyOf<T[K]>}`
+    : `${K}`;
+}[keyof T & (string | number)];
+
+export type Lang = 'fr' | 'en';
+
+export interface Translations {
+  common: {
+    loading: string;
+    save: string;
+    saving: string;
+    sending: string;
+    cancel: string;
+    confirm: string;
+    back: string;
+    next: string;
+    close: string;
+    search: string;
+    show: string;
+    hide: string;
+    error: string;
+    success: string;
+    retry: string;
+    notFound: string;
+    time: {
+      justNow: string;
+      minutesAgo: string;
+      hoursAgo: string;
+      daysAgo: string;
+      daysAgo_plural: string;
+      monthsAgo: string;
+    };
+  };
+  nav: {
+    home: string;
+    dashboard: string;
+    adventures: string;
+    createAdventure: string;
+    createCharacter: string;
+    ranking: string;
+    profile: string;
+    admin: string;
+    login: string;
+    register: string;
+    logout: string;
+    settings: string;
+    creator: string;
+    myProfile: string;
+    newCharacter: string;
+    navigation: string;
+    discover: string;
+    myAdventures: string;
+    loginShort: string;
+    players: string;
+    registerShort: string;
+  };
+  auth: {
+    loginTitle: string;
+    registerTitle: string;
+    email: string;
+    password: string;
+    username: string;
+    forgotPassword: string;
+    backToLogin: string;
+    loginButton: string;
+    registerButton: string;
+    loginWithGoogle: string;
+    loginWithDiscord: string;
+    noAccount: string;
+    noAccountLink: string;
+    hasAccount: string;
+    hasAccountLink: string;
+    invalidCredentials: string;
+    userNotFound: string;
+    emailTaken: string;
+    usernameTaken: string;
+    registrationSuccess: string;
+    loginSubtitle: string;
+    registerSubtitle: string;
+    emailPlaceholder: string;
+    usernamePlaceholder: string;
+    confirmPassword: string;
+    confirmPasswordPlaceholder: string;
+    or: string;
+    loggingIn: string;
+    registering: string;
+    terms: string;
+    errors: {
+      requiredFields: string;
+      googleError: string;
+      unexpected: string;
+      loginError: string;
+      registerError: string;
+      usernameTooShort: string;
+      emailInvalid: string;
+      passwordMismatch: string;
+      passwordTooShort: string;
+    };
+  };
+  quests: {
+    dailyQuests: string;
+    loading: string;
+    noneAvailable: string;
+    totalXp: string;
+  };
+  profile: {
+    title: string;
+    editProfile: string;
+    settings: string;
+    tabs: {
+      stories: string;
+      achievements: string;
+      creations: string;
+      quests: string;
+      characters: string;
+    };
+    notifications: string;
+    language: string;
+    saveSettings: string;
+    settingsSaved: string;
+    changePassword: string;
+    newPassword: string;
+    newPasswordDesc: string;
+    memberSince: string;
+    level: string;
+    bestLevel: string;
+    experience: string;
+    max: string;
+    maxLevelReached: string;
+    season: string;
+    mode: string;
+    usernamePlaceholder: string;
+    emailPlaceholder: string;
+    adventurer: string;
+    noStories: string;
+    noStoriesDesc: string;
+    discoverAdventures: string;
+    completed: string;
+    inProgress: string;
+    progression: string;
+    pageInfo: string;
+    previousPage: string;
+    nextPage: string;
+    goToPage: string;
+    noCreations: string;
+    noCreationsDesc: string;
+    noAchievements: string;
+    noAchievementsDesc: string;
+    resetEmailSent: string;
+    forgotPasswordDesc: string;
+    passwordChanged: string;
+    achievementsTab: string;
+    trophiesTab: string;
+    unlocked: string;
+    currentSeason: string;
+    trophiesEarned: string;
+    achievementsUnlocked: string;
+    categoryHistory: string;
+    categoryVotes: string;
+    categoryMisc: string;
+    role: {
+      admin: string;
+      creator: string;
+    };
+    stats: {
+      stories: string;
+      created: string;
+      likes: string;
+      trophies: string;
+      characters: string;
+    };
+  };
+  adventure: {
+    title: string;
+    start: string;
+    continue: string;
+    restart: string;
+    quit: string;
+    confirmLeave: string;
+    confirmLeaveMessage: string;
+    endScreen: {
+      title: string;
+      xpGained: string;
+      statsGained: string;
+      combatStats: string;
+      wins: string;
+      losses: string;
+      playAgain: string;
+      completedIn: string;
+      steps: string;
+      battlesWon: string;
+      battlesLost: string;
+      statsAcquired: string;
+      levelReached: string;
+    };
+    combat: {
+      attack: string;
+      defend: string;
+      flee: string;
+      ability: string;
+      enemyTurn: string;
+      yourTurn: string;
+      victory: string;
+      defeat: string;
+      escaped: string;
+      health: string;
+      mana: string;
+      title: string;
+      vs: string;
+      skills: string;
+      log: string;
+      cooldown: string;
+      level: string;
+      turns: string;
+    };
+    filter: {
+      all: string;
+      genre: string;
+      difficulty: string;
+      search: string;
+    };
+    error: {
+      notFound: string;
+      loadFailed: string;
+      branchNotFound: string;
+    };
+    noDescription: string;
+    thrillingDescription: string;
+    vote: {
+      remove: string;
+      add: string;
+      notLoggedIn: string;
+    };
+  };
+  character: {
+    create: string;
+    name: string;
+    className: string;
+    stats: string;
+    abilities: string;
+    level: string;
+    experience: string;
+    health: string;
+    mana: string;
+    prestige: string;
+    difficulty: {
+      beginner: string;
+      intermediate: string;
+      expert: string;
+    };
+    statsLabels: {
+      force: string;
+      agility: string;
+      magie: string;
+      endurance: string;
+    };
+    validation: {
+      nameTooShort: string;
+      nameTooLong: string;
+      nameInvalidChars: string;
+    };
+    select: string;
+    selected: string;
+    play: string;
+    delete: string;
+    deleteTitle: string;
+    hp: string;
+    xp: string;
+    noCharacters: string;
+    createFirst: string;
+    createCharacter: string;
+    namePlaceholder: string;
+    creating: string;
+    minChars: string;
+    previousClass: string;
+    nextClass: string;
+    goToClass: string;
+    creation: string;
+    createdSuccess: string;
+    sortDate: string;
+    sortLevel: string;
+    sortName: string;
+    mode: string;
+    newBtn: string;
+    hpShort: string;
+    abilityCooldown: string;
+    abilityType: {
+      offensive: string;
+      defensive: string;
+      support: string;
+      utility: string;
+      passive: string;
+    };
+  };
+  home: {
+    rpgTag: string;
+    heroTitle: string;
+    heroSubtitle: string;
+    createCharacter: string;
+    exploreQuests: string;
+    features: {
+      characters: { title: string; description: string };
+      stories: { title: string; description: string };
+      ranking: { title: string; description: string };
+    };
+  };
+  dashboard: {
+    welcome: string;
+    statsTitle: string;
+    suggestionsTitle: string;
+    myCharacters: string;
+    ready: string;
+    adventurer: string;
+    forYou: string;
+    allExplored: string;
+    noSuggestions: string;
+    exploreAdventures: string;
+    recommended: string;
+    stats: { characters: string; quests: string; maxLevel: string; userLevel: string; };
+  };
+  footer: {
+    description: string;
+    legalInfo: string;
+    privacy: string;
+    terms: string;
+    cookies: string;
+    licenses: string;
+    rights: string;
+    discover: string;
+    myAdventures: string;
+  };
+  admin: {
+    title: string;
+    users: string;
+    characters: string;
+    adventures: string;
+    logs: string;
+    delete: string;
+    edit: string;
+    role: string;
+    confirmDelete: string;
+  };
+  errors: {
+    generic: string;
+    network: string;
+    sessionExpired: string;
+    unauthorized: string;
+    forbidden: string;
+  };
+}

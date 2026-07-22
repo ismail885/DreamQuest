@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import PageBackground from "@/components/shared/PageBackground";
 import { Mail, Lock, ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
 import Loader from "@/components/shared/Loader";
+import { useLanguage } from "@/context/LanguageContext";
 
 function PageLayout({ children }: { children: ReactNode }) {
   return (
@@ -23,6 +24,7 @@ function PageLayout({ children }: { children: ReactNode }) {
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export default function ForgotPasswordPage() {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Veuillez entrer une adresse email valide");
+      setError(t("auth.errors.emailInvalid"));
       setLoading(false);
       return;
     }
@@ -69,14 +71,14 @@ export default function ForgotPasswordPage() {
     if (resetError) {
       setError(
         resetError.message ||
-          "Impossible d'envoyer l'email de reinitialisation.",
+          t("auth.errors.unexpected"),
       );
       setLoading(false);
       return;
     }
 
     setMessage(
-      "Si cet email existe, un lien de reinitialisation a ete envoye.",
+      t("profile.resetEmailSent"),
     );
     setLoading(false);
   };
@@ -87,13 +89,13 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     if (newPassword.length < 8) {
-      setError("Le mot de passe doit contenir au moins 8 caracteres");
+      setError(t("auth.errors.passwordTooShort"));
       setResetLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+      setError(t("auth.errors.passwordMismatch"));
       setResetLoading(false);
       return;
     }
@@ -104,15 +106,15 @@ export default function ForgotPasswordPage() {
       });
 
       if (updateError) {
-        setError(updateError.message || "Erreur lors de la reinitialisation.");
+        setError(updateError.message || t("auth.errors.unexpected"));
         setResetLoading(false);
         return;
       }
 
-      setMessage("Mot de passe modifié avec succès !");
+      setMessage(t("profile.passwordChanged"));
       setTimeout(() => router.push("/auth/login"), 2000);
     } catch {
-      setError("Une erreur est survenue");
+      setError(t("errors.generic"));
     } finally {
       setResetLoading(false);
     }
@@ -124,11 +126,11 @@ export default function ForgotPasswordPage() {
         <div className="flex items-center gap-3 mb-2">
           <Lock className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold text-primary">
-            Nouveau mot de passe
+            {t("profile.newPassword")}
           </h1>
         </div>
         <p className="mt-2 text-sm text-gray-400">
-          Définissez votre nouveau mot de passe.
+          {t("profile.newPasswordDesc")}
         </p>
 
         <form onSubmit={handleResetPassword} className="mt-6 space-y-4">
@@ -137,7 +139,7 @@ export default function ForgotPasswordPage() {
               htmlFor="newPassword"
               className="mb-2 block text-sm text-gray-400"
             >
-              Nouveau mot de passe
+              {t("profile.newPassword")}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -149,14 +151,14 @@ export default function ForgotPasswordPage() {
                 required
                 minLength={8}
                 className="w-full pl-10 pr-10 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                placeholder="Minimum 8 caractères"
+                placeholder={t("auth.errors.passwordTooShort")}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
                 tabIndex={-1}
-                aria-label={showPassword ? "Masquer" : "Afficher"}
+                aria-label={showPassword ? t("common.hide") : t("common.show")}
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -172,7 +174,7 @@ export default function ForgotPasswordPage() {
               htmlFor="confirmPassword"
               className="mb-2 block text-sm text-gray-400"
             >
-              Confirmer le mot de passe
+              {t("auth.confirmPassword")}
             </label>
             <div className="relative">
               <CheckCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -184,14 +186,14 @@ export default function ForgotPasswordPage() {
                 required
                 minLength={8}
                 className="w-full pl-10 pr-10 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                placeholder="Confirmez votre mot de passe"
+                placeholder={t("auth.confirmPasswordPlaceholder")}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
                 tabIndex={-1}
-                aria-label={showConfirm ? "Masquer" : "Afficher"}
+                aria-label={showConfirm ? t("common.hide") : t("common.show")}
               >
                 {showConfirm ? (
                   <EyeOff className="w-5 h-5" />
@@ -237,8 +239,8 @@ export default function ForgotPasswordPage() {
               </svg>
             )}
             {resetLoading
-              ? "Modification en cours..."
-              : "Modifier le mot de passe"}
+              ? t("common.saving")
+              : t("profile.changePassword")}
           </button>
         </form>
 
@@ -247,7 +249,7 @@ export default function ForgotPasswordPage() {
             href="/auth/login"
             className="text-primary hover:text-[#3b82f6] transition-colors"
           >
-            Retour à la connexion
+            {t("auth.backToLogin")}
           </Link>
         </div>
       </PageLayout>
@@ -263,10 +265,10 @@ export default function ForgotPasswordPage() {
           </div>
         </div>
         <h1 className="text-2xl font-bold text-primary">
-          Mot de passe oublié
+          {t("auth.forgotPassword")}
         </h1>
         <p className="text-gray-400 text-sm mt-1">
-          Entrez votre email pour recevoir un lien de réinitialisation.
+          {t("profile.forgotPasswordDesc")}
         </p>
       </div>
 
@@ -276,7 +278,7 @@ export default function ForgotPasswordPage() {
             htmlFor="email"
             className="block text-sm font-medium text-gray-400 mb-1.5"
           >
-            Email
+            {t("auth.email")}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -289,7 +291,7 @@ export default function ForgotPasswordPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full pl-10 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-              placeholder="votre.email@exemple.com"
+              placeholder={t("auth.emailPlaceholder")}
             />
           </div>
         </div>
@@ -328,7 +330,7 @@ export default function ForgotPasswordPage() {
               />
             </svg>
           )}
-          {loading ? "Envoi en cours..." : "Envoyer le lien"}
+          {loading ? t("common.sending") : t("auth.sendResetLink")}
         </button>
       </form>
 

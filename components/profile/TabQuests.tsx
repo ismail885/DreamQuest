@@ -2,6 +2,7 @@
 
 import type { DailyQuest } from "@/lib/dailyQuests";
 import { getTotalXPReward } from "@/lib/dailyQuests";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface TabQuestsProps {
   quests: DailyQuest[];
@@ -9,11 +10,12 @@ interface TabQuestsProps {
 }
 
 export default function TabQuests({ quests, loading }: TabQuestsProps) {
+  const { t } = useLanguage();
   if (loading) {
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-gray-400">Chargement des quêtes...</p>
+        <p className="text-gray-400">{t("quests.loading")}</p>
       </div>
     );
   }
@@ -22,7 +24,7 @@ export default function TabQuests({ quests, loading }: TabQuestsProps) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-400">
-          Aucune quête disponible aujourd&apos;hui.
+          {t("quests.noneAvailable")}
         </p>
       </div>
     );
@@ -31,7 +33,7 @@ export default function TabQuests({ quests, loading }: TabQuestsProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-white">Quêtes du jour</h3>
+        <h3 className="text-lg font-semibold text-white">{t("quests.dailyQuests")}</h3>
         <span className="text-cyan-400 font-bold">
           +{getTotalXPReward({ quests, lastReset: "" })} XP
         </span>

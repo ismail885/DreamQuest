@@ -1,7 +1,10 @@
 "use client";
 
+"use client";
+
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface StatChange {
   [key: string]: number;
@@ -18,6 +21,7 @@ export default function ChoiceButton({
   statChanges,
   onClick,
 }: ChoiceButtonProps) {
+  const { t } = useLanguage();
   // Extract stat changes from statChanges object
   const statsArray = statChanges
     ? Object.entries(statChanges)
@@ -33,11 +37,11 @@ export default function ChoiceButton({
 
   const getStatLabel = (stat: string): string => {
     const labels: Record<string, string> = {
-      force: "Force",
-      agility: "Agilité",
-      magie: "Intelligence",
-      endurance: "Endurance",
-      points_vie: "PV",
+      force: t("character.statsLabels.force"),
+      agility: t("character.statsLabels.agility"),
+      magie: t("character.statsLabels.magie"),
+      endurance: t("character.statsLabels.endurance"),
+      points_vie: t("adventure.combat.health"),
     };
     return labels[stat] || stat;
   };

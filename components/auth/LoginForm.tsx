@@ -5,8 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function LoginForm() {
+  const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
@@ -26,10 +28,10 @@ export default function LoginForm() {
     try {
       const result = await loginWithGoogle();
       if (!result.success) {
-        setError(result.error || "Erreur avec Google");
+        setError(result.error || t("auth.errors.googleError"));
       }
     } catch {
-      setError("Erreur inattendue");
+      setError(t("auth.errors.unexpected"));
     } finally {
       setIsLoading(false);
     }
@@ -41,7 +43,7 @@ export default function LoginForm() {
     try {
       const result = await loginWithDiscord();
       if (!result.success) {
-        setError(result.error || "Erreur avec Discord");
+        setError(result.error || t("auth.errors.googleError"));
       }
     } catch {
       setError("Erreur inattendue");
@@ -56,7 +58,7 @@ export default function LoginForm() {
     setError("");
 
     if (!emailOrUsername.trim() || !password.trim()) {
-      setError("Veuillez remplir tous les champs");
+      setError(t("auth.errors.requiredFields"));
       setIsLoading(false);
       return;
     }
@@ -66,11 +68,11 @@ export default function LoginForm() {
       if (result.success) {
         setTimeout(() => router.replace(redirect), 100);
       } else {
-        setError(result.error || "Erreur lors de la connexion");
+        setError(result.error || t("auth.errors.loginError"));
         setIsLoading(false);
       }
     } catch {
-      setError("Une erreur est survenue");
+      setError(t("auth.errors.unexpected"));
       setIsLoading(false);
     }
   };
@@ -129,7 +131,7 @@ export default function LoginForm() {
             </div>
             <h1 className="text-2xl font-bold text-primary">DreamQuest</h1>
             <p className="text-gray-400 text-sm mt-1">
-              Connectez-vous à votre aventure
+              {t("auth.loginSubtitle")}
             </p>
           </div>
 
@@ -152,7 +154,7 @@ export default function LoginForm() {
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-                <span className="ml-1">Continuer avec Google</span>
+                <span className="ml-1">{t("auth.loginWithGoogle")}</span>
               </button>
 
               <button
@@ -169,7 +171,7 @@ export default function LoginForm() {
                 >
                   <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2914a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" />
                 </svg>
-                Continuer avec Discord
+                {t("auth.loginWithDiscord")}
               </button>
             </div>
 
@@ -179,7 +181,7 @@ export default function LoginForm() {
               </div>
               <div className="relative flex justify-center text-xs">
                 <span className="px-3 backdrop-blur-card bg-slate-900/60 text-gray-500">
-                  ou
+                  {t("auth.or")}
                 </span>
               </div>
             </div>
@@ -189,7 +191,7 @@ export default function LoginForm() {
                 htmlFor="emailOrUsername"
                 className="block text-sm font-medium text-gray-400 mb-1.5"
               >
-                Email
+                {t("auth.email")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -211,7 +213,7 @@ export default function LoginForm() {
                   type="email"
                   id="emailOrUsername"
                   className="w-full pl-10 pr-4 py-3 bg-transparent border border-cyan-500/20 focus:border-primary rounded-card text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
-                  placeholder="votre.email@exemple.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
                   required
@@ -224,7 +226,7 @@ export default function LoginForm() {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-400 mb-1.5"
               >
-                Mot de passe
+                {t("auth.password")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -302,7 +304,7 @@ export default function LoginForm() {
                 href="/forgot-password"
                 className="text-sm text-primary hover:text-[#3b82f6] transition-colors"
               >
-                Mot de passe oublié ?
+                {t("auth.forgotPassword")}
               </Link>
             </div>
 
@@ -335,24 +337,23 @@ export default function LoginForm() {
                   />
                 </svg>
               )}
-              {isLoading ? "Connexion en cours..." : "Se connecter"}
+              {isLoading ? t("auth.loggingIn") : t("auth.loginButton")}
             </button>
 
             <p className="text-center text-sm text-gray-400">
-              Pas encore de compte ?{" "}
+              {t("auth.noAccount")}{" "}
               <Link
                 href="/auth/register"
                 className="text-primary hover:text-[#3b82f6] font-semibold transition-colors"
               >
-                S&apos;inscrire
+                {t("auth.noAccountLink")}
               </Link>
             </p>
           </form>
         </div>
 
         <p className="mt-6 text-xs text-gray-600 text-center leading-relaxed max-w-xs mx-auto">
-          En continuant, vous acceptez nos conditions d&apos;utilisation et
-          notre politique de confidentialité
+          {t("auth.terms")}
         </p>
       </div>
     </main>

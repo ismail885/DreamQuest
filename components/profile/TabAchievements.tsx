@@ -6,6 +6,7 @@ import * as LucideIcons from "lucide-react";
 import type { UserAchievements } from "@/lib/achievements";
 import type { UserTrophies, Trophy, TrophyRarity } from "@/lib/trophies";
 import { RARITY_LABELS } from "@/lib/trophies";
+import { useLanguage } from "@/context/LanguageContext";
 
 const RARITY_STYLES: Record<TrophyRarity, { ring: string; icon: string; badge: string; bar: string }> = {
   bronze: { ring: "border-amber-700/40 bg-amber-700/10", icon: "text-amber-500", badge: "bg-amber-700/20 text-amber-400 border-amber-700/30", bar: "bg-amber-600" },
@@ -19,13 +20,13 @@ interface TabAchievementsProps {
   trophies?: UserTrophies | null;
 }
 
-const CATEGORIES = [
-  { key: "history", label: "Histoire", ids: ["first_story", "five_stories", "ten_stories", "twenty_stories"] },
-  { key: "character", label: "Personnages", ids: ["first_character", "five_characters", "ten_characters"] },
-  { key: "votes", label: "Votes", ids: ["first_vote", "ten_votes", "fifty_votes"] },
-  { key: "creation", label: "Créations", ids: ["first_creation", "five_creations", "popular_creator", "star_creator"] },
-  { key: "level", label: "Niveau", ids: ["level_5", "level_10", "level_25", "level_50", "level_100"] },
-  { key: "misc", label: "Divers", ids: ["night_owl"] },
+const CATEGORY_DEFS = [
+  { key: "history", ids: ["first_story", "five_stories", "ten_stories", "twenty_stories"] },
+  { key: "character", ids: ["first_character", "five_characters", "ten_characters"] },
+  { key: "votes", ids: ["first_vote", "ten_votes", "fifty_votes"] },
+  { key: "creation", ids: ["first_creation", "five_creations", "popular_creator", "star_creator"] },
+  { key: "level", ids: ["level_5", "level_10", "level_25", "level_50", "level_100"] },
+  { key: "misc", ids: ["night_owl"] },
 ];
 
 const containerVariants = {
@@ -48,6 +49,7 @@ const cardVariants = {
 };
 
 export default function TabAchievements({ achievements, trophies }: TabAchievementsProps) {
+  const { t } = useLanguage();
   const [subTab, setSubTab] = useState<"succes" | "trophees">("succes");
 
   if (!achievements) {
@@ -58,14 +60,23 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">Aucune réalisation</h3>
-        <p className="text-gray-400">Vos trophées et badges apparaîtront ici quand vous les débloquerez.</p>
+        <h3 className="text-lg font-semibold text-white mb-2">{t("profile.noAchievements")}</h3>
+        <p className="text-gray-400">{t("profile.noAchievementsDesc")}</p>
       </div>
     );
   }
 
   const total = achievements.achievements.length;
   const iconRegistry = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>;
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    history: t("profile.tabs.stories"),
+    character: t("profile.stats.characters"),
+    votes: t("profile.categoryVotes"),
+    creation: t("profile.tabs.creations"),
+    level: t("profile.level"),
+    misc: t("profile.categoryMisc"),
+  };
 
   const trophiesBySeason = (trophies?.trophies ?? []).reduce<Record<string, Trophy[]>>(
     (acc, t) => {
@@ -86,7 +97,7 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
               : "bg-transparent text-gray-400 border border-gray-700/40 hover:text-white"
           }`}
         >
-          Succès
+          {t("profile.achievementsTab")}
         </button>
         <button
           onClick={() => setSubTab("trophees")}
@@ -96,7 +107,7 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
               : "bg-transparent text-gray-400 border border-gray-700/40 hover:text-white"
           }`}
         >
-          Trophées
+          {t("profile.trophiesTab")}
         </button>
       </div>
 
@@ -108,7 +119,7 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
               <span className="text-gray-500 text-2xl"> / {trophies.total}</span>
             </div>
             <div className="text-gray-400 text-sm">
-              trophées de saison · <span className="text-yellow-300 font-semibold">{trophies.totalPoints}</span> / {trophies.maxPoints} pts
+              {t("profile.trophiesEarned").replace("{points}", String(trophies.totalPoints)).replace("{maxPoints}", String(trophies.maxPoints))}
             </div>
           </div>
           <div className="space-y-5">
@@ -120,7 +131,7 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
                     {seasonName}
                     {current && (
                       <span className="text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2 py-0.5 rounded-full normal-case">
-                        Saison en cours
+                        {t("profile.currentSeason")}
                       </span>
                     )}
                   </h3>
@@ -169,10 +180,10 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
           {achievements.totalUnlocked}
           <span className="text-gray-500 text-2xl"> / {total}</span>
         </div>
-        <div className="text-gray-400 text-sm">succès débloqués</div>
+        <div className="text-gray-400 text-sm">{t("profile.achievementsUnlocked")}</div>
       </div>
 
-      {CATEGORIES.map((category) => {
+      {CATEGORY_DEFS.map((category) => {
         const catAchievements = achievements.achievements.filter((a) =>
           category.ids.includes(a.id)
         );
@@ -181,7 +192,7 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
         return (
           <div key={category.key}>
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-              {category.label}
+              {CATEGORY_LABELS[category.key] ?? category.key}
             </h3>
             <motion.div
               className="grid grid-cols-2 md:grid-cols-3 gap-4"
@@ -257,7 +268,7 @@ export default function TabAchievements({ achievements, trophies }: TabAchieveme
                           className="absolute -top-2 left-1/2 -translate-x-1/2 pointer-events-none"
                         >
                           <span className="text-[10px] bg-cyan-500 text-white px-2 py-0.5 rounded-full whitespace-nowrap shadow-lg">
-                            Débloqué
+                            {t("profile.unlocked")}
                           </span>
                         </motion.div>
                       )}

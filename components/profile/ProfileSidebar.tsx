@@ -7,6 +7,7 @@ import {
   getPrestigeTitle,
 } from "@/lib/leveling";
 import { getCurrentSeason, MAX_LEVEL } from "@/lib/seasons";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ProfileSidebarProps {
   userProfile: {
@@ -38,6 +39,7 @@ export default function ProfileSidebar({
   logout,
 }: ProfileSidebarProps) {
   const router = useRouter();
+  const { t } = useLanguage();
 
   const currentLevel = userProfile?.niveau || 1;
   const currentExperience = userProfile?.experience || 0;
@@ -59,10 +61,10 @@ export default function ProfileSidebar({
       <div className="card-base p-4 md:p-6">
         <div className="mb-4 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-900/40 to-cyan-900/40 border border-purple-500/20 text-center">
           <p className="text-[10px] uppercase tracking-widest text-purple-400 font-semibold">
-            Saison {seasonId}
+            {t("profile.season")} {seasonId}
           </p>
           <p className="text-sm font-semibold text-white">
-            {season?.name ?? "Inconnue"}
+            {season?.name ?? t("common.notFound")}
           </p>
           {season && (season.bonuses.length > 0 || season.maluses.length > 0) && (
             <div className="mt-1.5 flex flex-wrap justify-center gap-1">
@@ -80,7 +82,7 @@ export default function ProfileSidebar({
           )}
           {season && (
             <p className="mt-1.5 text-[10px] text-cyan-300">
-              <span className="font-semibold">Mode {season.mode.name}</span> · {season.mode.rule}
+              <span className="font-semibold">{t("profile.mode")} {season.mode.name}</span> · {season.mode.rule}
             </p>
           )}
         </div>
@@ -90,7 +92,7 @@ export default function ProfileSidebar({
             {getUserInitials()}
           </div>
           <h2 className="text-lg md:text-xl font-bold text-white">
-            {userProfile?.nom_utilisateur || "Aventurier"}
+            {userProfile?.nom_utilisateur || t("profile.adventurer")}
           </h2>
           {userProfile?.role && userProfile.role !== "joueur" && (
             <span
@@ -100,23 +102,23 @@ export default function ProfileSidebar({
                   : "text-purple-400 bg-purple-500/10 border-purple-500/30"
               }`}
             >
-              {userProfile.role === "admin" ? "Administrateur" : "Créateur"}
+              {userProfile.role === "admin" ? t("profile.role.admin") : t("profile.role.creator")}
             </span>
           )}
           <p className="text-gray-400 text-sm mt-2">
-            Niveau {currentLevel}/{MAX_LEVEL}
+            {t("profile.level")} {currentLevel}/{MAX_LEVEL}
           </p>
           <p className="text-yellow-400 text-xs font-medium">
             {prestigeTitle}
           </p>
           <p className="text-gray-500 text-xs mt-0.5">
-            Meilleur : Niveau {bestLevel}
+            {t("profile.bestLevel")} {bestLevel}
           </p>
         </div>
 
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-gray-400">Expérience</span>
+            <span className="text-gray-400">{t("profile.experience")}</span>
             <span className="text-red-400 font-semibold">
               {isMaxLevel
                 ? "MAX"
@@ -135,7 +137,7 @@ export default function ProfileSidebar({
           </div>
           {isMaxLevel && (
             <p className="text-yellow-400 text-xs text-center mt-1 font-semibold">
-              Niveau maximum atteint !
+              {t("profile.maxLevelReached")}
             </p>
           )}
         </div>
@@ -145,25 +147,25 @@ export default function ProfileSidebar({
             <div className="text-2xl font-bold text-primary">
               {stats.storiesPlayed}
             </div>
-            <div className="text-xs text-gray-400">Histoires</div>
+            <div className="text-xs text-gray-400">{t("profile.stats.stories")}</div>
           </div>
           <div className="text-center p-2 bg-transparent border border-cyan-500/20 rounded-card">
             <div className="text-2xl font-bold text-primary">
               {stats.storiesCreated}
             </div>
-            <div className="text-xs text-gray-400">Créées</div>
+            <div className="text-xs text-gray-400">{t("profile.stats.created")}</div>
           </div>
           <div className="text-center p-2 bg-transparent border border-cyan-500/20 rounded-card">
             <div className="text-2xl font-bold text-primary">
               {stats.likes}
             </div>
-            <div className="text-xs text-gray-400">Likes</div>
+            <div className="text-xs text-gray-400">{t("profile.stats.likes")}</div>
           </div>
           <div className="text-center p-2 bg-transparent border border-cyan-500/20 rounded-card">
             <div className="text-2xl font-bold text-primary">
               {stats.trophies}
             </div>
-            <div className="text-xs text-gray-400">Trophées</div>
+            <div className="text-xs text-gray-400">{t("profile.stats.trophies")}</div>
           </div>
         </div>
 
@@ -186,7 +188,7 @@ export default function ProfileSidebar({
                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
               />
             </svg>
-            Modifier le profil
+            {t("profile.editProfile")}
           </button>
           {(userProfile?.role === "createur" || userProfile?.role === "admin") && (
             <button
@@ -196,7 +198,7 @@ export default function ProfileSidebar({
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Créer une aventure
+              {t("nav.createAdventure")}
             </button>
           )}
           {userProfile?.role === "admin" && (
@@ -207,7 +209,7 @@ export default function ProfileSidebar({
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              Administration
+              {t("nav.admin")}
             </button>
           )}
           <button
@@ -228,7 +230,7 @@ export default function ProfileSidebar({
                 d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
               />
             </svg>
-            Paramètres
+            {t("nav.settings")}
           </button>
           <button
             onClick={async () => {
@@ -251,7 +253,7 @@ export default function ProfileSidebar({
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
               />
             </svg>
-            Se déconnecter
+            {t("nav.logout")}
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { useVote } from "@/hooks/useVote";
 import { supabase } from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
@@ -36,6 +37,7 @@ const AdventureCard = React.memo(function AdventureCard({
   genre,
 }: AdventureCardProps) {
   const { user } = useAuthContext();
+  const { t } = useLanguage();
   const [initialVoted, setInitialVoted] = useState(false);
 
   useEffect(() => {
@@ -81,7 +83,7 @@ const AdventureCard = React.memo(function AdventureCard({
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      toast.error("Vous devez être connecté pour voter");
+      toast.error(t("adventure.vote.notLoggedIn"));
       return;
     }
     await toggleVote();
@@ -147,7 +149,7 @@ const AdventureCard = React.memo(function AdventureCard({
           </div>
 
           <p className="text-gray-300 text-sm line-clamp-2 leading-relaxed ">
-            {description ?? "Aucune description disponible."}
+            {description ?? t("adventure.noDescription")}
           </p>
 
           <div className="flex items-center justify-between pt-2 border-t border-cyan-500/15 ">
@@ -159,7 +161,7 @@ const AdventureCard = React.memo(function AdventureCard({
             <button
               onClick={handleVoteClick}
               disabled={isLoading}
-              aria-label={hasVoted ? "Retirer votre vote" : "Voter pour cette aventure"}
+              aria-label={hasVoted ? t("adventure.vote.remove") : t("adventure.vote.add")}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all duration-200 ${
                 hasVoted
                   ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"

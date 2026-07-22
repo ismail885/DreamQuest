@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -26,9 +30,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-              Vivez des aventures interactives uniques. Créez votre personnage,
-              façonnez votre destin et partagez vos histoires avec la
-              communauté.
+              {t("footer.description")}
             </p>
             <div className="flex items-center gap-4 mt-4">
               <a
@@ -56,7 +58,7 @@ export default function Footer() {
           {/* Aventures - CENTER */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Aventures
+              {t("nav.adventures")}
             </h3>
             <ul className="space-y-2.5">
               <li>
@@ -64,7 +66,7 @@ export default function Footer() {
                   href="/dashboard"
                   className="text-gray-400 hover:text-cyan-400 transition-colors text-sm"
                 >
-                  Découvrir
+                  {t("footer.discover")}
                 </Link>
               </li>
               <li>
@@ -72,7 +74,7 @@ export default function Footer() {
                   href="/create-character"
                   className="text-gray-400 hover:text-cyan-400 transition-colors text-sm"
                 >
-                  Créer un personnage
+                  {t("nav.createCharacter")}
                 </Link>
               </li>
               <li>
@@ -80,7 +82,7 @@ export default function Footer() {
                   href="/adventure"
                   className="text-gray-400 hover:text-cyan-400 transition-colors text-sm"
                 >
-                  Mes aventures
+                  {t("footer.myAdventures")}
                 </Link>
               </li>
               <li>
@@ -88,7 +90,7 @@ export default function Footer() {
                   href="/classement"
                   className="text-gray-400 hover:text-cyan-400 transition-colors text-sm"
                 >
-                  Classement
+                  {t("nav.ranking")}
                 </Link>
               </li>
             </ul>
@@ -97,32 +99,32 @@ export default function Footer() {
           {/* Informations légales - RIGHT */}
           <div className="flex flex-col items-start">
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Informations légales
+              {t("footer.legalInfo")}
             </h3>
             <div className="flex flex-col gap-2.5 text-sm">
               <Link
                 href="/privacy"
                 className="text-gray-400 hover:text-cyan-400 transition-colors"
               >
-                Confidentialité
+                {t("footer.privacy")}
               </Link>
               <Link
                 href="/terms"
                 className="text-gray-400 hover:text-cyan-400 transition-colors"
               >
-                CGU
+                {t("footer.terms")}
               </Link>
               <Link
                 href="/cookies"
                 className="text-gray-400 hover:text-cyan-400 transition-colors"
               >
-                Cookies
+                {t("footer.cookies")}
               </Link>
               <Link
                 href="/licenses"
                 className="text-gray-400 hover:text-cyan-400 transition-colors"
               >
-                Licences
+                {t("footer.licenses")}
               </Link>
             </div>
           </div>
@@ -130,7 +132,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800/50 mt-10 pt-6 flex flex-col items-center gap-2">
           <p className="text-gray-400 text-xs">
-            &copy; {currentYear} DreamQuest. Tous droits réservés.
+            &copy; {currentYear} DreamQuest. {t("footer.rights")}
           </p>
           <p className="text-gray-500 text-xs hover:text-gray-400 transition-colors">
             Fait par <a href="https://github.com/ismail885" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Ismail Abou-zaid</a>
