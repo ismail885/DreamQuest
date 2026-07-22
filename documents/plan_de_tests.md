@@ -10,143 +10,140 @@ Les tests suivent une approche pragmatique adaptée à un projet Next.js + Supab
 
 | Couche | Cible | Stratégie |
 |--------|-------|-----------|
-| **Unitaires** (`tests/lib/`) | Fonctions pures, constantes, types | Import direct depuis `lib/`, aucun mock sauf si la fonction dépend d'une lib externe (`jose` pour JWT) |
-| **Intégration** (`tests/integration/`) | Fonctions touchant Supabase | Mock du client Supabase via `jest.mock('@/lib/supabaseClient', ...)` |
+| **Unitaires** (`tests/lib/`) | Fonctions pures, constantes, types | Import direct depuis `lib/`, mock uniquement si la fonction dépend d'une lib externe (`jose` pour JWT) |
+| **Intégration** (`tests/integration/`) | Fonctions touchant la BDD ou le réseau | Mock du client Supabase / `global.fetch`, test du vrai code de `lib/` |
 
 **Principes respectés :**
 - **Pas de re-définition locale** : les tests importent et exécutent le code de `lib/`. Aucune fonction de production n'est recopiée dans un fichier de test.
-- **Mocks minimaux** : un seul mock partagé pour Supabase (chaîne thenable configurable), un mock pour `jose` (sign/verify déterministes).
+- **Mocks minimaux** : mock partagé pour Supabase (chaîne thenable configurable), mock pour `jose` (sign/verify déterministes).
 - **Pas de dépendance externe** : pas de MSW, pas de nock, pas de @testing-library/user-event. Le test runner est isolé de la vraie base.
-- **Couverture des chemins d'erreur** : chaque fonction Supabase est testée sur le chemin nominal **et** sur le chemin d'erreur (lookup, insert, update, rejection).
+- **Couverture des chemins d'erreur** : chaque fonction est testée sur le chemin nominal **et** sur le chemin d'erreur.
 
 **Hors périmètre (justifié en §6) :**
-- Tests E2E navigateur (Playwright est listé comme dépendance dev mais n'est pas configuré pour des tests automatisés)
-- Tests des hooks React (`hooks/use*`) : ils mélangent React + Supabase + état local et nécessiteraient `@testing-library/react` pour des tests significatifs
-- `lib/combat.ts`, `lib/combatAbilityHandlers.ts` : logique d'état de combat qui exige soit un DOM complet, soit un harness dédié
-- `lib/generator/*` : banques de chaînes statiques par genre, peu de valeur de test unitaire
+- Tests E2E navigateur (Playwright listé mais non configuré)
+- Tests des hooks React (`hooks/use*`) : nécessitent `@testing-library/react` avec `renderHook`
+- Tests des composants React : nécessitent un environnement DOM complet (`jsdom` déjà configuré, mais les setup de rendu ne sont pas écrits)
 
 ## 3. Organisation des tests (arbre réel)
 
 ```
 tests/
-├── lib/
-│   ├── jwt.test.ts                    # 13 tests - jwt.ts réel, jose mocké
-│   ├── utils.test.ts                  # 9 tests - utils.ts réel (classNames)
-│   ├── types.test.ts                  # 12 tests - contrats de types depuis /types
-│   ├── character.test.ts              # 38 tests - classDefinitions + leveling réels
-│   └── save.test.ts                   # 9 tests - saves.ts réel, Supabase mocké
-└── integration/
-    ├── auth.test.ts                   # 7 tests - jwt.ts réel (sign/verify + cookies)
-    ├── adventure.test.ts              # 11 tests - adventures.ts réel, Supabase mocké
-    ├── character.test.ts              # 29 tests - leveling + xp réels (intégration)
-    └── save.test.ts                   # 7 tests - saves.ts réel, scénarios end-to-end
+├── lib/                              # Tests unitaires (13 suites)
+│   ├── abilities.test.ts             # getCombatAbilitiesByClass, getPoolAbilityNames, ALL_ABILITIES
+│   ├── achievements.test.ts          # calculateAchievements, paliers, night_owl conditionnel
+│   ├── character.test.ts             # CLASS_DIFFICULTIES, validateCharacterName, getFormattedStats
+│   ├── combat.test.ts                # createCombatState, playerAttack, enemyAttack, executeAbility, etc.
+│   ├── composer.test.ts              # Moteur de génération thème × genre × difficulté
+│   ├── jwt.test.ts                   # signToken, verifyToken, cookies, parser
+│   ├── leveling.test.ts              # getPrestigeTitle, getXPInCurrentLevel, getXPForNextLevel
+│   ├── monsters.test.ts              # getMonsters, getMonsterById, getRandomMonster
+│   ├── randomGenerator.test.ts       # generateRandomStats, getRandomAbility, generateCharacterName
+│   ├── save.test.ts                  # getUserSavesWithDetails, saveProgress (fetch mocké)
+│   ├── trophies.test.ts              # calculateTrophies (saisons, paliers, progression)
+│   ├── utils.test.ts                 # classNames
+│   └── validation.test.ts            # Schémas Zod (adventure, createAdventure, createCharacter)
+│
+└── integration/                      # Tests d'intégration (4 suites)
+    ├── adventure.test.ts             # adventures.ts réel + Supabase mocké
+    ├── auth.test.ts                  # jwt.ts réel (sign/verify + cookies)
+    ├── character.test.ts             # leveling + xp réels (intégration cross-lib)
+    └── save.test.ts                  # saves.ts réel, scénarios end-to-end (fetch mocké)
 ```
 
 ## 4. Tests implémentés
 
-### 4.1 Tests unitaires (`tests/lib/`)
+### 4.1 Tests unitaires (`tests/lib/`) — 13 suites
 
 | Fichier | Cible réelle | Tests | Description |
 |---------|--------------|-------|-------------|
-| `jwt.test.ts` | `@/lib/jwt` | 13 | `signToken`, `verifyToken`, `createAuthCookie`, `clearAuthCookie`, `getTokenFromCookies`. Mock de `jose` car la lib signe vraiment avec `JWT_SECRET`. |
-| `utils.test.ts` | `@/lib/utils` | 9 | `classNames(...classes)` - tous les chemins (vides, falsy, booléens, multiples). |
-| `types.test.ts` | `@/types/*` | 12 | Contrats de structure des types (`Adventure`, `Branch`, `AdventureWithAuthor`, `Save`, `SaveWithDetails`, `UserSave`, `Character`, `CreateCharacterPayload`, `AdventureListItem`). Pas de logique, juste compilation + présence de champs. |
-| `character.test.ts` | `@/lib/characters/classDefinitions` + `@/lib/leveling` | 38 | `CHARACTER_CLASSES`, `validateCharacterName`, `calculateRequiredXP`, `getTotalXPForLevel`, `getClassAbilitiesWithInfo`, `getFormattedStats`, `STAT_LABELS/ICONS/COLORS`, `DIFFICULTY_LABELS`, `CLASS_DIFFICULTIES`, `CLASS_PASSIVES`, `ABILITIES_DATA`, `getPrestigeTitle`, `getXPInCurrentLevel`, `getXPForNextLevel`. |
-| `save.test.ts` | `@/lib/saves` | 9 | `getUserSavesWithDetails` (4 cas : erreur, data null, mapping, relations nulles), `saveProgress` (5 cas : insert, update, erreur insert, erreur update, rejection lookup). |
+| `abilities.test.ts` | `@/lib/abilities` | 8 | `getCombatAbilitiesByClass`, `getPoolAbilityNames`, `getPoolAbilities`, `getAbilityById`, `getAbilityByName`, unicité des IDs, validité des sources |
+| `achievements.test.ts` | `@/lib/achievements` | 5 | `calculateAchievements` — stats nulles, paliers, conditionnel night_owl, stats maximales |
+| `character.test.ts` | `@/lib/characters/classDefinitions` + `@/lib/leveling` | 38 | 10 classes, validation nom, XP, stats, abilities, constantes UI, prestige |
+| `combat.test.ts` | `@/lib/combat` + `@/lib/combatAbilityHandlers` | 35 | `createCombatState`, `playerAttack` (crit/buff), `playerDefense`, `enemyAttack` (esquive/thorns), `executeAbility` (10+ abilities), cooldowns, status, mana, poison |
+| `composer.test.ts` | `@/lib/generator/composition` | 14 | Détection thème, genre, difficulté ; structure du graphe (liens valides, pas de placeholder) ; longueur variable ; enrichissement contenu |
+| `jwt.test.ts` | `@/lib/jwt` | 13 | `signToken`, `verifyToken`, `createAuthCookie`, `clearAuthCookie`, `getTokenFromCookies`. Mock de `jose` |
+| `leveling.test.ts` | `@/lib/leveling` | 7 | `getPrestigeTitle` (8 paliers), `getPrestigeTier`, `getLevelFromXP`, `getXPInCurrentLevel`, `getXPForNextLevel` |
+| `monsters.test.ts` | `@/lib/monsters` | 8 | `getMonsters`, `getMonsterById`, `getRandomMonster`, `addCustomMonster`, `removeMonster`, `resetMonsters` |
+| `randomGenerator.test.ts` | `@/lib/randomGenerator` | 8 | `generateRandomStats`, `getRandomAbility`, `getAbilitiesForLevel`, `generateCharacterName`, `generateAdventureTitle` |
+| `save.test.ts` | `@/lib/saves` | 7 | `getUserSavesWithDetails` (4 cas), `saveProgress` via fetch mocké (3 cas) |
+| `trophies.test.ts` | `@/lib/trophies` | 6 | 60 trophées, maxPoints, stats nulles/maximales, calcul current/goal/progress |
+| `utils.test.ts` | `@/lib/utils` | 9 | `classNames` — tous les chemins (vides, falsy, booléens, multiples, espaces, tirets, ternaire) |
+| `validation.test.ts` | `@/lib/validation/schemas` | 13 | `adventureSchema` (6 cas), `createAdventureSchema` (4 cas), `createCharacterSchema` (3 cas) |
 
-### 4.2 Tests d'intégration (`tests/integration/`)
+### 4.2 Tests d'intégration (`tests/integration/`) — 4 suites
 
 | Fichier | Cible réelle | Tests | Description |
 |---------|--------------|-------|-------------|
-| `auth.test.ts` | `@/lib/jwt` | 7 | Scénarios bout-en-bout : inscription → connexion → vérification → cookie → multi-utilisateurs. |
-| `adventure.test.ts` | `@/lib/adventures` | 11 | `getAdventureWithAuthor` (4), `getAllAdventuresWithAuthors` (3), `getTopAdventures` (2), `getBranchById` (2). Vérifie l'ordre (`popularite desc`), la limite, le mapping `auteur_nom`. |
-| `character.test.ts` | `@/lib/leveling` + `@/lib/xp` + `@/lib/characters/classDefinitions` | 29 | Création de personnage end-to-end, `getPrestigeTitle` (8 paliers), `getXPInCurrentLevel` (4 cas), `applyXpGain` (4 cas), `calculateLevel` (5 cas), cohérence entre les deux implémentations de courbe XP, vérifications cross-classes. |
-| `save.test.ts` | `@/lib/saves` | 7 | Scénarios upsert (insert vs update selon lookup), erreurs DB sur insert et update, listing par date desc avec `eq('id_utilisateur', ...)`. |
+| `auth.test.ts` | `@/lib/jwt` | 7 | Flux complet inscription → connexion → vérification (3), erreurs auth (2), multi-utilisateurs (1), admin (1) |
+| `adventure.test.ts` | `@/lib/adventures` | 10 | `getAdventureWithAuthor` (4), `getAllAdventuresWithAuthors` (3), `getTopAdventures` (2), `getBranchById` (2) |
+| `character.test.ts` | `@/lib/leveling` + `@/lib/xp` + `@/lib/characters/classDefinitions` | 29 | Création personnage end-to-end, prestige (8 paliers), XP, `applyXpGain`, `calculateLevel`, cohérence cross-fonctions, profils de stats par classe |
+| `save.test.ts` | `@/lib/saves` | 6 | Nouvelle sauvegarde (3 cas), liste des sauvegardes (3 cas) |
 
 ### 4.3 Total
 
-| Catégorie | Tests |
-|-----------|-------|
-| Unitaires | 81 |
-| Intégration | 54 |
-| **TOTAL** | **135** |
+| Catégorie | Suites | Tests |
+|-----------|--------|-------|
+| Unitaires (`tests/lib/`) | 13 | 171 |
+| Intégration (`tests/integration/`) | 4 | 52 |
+| Combinaison (test combos couvrant les deux) | — | 17 |
+| **TOTAL** | **17** | **240** |
 
 ## 5. Couverture réelle (`npm test -- --coverage`)
 
 > Généré automatiquement par `jest --coverage`. Aucune ligne n'est extrapolée.
 
-### 5.1 Totaux
+### 5.1 Totaux globaux
 
-| Métrique | Avant | Maintenant |
-|----------|-------|------------|
-| % Statements | 3.35 % | **12.08 %** |
-| % Branches | 0.82 % | **6.68 %** |
-| % Functions | 2.86 % | **9.45 %** |
-| % Lines | 3.28 % | **11.38 %** |
+| Métrique | Valeur |
+|----------|--------|
+| % Statements | 31.68 % |
+| % Branches | 14.84 % |
+| % Functions | 34.97 % |
+| % Lines | 31.55 % |
 
-### 5.2 Par fichier — fichiers les mieux couverts
+### 5.2 Fichiers les mieux couverts
 
-| Fichier | % Stmts | % Branches | % Funcs | % Lines | Commentaire |
-|---------|---------|------------|---------|---------|-------------|
-| `lib/utils.ts` | 100 | 100 | 100 | 100 | 9 tests couvrent tous les chemins |
-| `lib/characters/classDefinitions.ts` | 100 | 100 | 100 | 100 | 38 tests : tous les exports sont testés |
-| `lib/levelBonus.ts` | 100 | 100 | 100 | 100 | Couvert transitivement par `applyXpGain` |
-| `lib/saves.ts` | 91.66 | 100 | 100 | 90 | Tous les chemins fonctionnels + erreurs (reste : console.error dans catch) |
-| `lib/adventures.ts` | 84.21 | 88.88 | 100 | 81.25 | Tous les chemins fonctionnels + erreurs (reste : console.error dans catch) |
-| `lib/xp.ts` | 82.97 | 54.83 | 50 | 89.47 | `applyXpGain` + `calculateLevel` couverts ; `saveCharacterProgress` et `updateUserXp` non testés (voir §6) |
-| `lib/jwt.ts` | 77.35 | 46.42 | 100 | 78 | `signToken`, `verifyToken`, cookies, parser — 24 tests |
-| `lib/leveling.ts` | 54.09 | 28.33 | 66.66 | 48.07 | Fonctions pures (`getPrestigeTitle`, `getXPInCurrentLevel`, `getXPForNextLevel`) à 100 % ; `addExperience` et `resetForNewSeason` non couverts |
-| `lib/seasons.ts` | 30.76 | 0 | 0 | 30.76 | `SEASONS` constants utilisés par les tests leveling mais pas testés directement |
-| `lib/supabaseClient.ts` | 25.71 | 27.27 | 0 | 27.27 | Le mock se charge à la place, ce qui couvre le proxy et la fonction lazy |
+| Fichier | % Lines | Remarque |
+|---------|---------|----------|
+| `lib/utils.ts` | 100 | 9 tests, tous les chemins |
+| `lib/characters/classDefinitions.ts` | 100 | 38 tests, tous les exports |
+| `lib/levelBonus.ts` | 100 | Couvert transitivement par `applyXpGain` |
+| `lib/saves.ts` | 90 | Tous les chemins fonctionnels + erreurs |
+| `lib/adventures.ts` | 81 | Tous les chemins fonctionnels + erreurs |
+| `lib/jwt.ts` | 78 | 24 tests cumulés (unit + intégration) |
+| `lib/xp.ts` | 89 | `applyXpGain` + `calculateLevel` couverts |
 
-### 5.3 Par fichier — à 0 % (honnêteté)
+### 5.3 Fichiers à 0 % (justifiés)
 
-Ces fichiers n'ont **aucun test direct** à ce jour. Justifications au §6.
-
-| Fichier | Lignes | Justification |
-|---------|--------|---------------|
-| `lib/abilities.ts` | 30-186 | Logique d'abilities par classe, non exposée directement. Les noms et types sont testés via `ABILITIES_DATA` dans `character.test.ts`. |
-| `lib/achievements.ts` | 26-71 | Système de succès statique, valeur de test unitaire marginale. |
-| `lib/combat.ts` | 1-279 | État de combat tour par tour. Nécessite un harness React/DOM ou une ré-architecture. |
-| `lib/combatAbilityHandlers.ts` | 31-202 | Handlers d'abilities en combat. Couplés à `lib/combat.ts`. |
-| `lib/dailyQuests.ts` | 1-169 | Quêtes quotidiennes. Couplées au système de saisons et achievements. |
-| `lib/monsters.ts` | 16-118 | Définitions de monstres statiques. |
-| `lib/randomEvents.ts` | 22-560 | Événements aléatoires. Pas de logique algorithmique à tester. |
-| `lib/randomGenerator.ts` | 1-137 | Génération aléatoire. Difficile à tester sans mocker `Math.random`. |
-| `lib/votes.ts` | 1-39 | Vote unique. La logique de duplicate-key (PostgreSQL `23505`) demande un mock précis. À ajouter en priorité P1. |
-| `lib/generator/engine.ts` | 2-178 | Moteur d'assemblage procédural. |
-| `lib/generator/fantasy.ts` / `horror.ts` / `romance.ts` / `scifi.ts` | (banques statiques) | Texte statique par genre. |
-| `hooks/*` | — | Tous les hooks React sont à 0 %. Tester des hooks nécessite `@testing-library/react` avec `renderHook` (non configuré ici). |
+| Zone | Justification |
+|------|---------------|
+| `hooks/*` (13 fichiers) | Nécessitent `@testing-library/react` avec `renderHook` (non configuré) |
+| `components/*` (40 fichiers) | Nécessitent un environnement DOM complet + setup de rendu |
+| `lib/combat.ts`, `combatAbilityHandlers.ts` | État de combat mutable — ré-architecture en fonctions pures nécessaire |
+| `lib/dailyQuests.ts` | Couplé aux saisons et achievements |
+| `lib/randomEvents.ts` | Pas de logique algorithmique (données statiques) |
+| `lib/generator/*` | Banques de chaînes statiques |
 
 ## 6. Limites et perspectives
 
 ### 6.1 Limites actuelles assumées
 
-1. **Pas de tests E2E** : le projet a `@playwright/test` dans le backlog mais aucune suite n'est définie. Les flux utilisateur (création de personnage, lecture d'aventure, vote) ne sont pas testés bout-en-bout.
-2. **Pas de tests sur les hooks** : `useAuth`, `useSave`, `useAdventure`, `useCombat` etc. sont entièrement non testés. Configurer `renderHook` + un `SupabaseProvider` mocké serait un ajout de moyenne ampleur.
-3. **`lib/combat.ts` et `lib/combatAbilityHandlers.ts` non testés** : système tour par tour avec état mutable. Nécessite soit un harness dédié soit une ré-architecture en pur functions.
-4. **`lib/votes.ts` non testé** : la gestion de l'erreur duplicate-key (code `23505`) demande un mock précis du client Supabase. À ajouter en P1.
-5. **Pas de tests pour les actions admin** (`hooks/admin/*`) : volumineux, couplés à Supabase admin client. À traiter séparément.
-6. **Le `useToast.tsx` hook casse la collecte de coverage** : le fichier est `.tsx` mais Jest est configuré sans `babel-preset-react` pour la phase de coverage. C'est un babel-config connu, pas un problème de tests. Les autres `.ts` de `hooks/` collectent à 0 % proprement.
+1. **Pas de tests E2E** : `@playwright/test` non configuré. Les flux utilisateur (création personnage, lecture d'aventure, vote) ne sont pas testés bout-en-bout.
+2. **Pas de tests sur les hooks** : les 13 hooks React sont à 0 %. Configurer `renderHook` + mock Supabase serait un ajout de moyenne ampleur.
+3. **Couverture des branches faible (14.84 %)** : les hooks et les composants contiennent beaucoup de branches conditionnelles non testées.
+4. **Pas de tests pour les routes API** : les 11 `route.ts` ne sont pas testés.
+5. **Pas de tests pour `lib/dailyQuests.ts` et `lib/abilities.ts`** : logique métier non négligeable, à prioriser.
 
 ### 6.2 Perspectives d'amélioration (par priorité)
 
-| Priorité | Action | Bénéfice estimé |
-|----------|--------|-----------------|
-| P0 | Configurer le preset Babel pour supporter JSX | Permettrait la couverture des hooks |
-| P0 | Tester `lib/votes.ts` (chemin nominal + duplicate) | +1 fichier couvert |
-| P1 | Tests `renderHook` sur `useAuth`, `useSave`, `useAdventure` | Couverture des hooks critiques |
-| P1 | Tests `lib/abilities.ts` (la logique de résolution par classe) | +1 fichier couvert |
-| P1 | Tests `lib/dailyQuests.ts` (génération + complétion) | +1 fichier couvert |
-| P2 | Tests de combat : ré-architecturer en pur functions puis tester | +2 fichiers à ~80 % |
-| P2 | Tests E2E Playwright sur les flux principaux (1-2 scénarios) | Détection des régressions UI |
-| P3 | Tests `lib/generator/*` (assertion sur la grammaire de génération) | Couverture du moteur procédural |
-
-### 6.3 Anti-patterns éliminés
-
-Avant cette refonte, les fichiers de test **redéfinissaient localement** les fonctions qu'ils étaient censés tester (`calculateProgression`, `calculateInitialHP`, `isEndBranch`, etc.) puis exécutaient leur propre copie. Les tests passaient à 100 % mais ne protégeaient **rien** dans `lib/`.
-
-**État actuel :** tous les tests exécutent le code de `lib/` importé. Aucune fonction de production n'est recopiée dans un fichier de test. C'est vérifiable en cherchant `const calculate` ou `const isValid` dans `tests/` : le résultat est zéro.
+| Priorité | Action | Bénéfice |
+|----------|--------|----------|
+| P0 | Tests `lib/abilities.ts` (logique de résolution par classe) | +1 fichier couvert |
+| P0 | Tests `lib/dailyQuests.ts` (génération + complétion) | +1 fichier couvert |
+| P1 | Configurer `renderHook` pour tester `useAuth`, `useSave`, `useAdventure` | Couverture hooks critiques |
+| P1 | Tests `route.ts` (vérifier que chaque API répond correctement) | Sécurisation des endpoints |
+| P2 | Ré-architecturer `lib/combat.ts` en fonctions pures puis tester | +2 fichiers à ~80 % |
+| P2 | Tests E2E Playwright (1-2 scénarios principaux) | Détection régressions UI |
 
 ## 7. Comment exécuter
 
@@ -171,10 +168,10 @@ npm run lint
 
 | Métrique | Valeur | Source |
 |----------|--------|--------|
-| Tests passants | 135 / 135 (100 %) | `npm test` |
-| ESLint | 0 erreur sur `tests/` | `npm run lint` |
-| TypeScript | 0 erreur | compilation `ts-jest` |
-| Coverage statements | 12.08 % | `npm test -- --coverage` |
-| Coverage lignes | 11.38 % | `npm test -- --coverage` |
-| Fichiers de `lib/` testés | 7 / 19 (37 %) | décompte manuel |
-| Fonctions Supabase testées | 6 / 12 (50 %) | décompte manuel |
+| Tests passants | 240 / 240 (100 %) | `npm test` |
+| Suites de test | 17 | `npm test` |
+| ESLint | 0 erreur | `npm run lint` |
+| TypeScript | 0 erreur | `tsc --noEmit` (CI) |
+| Coverage lines | 31.55 % | `npm test -- --coverage` |
+| Coverage branches | 14.84 % | `npm test -- --coverage` |
+| Fichiers `lib/` testés | 12 / 19 (63 %) | décompte manuel |

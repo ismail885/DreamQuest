@@ -1,12 +1,8 @@
 node_modules
 .next
-.git
-.github
-.env
-.env.*
-npm-debug.log*
 coverage
-documents
-tests
+.git
+.env
+.env.local
 *.md
-.vscode
+.DS_Store

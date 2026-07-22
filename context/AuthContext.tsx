@@ -8,7 +8,7 @@ import React, {
  ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { hashPassword } from "@/lib/hashPassword";
+
 
 interface User {
  id: number;
@@ -193,11 +193,9 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  return { success: false, error: authError?.message || "Erreur lors de la création du compte" };
  }
 
-  const hashed = await hashPassword(password);
   const { error: insertError } = await supabase.from("utilisateur").insert({
     nom_utilisateur: username,
     email,
-    mot_de_passe: hashed,
     role: "joueur",
     auth_id: authData.user.id,
   });
