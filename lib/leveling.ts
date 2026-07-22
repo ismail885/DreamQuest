@@ -75,7 +75,7 @@ export async function resetForNewSeason(
   userId: number,
   newSeasonId: number,
 ): Promise<{ oldLevel: number; bestLevel: number; prestigeTitle: string }> {
-  const { default: supabase } = await import('@/lib/supabaseClient');
+  const { supabase } = await import('@/lib/supabaseClient');
 
   const { data: user } = await supabase
     .from("utilisateur")

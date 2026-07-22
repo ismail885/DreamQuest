@@ -57,7 +57,7 @@ export function useVote({
         );
         setHasVoted(false);
         // Re-fetch popularite depuis la vue publiquement accessible (SELECT anon OK)
-        const { default: supabase } = await import('@/lib/supabaseClient');
+        const { supabase } = await import('@/lib/supabaseClient');
         const { data } = await supabase.from('aventure').select('popularite').eq('id', adventureId).single();
         if (data) setPopularite(data.popularite);
       } else {
