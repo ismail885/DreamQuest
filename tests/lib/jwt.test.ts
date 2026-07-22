@@ -35,7 +35,7 @@ import {
 describe('JWT Utility Functions', () => {
   // Reset JWT_SECRET for each test
   beforeEach(() => {
-    process.env.JWT_SECRET = 'test_jwt_secret_for_testing'
+    process.env.JWT_SECRET = 'test_jwt_secret_for_testing_12345678'
   })
 
   describe('signToken', () => {

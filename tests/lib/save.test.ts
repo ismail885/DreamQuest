@@ -126,58 +126,49 @@ describe('Unitaires - Sauvegardes (lib/saves.ts réel)', () => {
   })
 
   describe('saveProgress', () => {
-    it('devrait INSERT une nouvelle sauvegarde quand le lookup ne retourne rien', async () => {
-      mockSupabase.__setResolved({ data: null, error: null })
+    let fetchMock: jest.SpyInstance
 
+    beforeEach(() => {
+      fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+      } as unknown as Response)
+    })
+
+    afterEach(() => {
+      fetchMock.mockRestore()
+    })
+
+    it('devrait POSTer vers /api/saves et retourner true si ok', async () => {
       const result = await saveProgress(1, 10, 20, 5, 50)
 
       expect(result).toBe(true)
-      expect(mockSupabase.insert).toHaveBeenCalledWith({
-        id_utilisateur: 1,
-        id_aventure: 10,
-        id_personnage: 20,
-        id_embranchement_actuel: 5,
-        progression: 50,
+      expect(fetchMock).toHaveBeenCalledWith('/api/saves', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adventureId: 10, characterId: 20, currentBranchId: 5, progression: 50 }),
       })
-      expect(mockSupabase.update).not.toHaveBeenCalled()
     })
 
-    it('devrait UPDATE une sauvegarde existante', async () => {
-      mockSupabase.__setResolved({ data: { id: 99 }, error: null })
-
-      const result = await saveProgress(1, 10, 20, 8, 80)
-
-      expect(result).toBe(true)
-      expect(mockSupabase.update).toHaveBeenCalledWith({
-        id_embranchement_actuel: 8,
-        progression: 80,
-      })
-      expect(mockSupabase.insert).not.toHaveBeenCalled()
-    })
-
-    it('devrait retourner false si l\'insert signale une erreur', async () => {
-      mockSupabase.__setResolved({ data: null, error: { message: 'insert failed' } })
+    it('devrait retourner false si l\'API répond avec une erreur', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({ error: 'DB error' }),
+      } as unknown as Response)
 
       const result = await saveProgress(1, 10, 20, 5, 50)
 
       expect(result).toBe(false)
     })
 
-    it('devrait retourner false si l\'update signale une erreur', async () => {
-      mockSupabase.__setResolved({ data: { id: 1 }, error: { message: 'update failed' } })
+    it('devrait retourner false si fetch jette une exception', async () => {
+      fetchMock.mockRejectedValue(new Error('Network error'))
 
       const result = await saveProgress(1, 10, 20, 5, 50)
 
       expect(result).toBe(false)
-    })
-
-    it('devrait retourner false si le lookup jette (rejection propagée)', async () => {
-      mockSupabase.__setRejected(new Error('lookup failed'))
-
-      const result = await saveProgress(1, 10, 20, 5, 50)
-
-      expect(result).toBe(false)
-      mockSupabase.__resetThen()
     })
   })
 })
