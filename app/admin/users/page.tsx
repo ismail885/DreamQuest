@@ -6,8 +6,10 @@ import AdminUsersTable from "@/components/admin/AdminUsersTable";
 import UserDetailModal from "@/components/admin/UserDetailModal";
 import UserEditModal from "@/components/admin/UserEditModal";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminUsersPage() {
+  const { t } = useLanguage();
  const {
  users, loading, searchTerm, currentPage, totalCount, totalPages,
  selectedUsers, actionError,
@@ -26,8 +28,8 @@ export default function AdminUsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Gestion des utilisateurs</h1>
-          <p className="text-gray-400 mt-1 sm:mt-2">{totalCount} utilisateur{totalCount !== 1 ? "s" : ""} enregistré{totalCount !== 1 ? "s" : ""}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">{t("admin.usersManagement")}</h1>
+          <p className="text-gray-400 mt-1 sm:mt-2">{totalCount} {t("admin.management.usersCount")}</p>
         </div>
       </div>
 
@@ -36,8 +38,8 @@ export default function AdminUsersPage() {
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 " />
  <input
  type="text"
- aria-label="Rechercher un utilisateur par nom ou email"
- placeholder="Rechercher par nom ou email..."
+  aria-label={t("admin.tables.searchUsers")}
+  placeholder={t("admin.tables.searchUsers")}
  value={searchTerm}
  onChange={(e) => {
  setSearchTerm(e.target.value);
@@ -52,7 +54,7 @@ export default function AdminUsersPage() {
  setCurrentPage(1);
  }}
  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
- title="Effacer la recherche"
+  title={t("admin.actions.clearSearch")}
  >
  <X className="w-5 h-5" />
  </button>
@@ -72,31 +74,31 @@ export default function AdminUsersPage() {
       {/* Bulk Actions Bar */}
       {selectedUsers.size > 0 && (
         <div className="flex flex-wrap items-center gap-3 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-card">
-          <span className="text-white font-medium whitespace-nowrap">{selectedUsers.size} sélectionné{selectedUsers.size > 1 ? "s" : ""}</span>
+          <span className="text-white font-medium whitespace-nowrap">{selectedUsers.size} {t("admin.bulk.selected")}</span>
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={() => handleBulkRoleChange("joueur")}
               className="px-2.5 py-1.5 bg-cyan-500/20 text-cyan-400 rounded-card hover:bg-cyan-500/30 text-xs sm:text-sm"
             >
-              Joueur
+              {t("admin.bulk.joueur")}
             </button>
             <button
               onClick={() => handleBulkRoleChange("createur")}
               className="px-2.5 py-1.5 bg-purple-500/20 text-purple-400 rounded-card hover:bg-purple-500/30 text-xs sm:text-sm"
             >
-              Créateur
+              {t("admin.bulk.createur")}
             </button>
             <button
               onClick={() => handleBulkRoleChange("admin")}
               className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-card hover:bg-red-500/30 text-xs sm:text-sm"
             >
-              Admin
+              {t("admin.bulk.admin")}
             </button>
             <button
               onClick={handleBulkDelete}
               className="px-2.5 py-1.5 bg-red-500/20 text-red-400 rounded-card hover:bg-red-500/30 text-xs sm:text-sm"
             >
-              Supprimer
+              {t("admin.bulk.delete")}
             </button>
           </div>
           <button onClick={() => clearSelection()} className="text-gray-400 hover:text-white">
@@ -141,12 +143,13 @@ export default function AdminUsersPage() {
  onClose={closeModal}
  />
 
- {/* Delete Confirmation Modal */}
- <DeleteConfirmModal
- deleteConfirm={deleteConfirm}
- onClose={() => setDeleteConfirm(null)}
- onDelete={handleDelete}
- />
+  {/* Delete Confirmation Modal */}
+  <DeleteConfirmModal
+  deleteConfirm={deleteConfirm}
+  onClose={() => setDeleteConfirm(null)}
+  onDelete={handleDelete}
+  itemLabel={t("admin.confirmDeleteUserDesc")}
+  />
  </div>
  );
 }

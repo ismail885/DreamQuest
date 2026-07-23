@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Loader from "@/components/shared/Loader";
+import { useLanguage } from "@/context/LanguageContext";
 
 async function ensureUtilisateurAfterOAuth(accessToken: string): Promise<void> {
   const res = await fetch('/api/auth/oauth-callback', {
@@ -19,6 +20,7 @@ async function ensureUtilisateurAfterOAuth(accessToken: string): Promise<void> {
 
 export default function AuthCallback() {
  const router = useRouter();
+ const { t } = useLanguage();
  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,32 +40,32 @@ export default function AuthCallback() {
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
   if (sessionError) {
-  setError("Erreur lors de la connexion");
-  return;
-  }
+   setError(t("auth.errors.callbackError"));
+   return;
+   }
 
-  if (session?.access_token) {
-  await ensureUtilisateurAfterOAuth(session.access_token);
-  router.replace("/dashboard");
-  } else {
-  setError("Aucun utilisateur trouvé");
-  }
-  } catch {
-  setError("Erreur lors de la création du profil utilisateur");
+   if (session?.access_token) {
+   await ensureUtilisateurAfterOAuth(session.access_token);
+   router.replace("/dashboard");
+   } else {
+   setError(t("auth.errors.noUserFound"));
+   }
+   } catch {
+   setError(t("auth.errors.profileCreationError"));
   }
   };
 
   handleCallback();
-  }, [router]);
+  }, [router, t]);
 
  if (error) {
  return (
  <main className="min-h-screen flex items-center justify-center bg-deep ">
  <div className="text-center p-8">
- <h1 className="text-2xl font-bold text-red-400 mb-4">Erreur</h1>
+          <h1 className="text-2xl font-bold text-red-400 mb-4">{t("common.error")}</h1>
  <p className="text-gray-400 mb-4">{error}</p>
  <a href="/auth/login" className="text-cyan-400 hover:underline">
- Retour à la connexion
+  {t("auth.backToLogin")}
  </a>
  </div>
  </main>
@@ -73,8 +75,8 @@ export default function AuthCallback() {
  return (
  <main className="min-h-screen flex items-center justify-center bg-deep ">
  <div className="text-center">
- <Loader size="lg" message="Connexion en cours..." />
- <p className="mt-4 text-gray-400 ">Redirection vers votre tableau de bord...</p>
+  <Loader size="lg" message={t("auth.loggingIn")} />
+  <p className="mt-4 text-gray-400 ">{t("auth.redirecting")}</p>
  </div>
  </main>
  );

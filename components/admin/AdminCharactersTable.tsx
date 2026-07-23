@@ -9,6 +9,7 @@ import {
   User,
 } from "lucide-react";
 import type { CharacterWithUser } from "@/hooks/admin/useAdminCharacters";
+import { useLanguage } from "@/context/LanguageContext";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -49,18 +50,19 @@ export default function AdminCharactersTable({
   onDelete,
   setCurrentPage,
 }: AdminCharactersTableProps) {
+  const { t } = useLanguage();
   return (
     <div className="card-base overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-900/50">
             <tr>
-              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Personnage</th>
-              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Classe</th>
-              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Niveau</th>
-              <th className="hidden sm:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">PV</th>
-              <th className="hidden md:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">Propriétaire</th>
-              <th className="px-3 sm:px-6 py-4 text-right text-gray-300 font-medium text-xs sm:text-sm">Actions</th>
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">{t("admin.tables.character")}</th>
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">{t("admin.tables.class")}</th>
+              <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">{t("admin.tables.level")}</th>
+              <th className="hidden sm:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">{t("admin.tables.hp")}</th>
+              <th className="hidden md:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">{t("admin.tables.owner")}</th>
+              <th className="px-3 sm:px-6 py-4 text-right text-gray-300 font-medium text-xs sm:text-sm">{t("admin.tables.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
@@ -73,7 +75,7 @@ export default function AdminCharactersTable({
             ) : characters.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
-                  Aucun personnage trouvé
+                  {t("admin.tables.noCharacters")}
                 </td>
               </tr>
             ) : (
@@ -107,7 +109,7 @@ export default function AdminCharactersTable({
                         <span className="text-gray-400 text-sm">{character.nom_utilisateur}</span>
                       </div>
                     ) : (
-                      <span className="text-gray-500 text-sm">Inconnu</span>
+                      <span className="text-gray-500 text-sm">{t("admin.tables.unknown")}</span>
                     )}
                   </td>
                   <td className="px-3 sm:px-6 py-4">
@@ -115,14 +117,14 @@ export default function AdminCharactersTable({
                       <button
                         onClick={() => onView(character)}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
-                        title="Voir"
+                        title={t("admin.actions.view")}
                       >
                         <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => character.id && onDelete(character.id)}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-card transition-colors"
-                        title="Supprimer"
+                        title={t("admin.actions.delete")}
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>

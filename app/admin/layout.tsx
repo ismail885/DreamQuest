@@ -16,19 +16,21 @@ import {
   Activity,
 } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import PageBackground from "@/components/shared/PageBackground";
-
-const navigation = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Journal", href: "/admin/logs", icon: Activity },
-  { name: "Utilisateurs", href: "/admin/users", icon: Users },
-  { name: "Aventures", href: "/admin/adventures", icon: BookOpen },
-  { name: "Personnages", href: "/admin/characters", icon: UserRound },
-];
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { user, logout } = useAuthContext();
+  const { t } = useLanguage();
+
+  const navigation = [
+    { name: t("admin.sidebar.dashboard"), href: "/admin", icon: LayoutDashboard },
+    { name: t("admin.sidebar.logs"), href: "/admin/logs", icon: Activity },
+    { name: t("admin.sidebar.users"), href: "/admin/users", icon: Users },
+    { name: t("admin.sidebar.adventures"), href: "/admin/adventures", icon: BookOpen },
+    { name: t("admin.sidebar.characters"), href: "/admin/characters", icon: UserRound },
+  ];
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
@@ -45,7 +47,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </div>
           <div className="min-w-0">
             <span className="text-xl font-bold text-white">DreamQuest</span>
-            <span className="block text-xs text-primary">Administration</span>
+            <span className="block text-xs text-primary">{t("admin.sidebar.administration")}</span>
           </div>
         </Link>
       </div>
@@ -91,7 +93,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             className="flex items-center gap-3 px-4 py-2 rounded-card text-gray-400 hover:bg-cyan-500/5 hover:text-white transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Retour au site</span>
+            <span>{t("admin.sidebar.returnToSite")}</span>
           </Link>
           <button
             onClick={() => {
@@ -101,7 +103,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             className="w-full flex items-center gap-3 px-4 py-2 rounded-card text-red-400 hover:bg-red-500/10 transition-all"
           >
             <LogOut className="w-4 h-4" />
-            <span>Déconnexion</span>
+            <span>{t("admin.sidebar.logout")}</span>
           </button>
         </div>
       </div>
@@ -118,6 +120,7 @@ export default function AdminLayout({
   const { user, loading } = useAuthContext();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!loading && user) {
@@ -149,12 +152,12 @@ export default function AdminLayout({
           <div className="w-8 h-8 rounded-card bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center">
             <span className="text-white font-bold text-sm">D</span>
           </div>
-          <span className="text-sm font-bold text-primary">Admin</span>
+          <span className="text-sm font-bold text-primary">{t("admin.title")}</span>
         </Link>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 rounded-card text-gray-400 hover:text-white hover:bg-cyan-500/5 transition-colors"
-          aria-label={sidebarOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-label={sidebarOpen ? t("common.closeMenu") : t("common.openMenu")}
         >
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>

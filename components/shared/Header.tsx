@@ -167,7 +167,7 @@ const Header = React.memo(function Header() {
             {/* Bouton hamburger — mobile seulement */}
             <button
               onClick={() => setIsOpen((v) => !v)}
-              aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-label={isOpen ? t("common.closeMenu") : t("common.openMenu")}
               aria-expanded={isOpen}
               aria-controls="mobile-drawer"
               className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg border border-gray-700/50 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95 transition-all touch-manipulation"
@@ -203,7 +203,7 @@ const Header = React.memo(function Header() {
           <span className="text-cyan-400 font-bold">{t("nav.navigation")}</span>
           <button
             onClick={close}
-            aria-label="Fermer le menu"
+            aria-label={t("common.closeMenu")}
             className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/60 active:scale-95 transition-all touch-manipulation"
           >
             <X className="w-5 h-5" />

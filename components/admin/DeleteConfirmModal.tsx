@@ -1,6 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface DeleteConfirmModalProps {
   deleteConfirm: number | null;
@@ -15,6 +16,7 @@ export default function DeleteConfirmModal({
   onDelete,
   itemLabel = "cet utilisateur",
 }: DeleteConfirmModalProps) {
+  const { t } = useLanguage();
   if (!deleteConfirm) return null;
 
   return (
@@ -25,11 +27,10 @@ export default function DeleteConfirmModal({
             <Trash2 className="w-8 h-8 text-red-400" />
           </div>
           <h3 className="text-xl font-bold text-white mb-2">
-            Confirmer la suppression
+            {t("admin.confirmDelete")}
           </h3>
           <p className="text-gray-400">
-            Êtes-vous sûr de vouloir supprimer {itemLabel} ? Cette action
-            est irréversible.
+            {itemLabel}
           </p>
         </div>
         <div className="flex gap-3 p-6 pt-0">
@@ -37,13 +38,13 @@ export default function DeleteConfirmModal({
             onClick={onClose}
             className="flex-1 px-4 py-3 border border-cyan-500/15 text-gray-400 rounded-card hover:bg-cyan-500/10 transition-colors"
           >
-            Annuler
+            {t("common.cancel")}
           </button>
           <button
             onClick={() => onDelete(deleteConfirm)}
             className="flex-1 px-4 py-3 bg-red-500 text-white rounded-card hover:bg-red-600 transition-colors"
           >
-            Supprimer
+            {t("admin.actions.delete")}
           </button>
         </div>
       </div>

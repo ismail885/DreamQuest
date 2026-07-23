@@ -8,6 +8,7 @@ import {
   LogIn,
 } from "lucide-react";
 import type { LogEntry } from "@/hooks/admin/useAdminLogs";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AdminLogListProps {
   loading: boolean;
@@ -29,21 +30,6 @@ function getTypeIcon(type: LogEntry["type"]) {
   }
 }
 
-function getTypeLabel(type: LogEntry["type"]) {
-  switch (type) {
-    case "inscription":
-      return "Inscription";
-    case "aventure_creee":
-      return "Aventure";
-    case "vote":
-      return "Vote";
-    case "personnage_cree":
-      return "Personnage";
-    case "connexion":
-      return "Connexion";
-  }
-}
-
 function getTypeColor(type: LogEntry["type"]) {
   switch (type) {
     case "inscription":
@@ -59,25 +45,45 @@ function getTypeColor(type: LogEntry["type"]) {
   }
 }
 
-function formatTimeAgo(timestamp: string) {
-  const now = new Date();
-  const then = new Date(timestamp);
-  const diffMs = now.getTime() - then.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return "À l'instant";
-  if (diffMins < 60) return `Il y a ${diffMins}min`;
-  if (diffHours < 24) return `Il y a ${diffHours}h`;
-  if (diffDays < 7) return `Il y a ${diffDays}j`;
-  return then.toLocaleDateString("fr-FR");
-}
-
 export default function AdminLogList({
   loading,
   entries,
 }: AdminLogListProps) {
+  const { t } = useLanguage();
+
+  function getTypeLabel(type: LogEntry["type"]) {
+    switch (type) {
+      case "inscription":
+        return t("admin.logTypes.registration");
+      case "aventure_creee":
+        return t("admin.logTypes.adventure");
+      case "vote":
+        return t("admin.logTypes.vote");
+      case "personnage_cree":
+        return t("admin.logTypes.character");
+      case "connexion":
+        return t("admin.logTypes.login");
+    }
+  }
+
+  function formatTimeAgo(timestamp: string) {
+    const now = new Date();
+    const then = new Date(timestamp);
+    const diffMs = now.getTime() - then.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return t("common.time.justNow");
+    if (diffMins < 60) return t("common.time.minutesAgo").replace("{minutes}", String(diffMins));
+    if (diffHours < 24) return t("common.time.hoursAgo").replace("{hours}", String(diffHours));
+    if (diffDays < 7) {
+      if (diffDays === 1) return t("common.time.daysAgo").replace("{days}", "1");
+      return t("common.time.daysAgo_plural").replace("{days}", String(diffDays));
+    }
+    return then.toLocaleDateString("fr-FR");
+  }
+
   return (
     <div className="card-base overflow-hidden">
       {loading ? (
@@ -86,7 +92,7 @@ export default function AdminLogList({
         </div>
       ) : entries.length === 0 ? (
         <div className="p-12 text-center text-gray-400">
-          Aucune activité récente
+          {t("admin.noRecentActivity")}
         </div>
       ) : (
         <div className="divide-y divide-gray-800">

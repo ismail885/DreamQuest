@@ -2,18 +2,20 @@
 
 import { Users, BookOpen, UserRound, TrendingUp, Activity } from "lucide-react";
 import type { Stats } from "@/hooks/admin/useAdminDashboard";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AdminStatCardsProps {
   stats: Stats;
 }
 
 export default function AdminStatCards({ stats }: AdminStatCardsProps) {
+  const { t } = useLanguage();
   const cards = [
-    { title: "Utilisateurs total", value: stats.totalUsers, icon: Users, color: "text-cyan-400", bgColor: "bg-cyan-500/10", subtitle: `${stats.recentUsers} cette semaine` },
-    { title: "Aventures", value: stats.totalAdventures, icon: BookOpen, color: "text-purple-400", bgColor: "bg-purple-500/10", subtitle: `${stats.recentAdventures} cette semaine` },
-    { title: "Personnages", value: stats.totalCharacters, icon: UserRound, color: "text-emerald-400", bgColor: "bg-emerald-500/10", subtitle: "Créés" },
-    { title: "Votes", value: stats.totalVotes, icon: TrendingUp, color: "text-amber-400", bgColor: "bg-amber-500/10", subtitle: "Total" },
-    { title: "Aujourd'hui", value: stats.activeUsersToday, icon: Activity, color: "text-green-400", bgColor: "bg-green-500/10", subtitle: "Nouveaux aujourd'hui" },
+    { title: t("admin.statCards.totalUsers"), value: stats.totalUsers, icon: Users, color: "text-cyan-400", bgColor: "bg-cyan-500/10", subtitle: `${stats.recentUsers} ${t("admin.statCards.thisWeek")}` },
+    { title: t("admin.statCards.totalAdventures"), value: stats.totalAdventures, icon: BookOpen, color: "text-purple-400", bgColor: "bg-purple-500/10", subtitle: `${stats.recentAdventures} ${t("admin.statCards.thisWeek")}` },
+    { title: t("admin.statCards.totalCharacters"), value: stats.totalCharacters, icon: UserRound, color: "text-emerald-400", bgColor: "bg-emerald-500/10", subtitle: t("admin.statCards.createdLabel") },
+    { title: t("admin.statCards.totalVotes"), value: stats.totalVotes, icon: TrendingUp, color: "text-amber-400", bgColor: "bg-amber-500/10", subtitle: t("admin.statCards.totalLabel") },
+    { title: t("admin.statCards.activeToday"), value: stats.activeUsersToday, icon: Activity, color: "text-green-400", bgColor: "bg-green-500/10", subtitle: t("admin.statCards.newToday") },
   ];
 
   return (

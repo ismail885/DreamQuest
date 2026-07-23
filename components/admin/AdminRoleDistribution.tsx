@@ -1,6 +1,7 @@
 "use client";
 
 import type { Stats } from "@/hooks/admin/useAdminDashboard";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AdminRoleDistributionProps {
   stats: Stats;
@@ -9,16 +10,17 @@ interface AdminRoleDistributionProps {
 export default function AdminRoleDistribution({
   stats,
 }: AdminRoleDistributionProps) {
+  const { t } = useLanguage();
   const roles = [
-    { role: "Joueurs", count: stats.joueurCount, color: "bg-cyan-500" },
-    { role: "Créateurs", count: stats.createurCount, color: "bg-purple-500" },
-    { role: "Administrateurs", count: stats.adminCount, color: "bg-red-500" },
+    { role: t("admin.roles.joueur"), count: stats.joueurCount, color: "bg-cyan-500" },
+    { role: t("admin.roles.createur"), count: stats.createurCount, color: "bg-purple-500" },
+    { role: t("admin.roles.admin"), count: stats.adminCount, color: "bg-red-500" },
   ];
 
   return (
     <div className="card-base p-6">
       <h2 className="text-xl font-bold text-white mb-6">
-        Distribution des rôles
+        {t("admin.roleDistribution")}
       </h2>
       <div className="space-y-4">
         {roles.map((item, i) => {

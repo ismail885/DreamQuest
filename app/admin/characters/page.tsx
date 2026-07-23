@@ -5,8 +5,10 @@ import { useAdminCharacters } from "@/hooks/admin/useAdminCharacters";
 import AdminCharactersTable from "@/components/admin/AdminCharactersTable";
 import CharacterViewModal from "@/components/admin/CharacterViewModal";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminCharactersPage() {
+  const { t } = useLanguage();
   const {
     characters, loading, searchTerm, currentPage, totalCount, totalPages,
     viewCharacter, deleteConfirm, actionError,
@@ -20,9 +22,9 @@ export default function AdminCharactersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Gestion des personnages</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">{t("admin.charactersManagement")}</h1>
           <p className="text-gray-400 mt-1 sm:mt-2">
-            {totalCount} personnage{totalCount !== 1 ? "s" : ""} créé{totalCount !== 1 ? "s" : ""}
+            {totalCount} {t("admin.management.charactersCount")}
           </p>
         </div>
       </div>
@@ -32,8 +34,8 @@ export default function AdminCharactersPage() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input
           type="text"
-          aria-label="Rechercher un personnage par nom"
-          placeholder="Rechercher par nom..."
+          aria-label={t("admin.tables.searchCharacters")}
+          placeholder={t("admin.tables.searchCharacters")}
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -76,7 +78,7 @@ export default function AdminCharactersPage() {
         deleteConfirm={deleteConfirm}
         onClose={() => setDeleteConfirm(null)}
         onDelete={handleDelete}
-        itemLabel="ce personnage"
+        itemLabel={t("admin.confirmDeleteCharacterDesc")}
       />
     </div>
   );

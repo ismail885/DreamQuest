@@ -12,6 +12,7 @@ import Loader from "@/components/shared/Loader";
 import { Search, X, User, Frown, ChevronDown } from "lucide-react";
 import { useAdventureList, FILTER_OPTIONS, type AdventureFilter } from "@/hooks/useAdventureList";
 import AdventurePagination from "@/components/adventure/AdventurePagination";
+import { useLanguage } from "@/context/LanguageContext";
 
 const easeOutExpo = [0.16, 1, 0.3, 1] as const;
 
@@ -46,6 +47,7 @@ export default function AdventurePage() {
 function AdventurePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const personnageId = searchParams.get("personnage");
   const [showCharacterModal, setShowCharacterModal] = useState(false);
   const {
@@ -77,7 +79,7 @@ function AdventurePageContent() {
             className="text-center space-y-3 md:space-y-4 mb-8 md:mb-12"
           >
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary">
-              Explorez les Aventures
+              {t("nav.adventures")}
             </h1>
             <p className="text-gray-300 text-sm md:text-base max-w-xl mx-auto ">
               Choisissez votre prochaine aventure parmi nos histoires épiques
@@ -115,8 +117,8 @@ function AdventurePageContent() {
                 <Search className="ml-4 w-5 h-5 text-gray-400 flex-shrink-0 group-focus-within:text-primary transition-colors duration-300" />
                 <input
                   type="text"
-                  aria-label="Rechercher une histoire"
-                  placeholder="Rechercher une histoire..."
+                  aria-label={t("adventure.filter.search")}
+                  placeholder={t("adventure.filter.search")}
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -131,7 +133,7 @@ function AdventurePageContent() {
                       setCurrentPage(1);
                     }}
                     className="mr-3 p-1 text-gray-400 hover:text-primary transition-colors duration-200"
-                    title="Effacer la recherche"
+                    title={t("common.clear")}
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -168,7 +170,7 @@ function AdventurePageContent() {
           </motion.div>
 
           {loading ? (
-            <Loader message="Chargement des aventures..." />
+            <Loader message={t("common.loading")} />
           ) : error ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -226,7 +228,7 @@ function AdventurePageContent() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800/50 mb-4">
                 <Frown className="w-8 h-8 text-gray-500" />
               </div>
-              <p className="text-gray-300 text-lg">Aucune aventure trouvée</p>
+              <p className="text-gray-300 text-lg">{t("admin.tables.noAdventures")}</p>
               <p className="text-gray-400 text-sm mt-2">
                 Essayez de modifier vos critères de recherche
               </p>
@@ -282,7 +284,7 @@ function AdventurePageContent() {
                       }}
                       className="w-full px-6 py-3 bg-transparent border border-cyan-500/20 text-primary font-semibold rounded-card hover:bg-cyan-500/5 transition-colors duration-200"
                     >
-                      Mes personnages
+                      {t("profile.tabs.characters")}
                     </button>
                     <button
                       onClick={() => {
@@ -291,7 +293,7 @@ function AdventurePageContent() {
                       }}
                       className="w-full px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-white font-semibold rounded-card hover:scale-102 active:scale-98 hover:shadow-[0px_10px_25px_-3px_rgba(6,182,212,0.5)] transition-all duration-300 ease-out"
                     >
-                      Créer un personnage
+                      {t("character.createCharacter")}
                     </button>
                   </div>
                 </div>

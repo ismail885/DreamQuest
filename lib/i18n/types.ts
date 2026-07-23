@@ -24,6 +24,11 @@ export interface Translations {
     success: string;
     retry: string;
     notFound: string;
+    clear: string;
+    unknown: string;
+    all: string;
+    openMenu: string;
+    closeMenu: string;
     time: {
       justNow: string;
       minutesAgo: string;
@@ -86,6 +91,8 @@ export interface Translations {
     or: string;
     loggingIn: string;
     registering: string;
+    redirecting: string;
+    sendResetLink: string;
     terms: string;
     errors: {
       requiredFields: string;
@@ -97,6 +104,9 @@ export interface Translations {
       emailInvalid: string;
       passwordMismatch: string;
       passwordTooShort: string;
+      callbackError: string;
+      noUserFound: string;
+      profileCreationError: string;
     };
   };
   quests: {
@@ -120,6 +130,7 @@ export interface Translations {
     language: string;
     saveSettings: string;
     settingsSaved: string;
+    profileUpdated: string;
     changePassword: string;
     newPassword: string;
     newPasswordDesc: string;
@@ -333,6 +344,7 @@ export interface Translations {
   };
   admin: {
     title: string;
+    dashboard: string;
     users: string;
     characters: string;
     adventures: string;
@@ -341,6 +353,108 @@ export interface Translations {
     edit: string;
     role: string;
     confirmDelete: string;
+    confirmDeleteUser: string;
+    confirmDeleteCharacter: string;
+    confirmDeleteAdventure: string;
+    confirmDeleteAdventureDesc: string;
+    confirmDeleteUserDesc: string;
+    confirmDeleteCharacterDesc: string;
+    statCards: {
+      totalUsers: string;
+      totalAdventures: string;
+      totalCharacters: string;
+      totalVotes: string;
+      activeToday: string;
+      thisWeek: string;
+      createdLabel: string;
+      totalLabel: string;
+      newToday: string;
+    };
+    roleDistribution: string;
+    roles: {
+      joueur: string;
+      createur: string;
+      admin: string;
+    };
+    logFilters: {
+      all: string;
+      registrations: string;
+      adventures: string;
+      votes: string;
+      characters: string;
+    };
+    logTypes: {
+      registration: string;
+      adventure: string;
+      vote: string;
+      character: string;
+      login: string;
+    };
+    noRecentActivity: string;
+    tables: {
+      user: string;
+      email: string;
+      roleLabel: string;
+      registrationDate: string;
+      actions: string;
+      character: string;
+      class: string;
+      level: string;
+      hp: string;
+      owner: string;
+      popularity: string;
+      creationDate: string;
+      description: string;
+      noUsers: string;
+      noCharacters: string;
+      noAdventures: string;
+      unknown: string;
+      noDescription: string;
+      searchUsers: string;
+      searchCharacters: string;
+      searchAdventures: string;
+    };
+    usersManagement: string;
+    charactersManagement: string;
+    adventuresManagement: string;
+    management: {
+      users: string;
+      characters: string;
+      adventures: string;
+      usersCount: string;
+      charactersCount: string;
+      adventuresCount: string;
+    };
+    actions: {
+      view: string;
+      edit: string;
+      delete: string;
+      cancel: string;
+      save: string;
+      search: string;
+      clearSearch: string;
+      newAdventure: string;
+      viewAdventure: string;
+    };
+    bulk: {
+      joueur: string;
+      createur: string;
+      admin: string;
+      delete: string;
+      selected: string;
+    };
+    sidebar: {
+      dashboard: string;
+      logs: string;
+      users: string;
+      adventures: string;
+      characters: string;
+      returnToSite: string;
+      logout: string;
+      administration: string;
+    };
+    editUser: string;
+    errorDelete: string;
   };
   errors: {
     generic: string;

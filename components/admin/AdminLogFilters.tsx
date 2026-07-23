@@ -1,19 +1,22 @@
 "use client";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 interface AdminLogFiltersProps {
   filter: string;
   onFilterChange: (filter: string) => void;
 }
 
-const FILTERS = [
-  { key: "all", label: "Tous" },
-  { key: "inscription", label: "Inscriptions" },
-  { key: "aventure_creee", label: "Aventures", activeColor: "bg-purple-500" },
-  { key: "vote", label: "Votes", activeColor: "bg-amber-500" },
-  { key: "personnage_cree", label: "Personnages", activeColor: "bg-emerald-500" },
-];
-
 export default function AdminLogFilters({ filter, onFilterChange }: AdminLogFiltersProps) {
+  const { t } = useLanguage();
+  const FILTERS = [
+    { key: "all", label: t("admin.logFilters.all") },
+    { key: "inscription", label: t("admin.logFilters.registrations") },
+    { key: "aventure_creee", label: t("admin.logFilters.adventures"), activeColor: "bg-purple-500" },
+    { key: "vote", label: t("admin.logFilters.votes"), activeColor: "bg-amber-500" },
+    { key: "personnage_cree", label: t("admin.logFilters.characters"), activeColor: "bg-emerald-500" },
+  ];
+
   const getActiveBg = (key: string) => {
     if (key === "all") return "bg-cyan-500";
     return "bg-cyan-500";

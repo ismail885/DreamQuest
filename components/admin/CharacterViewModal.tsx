@@ -2,6 +2,7 @@
 
 import { X, User } from "lucide-react";
 import type { CharacterWithUser } from "@/hooks/admin/useAdminCharacters";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CharacterViewModalProps {
   character: CharacterWithUser | null;
@@ -28,6 +29,7 @@ export default function CharacterViewModal({
   character,
   onClose,
 }: CharacterViewModalProps) {
+  const { t } = useLanguage();
   if (!character) return null;
 
   const maxHp = character.points_vie_max || 100;
@@ -58,7 +60,7 @@ export default function CharacterViewModal({
               {character.classe}
             </div>
             <div className="text-gray-400">
-              Niveau{" "}
+              {t("character.level")}{" "}
               <span className="text-white font-bold">
                 {character.niveau}
               </span>
@@ -68,27 +70,25 @@ export default function CharacterViewModal({
           {/* Stats */}
           <div className="grid grid-cols-2 gap-4 p-4 bg-gray-900/50 rounded-card">
             <div>
-              <label className="text-gray-400 text-xs">Force</label>
+              <label className="text-gray-400 text-xs">{t("character.statsLabels.force")}</label>
               <p className="text-white font-bold">
                 {character.stats?.force || 0}
               </p>
             </div>
             <div>
-              <label className="text-gray-400 text-xs">Agilité</label>
+              <label className="text-gray-400 text-xs">{t("character.statsLabels.agility")}</label>
               <p className="text-white font-bold">
                 {character.stats?.agility || 0}
               </p>
             </div>
             <div>
-              <label className="text-gray-400 text-xs">
-                Intelligence
-              </label>
+              <label className="text-gray-400 text-xs">{t("character.statsLabels.magie")}</label>
               <p className="text-white font-bold">
                 {character.stats?.magie || 0}
               </p>
             </div>
             <div>
-              <label className="text-gray-400 text-xs">Endurance</label>
+              <label className="text-gray-400 text-xs">{t("character.statsLabels.endurance")}</label>
               <p className="text-white font-bold">
                 {character.stats?.endurance || 0}
               </p>
@@ -98,7 +98,7 @@ export default function CharacterViewModal({
           {/* Health */}
           <div>
             <label className="text-gray-400 text-sm">
-              Points de vie
+              {t("character.health")}
             </label>
             <div className="mt-2">
               <div className="flex justify-between text-sm mb-1">
@@ -121,7 +121,7 @@ export default function CharacterViewModal({
           {/* Owner */}
           <div>
             <label className="text-gray-400 text-sm">
-              Propriétaire
+              {t("admin.tables.owner")}
             </label>
             <p className="text-white mt-1 flex items-center gap-2">
               <User className="w-4 h-4" />

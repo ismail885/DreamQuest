@@ -10,6 +10,8 @@ import {
   Square,
   Eye,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import type { TranslationKey } from "@/lib/i18n";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -30,22 +32,22 @@ interface AdminUsersTableProps {
   ) => void;
 }
 
-function getRoleBadge(role: string) {
+function getRoleBadge(role: string, t: (key: TranslationKey) => string) {
   const styles: Record<string, string> = {
     admin: "bg-red-500/20 text-red-400 border-red-500/30",
     createur: "bg-purple-500/20 text-purple-400 border-purple-500/30",
     joueur: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   };
   const labels: Record<string, string> = {
-    admin: "Admin",
-    createur: "Créateur",
-    joueur: "Joueur",
+    admin: t("admin.roles.admin"),
+    createur: t("admin.roles.createur"),
+    joueur: t("admin.roles.joueur"),
   };
   return (
     <span
       className={`px-2 py-1 rounded-full text-xs border ${styles[role] || styles.joueur}`}
     >
-      {labels[role] || "Joueur"}
+      {labels[role] || t("admin.roles.joueur")}
     </span>
   );
 }
@@ -64,6 +66,7 @@ export default function AdminUsersTable({
   setDeleteConfirm,
   setCurrentPage,
 }: AdminUsersTableProps) {
+  const { t } = useLanguage();
   return (
     <div className="card-base overflow-hidden">
       <div className="overflow-x-auto">
@@ -83,19 +86,19 @@ export default function AdminUsersTable({
                 </button>
               </th>
               <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
-                Utilisateur
+                {t("admin.tables.user")}
               </th>
               <th className="hidden lg:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
-                Email
+                {t("admin.tables.email")}
               </th>
               <th className="px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
-                Rôle
+                {t("admin.tables.roleLabel")}
               </th>
               <th className="hidden md:table-cell px-3 sm:px-6 py-4 text-left text-gray-300 font-medium text-xs sm:text-sm">
-                Inscription
+                {t("admin.tables.registrationDate")}
               </th>
               <th className="px-3 sm:px-6 py-4 text-right text-gray-300 font-medium text-xs sm:text-sm">
-                Actions
+                {t("admin.tables.actions")}
               </th>
             </tr>
           </thead>
@@ -115,7 +118,7 @@ export default function AdminUsersTable({
                   colSpan={6}
                   className="px-6 py-12 text-center text-gray-400"
                 >
-                  Aucun utilisateur trouvé
+                  {t("admin.tables.noUsers")}
                 </td>
               </tr>
             ) : (
@@ -154,7 +157,7 @@ export default function AdminUsersTable({
                     {user.email}
                   </td>
                   <td className="px-3 sm:px-6 py-4">
-                    {getRoleBadge(user.role)}
+                    {getRoleBadge(user.role, t)}
                   </td>
                   <td className="hidden md:table-cell px-3 sm:px-6 py-4 text-gray-400 text-sm">
                     {new Date(
@@ -166,21 +169,21 @@ export default function AdminUsersTable({
                       <button
                         onClick={() => openModal(user)}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
-                        title="Modifier"
+                        title={t("admin.actions.edit")}
                       >
                         <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => loadUserDetails(user)}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
-                        title="Voir details"
+                        title={t("admin.actions.view")}
                       >
                         <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(user.id)}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-card transition-colors"
-                        title="Supprimer"
+                        title={t("admin.actions.delete")}
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>

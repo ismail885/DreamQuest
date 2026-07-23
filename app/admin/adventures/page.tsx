@@ -4,10 +4,12 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Adventure } from "@/types";
 import { Search, Trash2, ChevronLeft, ChevronRight, Eye, Star, Calendar, X, ThumbsUp } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const ITEMS_PER_PAGE = 10;
 
 export default function AdminAdventuresPage() {
+  const { t } = useLanguage();
  const [adventures, setAdventures] = useState<Adventure[]>([]);
  const [loading, setLoading] = useState(true);
  const [searchTerm, setSearchTerm] = useState("");
@@ -63,7 +65,7 @@ export default function AdminAdventuresPage() {
       setDeleteConfirm(null);
       fetchAdventures();
     } catch {
-      setActionError("Erreur lors de la suppression de l'aventure.");
+      setActionError(t("admin.errorDelete"));
       setDeleteConfirm(null);
     }
   }
@@ -73,14 +75,14 @@ export default function AdminAdventuresPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Gestion des aventures</h1>
-          <p className="text-gray-400 mt-2">{totalCount} aventure{totalCount !== 1 ? "s" : ""} disponible{totalCount !== 1 ? "s" : ""}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">{t("admin.adventuresManagement")}</h1>
+          <p className="text-gray-400 mt-2">{totalCount} {t("admin.management.adventuresCount")}</p>
         </div>
         <a
           href="/create-adventure"
           className="self-start px-5 py-2.5 bg-gradient-to-r from-primary to-blue-500 hover:shadow-glow text-white font-medium rounded-card transition-colors text-sm sm:text-base whitespace-nowrap"
         >
-          + Nouvelle aventure
+          {t("admin.actions.newAdventure")}
         </a>
       </div>
 
@@ -89,8 +91,8 @@ export default function AdminAdventuresPage() {
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 " />
  <input
  type="text"
- aria-label="Rechercher une aventure par titre"
- placeholder="Rechercher par titre..."
+  aria-label={t("admin.tables.searchAdventures")}
+  placeholder={t("admin.tables.searchAdventures")}
  value={searchTerm}
  onChange={(e) => {
  setSearchTerm(e.target.value);
@@ -117,10 +119,10 @@ export default function AdminAdventuresPage() {
           <thead className="bg-gray-900/50">
             <tr>
               <th className="px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Titre</th>
-              <th className="hidden md:table-cell px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Description</th>
-              <th className="px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Popularité</th>
-              <th className="hidden sm:table-cell px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">Création</th>
-              <th className="px-4 sm:px-6 py-4 text-right text-gray-400 font-medium text-sm">Actions</th>
+              <th className="hidden md:table-cell px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">{t("admin.tables.description")}</th>
+              <th className="px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">{t("admin.tables.popularity")}</th>
+              <th className="hidden sm:table-cell px-4 sm:px-6 py-4 text-left text-gray-400 font-medium text-sm">{t("admin.tables.creationDate")}</th>
+              <th className="px-4 sm:px-6 py-4 text-right text-gray-400 font-medium text-sm">{t("admin.tables.actions")}</th>
             </tr>
           </thead>
  <tbody className="divide-y divide-gray-800 ">
@@ -133,8 +135,8 @@ export default function AdminAdventuresPage() {
  ) : adventures.length === 0 ? (
  <tr>
  <td colSpan={5} className="px-6 py-12 text-center text-gray-400 ">
- Aucune aventure trouvée
- </td>
+  {t("admin.tables.noAdventures")}
+  </td>
  </tr>
  ) : (
               adventures.map((adventure) => (
@@ -148,7 +150,7 @@ export default function AdminAdventuresPage() {
                     </div>
                   </td>
                   <td className="hidden md:table-cell px-4 sm:px-6 py-4 text-gray-400 max-w-xs truncate text-sm">
-                    {adventure.description || "Sans description"}
+                    {adventure.description || t("admin.tables.noDescription")}
                   </td>
                   <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-1.5 sm:gap-2">
@@ -164,14 +166,14 @@ export default function AdminAdventuresPage() {
                       <button
                         onClick={() => setViewAdventure(adventure)}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-card transition-colors"
-                        title="Voir"
+                        title={t("admin.actions.view")}
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(adventure.id)}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-card transition-colors"
-                        title="Supprimer"
+                        title={t("admin.actions.delete")}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -238,19 +240,19 @@ export default function AdminAdventuresPage() {
  </div>
  <div className="p-6 space-y-4">
  <div>
- <label className="text-gray-400 text-sm">Description</label>
- <p className="text-white mt-1">{viewAdventure.description || "Aucune description"}</p>
+  <label className="text-gray-400 text-sm">{t("admin.tables.description")}</label>
+  <p className="text-white mt-1">{viewAdventure.description || t("admin.tables.noDescription")}</p>
  </div>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="text-gray-400 text-sm">Popularité</label>
+  <label className="text-gray-400 text-sm">{t("admin.tables.popularity")}</label>
  <p className="text-white mt-1 flex items-center gap-2">
  <ThumbsUp className="w-4 h-4 text-amber-400" />
  {viewAdventure.popularite}
  </p>
  </div>
  <div>
- <label className="text-gray-400 text-sm">Date de création</label>
+  <label className="text-gray-400 text-sm">{t("admin.tables.creationDate")}</label>
  <p className="text-white mt-1 flex items-center gap-2">
  <Calendar className="w-4 h-4 text-cyan-400" />
  {new Date(viewAdventure.date_creation).toLocaleDateString("fr-FR")}
@@ -269,7 +271,7 @@ export default function AdminAdventuresPage() {
  href={`/adventure/${viewAdventure.id}`}
  className="block w-full px-4 py-3 bg-cyan-500 text-white text-center rounded-card hover:bg-cyan-600 transition-colors"
  >
- Voir l&apos;aventure
+  {t("admin.actions.viewAdventure")}
  </a>
  </div>
  </div>
@@ -284,23 +286,23 @@ export default function AdminAdventuresPage() {
  <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
  <Trash2 className="w-8 h-8 text-red-400" />
  </div>
- <h3 className="text-xl font-bold text-white mb-2">Confirmer la suppression</h3>
- <p className="text-gray-400 ">
- Êtes-vous sûr de vouloir supprimer cette aventure ? Cette action est irréversible.
- </p>
+  <h3 className="text-xl font-bold text-white mb-2">{t("admin.confirmDeleteAdventure")}</h3>
+  <p className="text-gray-400 ">
+  {t("admin.confirmDeleteAdventureDesc")}
+  </p>
  </div>
  <div className="flex gap-3 p-6 pt-0">
  <button
  onClick={() => setDeleteConfirm(null)}
  className="flex-1 px-4 py-3 border border-cyan-500/15 text-gray-400 rounded-card hover:bg-cyan-500/10 transition-colors"
  >
- Annuler
- </button>
- <button
- onClick={() => handleDelete(deleteConfirm)}
- className="flex-1 px-4 py-3 bg-red-500 text-white rounded-card hover:bg-red-600 transition-colors"
- >
- Supprimer
+  {t("admin.actions.cancel")}
+  </button>
+  <button
+  onClick={() => handleDelete(deleteConfirm)}
+  className="flex-1 px-4 py-3 bg-red-500 text-white rounded-card hover:bg-red-600 transition-colors"
+  >
+  {t("admin.actions.delete")}
  </button>
  </div>
  </div>

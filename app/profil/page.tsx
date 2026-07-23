@@ -223,7 +223,7 @@ export default function ProfilPage() {
       refresh();
       setSaveMessage({
         type: "success",
-        text: "Profil mis à jour avec succès !",
+        text: t("profile.profileUpdated"),
       });
       updateUser({ username: editUsername, email: editEmail });
 

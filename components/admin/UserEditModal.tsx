@@ -3,6 +3,7 @@
 import { User, UserRole } from "@/types";
 import { X, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface UserEditModalProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ export default function UserEditModal({
   onClose,
 }: UserEditModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useLanguage();
 
   const handleSubmitWithLoading = async (e: React.FormEvent) => {
     setIsSubmitting(true);
@@ -48,7 +50,7 @@ export default function UserEditModal({
         <div className="flex items-center justify-between p-6 border-b border-cyan-500/15">
           <h2 className="text-xl font-bold text-white">
             {editingUser
-              ? "Modifier l'utilisateur"
+              ? t("admin.editUser")
               : "Nouvel utilisateur"}
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
@@ -94,9 +96,9 @@ export default function UserEditModal({
               }
               className="w-full px-4 py-3 bg-gray-900 border border-cyan-500/15 rounded-card text-white focus:outline-none focus:border-primary"
             >
-              <option value="joueur">Joueur</option>
-              <option value="createur">Créateur</option>
-              <option value="admin">Administrateur</option>
+              <option value="joueur">{t("admin.roles.joueur")}</option>
+              <option value="createur">{t("admin.roles.createur")}</option>
+              <option value="admin">{t("admin.roles.admin")}</option>
             </select>
           </div>
           <div className="flex gap-3 pt-4">
@@ -105,7 +107,7 @@ export default function UserEditModal({
               onClick={onClose}
               className="flex-1 px-4 py-3 border border-cyan-500/15 text-gray-400 rounded-card hover:bg-cyan-500/10 transition-colors"
             >
-              Annuler
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
@@ -115,10 +117,10 @@ export default function UserEditModal({
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Enregistrement...
+                  {t("common.saving")}
                 </>
               ) : (
-                "Enregistrer"
+                t("common.save")
               )}
             </button>
           </div>

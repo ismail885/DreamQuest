@@ -2,6 +2,7 @@
 
 import { User } from "@/types";
 import { X, BookOpen, UserRound } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface UserDetailModalProps {
   user: User | null;
@@ -18,6 +19,7 @@ export default function UserDetailModal({
   loading,
   onClose,
 }: UserDetailModalProps) {
+  const { t } = useLanguage();
   if (!user) return null;
 
   return (
@@ -43,13 +45,13 @@ export default function UserDetailModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-900/50 rounded-card">
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                Role
+                {t("admin.tables.roleLabel")}
               </p>
               <p className="text-white font-medium">{user.role}</p>
             </div>
             <div className="p-4 bg-gray-900/50 rounded-card">
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                Inscription
+                {t("admin.tables.registrationDate")}
               </p>
               <p className="text-white font-medium">
                 {new Date(user.date_creation).toLocaleDateString("fr-FR")}
@@ -60,12 +62,12 @@ export default function UserDetailModal({
           <div>
             <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
               <UserRound className="w-5 h-5 text-cyan-400" />
-              Personnages ({characters.length})
+              {t("admin.characters")} ({characters.length})
             </h3>
             {loading ? (
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-cyan-500 mx-auto" />
             ) : characters.length === 0 ? (
-              <p className="text-gray-400 text-sm">Aucun personnage</p>
+              <p className="text-gray-400 text-sm">{t("admin.tables.noCharacters")}</p>
             ) : (
               <div className="space-y-2">
                 {characters.map((c) => (
@@ -82,7 +84,7 @@ export default function UserDetailModal({
                       </span>
                     </div>
                     <span className="text-cyan-400 text-sm">
-                      Niveau {c.niveau}
+                      {t("character.level")} {c.niveau}
                     </span>
                   </div>
                 ))}
