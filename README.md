@@ -37,7 +37,7 @@ DreamQuest est une application web de **RPG textuel narratif** où chaque choix 
 
 - **10 classes uniques** : Guerrier, Mage, Archer, Assassin, Paladin, Prêtre, Druide, Nécromancien, Voleur, Barbare
 - **9 genres heroic-fantasy** : Fantasy, Dark Fantasy, Mythologique, Flibuste, Intrigue de Cour, Marches Sauvages, Conte Féerique, Épopée Guerrière, Arcane & Reliques
-- **Génération procédurale** d'aventures (sans IA) combinant thème × genre × difficulté
+- **Génération** d'aventures combinant thème × genre × difficulté
 - **Combats au tour par tour** avec capacités spéciales, esquive, coups critiques et poison
 - **Progression sur 4 couches** : niveaux, saisons mensuelles, trophées et succès
 
