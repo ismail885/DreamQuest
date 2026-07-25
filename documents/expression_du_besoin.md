@@ -35,6 +35,7 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 - Gestion de session JWT (HttpOnly cookies).
 - Réinitialisation de mot de passe.
 - Profil utilisateur public (`/profil/[username]`) avec onglets (histoires, personnages, succès, quêtes, créations, évolution).
+- Événements saisonniers.
 
 ### Personnages
 - Création de personnage avec 10 classes uniques (Guerrier, Mage, Archer, Assassin, Paladin, Prêtre, Druide, Nécromancien, Voleur, Barbare).
@@ -88,8 +89,7 @@ DreamQuest est une application web de RPG textuel permettant aux utilisateurs de
 
 ## 7. Fonctionnalités futures (non réalisées)
 
-- Traduction multilingue.
-- Événements saisonniers.
+- Traduction multilingue complète.
 - Mode multijoueur / coopératif.
 
 ## 8. Contraintes
