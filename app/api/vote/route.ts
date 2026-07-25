@@ -1,6 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, getTokenFromCookies } from '@/lib/jwt';
 import { createAdminClient } from '@/lib/supabaseClient';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+/**
+ * Compte les votes pour une aventure et met à jour la colonne popularite.
+ * Retourne le nouveau nombre, ou undefined en cas d'erreur.
+ */
+async function syncPopularite(admin: SupabaseClient, adventureId: number): Promise<number | undefined> {
+  try {
+    const { count, error } = await admin
+      .from('vote')
+      .select('*', { count: 'exact', head: true })
+      .eq('id_aventure', adventureId);
+
+    if (error || count === null) return undefined;
+
+    const { error: updateError } = await admin
+      .from('aventure')
+      .update({ popularite: count })
+      .eq('id', adventureId);
+
+    if (updateError) return undefined;
+    return count;
+  } catch {
+    return undefined;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,14 +74,13 @@ export async function POST(request: NextRequest) {
       throw insertError;
     }
 
-    // Synchroniser la popularité
-    const { data: newPop } = await admin
-      .rpc('sync_popularite', { p_aventure_id: body.adventureId });
+    // Synchroniser la popularité (comptage direct, pas de dépendance RPC)
+    const popularite = await syncPopularite(admin, body.adventureId);
 
     return NextResponse.json({
       ok: true,
       hasVoted: true,
-      popularite: typeof newPop === 'number' ? newPop : undefined,
+      popularite,
     });
   } catch (error) {
     console.error('[Vote] Erreur:', error);
@@ -95,14 +120,13 @@ export async function DELETE(request: NextRequest) {
 
     if (deleteError) throw deleteError;
 
-    // Synchroniser la popularité
-    const { data: newPop } = await admin
-      .rpc('sync_popularite', { p_aventure_id: adventureId });
+    // Synchroniser la popularité (comptage direct, pas de dépendance RPC)
+    const popularite = await syncPopularite(admin, adventureId);
 
     return NextResponse.json({
       ok: true,
       hasVoted: false,
-      popularite: typeof newPop === 'number' ? newPop : undefined,
+      popularite,
     });
   } catch (error) {
     console.error('[Vote] Erreur:', error);

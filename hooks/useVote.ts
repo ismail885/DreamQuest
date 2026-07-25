@@ -14,7 +14,7 @@ interface UseVoteReturn {
   popularite: number;
   isLoading: boolean;
   error: string | null;
-  toggleVote: () => Promise<void>;
+  toggleVote: () => Promise<boolean>;
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -43,13 +43,18 @@ export function useVote({
     setHasVoted(initialHasVoted);
   }, [initialHasVoted]);
 
-  const toggleVote = useCallback(async () => {
+  // Resynchroniser popularite quand la prop change (ex: re-fetch de la liste)
+  useEffect(() => {
+    setPopularite(initialPopularite);
+  }, [initialPopularite]);
+
+  const toggleVote = useCallback(async (): Promise<boolean> => {
     if (!userId) {
       setError("Vous devez etre connecte pour voter");
-      return;
+      return false;
     }
 
-    if (loadingRef.current) return;
+    if (loadingRef.current) return false;
     loadingRef.current = true;
     setIsLoading(true);
     setError(null);
@@ -79,9 +84,11 @@ export function useVote({
         setHasVoted(true);
         if (typeof res.popularite === 'number') setPopularite(res.popularite);
       }
+      return true;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erreur lors du vote";
       setError(message);
+      return false;
     } finally {
       setIsLoading(false);
       loadingRef.current = false;

@@ -60,6 +60,7 @@ const AdventureCard = React.memo(function AdventureCard({
     hasVoted,
     popularite: currentPopularite,
     isLoading,
+    error: voteError,
     toggleVote,
   } = useVote({
     adventureId: id,
@@ -67,6 +68,13 @@ const AdventureCard = React.memo(function AdventureCard({
     initialHasVoted: initialVoted,
     initialPopularite: popularite,
   });
+
+  // Afficher une toast quand une erreur de vote survient
+  useEffect(() => {
+    if (voteError) {
+      toast.error(voteError);
+    }
+  }, [voteError]);
 
   const href = personnageId
     ? `/adventure/${id}?personnage=${personnageId}`
@@ -86,7 +94,8 @@ const AdventureCard = React.memo(function AdventureCard({
       toast.error(t("adventure.vote.notLoggedIn"));
       return;
     }
-    await toggleVote();
+    const success = await toggleVote();
+    if (!success) return; // Ne pas bumpVote si le vote a échoué
     const uid = user.id;
     const bumpVote = (questId: string) =>
       updateQuestProgress(uid, questId, 1).then((r) => {
