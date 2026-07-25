@@ -34,7 +34,7 @@ const fr: Translations = {
   },
   nav: {
     home: 'Accueil',
-    dashboard: 'Tableau de bord',
+    dashboard: 'Accueil',
     adventures: 'Aventures',
     createAdventure: 'Créer une aventure',
     createCharacter: 'Créer un personnage',
