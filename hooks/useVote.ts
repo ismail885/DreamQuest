@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 const VOTE_TIMEOUT = 10000;
 
@@ -38,6 +38,11 @@ export function useVote({
   const [error, setError] = useState<string | null>(null);
   const loadingRef = useRef(false);
 
+  // Resynchroniser hasVoted quand initialHasVoted change (ex: chargement asynchrone dans AdventureCard)
+  useEffect(() => {
+    setHasVoted(initialHasVoted);
+  }, [initialHasVoted]);
+
   const toggleVote = useCallback(async () => {
     if (!userId) {
       setError("Vous devez etre connecte pour voter");
@@ -51,10 +56,11 @@ export function useVote({
 
     try {
       if (hasVoted) {
-        await withTimeout(
+        const res = await withTimeout(
           fetch(`/api/vote?adventureId=${adventureId}`, { method: 'DELETE' }).then(r => r.json()),
           VOTE_TIMEOUT
         );
+        if (res.error) throw new Error(res.error);
         setHasVoted(false);
         // Re-fetch popularite depuis la vue publiquement accessible (SELECT anon OK)
         const { supabase } = await import('@/lib/supabaseClient');
