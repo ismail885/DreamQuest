@@ -7,7 +7,7 @@ import React, {
  useEffect,
  ReactNode,
 } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { hasSupabaseClientConfig, supabase } from "@/lib/supabaseClient";
 
 
 interface User {
@@ -79,6 +79,12 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  const [loading, setLoading] = useState(true);
 
  useEffect(() => {
+ if (!hasSupabaseClientConfig()) {
+ setUser(null);
+ setLoading(false);
+ return;
+ }
+
  let mounted = true;
 
  // Vérification initiale (indispensable — l'event INITIAL_SESSION ne se déclenche pas toujours)
@@ -148,6 +154,10 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  }, []);
 
  const login = async (email: string, password: string) => {
+ if (!hasSupabaseClientConfig()) {
+ return { success: false, error: "Variables Supabase manquantes dans l'environnement" };
+ }
+
  try {
  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
  if (authError || !authData.user) {
@@ -169,6 +179,10 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  };
 
  const register = async (username: string, email: string, password: string) => {
+ if (!hasSupabaseClientConfig()) {
+ return { success: false, error: "Variables Supabase manquantes dans l'environnement" };
+ }
+
  try {
  const { data: existingEmail } = await supabase
  .from("utilisateur")
@@ -212,6 +226,10 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  };
 
  const loginWithGoogle = async () => {
+ if (!hasSupabaseClientConfig()) {
+ return { success: false, error: "Variables Supabase manquantes dans l'environnement" };
+ }
+
  try {
  const { error } = await supabase.auth.signInWithOAuth({
  provider: "google",
@@ -227,6 +245,10 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
  };
 
   const loginWithDiscord = async () => {
+  if (!hasSupabaseClientConfig()) {
+  return { success: false, error: "Variables Supabase manquantes dans l'environnement" };
+  }
+
   try {
   const { error } = await supabase.auth.signInWithOAuth({
   provider: "discord",
@@ -242,6 +264,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   };
 
  const logout = async () => {
+ if (!hasSupabaseClientConfig()) {
+ setUser(null);
+ return;
+ }
+
  try {
  await supabase.auth.signOut();
  await clearAuthSession();

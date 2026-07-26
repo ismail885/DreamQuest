@@ -1,6 +1,5 @@
 import "@/styles/globals.css";
 import dynamic from "next/dynamic";
-import Script from "next/script";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 
@@ -33,8 +32,6 @@ export default function RootLayout({
   return (
     <html lang="fr" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        {/* Blocking script — lit le cookie theme avant le rendu pour éviter le FOIT */}
-        <Script src="/scripts/theme-init.js" strategy="beforeInteractive" />
         <link rel="icon" href="/Logo_DreamQuest.png" sizes="any" />
         <meta name="theme-color" content="#00d4ff" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

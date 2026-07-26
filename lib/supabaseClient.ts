@@ -4,6 +4,10 @@ import type { UserRole } from '@/types/user'
 const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey: string = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
+export function hasSupabaseClientConfig(): boolean {
+  return Boolean(supabaseUrl && supabaseAnonKey)
+}
+
 const REQUEST_TIMEOUT = 15_000;
 
 async function fetchWithTimeout(
@@ -29,7 +33,7 @@ let _supabase: SupabaseClient | null = null
 
 export function getSupabaseClient(): SupabaseClient {
   if (!_supabase) {
-    if (!supabaseUrl || !supabaseAnonKey) {
+    if (!hasSupabaseClientConfig()) {
       throw new Error('Variables Supabase manquantes dans .env')
     }
     _supabase = createClient(supabaseUrl, supabaseAnonKey, {

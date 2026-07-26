@@ -144,6 +144,26 @@ npm run dev
 
 Ouvrir [http://localhost:3000](http://localhost:3000)
 
+### Lancer avec Docker en local
+
+Le conteneur utilise les mêmes variables Supabase/JWT que Vercel. Créez un fichier `.env.local` à la racine, puis lancez :
+
+```bash
+docker compose --env-file .env.local -f docker/docker-compose.yml up --build
+```
+
+Arrêt du conteneur :
+
+```bash
+docker compose -f docker/docker-compose.yml down
+```
+
+Si vous démarrez Docker depuis le dossier `docker/`, utilisez plutôt :
+
+```bash
+docker compose --env-file ../.env.local up --build
+```
+
 ---
 
 ## Structure du projet
@@ -397,6 +417,7 @@ Le projet est déployé sur **Vercel** :
 
 - Déploiement automatique à chaque push sur `main`
 - Variables d'environnement configurées dans le dashboard Vercel
+- Les mêmes variables sont utilisées en local via Docker avec `.env.local`
 
 ### Variables requises
 
