@@ -32,6 +32,19 @@ import {
   clearAuthCookie,
 } from '@/lib/jwt'
 
+// verifyToken journalise volontairement un warning sur token invalide :
+// on neutralise la sortie pour garder le rapport Jest lisible, sans toucher
+// au code de production qui doit continuer a journaliser en conditions reelles.
+let consoleWarnSpy: jest.SpyInstance
+
+beforeEach(() => {
+  consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  consoleWarnSpy.mockRestore()
+})
+
 describe('JWT Utility Functions', () => {
   // Reset JWT_SECRET for each test
   beforeEach(() => {

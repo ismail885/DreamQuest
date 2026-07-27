@@ -39,6 +39,19 @@ jest.mock('@/lib/supabaseClient', () => {
 import { supabase } from '@/lib/supabaseClient'
 import { getUserSavesWithDetails, saveProgress } from '@/lib/saves'
 
+// Les cas d'erreur testes ici journalisent volontairement via console.error :
+// on neutralise la sortie pour garder le rapport Jest lisible, sans toucher
+// au code de production qui doit continuer a journaliser en conditions reelles.
+let consoleErrorSpy: jest.SpyInstance
+
+beforeEach(() => {
+  consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  consoleErrorSpy.mockRestore()
+})
+
 const mockSupabase = supabase as unknown as {
   __setResolved: (v: { data?: unknown; error?: unknown }) => void
   __setRejected: (err: unknown) => void

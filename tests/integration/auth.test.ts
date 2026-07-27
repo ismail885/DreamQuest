@@ -26,6 +26,19 @@ jest.mock('jose', () => {
 
 import { signToken, verifyToken, createAuthCookie, clearAuthCookie } from '@/lib/jwt'
 
+// verifyToken journalise volontairement un warning sur token invalide :
+// on neutralise la sortie pour garder le rapport Jest lisible, sans toucher
+// au code de production qui doit continuer a journaliser en conditions reelles.
+let consoleWarnSpy: jest.SpyInstance
+
+beforeEach(() => {
+  consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  consoleWarnSpy.mockRestore()
+})
+
 describe('Intégration - Authentification', () => {
   describe('Flux complet: inscription -> connexion -> vérification', () => {
     it('devrait créer un token et le vérifier', async () => {
